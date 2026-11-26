@@ -1,0 +1,23 @@
+{
+  "id": "L-twin-primes-two-moment-identity",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_two_moment_identity.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_two_moment_identity",
+  "statement": "let bump := fun (a b t : ℝ) => if a < t ∧ t < b then Real.exp (-1/((t-a)*(b-t))) else 0; let W := bump 1 (51/50); let b := bump (-1/40) (1/40); let K := fun (v : ℝ) => ∫ u : ℝ, b u * b (v-u); let H := fun (v : ℝ) => K v / 2 - K (v-1/5)/4 - K (v+1/5)/4; let k := fun (t : ℝ) => ∫ v : ℝ, b v * Real.cos (2*Real.pi*v*t); let l := fun (t : ℝ) => Real.sin (Real.pi*t/5)*k t; let T := fun (X : ℕ) => 2*Real.pi*(X:ℝ); let w := fun (X : ℕ) => (Finset.range (2*X+1)).filter (fun n => X < n ∧ 50*n < 51*X); let u := fun (X n : ℕ) => ArithmeticFunction.vonMangoldt n * W ((n:ℝ)/X) / Real.sqrt n; let P := fun (X : ℕ) (t : ℝ) => (w X).sum (fun n => (u X n : ℂ)*Complex.exp (-Complex.I*(t:ℂ)*(Real.log n : ℂ))); let I := fun (X : ℕ) (σ : ℝ) => ∫ t in Set.Ioi (0:ℝ), (l (t/T X))^2*(1+σ*Real.cos (4*Real.pi*t/T X))*‖P X t‖^2; let f := fun (x n j : ℝ) => x * Real.log (1+j/n); ∀ X : ℕ, 1000 ≤ X → I X 1 - I X (-1) = T X * ((w X).filter (fun n => n+2 ∈ w X)).sum (fun n => u X n*u X (n+2)*H (f X n 2 - 2))",
+  "plain_statement": {
+    "zh": "新路线 · Fourier 选频 · TP-0013 · 对实际多项式证明两支时间积分之差",
+    "en": "New route · Fourier isolation · TP-0013 · Compute the difference of the two actual polynomial moments"
+  },
+  "brief": {
+    "zh": "展开有限平方，偶性将全轴积分减半；用 Fourier 卷积公式和已分离的边带。",
+    "en": "Expand the finite square, halve the full integral by evenness and apply the convolution formula and frequency isolation."
+  },
+  "source": "https://arxiv.org/abs/2610.32672",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-finite-band-sum",
+    "L-twin-primes-time-weights"
+  ],
+  "imports": []
+}

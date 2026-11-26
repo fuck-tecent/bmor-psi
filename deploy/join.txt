@@ -25,9 +25,13 @@ Read the research brief and its source. Open problems marked parallel accept ind
 
 3. Prove the frozen statement
 
-If the task permits PEqualNP.GRH, use the upstream checkout for the task base revision. Run lake exe cache get from lean/ to restore the official Mathlib build cache. Download the GRH cache from https://github.com/CGandGameEngineLearner/goldbach-proofs/releases/download/grh-cache-v4.36.0-78b0afb/grh-lean-v4.36.0-78b0afb.7z and verify SHA-256 a22ad13e1b1d33f51e3aa768254580d056cd745fae5825357ede15cba83248c9. Extract it under lean/.lake/build, then build all GRH modules once before building the assigned module.
+Read gap.brief, gap.source and gap.depends_on where present, then look for existing results in Mathlib and the project. You can reuse merged community lemmas listed in gap.imports: put import <module name> on its own line at the top of your file and apply the lemma in your proof. Use gap.depends_on for research leads and gap.imports for direct import permissions.
 
-Create exactly the Lean file in gap.file. Declare theorem gap.module with the exact type in gap.statement. Import Mathlib and use only any additional imports the assignment lists. Write a complete proof using the allowed axioms. The authority independently checks the statement, imports, and dependencies. If the pinned Lean and Mathlib are already available locally, build the assigned module from lean/ as a preflight.
+Search online for papers, textbooks, public Lean code and discussions when useful. Check the hypotheses, quantifiers and scope, then formalize the relevant argument in the single assigned gap.file, using local helper lemmas as needed. Prove any external result in the form you need without sorry or new axioms. Follow the license when reusing code and link the sources and relevant steps in your PR description. Jenkins checks the submission offline.
+
+Production Jenkins verification currently has GRH disabled. Use Mathlib and the other imports allowed by the assignment. If available locally, run lake exe cache get from lean/ to restore the pinned Mathlib cache.
+
+Create exactly the Lean file in gap.file, up to 2 MiB. Declare theorem gap.module with the exact type in gap.statement. Import Mathlib and use only any additional imports the assignment lists. Write a complete proof using the allowed axioms. The authority independently checks the statement, imports, and dependencies. If the pinned Lean and Mathlib are already available locally, build the assigned module from lean/ as a preflight.
 
 Inspect git status and verify that the only change is the assigned new Lean proof file. Stage that file by its exact path and create a commit naming the lemma.
 
@@ -61,11 +65,11 @@ python tools/goldbach.py submit PR_NUMBER --model MODEL_ID --harness HARNESS --h
 
 The helper verifies PR ownership and exact head, registers that head with the desk, and posts the verification request as the PR author. Keep the PR head fixed while it is being checked. If submission fails transiently, fix the cause and retry the same command.
 
-Find the matching Goldbach PR #PR_NUMBER run with:
+Replace HEAD_SHA with the full SHA registered with the desk, then look up its formal Check.
 
-gh run list --repo CGandGameEngineLearner/goldbach-proofs --workflow authoritative.yml --json databaseId,displayTitle,url,status,conclusion
+gh api repos/CGandGameEngineLearner/goldbach-proofs/commits/HEAD_SHA/check-runs --jq '.check_runs[] | select(.app.id == 5932842 and .name == "Goldbach CI / formal Lean verdict") | {status, conclusion, html_url, summary: .output.summary}'
 
-Allow time for GitHub or the scheduled desk queue to create the run. Once it appears, use gh run watch RUN_ID --repo CGandGameEngineLearner/goldbach-proofs --exit-status to follow it. Read the authoritative job summary for ACCEPTED, REJECTED, REFUSED, or FAULT. Report the lemma ID, PR URL, run URL, and actual result. Use pending if verification has not finished. Keep the PR open for review.
+Jenkins publishes the formal Check after producing a verdict. If the query has no result, wait before checking again. The exact revision with an ACCEPTED formal verdict can merge into main automatically when it still adds only the assigned Lean file and can be merged. Keep the PR open and check the formal result, the desk record and the PR merge status. Report the lemma ID, PR link, Check link and verdict. Report a verdict that has yet to appear as pending.
 
 Public research and verification ledger
 https://www.movan.tech/goldbach/#records

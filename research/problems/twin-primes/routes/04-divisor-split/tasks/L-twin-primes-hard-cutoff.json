@@ -1,0 +1,23 @@
+{
+  "id": "L-twin-primes-hard-cutoff",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_hard_cutoff.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_hard_cutoff",
+  "statement": "let f := fun (p : ℕ) => if p.Prime ∧ 2 < p then 1-1/((p:ℝ)-1)^2 else 1; let twinC := ∏' p : ℕ, f p; RiemannHypothesis → Filter.Tendsto (fun D : ℕ => ((Finset.Icc 1 D).filter (fun n => n%2=1)).sum (fun n => -(ArithmeticFunction.moebius n : ℝ)*Real.log n / Nat.totient n)) Filter.atTop (nhds (2*twinC))",
+  "plain_statement": {
+    "zh": "新路线 · 短长除数与奇偶 · TP-0034 · 识别奇除数硬截断的 2C₂ 常数",
+    "en": "New route · Short and long divisors · TP-0034 · Identify the hard cutoff limit over odd divisors"
+  },
+  "brief": {
+    "zh": "卷积两个 Möbius 矩；p=2 的缺失提供因子 2。需控制截断尾部。",
+    "en": "Convolve the two Möbius moments and bound the cutoff tail. The omitted prime 2 supplies a factor of two."
+  },
+  "source": "https://arxiv.org/abs/2610.32672",
+  "program": "correlation",
+  "role": "conditional",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-moebius-moments",
+    "L-twin-primes-euler-factor"
+  ],
+  "imports": []
+}

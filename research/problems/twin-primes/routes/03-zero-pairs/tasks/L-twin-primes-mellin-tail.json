@@ -1,0 +1,20 @@
+{
+  "id": "L-twin-primes-mellin-tail",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_mellin_tail.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_mellin_tail",
+  "statement": "∀ C : ℝ, 0 ≤ C → ∃ D : ℝ, 0 ≤ D ∧ ∀ (L : ℕ) (m : ℕ → ℝ), (∀ n, 0 ≤ m n ∧ m n ≤ C*Real.log (2+(n:ℝ))) → (∑' n : ℕ, m (L+n)/(1+(L:ℝ)+n)^6) ≤ D/(1+(L:ℝ))^4",
+  "plain_statement": {
+    "zh": "新路线 · 零点对与相位 · TP-0022 · 由单位窗计数控制衰减核的远零点尾",
+    "en": "New route · Zero pairs and phases · TP-0022 · Bound the far-zero tail of a decaying kernel from unit counts"
+  },
+  "brief": {
+    "zh": "按距中心的整壳计数；以一个小幂吸收对数并控制收敛尾和。",
+    "en": "Group by integer distance from the center, absorb the logarithm and sum the tail."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/GlobalInterpolation/TruncatedExplicitFormula.lean",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

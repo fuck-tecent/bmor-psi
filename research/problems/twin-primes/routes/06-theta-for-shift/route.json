@@ -1,0 +1,11 @@
+{
+  "id": "06-theta-for-shift",
+  "title": {
+    "zh": "指定平移的 Θ 提升",
+    "en": "Theta lift for a prescribed shift"
+  },
+  "description": {
+    "zh": "先在有限系数序列与局部掩码上固定 n↦n+2，再研究同一模型两支测试的混合项。",
+    "en": "Fix the shift n↦n+2 on finite coefficient sequences and local masks, then study the mixed term of two prescribed tests in one model."
+  }
+}

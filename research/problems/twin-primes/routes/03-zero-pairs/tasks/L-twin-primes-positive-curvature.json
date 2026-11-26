@@ -1,0 +1,20 @@
+{
+  "id": "L-twin-primes-positive-curvature",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_positive_curvature.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_positive_curvature",
+  "statement": "∀ u c : ℝ, 0 < c → c < u → 1/(u+c)+1/(u-c)-2/u = 2*c^2/(u*(u^2-c^2)) ∧ 0 < 1/(u+c)+1/(u-c)-2/u",
+  "plain_statement": {
+    "zh": "新路线 · 零点对与相位 · TP-0018 · 计算谱对角核的严格正二阶差",
+    "en": "New route · Zero pairs and phases · TP-0018 · Compute the strictly positive second difference of the diagonal kernel"
+  },
+  "brief": {
+    "zh": "先清分母，再由 u>c 确定三个分母的符号。",
+    "en": "Clear denominators first and use u>c to determine their signs."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/GlobalInterpolation/TruncatedExplicitFormula.lean",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

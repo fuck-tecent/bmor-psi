@@ -1,0 +1,21 @@
+{
+  "id": "L-twin-primes-shift-fourier-phase",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_shift_fourier_phase.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_shift_fourier_phase",
+  "statement": "∀ (N : ℕ) [NeZero N] (f : ZMod N → ℂ) (k : ZMod N), ZMod.dft (fun n => f (n+2)) k = ZMod.stdAddChar (N:=N) (2*k) * ZMod.dft f k",
+  "plain_statement": {
+    "zh": "新路线 · 指定平移的 Θ 提升 · TP-0049 · 证明平移二在指定 Fourier 频率的相位",
+    "en": "New route · Theta lift for a prescribed shift · TP-0049 · Compute the Fourier phase of translation by two at every prescribed frequency"
+  },
+  "brief": {
+    "zh": "参照 QP-0042 的任意平移公式，取平移量 2。使用 Mathlib DFT 的同一个负指数约定。",
+    "en": "Specialize the general shift formula QP-0042 to shift 2 under the same Mathlib DFT sign convention."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/DecoratedLatticeProofs/ThetaKernelSplitPlacesEqJetClassicalThetaStatement.lean#L1335",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": false,
+  "depends_on": [],
+  "imports": [],
+  "challenge_only": true
+}

@@ -9,6 +9,21 @@ from deploy import publish_catalogue as pub
 
 
 class CataloguePublisherTests(unittest.TestCase):
+    def test_merge_preserves_independent_changes_to_the_same_lemma(self):
+        base = {"gaps": [{"id": "L-one", "statement": "True"}]}
+        live = {"gaps": [dict(base["gaps"][0], refutation={"status": "verified"})]}
+        candidate = {"gaps": [dict(base["gaps"][0], claims_closed=True), {"id": "L-two"}]}
+        self.assertEqual(pub.merge_catalogue(base, live, candidate, "gaps.json"), {
+            "gaps": [dict(live["gaps"][0], claims_closed=True), {"id": "L-two"}],
+        })
+
+    def test_merge_rejects_competing_changes_to_the_same_field(self):
+        base = {"gaps": [{"id": "L-one", "statement": "True"}]}
+        live = {"gaps": [dict(base["gaps"][0], statement="False")]}
+        candidate = {"gaps": [dict(base["gaps"][0], statement="0 = 0")]}
+        with self.assertRaisesRegex(ValueError, r"L-one\.statement"):
+            pub.merge_catalogue(base, live, candidate, "gaps.json")
+
     def test_owner_and_exact_successful_build(self):
         sha = "a" * 40
         pr = dict(number=12, merge_commit_sha=sha, merged_at="today",

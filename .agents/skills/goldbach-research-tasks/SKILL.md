@@ -43,7 +43,7 @@ description: 为哥德巴赫研究台及分站自动盘点剩余困难命题，�
 1. **读取**：从研究台快照取得父题 ID、冻结声明和基线 Git SHA。对原声明 UTF-8 字节计算 SHA-256。读取父题、已完成输入和在途任务，先查重。
 2. **拆解**：将数学家的意图写入 `motivation`。每条子题给出独立 Lean 声明、显式前提、中英文解释、证明提示、所属路线、来源和依赖 ID。用 `links` 指向下游：`input` 提供必要步骤或可复用输入，`exploration` 是探索，`sufficient_reduction` 要列全输入并提供组合引理 `bridge`。检查组合引理的类型确实把这些输入推到父题。证明状态始终读取权威流水线裁决。
 3. **校验**：先用 Draft 2020-12 验证 JSON 结构，再验证父题哈希、ID 唯一性、引用在本台存在、路线存在、依赖无环和双语语义。服务端从 ID 派生固定文件名与模块名；v1 新题使用 Mathlib 并遵循该台的 program/role 规则。新路线或新增允许导入项需要扩展协议；v1 的 `route_note` 更新父题对应路线的双语说明。仅调整说明时允许空任务列表。最后运行仓库目录测试和固定版本 Lean。
-4. **交付变更 PR**：将变更集落实到对应目录，在功能分支提交并推送。用 PR 正文记录父题、数学动机、新增命题、依赖关系、声明变化和待解决输入。把 PR 链接交给 lifesize 审核；不代替管理员合并。网站部署器读取 GitHub 的合并身份和 main 上对应 SHA 的 CI 结果。变更集是 skill 的逐题交换格式；发布入口是 GitHub PR。
+4. **交付变更 PR**：将变更集落实到对应目录，在功能分支提交并推送。用 PR 正文记录父题、数学动机、新增命题、依赖关系、声明变化和待解决输入。把 PR 链接交给 lifesize 审核；不代替管理员合并。研究目录发布器核对合并身份和 main 上确切 SHA 的 `Goldbach CI / catalogue release` Check。变更集是 skill 的逐题交换格式；发布入口是 GitHub PR。
 
 ## 定位缺口
 
@@ -55,17 +55,23 @@ description: 为哥德巴赫研究台及分站自动盘点剩余困难命题，�
 
 ## 编辑研究台
 
-新增任务先按[分目录发布约定](../../../research/problems/README.md)放进所属研究台、路线的 tasks 目录。每个 ID 单独建文件。复用引理通过 depends_on 引用。运行 `python research/build_catalogue.py --write` 后一并提交生成清单。已发布任务和在审 PR 沿用原路径。以下字段和验证约定两种格式共用。
+新增任务先按[分目录发布约定](../../../research/problems/README.md)放进所属研究台、路线的 tasks 目录。每个 ID 单独建文件。数学依赖通过 `depends_on` 记录。需要直接调用已通过正式核验并合入 main 的社区引理时，另将实际模块名加入该任务的 `imports`，并核对 Jenkins 受信基线包含该目录规则和引理源文件。运行 `python research/build_catalogue.py --write` 后一并提交生成清单。已发布任务和在审 PR 沿用原路径。以下字段和验证约定两种格式共用。
 
 - 哥德巴赫主站使用 [gaps.json](../../../research/gaps.json) 中的 `gaps`、`tracks` 和 `feeds`。每道新题关联有效的 `track`、`program` 和适当的 `role`。主线数学方向改变时更新 [ROADMAP.md](../../../research/ROADMAP.md)，并核对中英文首页的路线摘要。
 - 分站使用 [problems.json](../../../research/problems.json) 对应 slug 下的 `gaps` 与 `roadmap`。在阶段的 `tasks` 中引用同一分站的题目 ID，并为阶段和任务填写中英文文本。只改阶段顺序、说明或引用时，可保留原有题目。
 - 遵循同分支相邻记录的字段和 [目录测试](../../../research/test_catalogue.py)。例如 `L-goldbach-example` 对应模块 `PEqualNP.Outside.L_goldbach_example`、文件 `lean/PEqualNP/Outside/L_goldbach_example.lean`。全站 ID、模块名和文件路径须唯一。填写完整 `statement`、两种语言的 `plain_statement` 与 `brief`、可核对的 `source`，按实际情况设置 `parallel`。使用项目允许的导入。
 - 既有领取记录绑定声明字节的 SHA-256。扩充目录时对比基线，核对旧题 ID 和声明。修正改变数学含义的已发布命题时使用新 ID，在路线中解释替代关系并处理旧任务的在途领取和历史记录。仅重写路线说明不需要换 ID。
 
+## 新版路线图的挂载与验收
+
+新增任务或改路线时，按[新版路线图指南](references/roadmap-display.md)核对主站地图与分站路线面板各自的数据字段和直达链接。PR 写明研究台、路线 ID、影响的任务和中英文预览入口。发布后核对实际页面、任务详情和状态接口中的路线归属。目录测试和 CI 通过后，仍需完成这一步。
+
+单条证明 PR 只提交指定的 Lean 文件。通过权威核验后，页面从任务台状态刷新进度。证明改变研究方向时，由维护者另开路线 PR。
+
 ## 验证、发布与回读
 
-1. 运行 `python -B -m unittest research.test_catalogue deploy.test_landau` 和 `git diff --check`。人工核对中英文描述与 Lean 类型是否一致，尤其是自然数减法、整除、求和括号和存在量词。若实际需要导入其他已证引理，核对它已存在于受信基线，提交者能够按导入规则使用。
+1. 运行 `python research/build_catalogue.py`、`python -B -m unittest research.test_catalogue research.test_route_sources deploy.test_landau` 和 `git diff --check`。人工核对中英文描述与 Lean 类型是否一致，尤其是自然数减法、整除、求和括号和存在量词。若实际需要导入其他已证引理，核对它已存在于受信基线，提交者能够按导入规则使用。
 2. 参照 [Desk 测试](../../../deploy/test_desk.py)，用临时 SQLite 初始化各受影响的 Desk，调用 `/api/desk/claim`，逐一验证新增 ID 返回 201 且领取对应题目。验证过程使用隔离租约。
-3. 创建 PR 后核对目录 CI，修正在预检中发现的问题。管理员审核后，由项目所有者或获授权的数学任务发布者用自己的 GitHub 账号合并到 main。
-4. 合并后查看该 SHA 的 push 目录 CI 和网站 `research-changes`，检查生产快照里的新增 ID 和冻结声明。需要诊断发布时参见[自动发布运维](../../../deploy/catalogue-release.md)。不要把 PR 检查通过或合并动作单独报告为已上线。
-5. 给出 PR、CI、受影响研究台与任务链接。区分声明通过类型检查与提交的证明通过权威核验。
+3. 创建 PR 后核对 `Goldbach CI / catalogue PR`，修正在预检中发现的问题。管理员审核后，由项目所有者或获授权的数学任务发布者用自己的 GitHub 账号合并到 main。
+4. 合并后查看该 SHA 的 `Goldbach CI / catalogue release` 和网站 `research-changes`，检查生产快照里的新增 ID 和冻结声明。需要诊断发布时参见[自动发布运维](../../../deploy/catalogue-release.md)。不要把 PR 检查通过或合并动作单独报告为已上线。
+5. 给出 PR、CI、受影响研究台与任务链接。区分目录类型检查与提交者的 `Goldbach CI / formal Lean verdict` 及任务台裁决。

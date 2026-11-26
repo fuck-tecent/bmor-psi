@@ -1,0 +1,38 @@
+jenkins:
+  numExecutors: 0
+  mode: EXCLUSIVE
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "goldbach-admin"
+          password: "${goldbach_admin_password}"
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: false
+  slaveAgentPort: -1
+  nodes:
+    - permanent:
+        name: goldbach-isolated-site
+        labelString: goldbach-isolated-site
+        remoteFS: /workspace
+        numExecutors: 4
+        mode: EXCLUSIVE
+        launcher:
+          inbound: {}
+    - permanent:
+        name: goldbach-site-replay
+        labelString: goldbach-site-replay
+        remoteFS: /workspace
+        numExecutors: 1
+        mode: EXCLUSIVE
+        launcher:
+          inbound: {}
+    - permanent:
+        name: goldbach-trusted
+        labelString: goldbach-trusted
+        remoteFS: /workspace
+        numExecutors: 1
+        mode: EXCLUSIVE
+        launcher:
+          inbound: {}

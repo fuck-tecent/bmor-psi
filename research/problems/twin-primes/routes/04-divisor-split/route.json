@@ -1,0 +1,11 @@
+{
+  "id": "04-divisor-split",
+  "title": {
+    "zh": "短长除数与奇偶",
+    "en": "Short and long divisors"
+  },
+  "description": {
+    "zh": "保持带符号的 Möbius 导数；把模数平均与越过奇偶障碍的输入分开。",
+    "en": "Keep the signed Möbius derivative and identify exactly which long divisors can cancel the short main term."
+  }
+}

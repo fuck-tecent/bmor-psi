@@ -15,18 +15,22 @@ To propose a research direction, open a roadmap PR identifying the conjecture, s
 Give the participation prompt to a coding agent to claim a lemma and follow the full submission flow. The same instructions work for manual contributions. [English joining guide](https://www.movan.tech/goldbach/join.txt) · [Research desk](https://www.movan.tech/goldbach/?lang=en)
 
 1. 在专用 checkout 运行 `python tools/goldbach.py claim`，使用分配的单个 Lean 文件、定理名和冻结命题。
-2. 向默认分支创建只新增这一文件的 PR。
-3. 用领取任务时的同一 GitHub 账号运行 `python tools/goldbach.py submit PR_NUMBER --model MODEL_ID --harness HARNESS --harness-version VERSION`。工具登记确切的提交，并由 PR 作者发布 `/goldbach-check GAP_ID`，触发权威验证。
-4. 合并前对照运行报告中的 head、命题哈希和结果。
+2. 向默认分支创建只新增这一文件的 PR，单文件最大 2 MiB。生产核验暂不支持 GRH 导入。
+3. 用领取任务时的同一 GitHub 账号运行 `python tools/goldbach.py submit PR_NUMBER --model MODEL_ID --harness HARNESS --harness-version VERSION`。工具登记确切的提交，并由 PR 作者发布 `/goldbach-check GAP_ID`，触发 Jenkins 正式裁决。
+4. 核对任务台裁决和该提交的 `Goldbach CI / formal Lean verdict`。正式通过且符合单文件提交规则的证明 PR 可自动合入 main。
 
 1. Run `python tools/goldbach.py claim` in a dedicated checkout and use the assigned Lean file, theorem name, and frozen statement.
-2. Open a PR against the default branch that adds exactly that file.
-3. From the same GitHub account, run `python tools/goldbach.py submit PR_NUMBER --model MODEL_ID --harness HARNESS --harness-version VERSION`. The helper registers the exact head and posts `/goldbach-check GAP_ID` as the PR author to request authoritative verification.
-4. Verify the recorded head, statement hash, and result before merging.
+2. Open a PR against the default branch that adds exactly that file, up to 2 MiB. Production verification currently excludes GRH imports.
+3. From the same GitHub account, run `python tools/goldbach.py submit PR_NUMBER --model MODEL_ID --harness HARNESS --harness-version VERSION`. The helper registers the exact head and posts `/goldbach-check GAP_ID` as the PR author to request formal verification in Jenkins.
+4. Verify the task desk verdict and the `Goldbach CI / formal Lean verdict` Check on the submitted commit. Eligible one-file proof PRs with an official ACCEPTED verdict can merge automatically into main.
 
 命题进入清单前，由另一位审查者逐项比对中英文表述、Lean 类型、量词范围以及依赖。提交者以已登记的命题为准。 [命题清单](research/gaps.json)
 
 A second reviewer checks the English and Chinese statements against the Lean type, quantifier bounds, and dependencies before publication. Use the registered statements when submitting proofs. [Statement registry](research/gaps.json)
+
+可以导入任务 `gap.imports` 列出的已合并社区引理。也可以查阅网上资料，将相关方法形式化到指定的 Lean 文件中，在 PR 正文注明参考来源和使用的步骤。
+
+You can import merged community lemmas listed in the task's `gap.imports`. You can also research methods online, formalize them in the assigned Lean file, and cite the sources and relevant steps in your PR description.
 
 ## 模型与工具归因 / Model and harness attribution
 

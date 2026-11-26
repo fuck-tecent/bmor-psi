@@ -49,7 +49,7 @@ jobs:
           [ "$n" -eq 2 ] && [ "$status" = A ] || { echo "REFUSED: a pull request may add exactly one file and change nothing else"; exit 1; }
           printf '%s' "$file" | grep -Eqx 'lean/PEqualNP/Outside/L_[a-z0-9_]+\.lean' || { echo "REFUSED: the file must be lean/PEqualNP/Outside/L_<gap>.lean"; exit 1; }
           [ -f "$file" ] && [ ! -L "$file" ] || { echo "REFUSED: the file must be a plain file, not a link"; exit 1; }
-          [ "$(wc -c < "$file")" -le 524288 ] || { echo "REFUSED: the file is larger than 512 KiB"; exit 1; }
+          [ "$(wc -c < "$file")" -le 2097152 ] || { echo "REFUSED: the file is larger than 2 MiB"; exit 1; }
           echo "run=yes" >> "$GITHUB_OUTPUT"
           echo "FILE=$file" >> "$GITHUB_ENV"
 

@@ -1,0 +1,38 @@
+pipeline {
+    agent { label 'goldbach-isolated-site' }
+    options {
+        skipDefaultCheckout()
+        timeout(time: 35, unit: 'MINUTES')
+    }
+    stages {
+        stage('Isolated GRH verification') {
+            steps {
+                sh '''
+                    python3 - <<'PY'
+import os
+import re
+import socket
+import unicodedata
+
+sha = os.environ["CI_HEAD"]
+if not re.fullmatch(r"[0-9a-f]{40}", sha):
+    raise SystemExit("Invalid commit SHA")
+with socket.socket(socket.AF_UNIX) as connection:
+    connection.settimeout(2000)
+    connection.connect("/runner/runner.sock")
+    connection.sendall(("grh " + sha + "\\n").encode())
+    with connection.makefile("rb") as response:
+        status = response.readline(8)
+        diagnostics = response.read(32768).decode("utf-8", errors="replace")
+# Strip control characters from output produced by the checked revision.
+print("".join(c for c in diagnostics if c in (chr(10), chr(9)) or
+              not unicodedata.category(c).startswith("C")), end="")
+if status != bytes([48, 10]):
+    raise SystemExit("Isolated GRH check failed: " + repr(status))
+print("Isolated GRH check passed for " + sha)
+PY
+                '''
+            }
+        }
+    }
+}

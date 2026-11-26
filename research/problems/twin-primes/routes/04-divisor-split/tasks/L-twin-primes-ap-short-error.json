@@ -1,0 +1,22 @@
+{
+  "id": "L-twin-primes-ap-short-error",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_ap_short_error.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_ap_short_error",
+  "statement": "(∀ (q : ℕ) [NeZero q] (χ : DirichletCharacter ℂ q) (s : ℂ), 0 < s.re → s.re < 1 → DirichletCharacter.LFunction χ s = 0 → s.re = 1/2) → let w := fun (X : ℕ) => (Finset.range (2*X+1)).filter (fun n => X < n ∧ 50*n < 51*X); ∃ C : ℝ, 0 < C ∧ ∀ (X d : ℕ), 2 ≤ X → d ≤ X → Odd d → |((w X).filter (fun p => p.Prime ∧ d ∣ p+2)).sum (fun p => Real.log p) - (X:ℝ)/(50*Nat.totient d)| ≤ C*Real.sqrt X*(Real.log (2*(d:ℝ)*X))^2",
+  "plain_statement": {
+    "zh": "新路线 · 短长除数与奇偶 · TP-0030 · 在 −2 类上取得随模数一致的 GRH 窄窗误差",
+    "en": "New route · Short and long divisors · TP-0030 · Obtain the GRH narrow-window error uniformly in the minus-two class"
+  },
+  "brief": {
+    "zh": "在两个端点相减，处理严格上端点、诱导特征和素数幂，再保留统一常数。",
+    "en": "Subtract the two endpoint estimates and account for the strict upper endpoint, induced characters and proper powers with one constant."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Main.lean#L43",
+  "program": "correlation",
+  "role": "conditional",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-unit-class"
+  ],
+  "imports": []
+}

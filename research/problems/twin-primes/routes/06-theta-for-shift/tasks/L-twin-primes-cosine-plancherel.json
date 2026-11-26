@@ -1,0 +1,23 @@
+{
+  "id": "L-twin-primes-cosine-plancherel",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_cosine_plancherel.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_cosine_plancherel",
+  "statement": "∀ (N : ℕ) [NeZero N] (f : ZMod N → ℝ), (∑ k : ZMod N, (ZMod.stdAddChar (N:=N) (2*k)).re * ‖ZMod.dft (fun j => (f j : ℂ)) k‖^2) = (N:ℝ)*∑ j : ZMod N, f j*f (j+2)",
+  "plain_statement": {
+    "zh": "新路线 · 指定平移的 Θ 提升 · TP-0051 · 把指定间距写成 Fourier 能量的带符号余弦和",
+    "en": "New route · Theta lift for a prescribed shift · TP-0051 · Express the prescribed gap as a signed cosine sum of Fourier energies"
+  },
+  "brief": {
+    "zh": "DFT 采用无归一的正向变换，Parseval 给 N。保留每个频率的实部符号。",
+    "en": "Use Parseval for the unnormalized forward DFT, which contributes N. Keep the sign of the real part at each frequency."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AutomorphicArithmetic/ThetaCorrespondence/ThetaPairLifts/LocalTypeDictionary/ThetaLiftPeterssonNormEqRallisIntegral.lean#L972",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-shift-fourier-phase",
+    "L-twin-primes-no-wrap"
+  ],
+  "imports": []
+}

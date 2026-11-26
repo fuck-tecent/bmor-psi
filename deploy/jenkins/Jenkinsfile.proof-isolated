@@ -1,0 +1,37 @@
+pipeline {
+    agent { label 'goldbach-isolated-site' }
+    options {
+        skipDefaultCheckout()
+        timeout(time: 130, unit: 'MINUTES')
+    }
+    stages {
+        stage('Isolated Lean proof verification') {
+            steps {
+                sh '''
+                    python3 - <<'PY'
+import os
+import re
+import socket
+
+sha = os.environ["CI_HEAD"]
+pr = os.environ["CI_PR"]
+if not re.fullmatch(r"[1-9][0-9]{0,9}", pr):
+    raise SystemExit("Invalid pull request number")
+if not re.fullmatch(r"[0-9a-f]{40}", sha):
+    raise SystemExit("Invalid commit SHA")
+with socket.socket(socket.AF_UNIX) as connection:
+    # Allow 16 dependency builds, the submission build, and the independent check.
+    connection.settimeout(7500)
+    connection.connect("/runner/runner.sock")
+    connection.sendall(("proof " + pr + " " + sha + "\\n").encode())
+    with connection.makefile("rb") as response:
+        status = response.readline(8)
+if status != bytes([48, 10]):
+    raise SystemExit("Isolated Lean proof check failed: " + repr(status))
+print("Isolated Lean proof check passed for " + sha)
+PY
+                '''
+            }
+        }
+    }
+}

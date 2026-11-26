@@ -1,0 +1,20 @@
+{
+  "id": "L-twin-primes-unit-class",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_unit_class.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_unit_class",
+  "statement": "∀ d : ℕ, Odd d → Nat.Coprime 2 d ∧ ∀ p : ℕ, d ∣ p+2 ↔ ((p:ZMod d) = -(2:ZMod d))",
+  "plain_statement": {
+    "zh": "新路线 · 短长除数与奇偶 · TP-0029 · 确定 −2 是每个奇模数的约化类",
+    "en": "New route · Short and long divisors · TP-0029 · Certify minus two as a unit for every odd modulus"
+  },
+  "brief": {
+    "zh": "模 d 化整除关系，d=1 的平凡环亦包含在内。",
+    "en": "Reduce divisibility modulo d, including the trivial ring at d=1."
+  },
+  "source": "https://arxiv.org/abs/2610.32672",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

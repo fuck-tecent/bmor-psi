@@ -1,0 +1,11 @@
+{
+  "id": "high-mode-extension",
+  "title": {
+    "zh": "高频估计推广与 1.32301 合成",
+    "en": "High-frequency extension and the 1.32301 bridge"
+  },
+  "description": {
+    "zh": "把 #2643 提升为最终一致的小量，并试把移动窗口推广到 n²+a 和 α≤1.325。当前指数路线先补低频的内外两段，再把零频、低频、高频和重复赋值预算在同一尺度合成。",
+    "en": "Extract eventual smallness from #2643 and explore moving windows for n²+a and α≤1.325. For the current exponent, prove the two low-mode bounds and combine zero, low, high and excess masses on the same scales."
+  }
+}

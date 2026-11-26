@@ -1,0 +1,22 @@
+{
+  "id": "L-twin-primes-diagonal-integral",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_diagonal_integral.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_diagonal_integral",
+  "statement": "let bump := fun (a b t : ℝ) => if a < t ∧ t < b then Real.exp (-1/((t-a)*(b-t))) else 0; let W := bump 1 (51/50); let b := bump (-1/40) (1/40); let K := fun (v : ℝ) => ∫ u : ℝ, b u * b (v-u); let d := fun (h : ℝ) => (∫ u : ℝ, (W u)^2/u)/16 * (∫ v : ℝ, K v*(1/(h+v+1/5)+1/(h+v-1/5)-2/(h+v))); ∀ h : ℝ, 1 ≤ h → 0 < d h",
+  "plain_statement": {
+    "zh": "新路线 · 零点对与相位 · TP-0019 · 在两个对照频率计算正对角常数的符号",
+    "en": "New route · Zero pairs and phases · TP-0019 · Prove positivity of the diagonal integral at both test frequencies"
+  },
+  "brief": {
+    "zh": "K 的小支撑上用二阶差正性，在 0 附近找有正测度的严格正集。",
+    "en": "Use curvature on the support of K and a set of positive measure near zero."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/GlobalInterpolation/TruncatedExplicitFormula.lean",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-positive-curvature"
+  ],
+  "imports": []
+}

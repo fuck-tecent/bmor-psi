@@ -1,0 +1,20 @@
+{
+  "id": "L-twin-primes-zero-extension",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_zero_extension.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_zero_extension",
+  "statement": "∀ (N : ℕ) (b : ℤ → ℝ), (∀ n, n < 0 ∨ (N:ℤ) < n → b n = 0) → let S := Finset.Icc (-2:ℤ) (N:ℤ); S.sum (fun n => (b n+b (n+2))^2) - S.sum (fun n => (b n-b (n+2))^2) = 4*S.sum (fun n => b n*b (n+2))",
+  "plain_statement": {
+    "zh": "新路线 · 指定平移的 Θ 提升 · TP-0044 · 在补零序列上极化平移二次型",
+    "en": "New route · Theta lift for a prescribed shift · TP-0044 · Polarize the shift on a zero-extended sequence"
+  },
+  "brief": {
+    "zh": "两个边界都用整数上的补零，逐项极化。",
+    "en": "Extend by zero at both boundaries on the integers and polarize term by term."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/DecoratedLatticeProofs/ThetaKernelSplitPlacesEqJetClassicalThetaStatement.lean#L1335",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

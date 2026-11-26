@@ -1,0 +1,22 @@
+{
+  "id": "L-twin-primes-semiprime-cancellation",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_semiprime_cancellation.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_semiprime_cancellation",
+  "statement": "∀ r q : ℕ, r.Prime → q.Prime → r ≠ q → (r*q).divisors.sum (fun d => -(ArithmeticFunction.moebius d : ℝ)*Real.log d) = 0",
+  "plain_statement": {
+    "zh": "新路线 · 短长除数与奇偶 · TP-0037 · 计算不同素数之积导致的精确抵消",
+    "en": "New route · Short and long divisors · TP-0037 · Compute exact Möbius cancellation at a product of distinct primes"
+  },
+  "brief": {
+    "zh": "分别写出 1、r、q、rq 四项并使用 log(rq)。",
+    "en": "List the four divisors 1, r, q and rq and expand log(rq)."
+  },
+  "source": "https://arxiv.org/abs/2610.32672",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-mangoldt-divisors"
+  ],
+  "imports": []
+}

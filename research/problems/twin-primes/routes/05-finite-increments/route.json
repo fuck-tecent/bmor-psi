@@ -1,0 +1,11 @@
+{
+  "id": "05-finite-increments",
+  "title": {
+    "zh": "有限跳跃",
+    "en": "Finite increments"
+  },
+  "description": {
+    "zh": "用整数长度 1、2、3 的窗口精确恢复差二，量化高次幂对累计质量的影响。",
+    "en": "Recover gap two with lengths one, two and three and control proper powers in the cumulative mass."
+  }
+}

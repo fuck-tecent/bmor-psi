@@ -1,0 +1,22 @@
+{
+  "id": "L-twin-primes-energy-bridge",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_energy_bridge.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_energy_bridge",
+  "statement": "(let w := fun (X : ℕ) => (Finset.range (2*X+1)).filter (fun n => X < n ∧ 50*n < 51*X); let N := fun (X : ℕ) => 2*X+5; let f := fun (X n : ℕ) => if n ∈ w X ∧ n.Prime then Real.log n else 0; let energy := fun (X : ℕ) => letI : NeZero (N X) := ⟨by dsimp [N]; omega⟩; ∑ k : ZMod (N X), (ZMod.stdAddChar (N:=N X) (2*k)).re * ‖ZMod.dft (fun j : ZMod (N X) => ((f X j.val:ℝ):ℂ)) k‖^2; ∀ B : ℕ, ∃ X : ℕ, B<X ∧ 0<energy X) → (∀ B : ℕ, ∃ p : ℕ, B < p ∧ p.Prime ∧ (p+2).Prime)",
+  "plain_statement": {
+    "zh": "新路线 · 指定平移的 Θ 提升 · TP-0053 · 由指定 Θ 算术测试的正能量抽取孪生素数",
+    "en": "New route · Theta lift for a prescribed shift · TP-0053 · Extract twin primes from positive energy in the prescribed arithmetic test"
+  },
+  "brief": {
+    "zh": "对同一补零序列应用带符号 Parseval；能量严格正给出两端同窗的素数。",
+    "en": "Apply signed Parseval to the same padded sequence. Positive energy yields two primes in the same window."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AutomorphicArithmetic/ThetaCorrespondence/ThetaPairLifts/LocalTypeDictionary/ThetaLiftPeterssonNormEqRallisIntegral.lean#L972",
+  "program": "correlation",
+  "role": "conditional",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-prescribed-energy"
+  ],
+  "imports": []
+}

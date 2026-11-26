@@ -1,0 +1,22 @@
+{
+  "id": "L-twin-primes-second-difference",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_second_difference.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_second_difference",
+  "statement": "let v := fun (X n : ℕ) => if n ≤ X then ArithmeticFunction.vonMangoldt n else 0; let F := fun (X H : ℕ) => (Finset.range (X+H+1)).sum (fun t => ((Finset.range H).sum (fun j => if j ≤ t then v X (t-j) else 0))^2); let C := fun (X h : ℕ) => (Finset.range (X+1)).sum (fun n => v X n * v X (n+h)); ∀ X : ℕ, F X 3-2*F X 2+F X 1 = 2*C X 2",
+  "plain_statement": {
+    "zh": "新路线 · 有限跳跃 · TP-0041 · 用三个窗口的二阶差精确读出差二",
+    "en": "New route · Finite increments · TP-0041 · Extract gap two by the second difference of three window energies"
+  },
+  "brief": {
+    "zh": "对补零序列展开平方，用交长数各间距的系数。",
+    "en": "Expand the square of the zero-extended sequence and count each gap by interval overlap."
+  },
+  "source": "https://arxiv.org/abs/2610.32672",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": false,
+  "depends_on": [
+    "L-twin-primes-overlap"
+  ],
+  "imports": []
+}

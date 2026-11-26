@@ -1,0 +1,25 @@
+{
+  "id": "L-twin-primes-finite-band-sum",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_finite_band_sum.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_finite_band_sum",
+  "statement": "let w := fun (X : ℕ) => (Finset.range (2*X+1)).filter (fun n => X < n ∧ 50*n < 51*X); let f := fun (x n j : ℝ) => x * Real.log (1+j/n); ∀ (X : ℕ) (u : ℕ → ℝ) (H : ℝ → ℝ), 1000 ≤ X → (∀ v, 1/4 ≤ |v| → H v = 0) → (w X).sum (fun n => ((w X).filter (fun m => n < m)).sum (fun m => u n*u m*H (f X n (m-n) - 2))) = ((w X).filter (fun n => n+2 ∈ w X)).sum (fun n => u n*u (n+2)*H (f X n 2 - 2))",
+  "plain_statement": {
+    "zh": "新路线 · Fourier 选频 · TP-0012 · 在有限有序对和中只留下 n 与 n+2",
+    "en": "New route · Fourier isolation · TP-0012 · Isolate n and n+2 in the finite ordered-pair sum"
+  },
+  "brief": {
+    "zh": "按整数差 1、2、至少 3 分组；两端都要在支撑内。",
+    "en": "Group by gaps 1, 2 and at least 3. Keep both endpoints in the support."
+  },
+  "source": "https://arxiv.org/abs/2610.32672",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": false,
+  "depends_on": [
+    "L-twin-primes-unit-band",
+    "L-twin-primes-double-band",
+    "L-twin-primes-outer-band",
+    "L-twin-primes-kernel-support"
+  ],
+  "imports": []
+}

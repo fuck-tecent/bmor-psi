@@ -1,0 +1,20 @@
+{
+  "id": "L-quadratic-primes-high-eventual-epsilon",
+  "statement": "let block := fun x : ℕ => Finset.Ioc x (2*x); let budget := fun x : ℕ => (x : ℝ) * Real.log (x : ℝ); let roots := fun a q : ℕ => (Finset.range q).filter (fun r => q ∣ r^2+a); let primes := fun x : ℕ => (Finset.Ioc x ((2*x)^2+1)).filter (fun p => Nat.Prime p ∧ p^100000 ≤ (2*x)^132301); let window := fun x p : ℕ => (block x).filter (fun n => p^100000 ≤ n^132301); let angle := fun p k : ℕ => fun t : ℝ => 2 * Real.pi * k * t / p; let coef := fun a x p k : ℕ => (∑ r ∈ roots a p, ∑ n ∈ window x p, Real.cos (angle p k ((n : ℝ) - r))) / p; let freqs := fun (p : ℕ) (low : Bool) => (Finset.Ico 1 p).filter (fun k => if low then min k (p-k) ≤ Nat.sqrt p else Nat.sqrt p < min k (p-k)); let part := fun (a x p : ℕ) (low : Bool) => (∑ k ∈ freqs p low, coef a x p k) * Real.log (p : ℝ); let modes := fun (a x : ℕ) (low : Bool) => ∑ p ∈ primes x, part a x p low; ∀ ε : ℝ, 0 < ε → ∃ X : ℕ, ∀ x : ℕ, X ≤ x → modes 1 x false ≤ ε * budget x",
+  "plain_statement": {
+    "zh": "现有窗口的真实高频和最终小于任意正比例的 x log x。",
+    "en": "For the original windows the actual high-mode sum eventually lies below ε x log x for every ε>0."
+  },
+  "brief": {
+    "zh": "参考 #2643 的端点总估计和 eventual_linear_of_power_log，把取无界子序列之前的界提出来。",
+    "en": "Extract the estimate before the unbounded-subsequence specialization in #2643."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2643",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "file": "lean/PEqualNP/Outside/L_quadratic_primes_high_eventual_epsilon.lean",
+  "module": "PEqualNP.Outside.L_quadratic_primes_high_eventual_epsilon",
+  "imports": [],
+  "role": "lemma"
+}

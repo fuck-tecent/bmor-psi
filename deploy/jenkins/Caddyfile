@@ -1,0 +1,12 @@
+jenkins-hook.goldbach.tech {
+    @webhook {
+        method POST
+        path /github/webhook
+    }
+    handle @webhook {
+        reverse_proxy 127.0.0.1:18081
+    }
+    handle {
+        respond 404
+    }
+}

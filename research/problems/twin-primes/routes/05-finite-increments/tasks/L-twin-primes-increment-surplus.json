@@ -1,0 +1,24 @@
+{
+  "id": "L-twin-primes-increment-surplus",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_increment_surplus.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_increment_surplus",
+  "statement": "let v := fun (X n : ℕ) => if n ≤ X then ArithmeticFunction.vonMangoldt n else 0; let F := fun (X H : ℕ) => (Finset.range (X+H+1)).sum (fun t => ((Finset.range H).sum (fun j => if j ≤ t then v X (t-j) else 0))^2); ∃ δ b : ℝ, 0 < δ ∧ δ < 1/2 ∧ 0 < b ∧ ∀ B : ℕ, ∃ X : ℕ, B < X ∧ 3*((X:ℝ)*Real.log X-X)+b*(X:ℝ)^(1/2+δ) ≤ F X 3",
+  "plain_statement": {
+    "zh": "新路线 · 有限跳跃 · TP-0043 · 寻求长度三跳跃的超平方根余量",
+    "en": "New route · Finite increments · TP-0043 · Seek a super-square-root gain for the length-three increment"
+  },
+  "brief": {
+    "zh": "比较 F(3) 与 3D+4C₁；一次 Chebyshev 估计不测量交叉跳跃。",
+    "en": "Compare F(3) with 3D+4C₁ and measure the cross increments explicitly."
+  },
+  "source": "https://arxiv.org/abs/2610.32672",
+  "program": "foundation",
+  "role": "target",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-second-difference",
+    "L-twin-primes-gap-one-sum"
+  ],
+  "imports": [],
+  "challenge_only": true
+}

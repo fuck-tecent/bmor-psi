@@ -1,0 +1,25 @@
+{
+  "id": "L-twin-primes-zero-pair-margin",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_zero_pair_margin.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_zero_pair_margin",
+  "statement": "let bump := fun (a b t : ℝ) => if a < t ∧ t < b then Real.exp (-1/((t-a)*(b-t))) else 0; let W := bump 1 (51/50); let b := bump (-1/40) (1/40); let K := fun (v : ℝ) => ∫ u : ℝ, b u * b (v-u); let d := fun (h : ℝ) => (∫ u : ℝ, (W u)^2/u)/16 * (∫ v : ℝ, K v*(1/(h+v+1/5)+1/(h+v-1/5)-2/(h+v))); let k := fun (t : ℝ) => ∫ v : ℝ, b v*Real.cos (2*Real.pi*v*t); let omega := fun (t : ℝ) => (Real.sin (Real.pi*t/5)*k t)^2 * Real.cos (4*Real.pi*t); let z := fun (g : ℝ) => (1/2 : ℂ) + Complex.I*(g:ℂ); let m := fun (g : ℝ) => analyticOrderNatAt riemannZeta (z g); let M := fun (v : ℝ) => ∫ u : ℝ, ((W u/u : ℝ):ℂ)*Complex.exp (Complex.I*(v*Real.log u : ℝ)); let R := fun (X : ℕ) => let T : ℝ := 2*Real.pi*X; let L := (Real.log (2+T))^2; (∫ t in Set.Icc (-T*L) (T*L), omega (t/T) * (‖∑' g : {g : ℝ // |g-t| ≤ L ∧ riemannZeta (z g) = 0}, (m g.val : ℂ)*Complex.exp (Complex.I*(g.val*Real.log X : ℝ))*M (g.val-t)‖^2 - ∑' g : {g : ℝ // |g-t| ≤ L ∧ riemannZeta (z g) = 0}, (m g.val : ℝ)*‖M (g.val-t)‖^2))/(2*T); ∃ κ : ℝ, 0 < κ ∧ ∀ B : ℕ, ∃ X : ℕ, B < X ∧ κ < d 2 + R X",
+  "plain_statement": {
+    "zh": "新路线 · 零点对与相位 · TP-0025 · 检验 ζ 零点非对角能否在无界窗保留严格余量",
+    "en": "New route · Zero pairs and phases · TP-0025 · Seek a strict margin in the actual zeta zero pairs on unbounded windows"
+  },
+  "brief": {
+    "zh": "对每个 t 只保留对数平方距离内的零点；平方后扣除 m 个自配对，相同纵坐标仍有 m(m−1) 项。",
+    "en": "Truncate at squared logarithmic distance from t. Subtract m individual diagonals from the square, leaving m(m−1) pairs at a repeated ordinate."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/GlobalInterpolation/TruncatedExplicitFormula.lean",
+  "program": "correlation",
+  "role": "target",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-ordered-indices",
+    "L-twin-primes-hermitian-pairs",
+    "L-twin-primes-diagonal-integral"
+  ],
+  "imports": [],
+  "challenge_only": true
+}

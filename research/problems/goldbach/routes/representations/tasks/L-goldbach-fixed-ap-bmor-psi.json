@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-fixed-ap-bmor-psi",
+  "statement": "∀ (q a n : ℕ), 3 ≤ q → q ≤ 105 → a < q → Nat.Coprime a q → 8000000000 ≤ n → |(∑ k ∈ (Finset.range (n+1)).filter (fun k => k % q = a % q), ArithmeticFunction.vonMangoldt k) - (n:ℝ)/Nat.totient q| ≤ (n:ℝ)/(840 * Real.log (n:ℝ))",
+  "plain_statement": {
+    "zh": "把 BMOR 定理 1.1 的小模数 ψ 估计形式化",
+    "en": "Formalize the small-modulus ψ bound of BMOR Theorem 1.1"
+  },
+  "brief": {
+    "zh": "从定理 1.1 的式 (1.9)–(1.11) 取 q=3…105 的范围。保留 x≥8×10⁹ 和 1/840，核对端点包含在求和内。权威核验需要 Lean 证明及所用数值证书。",
+    "en": "Specialize (1.9)–(1.11) to 3 ≤ q ≤ 105. Retain the threshold and constant, reconcile the inclusive sum, and provide checked proofs for the analytic and numerical inputs."
+  },
+  "source": "https://personal.math.ubc.ca/~bennett/BeMaObRe-IJM-2018.pdf",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "file": "lean/PEqualNP/Outside/L_goldbach_fixed_ap_bmor_psi.lean",
+  "module": "PEqualNP.Outside.L_goldbach_fixed_ap_bmor_psi",
+  "imports": [],
+  "track": "representations",
+  "role": "lemma"
+}

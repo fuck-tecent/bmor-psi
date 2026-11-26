@@ -71,7 +71,7 @@ import { importClosure, headerImports } from './outside-guard.mjs';
 const tree = (files) => (m) => (m in files ? new TextEncoder().encode(files[m]) : null);
 const proof = (imports, name = 'PEqualNP.Outside.L_x_2') => `${imports.map((m) => `import ${m}\n`).join('')}\ntheorem ${name} : True := trivial\n`;
 const judged = 'PEqualNP.Outside.L_x_1';
-const closure = (listed, files) => importClosure(listed, tree(files), judged);
+const closure = (listed, files, buildOrder) => importClosure(listed, tree(files), judged, buildOrder);
 const closureRefused = (name, listed, files, word) => test(`closure refused: ${name}`, () => {
   assert.throws(() => closure(listed, files), (e) => e.message.includes(word), 'not refused, or for another reason');
 });
@@ -81,10 +81,12 @@ test('closure: base modules only, as before', () => {
     { outside: [], base: ['PEqualNP.Defs', 'PEqualNP.Gct.A', 'PEqualNP.Gct.B'] });
 });
 test('closure: a listed outside module is never handed to the base step; the base modules it imports are', () => {
+  const buildOrder = [];
   const r = closure(['PEqualNP.Outside.L_meta_473'], {
     'PEqualNP.Outside.L_meta_473': proof(['Mathlib', 'PEqualNP.Defs', 'PEqualNP.Outside.L_meta_9'], 'PEqualNP.Outside.L_meta_473'),
     'PEqualNP.Outside.L_meta_9': proof(['Mathlib', 'PEqualNP.Gct.L090'], 'PEqualNP.Outside.L_meta_9'),
-    'PEqualNP.Defs': 'import Mathlib\n', 'PEqualNP.Gct.L090': 'import PEqualNP.Defs\n' });
+    'PEqualNP.Defs': 'import Mathlib\n', 'PEqualNP.Gct.L090': 'import PEqualNP.Defs\n' }, buildOrder);
+  assert.deepEqual(buildOrder, ['PEqualNP.Outside.L_meta_9', 'PEqualNP.Outside.L_meta_473']);
   assert.deepEqual(r, { outside: ['PEqualNP.Outside.L_meta_473', 'PEqualNP.Outside.L_meta_9'], base: ['PEqualNP.Defs', 'PEqualNP.Gct.L090'] });
 });
 closureRefused('the judged file itself', [judged], {}, 'the file being judged');
@@ -124,4 +126,21 @@ test(`closure refused: ${MAX_OUTSIDE + 1} outside modules, one listed and the re
   const files = many(MAX_OUTSIDE);
   files['PEqualNP.Outside.L_x_1000'] = proof(Object.keys(many(MAX_OUTSIDE)), 'PEqualNP.Outside.L_x_1000');
   assert.throws(() => closure(['PEqualNP.Outside.L_x_1000'], files), /more than 16 outside modules/);
+});
+
+test('accepts a 2 MiB proof and refuses one extra byte', () => {
+  const limit = 2 * 1024 * 1024;
+  const proof = Buffer.alloc(limit + 1, 0x20);
+  proof.write(head + thm);
+  assert.deepEqual(checkImports(proof.subarray(0, limit), ['PEqualNP.Defs']), ['Mathlib', 'PEqualNP.Defs']);
+  assert.throws(() => checkImports(proof, ['PEqualNP.Defs']), /2097152 bytes/);
+});
+
+test('allows the GRH source modules for a task that opts in', () => {
+  const proof = Buffer.from('import PEqualNP.GRH\n' + thm);
+  assert.deepEqual(checkImports(proof, ['PEqualNP.GRH']), ['PEqualNP.GRH']);
+  assert.throws(() => checkImports(proof, []), /PEqualNP\.GRH is not allowed/);
+  const internal = Buffer.from('import PEqualNP.GRHSource.Main\n' + thm);
+  assert.deepEqual(checkImports(internal, ['PEqualNP.GRH']), ['PEqualNP.GRHSource.Main']);
+  assert.throws(() => checkImports(internal, []), /PEqualNP\.GRHSource\.Main is not allowed/);
 });

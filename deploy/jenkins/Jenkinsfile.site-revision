@@ -1,0 +1,27 @@
+pipeline {
+    agent { label 'goldbach-site-replay' }
+    options {
+        skipDefaultCheckout()
+        disableConcurrentBuilds()
+        timeout(time: 10, unit: 'MINUTES')
+    }
+    stages {
+        stage('Website release verification') {
+            steps {
+                deleteDir()
+                sh '''
+                    set -eu
+                    case "$CI_JOB_ID" in ''|*[!0-9]*) exit 2;; esac
+                    input="/input/jobs/$CI_JOB_ID"
+                    test "$(git get-tar-commit-id < "$input/source.tar")" = "$CI_HEAD"
+                    tar -xf "$input/source.tar"
+                    install -D "$input/check-site.sh" deploy/jenkins/check-site.sh
+                    bash deploy/jenkins/check-site.sh
+                '''
+            }
+        }
+    }
+    post {
+        cleanup { deleteDir() }
+    }
+}

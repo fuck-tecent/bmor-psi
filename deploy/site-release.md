@@ -1,11 +1,11 @@
 # 网站自动发布
 
-开发者创建 PR，仓库所有者或获授权的网站维护者合并到 `main`。GitHub Actions 在合并后的确切提交运行 `Website release verification`。服务端每三分钟拉取公开仓库并检查合并人和测试结果。符合条件时只发布检查范围内的应用模块、模板及静态资源。任务清单按 [任务发布流程](catalogue-release.md) 发布。nginx、systemd、凭据和发布器自身由服务器维护者单独更新。
+开发者创建 PR，仓库所有者或获授权的网站维护者合并到 `main`。Jenkins 验证合并后的确切提交，GitHub App 回写 `Goldbach CI / site release`。服务端每三分钟拉取公开仓库并检查合并人和测试结果。符合条件时只发布检查范围内的应用模块、模板及静态资源。任务清单按 [任务发布流程](catalogue-release.md) 发布。nginx、systemd、凭据和发布器自身由服务器维护者单独更新。
 
 ## 开发者操作
 
 1. 创建分支并开 PR，说明改动和验收方式。尽量用 GitHub 的 squash merge 将一次发布合为单个 main 提交。
-2. 合并后查看 Actions 中同一 SHA 的测试。通过后等待服务器轮询。
+2. 合并后查看同一 SHA 的 `Goldbach CI / site release` 检查。通过后等待服务器轮询。
 3. 打开两个入口的健康接口，确认 `site_revision` 是本次发布提交或其后续发布提交。访问改动页面确认效果。
 
 ```sh
@@ -15,7 +15,7 @@ curl -fsS https://www.movan.tech/goldbach/health
 
 ## 服务器首次安装
 
-由已有服务器维护者执行。从已审核提交安装，先比对网站正在运行的文件与选定的完整 `LIVE_BASE_SHA`。该 SHA 应在 main 的第一父提交链上。已有的任务发布器应处于已配置状态。
+由已有服务器维护者执行。从已审核提交安装，先比对网站正在运行的文件与选定的完整 `LIVE_BASE_SHA`。该 SHA 应在 main 的第一父提交链上。已有的任务发布器应处于已配置状态。在网站发布服务的 systemd drop-in 中设置 `GOLDBACH_SITE_CI=jenkins`。
 
 ```sh
 install -d -m 0755 /usr/local/libexec/goldbach

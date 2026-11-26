@@ -1,0 +1,20 @@
+{
+  "id": "L-twin-primes-cofactor-switch",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_cofactor_switch.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_cofactor_switch",
+  "statement": "∀ p d D : ℕ, 0 < d → d ∣ p+2 → (D < d ↔ D*((p+2)/d) < p+2) ∧ ((p+2)/d)*d = p+2",
+  "plain_statement": {
+    "zh": "新路线 · 短长除数与奇偶 · TP-0036 · 把长除数条件换成精确余因子界",
+    "en": "New route · Short and long divisors · TP-0036 · Switch a long divisor to an exact cofactor bound"
+  },
+  "brief": {
+    "zh": "以 m=(p+2)/d 消去整除；严格切点不作实数近似。",
+    "en": "Use m=(p+2)/d and preserve the strict integer cutoff."
+  },
+  "source": "https://arxiv.org/abs/2610.32672",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

@@ -1,0 +1,20 @@
+{
+  "id": "L-quadratic-primes-weighted-endpoint-envelope",
+  "statement": "∀ (ι : Type) [DecidableEq ι] (rows near : Finset ι) (f : ι → ℝ) (x C D α β γ : ℝ), 1 ≤ x → 0 ≤ C → 0 ≤ D → near ⊆ rows → (rows.card : ℝ) ≤ C * x ^ α → (near.card : ℝ) ≤ C * x ^ γ → (∀ i ∈ near, f i ≤ D * (Real.log x)^2) → (∀ i ∈ rows \\ near, f i ≤ D * x ^ (α / 2 - β) * (Real.log x)^2) → (∑ i ∈ rows, f i) ≤ C * D * (x ^ γ + x ^ (3 * α / 2 - β)) * (Real.log x)^2",
+  "plain_statement": {
+    "zh": "把近、远端点合成可复用的实指数包络，分别保留 γ 和 3α/2−β。",
+    "en": "Combine near and far endpoint estimates with separate exponents γ and 3α/2−β."
+  },
+  "brief": {
+    "zh": "近端和远端分别取基数上界，写清远端指数来自素数行数和单项平方根因子。α≤1.325 时取 β=0.99，远端指数最多 0.9975。",
+    "en": "Split the finite sum and use cardinality and real-power multiplication. With α≤1.325 and β=0.99 the far exponent is at most 0.9975."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2643",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "file": "lean/PEqualNP/Outside/L_quadratic_primes_weighted_endpoint_envelope.lean",
+  "module": "PEqualNP.Outside.L_quadratic_primes_weighted_endpoint_envelope",
+  "imports": [],
+  "role": "lemma"
+}

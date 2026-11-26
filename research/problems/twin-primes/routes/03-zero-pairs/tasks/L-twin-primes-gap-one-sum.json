@@ -1,0 +1,22 @@
+{
+  "id": "L-twin-primes-gap-one-sum",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_gap_one_sum.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_gap_one_sum",
+  "statement": "∃ C : ℝ, 0 < C ∧ ∀ X : ℕ, (Finset.range X).sum (fun n => ArithmeticFunction.vonMangoldt n*ArithmeticFunction.vonMangoldt (n+1)) ≤ C * Real.log (2+(X:ℝ))^2",
+  "plain_statement": {
+    "zh": "新路线 · 零点对与相位 · TP-0024 · 控制差一相关总量的平方对数上界",
+    "en": "New route · Zero pairs and phases · TP-0024 · Bound the entire gap-one correlation by a squared logarithm"
+  },
+  "brief": {
+    "zh": "每个二的幂可作两个相邻对的偶数端，每项只花 log 2 与一次 log X。",
+    "en": "Each power of two can occur at either end and costs log 2 times a single log X."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/GlobalInterpolation/TruncatedExplicitFormula.lean",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-gap-one-control"
+  ],
+  "imports": []
+}

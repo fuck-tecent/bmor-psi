@@ -1,0 +1,15 @@
+[Unit]
+Description=Publish Goldbach staging Jenkins check results
+Wants=network-online.target
+After=network-online.target goldbach-ci-staging-dispatch.service
+
+[Service]
+Type=oneshot
+StateDirectory=goldbach-ci-staging-checks
+StateDirectoryMode=0700
+LoadCredential=github-app.pem:/etc/goldbach-ci/github-app.pem
+ExecStart=/usr/bin/python3 -B /opt/goldbach-ci/controller/build_checks.py --jobs-db /var/lib/goldbach-ci-webhook/deliveries.db --outbox /var/lib/goldbach-ci-staging-checks/checks.db --private-key %d/github-app.pem --staging
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes

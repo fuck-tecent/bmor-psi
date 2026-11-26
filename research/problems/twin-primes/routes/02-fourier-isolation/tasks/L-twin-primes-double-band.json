@@ -1,0 +1,20 @@
+{
+  "id": "L-twin-primes-double-band",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_double_band.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_double_band",
+  "statement": "let f := fun (x n j : ℝ) => x * Real.log (1+j/n); ∀ x n : ℝ, 1000 ≤ x → x ≤ n → 50*n ≤ 51*x → |f x n 2 - 2| < 1/20",
+  "plain_statement": {
+    "zh": "新路线 · Fourier 选频 · TP-0008 · 保证差二频率落在开正带",
+    "en": "New route · Fourier isolation · TP-0008 · Place gap two in the open positive band"
+  },
+  "brief": {
+    "zh": "下端须保留 n+2 的修正；在 x=1000 处检查最弱界。",
+    "en": "Keep the n+2 correction in the lower bound and check its worst value at x=1000."
+  },
+  "source": "https://arxiv.org/abs/2610.32672",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": false,
+  "depends_on": [],
+  "imports": []
+}

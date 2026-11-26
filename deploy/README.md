@@ -14,7 +14,7 @@
 | 主域名代理 | [goldbach.tech.conf](nginx/goldbach.tech.conf) | `/etc/nginx/sites-enabled/goldbach.tech` |
 | movan.tech 的子路径代理 | [goldbach-location.conf](nginx/goldbach-location.conf) | `/etc/nginx/snippets/goldbach-location.conf`，在已有 HTTPS 虚拟主机的 `server` 块中通过 `include` 加载 |
 
-`deploy/issue_fleet_pass.py` 供管理员签发团队凭证。`tools/goldbach.py` 是参与者客户端。证明源文件、验证器和队列分别在 `lean/`、`tools/` 和 `.github/workflows/`。线上 SQLite 状态由 systemd 的 `StateDirectory` 管理，证书和服务凭据按 unit 指定的路径在部署机上提供。
+`deploy/issue_fleet_pass.py` 供管理员签发团队凭证。`tools/goldbach.py` 是参与者客户端。证明源文件在 `lean/`，本地检查工具在 `tools/`，生产 CI 和任务队列配置在 `deploy/jenkins/`。线上 SQLite 状态由 systemd 的 `StateDirectory` 管理，证书和服务凭据按 unit 指定的路径在部署机上提供。
 
 ### 地区数据来源
 
@@ -44,15 +44,13 @@
 
 Nginx strips the /goldbach/ prefix on movan.tech and forwards to the HTTPS service on 127.0.0.1:8443. The upstream service reads its certificate through systemd credentials. Restart the service after its certificate renews or the APNIC file is refreshed. Nginx sets the visitor address used for language selection. Visitors can override it with ?lang=zh or ?lang=en.
 
-权威工作流仅在生成 ACCEPTED 或 REJECTED 时回传。配置 GitHub Actions 仓库变量 GOLDBACH_WEBHOOK_URL 与密钥 GOLDBACH_WEBHOOK_SECRET 后，由单独的 runner 向 https://www.movan.tech/goldbach/api/verdict 发送 HTTPS POST。端点校验 X-Goldbach-Signature，格式为 sha256=<对原始请求体的 HMAC-SHA256>。
+## Jenkins 生产 CI
 
-服务器的 `/etc/goldbach-web/webhook` 与 Actions Secret `GOLDBACH_WEBHOOK_SECRET` 使用同一个签名密钥。可在具备仓库管理权限的受信终端运行下方命令，从仓库外的私有文件通过标准输入设置。供 `gh` 访问 GitHub 的凭据使用 `gh auth login` 或进程环境变量 `GH_TOKEN`。知乎 App Key 只在上述 systemd 凭据中配置。
+Jenkins 运行在 `114.55.113.128`。GitHub App 经 HTTPS 投递签名事件。Lean 验证使用固定版 Lean 与 Mathlib，接受最多 2 MiB 的单个证明文件。沙箱禁网且不挂载凭据，当前最多并行 4 路，每个 Lean 沙箱最多使用 8 个逻辑 CPU 和 16 GiB 内存。首发关闭 GRH 验证。
 
-```sh
-gh secret set GOLDBACH_WEBHOOK_SECRET --repo CGandGameEngineLearner/goldbach-proofs < /etc/goldbach-web/webhook
-```
+Jenkins 仅在产生 `ACCEPTED` 或 `REJECTED` 后向网站发送签名裁决，任务台与 GitHub Checks 分别排队重试。生产网站校验 `X-Goldbach-Signature` 中的原始请求体 HMAC-SHA256。GitHub App 私钥、Webhook 密钥和任务台签名密钥通过服务器私有文件和 systemd 凭据提供。
 
-请求字段为 lemma_id、verdict、manifest、run_id、run_attempt。ACCEPTED 的 manifest 含 rests_on 与 defs，各为包含 module 和 sha256 的数组。REJECTED 使用 null。SQLite 按 run_id 和 run_attempt 去重。
+Jenkins 裁决字段包括 `lemma_id`、`head_sha`、`verdict`、`manifest`、`run_id` 和 `run_attempt`。ACCEPTED 的 manifest 含 rests_on 与 defs，各为包含 module 和 sha256 的数组。REJECTED 使用 null。SQLite 按 run_id 和 run_attempt 去重。
 
 服务端目录 /opt/goldbach-web，状态目录 /var/lib/goldbach-web。公网入口使用 nginx 的 HTTPS 443 端口。
 
@@ -60,7 +58,7 @@ gh secret set GOLDBACH_WEBHOOK_SECRET --repo CGandGameEngineLearner/goldbach-pro
 
 讨论群浮窗的 `deploy/discussion.js`、`deploy/discussion-qr.png` 和 `deploy/wechat.svg` 也放在 `/opt/goldbach-web/`。换群码时同步更新 `server.py` 的 `DISCUSSION_EXPIRES`，按微信标注的北京时间有效期填写；到期后页面自动隐藏入口。
 
-二次型素数研究台的 `/goldbach/problems/quadratic-primes/api/status` 返回 `lpf_record`。其中 `baseline` 链接外部 1.323 论文及其有限证书，`verified` 是本站权威核验通过的最高指数，暂缺时为 null。登记新的挑战值时，请在 `research/problems.json` 使用新的任务 ID、十进制字符串 `lpf_exponent` 和 `deploy/landau.py` 的 `record_statement` 生成的固定命题。参与者可领取该任务并提交 Lean 证明。通过核验的运行与任务租约及命题哈希匹配后，访客即可在记录上打开对应的 Actions 运行。
+二次型素数研究台的 `/goldbach/problems/quadratic-primes/api/status` 返回 `lpf_record`。其中 `baseline` 链接外部 1.323 论文及其有限证书，`verified` 是本站权威核验通过的最高指数，暂缺时为 null。登记新的挑战值时，请在 `research/problems.json` 使用新的任务 ID、十进制字符串 `lpf_exponent` 和 `deploy/landau.py` 的 `record_statement` 生成的固定命题。参与者可领取该任务并提交 Lean 证明。通过核验的运行与任务租约及命题哈希匹配后，访客即可在记录上打开对应的 GitHub Check。
 
 多问题目录位于 `/goldbach/problems/`。将 `research/problems.json` 同样部署到 `/opt/goldbach-web`。新问题以 `/goldbach/problems/<slug>/` 为入口，拥有独立的状态接口、加入说明和 SQLite 数据库。哥德巴赫沿用 `gaps.json` 与 `verdicts.sqlite3`。新问题可用 `python tools/goldbach.py claim --problem <slug>` 领取；提交、续租和归还从租约读取问题编号。签名队列为每个问题保留一部分批次位置，空余位置继续处理等待中的任务。签名判定按任务归属路由，新增问题的判定须关联已授权的运行。
 
@@ -75,20 +73,11 @@ gh secret set GOLDBACH_WEBHOOK_SECRET --repo CGandGameEngineLearner/goldbach-pro
 知乎访客可从 `https://www.goldbach.tech/?lang=zh&from=zhihu#participation` 打开参与引导。现有入口 `https://www.movan.tech/goldbach/?lang=zh&from=zhihu#participation` 使用同一套页面。访客可以直接选题、阅读引理和复制提示词。准备提交证明时，参与者在运行 Agent 的环境用 `gh auth login --hostname github.com --web` 打开 GitHub 授权，验证流程沿用 GitHub PR。
 
 自动领取优先覆盖无人领取的题目，再按每题和每条路线的活跃人数均衡分配。标记 parallel 的难题支持多份独立租约；其他引理独占。某题首次通过后，释放尚未开始核验的同题租约，已在核验的提交仍可接收判定。指定编号领取时只考虑该编号。
-PR 作者在登记提交后使用 `/goldbach-check <gap>` 触发权威验证。GitHub Actions 使用仓库变量 `GOLDBACH_DESK_URL` 指向任务台根 URL，并用 `GOLDBACH_WEBHOOK_SECRET` 签署授权请求。
+PR 作者在登记提交后用 `/goldbach-check <gap>` 触发 Jenkins 正式裁决。Jenkins 使用任务台签名密钥发送授权请求。
 授权绑定 PR、提交 SHA、作者和固定命题哈希。结果写入同一 SQLite 数据库，并更新参与动态和贡献榜。
 
-评论事件未直接启动核验时，desk-queue 工作流定期检查已登记提交，并用当前 PR 作者、head 与请求评论做预检，再派发同一个权威工作流。管理员可手动运行 desk-queue 补跑队列。
+评论事件未直接派发时，`goldbach-ci-desk-poll.timer` 定期核对已登记提交、PR 作者、提交 SHA 和作者命令。用 `journalctl -u goldbach-ci-desk-poll.service` 查看待处理队列，用 `journalctl -u goldbach-ci-desk-outbox.service` 查看裁决回写。
 
 ## 一次完整的线上核验
 
-2026-11-24，PR #4 通过正卷积提取素数对的引理，适用于任意自然数和任意支撑在素数上的实权。研究台收到权威 ACCEPTED 及含有 rests_on、defs 的 SHA-256 清单。核验后，贡献榜的一小时新增为 1。这个公开榜只统计能绑定到参与者、且有首次通过记录的引理。[PR #4](https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4) · [权威运行](https://github.com/CGandGameEngineLearner/goldbach-proofs/actions/runs/45312512546) · [回传后的公开记录](https://www.movan.tech/goldbach/api/status)
-
-| 观测项 | 实测值 | 口径 |
-| --- | ---: | --- |
-| Mathlib 缓存 | 60.555 秒 | 日志中 lake exe cache get 的 real 时间，含获取和解包 |
-| 单次 check-lean | 约 63 秒 | 权威运行的 checker 步骤，包含隔离启动与收尾 |
-| 完整 workflow | 5 分 32 秒 | 从创建运行到回传任务结束后的最终更新时间 |
-| 两个 runner 的执行时间 | 319 秒 + 5 秒 | check 和 report 各自的作业起止时间 |
-
-公开仓库使用标准 GitHub 托管 runner 的执行时间免费。若另按每月 2,000 分钟模拟受限预算，并对每个 job 单独向上取整，这次样本折合 6 + 1 = 7 分钟，即约 285 次。三个独立端到端槽且每份均耗时 5 分 32 秒时，300 份同时到达需 100 批，最后一批约 9 小时 7 分 48 秒后开工，9 小时 13 分 20 秒后全部完成。这个情形假设每个槽从头至尾被一份提交占用，实际 GitHub 等待和队列回补会改变结果。研究租约的并行度与 runner 槽位分别统计。[GitHub Actions 计费](https://docs.github.com/en/billing/concepts/product-billing/github-actions)
+2026-11-26，PR #2738 由 Jenkins 完成正式 Lean 核验。生产任务台记录了 `ACCEPTED`，GitHub App 在同一提交上回写了 `success`。可分别核对任务台裁决与 GitHub Check。[PR #2738](https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2738) · [正式裁决 Check](https://github.com/CGandGameEngineLearner/goldbach-proofs/runs/139975214046)

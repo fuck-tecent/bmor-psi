@@ -1,0 +1,20 @@
+{
+  "id": "L-twin-primes-mean-threshold",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_mean_threshold.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_mean_threshold",
+  "statement": "∀ θ : ℝ, θ < 7/8 → ∃ ε : ℝ, 0 < ε ∧ Filter.Tendsto (fun x : ℝ => x ^ (θ+1/8+ε) / x) Filter.atTop (nhds 0)",
+  "plain_statement": {
+    "zh": "新路线 · Fourier 选频 · TP-0017 · 给出微分均值容许的 7/8 严格阈值",
+    "en": "New route · Fourier isolation · TP-0017 · Budget the strict seven-eighths threshold for the differentiated mean"
+  },
+  "brief": {
+    "zh": "两条 Mellin 线共耗 1/8，除以 T 后选 ε；均值公式本身另需证明。",
+    "en": "Budget 1/8 for the two Mellin lines, divide by T and choose ε. The differentiated mean itself requires proof."
+  },
+  "source": "https://arxiv.org/abs/2610.32672",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": false,
+  "depends_on": [],
+  "imports": []
+}

@@ -1,0 +1,25 @@
+[Unit]
+Description=Poll Goldbach task desk for formal proof requests
+# Production polling advances the desk queue, so rehearsal must not poll it.
+ConditionPathExists=/etc/goldbach-ci/production-release.env
+After=network-online.target goldbach-ci-webhook.service
+Wants=network-online.target
+Requires=goldbach-ci-webhook.service
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/goldbach-ci/production-release.env
+LoadCredential=github-app.pem:/etc/goldbach-ci/github-app.pem
+LoadCredential=desk-secret:/etc/goldbach-ci/desk-secret
+Environment=GOLDBACH_APP_PRIVATE_KEY=%d/github-app.pem
+Environment=GOLDBACH_DESK_SECRET_FILE=%d/desk-secret
+Environment=GOLDBACH_CI_DATABASE=/var/lib/goldbach-ci-webhook/deliveries.db
+Environment=DESK_URL=https://www.movan.tech/goldbach/api/desk
+Environment=DEFAULT_BRANCH=main
+Environment=REPO=CGandGameEngineLearner/goldbach-proofs
+ExecStart=/usr/bin/python3 -B /opt/goldbach-ci/controller/poll_desk.py
+NoNewPrivileges=yes
+ProtectSystem=strict
+ReadWritePaths=/var/lib/goldbach-ci-webhook
+ProtectHome=yes
+PrivateTmp=yes

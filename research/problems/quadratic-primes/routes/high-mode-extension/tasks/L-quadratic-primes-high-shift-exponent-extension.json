@@ -1,0 +1,24 @@
+{
+  "id": "L-quadratic-primes-high-shift-exponent-extension",
+  "statement": "∀ (offset U V : ℕ), 0 < offset → 0 < V → 132301 * V ≤ 100000 * U → 40 * U ≤ 53 * V → (let block := fun x : ℕ => Finset.Ioc x (2*x); let budget := fun x : ℕ => (x : ℝ) * Real.log (x : ℝ); let roots := fun a q : ℕ => (Finset.range q).filter (fun r => q ∣ r^2+a); let primes := fun x : ℕ => (Finset.Ioc x ((2*x)^2+offset)).filter (fun p => Nat.Prime p ∧ p^V ≤ (2*x)^U); let window := fun x p : ℕ => (block x).filter (fun n => p^V ≤ n^U); let angle := fun p k : ℕ => fun t : ℝ => 2 * Real.pi * k * t / p; let coef := fun a x p k : ℕ => (∑ r ∈ roots a p, ∑ n ∈ window x p, Real.cos (angle p k ((n : ℝ) - r))) / p; let freqs := fun (p : ℕ) (low : Bool) => (Finset.Ico 1 p).filter (fun k => if low then min k (p-k) ≤ Nat.sqrt p else Nat.sqrt p < min k (p-k)); let part := fun (a x p : ℕ) (low : Bool) => (∑ k ∈ freqs p low, coef a x p k) * Real.log (p : ℝ); let modes := fun (a x : ℕ) (low : Bool) => ∑ p ∈ primes x, part a x p low; ∀ ε : ℝ, 0 < ε → ∃ X : ℕ, ∀ x : ℕ, X ≤ x → modes offset x false ≤ ε * budget x)",
+  "plain_statement": {
+    "zh": "对于每个固定正整数 a 和 1.32301≤U/V≤1.325，证明 n²+a 的相应高频和最终小于任意正比例的 x log x。",
+    "en": "For a fixed positive offset and 1.32301≤U/V≤1.325, prove eventual ε-smallness of the corresponding n²+a high modes."
+  },
+  "brief": {
+    "zh": "固定端点可复用计数引理。主要新难点是移动端点 p^(V/U) 附近的短区间根计数，尤其要核对余因子短区间和坏素数。此题是高频推广；更高大素因子指数还需要新的低频及其余预算。",
+    "en": "Use the fixed-endpoint count and weighted envelope. The main gap is moving-endpoint root counting, including short cofactor intervals and exceptional primes. This only extends the high-mode estimate."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2643",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [
+    "L-quadratic-primes-weighted-endpoint-envelope",
+    "L-quadratic-primes-fixed-offset-endpoint-count"
+  ],
+  "file": "lean/PEqualNP/Outside/L_quadratic_primes_high_shift_exponent_extension.lean",
+  "module": "PEqualNP.Outside.L_quadratic_primes_high_shift_exponent_extension",
+  "imports": [],
+  "role": "target",
+  "challenge_only": true
+}

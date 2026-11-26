@@ -1,0 +1,16 @@
+[Unit]
+Description=Merge officially accepted Goldbach Lean proofs
+After=network-online.target goldbach-ci-webhook.service
+Wants=network-online.target
+Requires=goldbach-ci-webhook.service
+
+[Service]
+Type=oneshot
+LoadCredential=github-app.pem:/etc/goldbach-ci/github-app.pem
+EnvironmentFile=/etc/goldbach-ci/production-release.env
+ExecStart=/usr/bin/python3 -B /opt/goldbach-ci/controller/merge_proofs.py --database /var/lib/goldbach-ci-webhook/deliveries.db --private-key %d/github-app.pem --store /opt/goldbach-ci/proof-bases --first-job-id ${GOLDBACH_CI_FIRST_PRODUCTION_JOB}
+NoNewPrivileges=yes
+ProtectSystem=strict
+ReadWritePaths=/var/lib/goldbach-ci-webhook /opt/goldbach-ci/proof-bases
+ProtectHome=yes
+PrivateTmp=yes

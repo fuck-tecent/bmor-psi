@@ -18,7 +18,4 @@ jobs:
       - name: Install the site image dependency
         run: python -m pip install 'Pillow>=12,<13'
       - name: Verify site modules and research services
-        run: |
-          python -m compileall -q deploy
-          for file in deploy/*.js; do node --check "$file"; done
-          python -B -m unittest deploy.test_zhihu deploy.test_github_identity deploy.test_presence deploy.test_desk deploy.test_agent_attribution deploy.test_desk_scale.DeskScaleTest.test_agent_attribution_across_problem_desks deploy.test_desk_scale.DeskScaleTest.test_directory_counts_and_scoped_join_guides deploy.test_desk_scale.DeskScaleTest.test_verification_history_pagination deploy.test_rankings deploy.test_landau deploy.test_publish_catalogue research.test_catalogue
+        run: bash deploy/jenkins/check-site.sh

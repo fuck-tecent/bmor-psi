@@ -1,0 +1,25 @@
+{
+  "id": "L-twin-primes-endpoint",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_endpoint.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_endpoint",
+  "statement": "∀ B : ℕ, ∃ p : ℕ, B < p ∧ p.Prime ∧ (p+2).Prime",
+  "plain_statement": {
+    "zh": "新路线 · 指定平移的 Θ 提升 · TP-0054 · 在任意界外找到差恰为二的两个素数",
+    "en": "New route · Theta lift for a prescribed shift · TP-0054 · Find two primes exactly two apart beyond every bound"
+  },
+  "brief": {
+    "zh": "输入可走窄窗归约或短长除数归约。每个界 B 必须有相应的新见证。",
+    "en": "Use either the window or the divisor reduction. Each lower bound B needs its own witness."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AutomorphicArithmetic/ThetaCorrespondence/ThetaPairLifts/LocalTypeDictionary/ThetaLiftPeterssonNormEqRallisIntegral.lean#L972",
+  "program": "correlation",
+  "role": "endpoint",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-window-bridge",
+    "L-twin-primes-divisor-bridge",
+    "L-twin-primes-energy-bridge"
+  ],
+  "imports": [],
+  "challenge_only": true
+}

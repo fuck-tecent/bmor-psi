@@ -1,0 +1,20 @@
+{
+  "id": "L-twin-primes-moebius-moments",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_moebius_moments.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_moebius_moments",
+  "statement": "RiemannHypothesis → Filter.Tendsto (fun N : ℕ => (Finset.Icc 1 N).sum (fun n => (ArithmeticFunction.moebius n : ℝ)/n)) Filter.atTop (nhds 0) ∧ Filter.Tendsto (fun N : ℕ => (Finset.Icc 1 N).sum (fun n => -(ArithmeticFunction.moebius n : ℝ)*Real.log n/n)) Filter.atTop (nhds 1)",
+  "plain_statement": {
+    "zh": "新路线 · 短长除数与奇偶 · TP-0033 · 求 Möbius 两个截断对数矩的极限",
+    "en": "New route · Short and long divisors · TP-0033 · Compute the two limiting logarithmic Möbius moments"
+  },
+  "brief": {
+    "zh": "对 Möbius 部分和分部求和，再用 1/ζ 在 1 的一阶展开识别两个常数。",
+    "en": "Apply partial summation to Möbius sums and use the first-order expansion of 1/ζ at one."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Main.lean#L43",
+  "program": "correlation",
+  "role": "conditional",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

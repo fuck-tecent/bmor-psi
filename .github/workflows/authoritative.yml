@@ -122,7 +122,7 @@ jobs:
           # The whole tree of the head commit: it says whether the file is a plain file or a link.
           get "git/trees/$head?recursive=1" "$W/api/tree.json"
           # One place decides: exactly one file, added, under lean/PEqualNP/Outside/, the allowed
-          # name (so no path can climb out with ..), a plain file, at most 512 KiB, nothing else.
+          # name (so no path can climb out with ..), a plain file, at most 2 MiB, nothing else.
           node "$W/base/.github/scripts/outside-guard.mjs" pr "$W/api/pr.json" "$W/api/files.json" "$W/api/tree.json" \
             "$GITHUB_REPOSITORY" "$DEFAULT_BRANCH" "$W/in"
           [ ! -e "$W/base/$(cat "$W/in/pr.file")" ] || { echo "REFUSED: the file already exists in the base"; exit 1; }
@@ -137,10 +137,10 @@ jobs:
           blob=$(cat "$W/in/pr.blob")
           # The content is fetched by its hash, as bytes, into a plain file this run creates.
           # Whatever the pull request made of the path (a link, a mode), only bytes arrive.
-          curl -sSf --proto '=https' --max-redirs 0 --max-filesize 524288 \
+          curl -sSf --proto '=https' --max-redirs 0 --max-filesize 2097152 \
             -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github.raw+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" -o "$W/in/proof.lean" "$API/repos/$GITHUB_REPOSITORY/git/blobs/$blob"
-          [ "$(wc -c < "$W/in/proof.lean")" -le 524288 ] || { echo "REFUSED: the file is larger than 512 KiB"; exit 1; }
+          [ "$(wc -c < "$W/in/proof.lean")" -le 2097152 ] || { echo "REFUSED: the file is larger than 2 MiB"; exit 1; }
           # The bytes must be the ones the pull request names.
           [ "$(git hash-object "$W/in/proof.lean")" = "$blob" ] || { echo "REFUSED: the downloaded bytes are not the file of the pull request"; exit 1; }
 
@@ -153,7 +153,7 @@ jobs:
             "$W/base/research/gaps.json" "$W/base/research/problems.json" > "$W/in/gaps.json"
           node "$W/base/.github/scripts/outside-guard.mjs" gap "$W/in/gaps.json" "$GAP" "$(cat "$W/in/pr.file")" "$W/in"
           # Before anything is built: the file may import Mathlib and the modules the gap lists.
-          node "$W/base/.github/scripts/outside-guard.mjs" imports "$W/in/proof.lean" "$W/in/imports.json"
+          node "$W/base/.github/scripts/outside-guard.mjs" imports "$W/in/proof.lean" "$W/in/imports.json" "$W/in/build-imports.json"
           # A listed module may itself be outside-written (under PEqualNP.Outside, merged on the
           # base). Such a module runs code when it compiles, like the judged file, so it is never
           # built before the locked step. This splits what the listed modules import, read as
@@ -161,7 +161,7 @@ jobs:
           # (in/outside-imports.txt, built only by the checker's build in the locked step, as the
           # locked account). It refuses an outside module whose text fails the proof-file rules,
           # and a base module that imports an outside one.
-          node "$W/base/.github/scripts/outside-guard.mjs" closure "$W/base" "$W/in/imports.json" "$(cat "$W/in/pr.file")" "$W/in"
+          node "$W/base/.github/scripts/outside-guard.mjs" closure "$W/base" "$W/in/build-imports.json" "$(cat "$W/in/pr.file")" "$W/in"
 
       - name: Authorize the author's submitted lease
         if: github.event_name == 'issue_comment' || inputs.desk

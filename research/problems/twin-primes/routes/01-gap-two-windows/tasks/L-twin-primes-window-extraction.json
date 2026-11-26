@@ -1,0 +1,20 @@
+{
+  "id": "L-twin-primes-window-extraction",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_window_extraction.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_window_extraction",
+  "statement": "let w := fun (X : ℕ) => (Finset.range (2*X+1)).filter (fun n => X < n ∧ 50*n < 51*X); let v := fun (n : ℕ) => ArithmeticFunction.vonMangoldt n * ArithmeticFunction.vonMangoldt (n+2); let M := fun (X : ℕ) => (w X).sum v / (X : ℝ); let E := fun (X : ℕ) => ((w X).filter (fun n => ¬ (n.Prime ∧ (n+2).Prime))).sum v / (X : ℝ); ∀ X : ℕ, 0 < X → E X < M X → ∃ n ∈ w X, n.Prime ∧ (n+2).Prime",
+  "plain_statement": {
+    "zh": "新路线 · 差二窄窗 · TP-0003 · 从严格余量抽取同窗真素数对",
+    "en": "New route · Gap-two windows · TP-0003 · Extract a genuine prime pair from a strict window surplus"
+  },
+  "brief": {
+    "zh": "按两端的素性切分同一个有限和，消去相同的归一化。",
+    "en": "Partition the same finite sum by the two primality tests and cancel the common normalization."
+  },
+  "source": "https://arxiv.org/abs/2610.32672",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": false,
+  "depends_on": [],
+  "imports": []
+}

@@ -1,0 +1,22 @@
+{
+  "id": "L-twin-primes-rh-square-diagonal",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_rh_square_diagonal.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_rh_square_diagonal",
+  "statement": "let v := fun (X n : ℕ) => if n ≤ X then ArithmeticFunction.vonMangoldt n else 0; let C := fun (X h : ℕ) => (Finset.range (X+1)).sum (fun n => v X n * v X (n+h)); RiemannHypothesis → ∃ K : ℝ, 0 < K ∧ ∀ X : ℕ, 2 ≤ X → |C X 0-((X:ℝ)*Real.log X-X)| ≤ K*Real.sqrt X*Real.log (2+(X:ℝ))^3",
+  "plain_statement": {
+    "zh": "新路线 · 有限跳跃 · TP-0042 · 在 RH 下算出平方对角的主次两项",
+    "en": "New route · Finite increments · TP-0042 · Evaluate the first two terms of the squared diagonal under RH"
+  },
+  "brief": {
+    "zh": "先对素数上的 log² 作分部求和，再补回高次幂。",
+    "en": "Use partial summation for log² on primes and restore proper powers."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Main.lean#L43",
+  "program": "foundation",
+  "role": "conditional",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-power-count"
+  ],
+  "imports": []
+}

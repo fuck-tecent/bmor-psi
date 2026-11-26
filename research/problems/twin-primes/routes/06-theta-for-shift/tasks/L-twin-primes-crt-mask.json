@@ -1,0 +1,22 @@
+{
+  "id": "L-twin-primes-crt-mask",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_crt_mask.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_crt_mask",
+  "statement": "let A := fun (q : ℕ) => ((Finset.range q).filter (fun n => Nat.Coprime n q ∧ Nat.Coprime (n+2) q)).card; ∀ a b : ℕ, 0 < a → 0 < b → Nat.Coprime a b → A (a*b) = A a*A b",
+  "plain_statement": {
+    "zh": "新路线 · 指定平移的 Θ 提升 · TP-0046 · 用 CRT 拼接互素模数的平移掩码",
+    "en": "New route · Theta lift for a prescribed shift · TP-0046 · Multiply the shifted masks over coprime moduli"
+  },
+  "brief": {
+    "zh": "用 CRT 给出有序余类对的双射，并分别运输两项互素条件。",
+    "en": "Use the CRT bijection on residue pairs and transport both coprimality conditions."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/twin-primes.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-local-residues"
+  ],
+  "imports": []
+}

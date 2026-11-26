@@ -1,0 +1,24 @@
+{
+  "id": "L-twin-primes-unconditional-short",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_unconditional_short.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_unconditional_short",
+  "statement": "let w := fun (X : ℕ) => (Finset.range (2*X+1)).filter (fun n => X < n ∧ 50*n < 51*X); let primes := fun X => (w X).filter Nat.Prime; let c := fun (d : ℕ) => -(ArithmeticFunction.moebius d : ℝ)*Real.log d; let short := fun (X D : ℕ) => (primes X).sum (fun p => Real.log p * (((p+2).divisors.filter (fun d => d ≤ D)).sum c))/(X:ℝ); let D := fun (X : ℕ) => Nat.floor ((X:ℝ)^(1/3:ℝ)); let f := fun (p : ℕ) => if p.Prime ∧ 2 < p then 1-1/((p:ℝ)-1)^2 else 1; let twinC := ∏' p : ℕ, f p; Filter.Tendsto (fun X : ℕ => short X (D X)) Filter.atTop (nhds (2*twinC/50))",
+  "plain_statement": {
+    "zh": "新路线 · 短长除数与奇偶 · TP-0035 · 无条件求立方根截点的短除数主项",
+    "en": "New route · Short and long divisors · TP-0035 · Prove the unconditional short-divisor limit at the cube-root cutoff"
+  },
+  "brief": {
+    "zh": "已知定理的形式化里程碑。调用 Bombieri–Vinogradov 控制加权模数误差，再用定量素数定理导出的无条件 Möbius 矩识别硬截断常数。",
+    "en": "Formalize a consequence of known theorems. Use Bombieri–Vinogradov for the weighted error across moduli and unconditional Möbius moments from the quantitative prime number theorem for the cutoff constant."
+  },
+  "source": "https://arxiv.org/abs/2610.32672",
+  "program": "correlation",
+  "role": "target",
+  "parallel": false,
+  "depends_on": [
+    "L-twin-primes-divisor-split",
+    "L-twin-primes-euler-factor"
+  ],
+  "imports": [],
+  "challenge_only": true
+}

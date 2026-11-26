@@ -1,0 +1,21 @@
+[Unit]
+Description=Goldbach isolated CI runner
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+RuntimeDirectory=goldbach-ci-site
+RuntimeDirectoryMode=0755
+RuntimeDirectoryPreserve=restart
+CacheDirectory=goldbach-lean-deps
+CacheDirectoryMode=0700
+Environment=GOLDBACH_LEAN_DEP_CACHE=/var/cache/goldbach-lean-deps
+UMask=0022
+ExecStartPre=/usr/bin/rm -f /run/goldbach-ci-site/runner.sock
+ExecStart=/usr/bin/python3 -B /opt/goldbach-ci/controller/site_runner.py
+Restart=on-failure
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=multi-user.target

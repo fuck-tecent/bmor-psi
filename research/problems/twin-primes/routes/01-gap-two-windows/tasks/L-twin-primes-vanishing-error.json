@@ -1,0 +1,20 @@
+{
+  "id": "L-twin-primes-vanishing-error",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_vanishing_error.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_vanishing_error",
+  "statement": "let e := fun (X : ℕ) => Real.log (2+(X:ℝ))^3 / Real.sqrt X; Filter.Tendsto e Filter.atTop (nhds 0)",
+  "plain_statement": {
+    "zh": "新路线 · 差二窄窗 · TP-0004 · 验证窄窗污染率趋零",
+    "en": "New route · Gap-two windows · TP-0004 · Show the normalized power error tends to zero"
+  },
+  "brief": {
+    "zh": "把三次对数与任意小于二分之一的正幂比较。",
+    "en": "Compare the cubed logarithm with a positive power smaller than one half."
+  },
+  "source": "https://arxiv.org/abs/2610.32672",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": false,
+  "depends_on": [],
+  "imports": []
+}

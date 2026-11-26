@@ -1,13 +1,13 @@
 (() => {
-  const widget = document.querySelector('.presence-widget');
-  if (!widget) return;
-  const endpoint = new URL(widget.dataset.endpoint, document.baseURI);
+  const widgets = Array.from(document.querySelectorAll('.presence-widget'));
+  if (!widgets.length) return;
+  const endpoint = new URL(widgets[0].dataset.endpoint, document.baseURI);
   const cookiePath = new URL('../', endpoint).pathname;
-  const visitors = widget.querySelector('[data-count="visitors"]');
-  const agents = widget.querySelector('[data-count="agents"]');
-  const views = widget.querySelector('[data-count="page_views"]');
-  const ips = widget.querySelector('[data-count="unique_ips"]');
   const format = new Intl.NumberFormat(document.documentElement.lang);
+  const fields = ['visitors', 'agents', 'page_views', 'unique_ips'];
+  const slots = Object.fromEntries(
+    fields.map(key => [key, widgets.flatMap(w => Array.from(w.querySelectorAll(`[data-count="${key}"]`)))])
+  );
   let visit;
   let timer;
   let pending = false;
@@ -24,6 +24,13 @@
     return visit;
   }
 
+  function render(value) {
+    for (const key of fields) {
+      const text = value && Number.isSafeInteger(value[key]) ? format.format(value[key]) : '—';
+      for (const node of slots[key]) node.textContent = text;
+    }
+  }
+
   async function refresh() {
     if (pending || document.hidden) return;
     pending = true;
@@ -35,13 +42,9 @@
         cache: 'no-store', signal: controller.signal
       });
       if (!response.ok) throw new Error('Presence unavailable');
-      const value = await response.json();
-      visitors.textContent = Number.isSafeInteger(value.visitors) ? format.format(value.visitors) : '—';
-      agents.textContent = Number.isSafeInteger(value.agents) ? format.format(value.agents) : '—';
-      views.textContent = Number.isSafeInteger(value.page_views) ? format.format(value.page_views) : '—';
-      ips.textContent = Number.isSafeInteger(value.unique_ips) ? format.format(value.unique_ips) : '—';
+      render(await response.json());
     } catch {
-      visitors.textContent = agents.textContent = views.textContent = ips.textContent = '—';
+      render(null);
     } finally {
       clearTimeout(timeout);
       pending = false;
@@ -55,7 +58,7 @@
       timer = setInterval(refresh, 30000);
     }
   }
-  widget.hidden = false;
+  for (const widget of widgets) widget.hidden = false;
   document.addEventListener('visibilitychange', watch);
   window.addEventListener('pagehide', () => clearInterval(timer));
   window.addEventListener('pageshow', watch);
