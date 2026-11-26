@@ -455,3 +455,26 @@ For fixed `e`, `G_e(d)` is a geometric sum at frequency `d * (e t)`; the
 `q / gcd(e,q)`, so the remaining step is the standard gcd decomposition:
 apply the separated/finite large sieve to each `e` class and sum over `e`
 with the divisor bounds on `∑ Λ(e) / gcd(e,q)`.
+
+## Dispersion/phase expansion of Type-II
+
+`type1_bound.lean` now contains the dispersion identity
+
+```lean
+((∑ d ≤ n/(U+1), ‖typeIIFourier n U t d‖² : ℝ) : ℂ)
+  = ∑ l1,l2 ≤ n/(U+1),
+      typeIICoeff U l1 * star (typeIICoeff U l2) *
+        ∑ d = U+1 .. min (n/(U+1)) (n/max l1 l2),
+          E (d (l1-l2) t)
+```
+
+(`dispersion_identity`, specialized as `typeII_energy_dispersion`).
+The inner sum over `d` is now a pure geometric sum with frequency
+`(l1-l2)t`.  The next step is the standard dispersion analysis:
+
+- `l1 = l2` (diagonal): length `≤ n/l1`;
+- `q | (l1-l2)`: resonant geometric sums;
+- `q ∤ (l1-l2)`: geometric sum bounded by `2/|sin (π (l1-l2) t)|`.
+
+Together with `|typeIICoeff U l| ≤ log n` and divisor bounds on the
+resonant correlations, this gives the Type-II dispersion estimate.

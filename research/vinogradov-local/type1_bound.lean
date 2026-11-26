@@ -475,6 +475,162 @@ lemma norm_sum_shift {M : ℕ} (c : Fin M → ℂ) (θ shift : ℝ) :
     ring
   rw [h, norm_mul, norm_E, mul_one]
 
+lemma star_E (x : ℝ) : (starRingEnd ℂ) (E x) = E (-x) := by
+  unfold E
+  rw [← Complex.exp_conj]
+  congr 1
+  simp [map_ofNat, map_mul]
+
+lemma dispersion_identity (N D : ℕ) (hD : 0 < D) (c : ℕ → ℂ) (t : ℝ) :
+    ((∑ d ∈ Finset.Icc D (N / D),
+        ‖∑ l ∈ Finset.Icc 1 (N / d), c l * E (((d * l : ℕ) : ℝ) * t)‖ ^ 2 : ℝ) : ℂ)
+      = ∑ l1 ∈ Finset.Icc 1 (N / D), ∑ l2 ∈ Finset.Icc 1 (N / D),
+          c l1 * star (c l2) *
+            ∑ d ∈ Finset.Icc D (min (N / D) (N / max l1 l2)),
+              E (((d : ℝ) * ((l1 : ℝ) - (l2 : ℝ))) * t) := by
+  classical
+  have hstep : ((∑ d ∈ Finset.Icc D (N / D),
+        ‖∑ l ∈ Finset.Icc 1 (N / d), c l * E (((d * l : ℕ) : ℝ) * t)‖ ^ 2 : ℝ) : ℂ)
+      = ∑ d ∈ Finset.Icc D (N / D),
+          ∑ l1 ∈ Finset.Icc 1 (N / d),
+            ∑ l2 ∈ Finset.Icc 1 (N / d),
+              c l1 * star (c l2) * E (((d : ℝ) * ((l1 : ℝ) - (l2 : ℝ))) * t) := by
+    rw [Complex.ofReal_sum]
+    apply Finset.sum_congr rfl
+    intro d hd
+    rw [Complex.ofReal_pow, ← Complex.mul_conj']
+    rw [Finset.sum_mul]
+    apply Finset.sum_congr rfl
+    intro l1 hl1
+    rw [map_sum, Finset.mul_sum]
+    apply Finset.sum_congr rfl
+    intro l2 hl2
+    rw [map_mul, star_E]
+    have hphase : E (((d * l1 : ℕ) : ℝ) * t) * E (-(((d * l2 : ℕ) : ℝ) * t)) =
+        E (((d : ℝ) * ((l1 : ℝ) - (l2 : ℝ))) * t) := by
+      rw [← E_add]
+      congr 1
+      push_cast
+      ring
+    calc
+      c l1 * E (((d * l1 : ℕ) : ℝ) * t) *
+          ((starRingEnd ℂ) (c l2) * E (-(((d * l2 : ℕ) : ℝ) * t)))
+          = c l1 * (starRingEnd ℂ) (c l2) *
+              (E (((d * l1 : ℕ) : ℝ) * t) * E (-(((d * l2 : ℕ) : ℝ) * t))) := by ring
+      _ = c l1 * (starRingEnd ℂ) (c l2) *
+              E (((d : ℝ) * ((l1 : ℝ) - (l2 : ℝ))) * t) := by rw [hphase]
+  rw [hstep]
+  simp_rw [Finset.mul_sum]
+  have hL : (∑ d ∈ Finset.Icc D (N / D),
+          ∑ l1 ∈ Finset.Icc 1 (N / d),
+            ∑ l2 ∈ Finset.Icc 1 (N / d),
+              c l1 * star (c l2) * E (((d : ℝ) * ((l1 : ℝ) - (l2 : ℝ))) * t))
+      = ∑ p ∈ (Finset.Icc D (N / D)).sigma
+          (fun d => (Finset.Icc 1 (N / d)).product (Finset.Icc 1 (N / d))),
+          c p.2.1 * star (c p.2.2) *
+            E (((p.1 : ℝ) * ((p.2.1 : ℝ) - (p.2.2 : ℝ))) * t) := by
+    calc
+      (∑ d ∈ Finset.Icc D (N / D),
+          ∑ l1 ∈ Finset.Icc 1 (N / d),
+            ∑ l2 ∈ Finset.Icc 1 (N / d),
+              c l1 * star (c l2) * E (((d : ℝ) * ((l1 : ℝ) - (l2 : ℝ))) * t))
+          = ∑ d ∈ Finset.Icc D (N / D),
+              ∑ p ∈ (Finset.Icc 1 (N / d)).product (Finset.Icc 1 (N / d)),
+                c p.1 * star (c p.2) * E (((d : ℝ) * ((p.1 : ℝ) - (p.2 : ℝ))) * t) := by
+            apply Finset.sum_congr rfl
+            intro d hd
+            rw [show (Finset.Icc 1 (N / d)).product (Finset.Icc 1 (N / d)) =
+                Finset.Icc 1 (N / d) ×ˢ Finset.Icc 1 (N / d) from rfl]
+            rw [Finset.sum_product]
+      _ = ∑ p ∈ (Finset.Icc D (N / D)).sigma
+            (fun d => (Finset.Icc 1 (N / d)).product (Finset.Icc 1 (N / d))),
+            c p.2.1 * star (c p.2.2) *
+              E (((p.1 : ℝ) * ((p.2.1 : ℝ) - (p.2.2 : ℝ))) * t) := by
+            rw [Finset.sum_sigma']
+  rw [hL]
+  have hR : (∑ l1 ∈ Finset.Icc 1 (N / D), ∑ l2 ∈ Finset.Icc 1 (N / D),
+          ∑ d ∈ Finset.Icc D (min (N / D) (N / max l1 l2)),
+            c l1 * star (c l2) * E (((d : ℝ) * ((l1 : ℝ) - (l2 : ℝ))) * t))
+      = ∑ q ∈ ((Finset.Icc 1 (N / D)).product (Finset.Icc 1 (N / D))).sigma
+          (fun p => Finset.Icc D (min (N / D) (N / max p.1 p.2))),
+          c q.1.1 * star (c q.1.2) *
+            E (((q.2 : ℝ) * ((q.1.1 : ℝ) - (q.1.2 : ℝ))) * t) := by
+    calc
+      (∑ l1 ∈ Finset.Icc 1 (N / D), ∑ l2 ∈ Finset.Icc 1 (N / D),
+          ∑ d ∈ Finset.Icc D (min (N / D) (N / max l1 l2)),
+            c l1 * star (c l2) * E (((d : ℝ) * ((l1 : ℝ) - (l2 : ℝ))) * t))
+          = ∑ p ∈ (Finset.Icc 1 (N / D)).product (Finset.Icc 1 (N / D)),
+              ∑ d ∈ Finset.Icc D (min (N / D) (N / max p.1 p.2)),
+                c p.1 * star (c p.2) * E (((d : ℝ) * ((p.1 : ℝ) - (p.2 : ℝ))) * t) := by
+            rw [show (Finset.Icc 1 (N / D)).product (Finset.Icc 1 (N / D)) =
+                Finset.Icc 1 (N / D) ×ˢ Finset.Icc 1 (N / D) from rfl]
+            rw [Finset.sum_product]
+      _ = ∑ q ∈ ((Finset.Icc 1 (N / D)).product (Finset.Icc 1 (N / D))).sigma
+            (fun p => Finset.Icc D (min (N / D) (N / max p.1 p.2))),
+            c q.1.1 * star (c q.1.2) *
+              E (((q.2 : ℝ) * ((q.1.1 : ℝ) - (q.1.2 : ℝ))) * t) := by
+            rw [Finset.sum_sigma']
+  rw [hR]
+  refine Finset.sum_bij (fun p _ => (⟨(p.2.1, p.2.2), p.1⟩ : Σ _ : ℕ × ℕ, ℕ)) ?_ ?_ ?_ ?_
+  · intro p hp
+    obtain ⟨hpd, hpl⟩ := Finset.mem_sigma.mp hp
+    obtain ⟨hpl1, hpl2⟩ := Finset.mem_product.mp hpl
+    obtain ⟨hd1, hd2⟩ := Finset.mem_Icc.mp hpd
+    obtain ⟨hl11, hl12⟩ := Finset.mem_Icc.mp hpl1
+    obtain ⟨hl21, hl22⟩ := Finset.mem_Icc.mp hpl2
+    have hdpos : 0 < p.1 := by omega
+    have hl1L : p.2.1 ≤ N / D := by
+      exact le_trans hl12 (Nat.div_le_div_left hd1 hD)
+    have hl2L : p.2.2 ≤ N / D := by
+      exact le_trans hl22 (Nat.div_le_div_left hd1 hD)
+    have hmaxpos : 0 < max p.2.1 p.2.2 := by omega
+    have hdle : p.1 ≤ min (N / D) (N / max p.2.1 p.2.2) := by
+      apply le_min
+      · exact hd2
+      · rw [Nat.le_div_iff_mul_le hmaxpos, mul_max, Nat.max_le]
+        exact ⟨by simpa [Nat.mul_comm] using (Nat.le_div_iff_mul_le hdpos).mp hl12,
+          by simpa [Nat.mul_comm] using (Nat.le_div_iff_mul_le hdpos).mp hl22⟩
+    exact Finset.mem_sigma.mpr ⟨Finset.mem_product.mpr
+      ⟨Finset.mem_Icc.mpr ⟨hl11, hl1L⟩, Finset.mem_Icc.mpr ⟨hl21, hl2L⟩⟩,
+      Finset.mem_Icc.mpr ⟨hd1, hdle⟩⟩
+  · intro p hp p' hp' heq
+    simp only [Sigma.mk.injEq, Prod.mk.injEq] at heq
+    obtain ⟨h1, h2⟩ := heq
+    have h2' : p.1 = p'.1 := eq_of_heq h2
+    have hp2 : p.2 = p'.2 := Prod.ext h1.1 h1.2
+    exact Sigma.ext h2' (heq_of_eq hp2)
+  · intro q hq
+    obtain ⟨hqp, hqd⟩ := Finset.mem_sigma.mp hq
+    obtain ⟨hq1, hq2⟩ := Finset.mem_product.mp hqp
+    obtain ⟨hq11, hq12⟩ := Finset.mem_Icc.mp hq1
+    obtain ⟨hq21, hq22⟩ := Finset.mem_Icc.mp hq2
+    obtain ⟨hqd1, hqd2⟩ := Finset.mem_Icc.mp hqd
+    have hqmaxpos : 0 < max q.1.1 q.1.2 := by omega
+    have hq1pos : 0 < q.1.1 := by omega
+    have hq2pos : 0 < q.1.2 := by omega
+    have hqd2' : q.2 ≤ N / max q.1.1 q.1.2 := le_trans hqd2 (min_le_right _ _)
+    have hqdD : q.2 ≤ N / D := le_trans hqd2 (min_le_left _ _)
+    have hmul : q.2 * max q.1.1 q.1.2 ≤ N :=
+      (Nat.le_div_iff_mul_le hqmaxpos).mp hqd2'
+    have hdpos : 0 < q.2 := by omega
+    refine ⟨⟨q.2, (q.1.1, q.1.2)⟩, ?_, ?_⟩
+    · refine Finset.mem_sigma.mpr ⟨Finset.mem_Icc.mpr ⟨hqd1, hqdD⟩, ?_⟩
+      refine Finset.mem_product.mpr ⟨Finset.mem_Icc.mpr ⟨hq11, ?_⟩,
+        Finset.mem_Icc.mpr ⟨hq21, ?_⟩⟩
+      · rw [Nat.le_div_iff_mul_le hdpos]
+        calc q.1.1 * q.2 = q.2 * q.1.1 := by ring
+          _ ≤ q.2 * max q.1.1 q.1.2 := Nat.mul_le_mul_left _ (le_max_left _ _)
+          _ ≤ N := hmul
+      · rw [Nat.le_div_iff_mul_le hdpos]
+        calc q.1.2 * q.2 = q.2 * q.1.2 := by ring
+          _ ≤ q.2 * max q.1.1 q.1.2 := Nat.mul_le_mul_left _ (le_max_right _ _)
+          _ ≤ N := hmul
+    · rfl
+  · intro p hp
+    obtain ⟨-, hpl⟩ := Finset.mem_sigma.mp hp
+    obtain ⟨hpl1, hpl2⟩ := Finset.mem_product.mp hpl
+    rfl
+
 /-- Split a multiple of `B` into `K` consecutive blocks of length `B`. -/
 lemma sum_range_mul_eq_sum_blocks (f : ℕ → ℝ) (B K : ℕ) :
     ∑ i ∈ Finset.range (K * B), f i =
@@ -938,6 +1094,18 @@ lemma sum_normSq_typeIICoeff_le (n U : ℕ) (s : Finset ℕ)
       nlinarith [norm_nonneg (typeIICoeff U l), h]
     _ = (s.card : ℝ) * (Real.log (n : ℝ)) ^ 2 := by
       rw [Finset.sum_const, nsmul_eq_mul]
+
+/-- Dispersion/phase expansion of the Type-II energy: the squared sum becomes
+a double sum in `l1,l2` with an inner geometric sum in `d`. -/
+theorem typeII_energy_dispersion (n U : ℕ) (t : ℝ) :
+    ((∑ d ∈ Finset.Icc (U + 1) (n / (U + 1)),
+        ‖typeIIFourier n U t d‖ ^ 2 : ℝ) : ℂ) =
+      ∑ l1 ∈ Finset.Icc 1 (n / (U + 1)), ∑ l2 ∈ Finset.Icc 1 (n / (U + 1)),
+        typeIICoeff U l1 * star (typeIICoeff U l2) *
+          ∑ d ∈ Finset.Icc (U + 1) (min (n / (U + 1)) (n / max l1 l2)),
+            E (((d : ℝ) * ((l1 : ℝ) - (l2 : ℝ))) * t) := by
+  simpa only [typeIIFourier] using
+    dispersion_identity n (U + 1) (by omega) (typeIICoeff U) t
 
 lemma typeIIInner_eq_typeIIFourier (n U d : ℕ) (hd : 0 < d) (t : ℝ) :
     typeIIInner n U t d = typeIIFourier n U t d := by

@@ -158,3 +158,16 @@ Now `G_e(d) = ∑_m E(d e m t)` is a geometric sum at frequency `d (e t)`.
 For fixed `e`, the modulus is `q / gcd(e,q)`, so the remaining task is the
 gcd decomposition: apply the large sieve to each `e` class and sum over `e`
 using divisor bounds.  This is the genuine bilinear/Gallagher step.
+
+## Dispersion identity completed
+
+`typeII_energy_dispersion` expands the Type-II energy into
+
+`∑_{l1,l2} c(l1) \bar c(l2) ∑_{d} E(d(l1-l2)t)`.
+
+The inner `d`-sum is geometric.  Remaining:
+
+1. diagonal `l1=l2`;
+2. resonant `q | (l1-l2)`;
+3. non-resonant geometric bound;
+4. sum over `l1,l2` using `|c(l)| ≤ log n` and divisor correlation bounds.
