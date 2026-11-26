@@ -1,0 +1,11 @@
+{
+  "id": "01-gap-two-windows",
+  "title": {
+    "zh": "差二窄窗",
+    "en": "Gap-two windows"
+  },
+  "description": {
+    "zh": "先量出假素数对和真素数对之间的差，再确定在哪些尺度需要下界。",
+    "en": "Measure the proper-power error and specify the scales on which a lower bound suffices."
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "id": "L-twin-primes-power-count",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_power_count.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_power_count",
+  "statement": "∃ C : ℝ, 0 < C ∧ ∀ Y : ℕ, 2 ≤ Y → (((Finset.range (Y+1)).filter (fun n => IsPrimePow n ∧ ¬n.Prime)).card : ℝ) ≤ C * Real.sqrt Y * Real.log (2+(Y:ℝ))",
+  "plain_statement": {
+    "zh": "新路线 · 差二窄窗 · TP-0001 · 计数不超过 Y 的高次素数幂",
+    "en": "New route · Gap-two windows · TP-0001 · Count proper prime powers up to Y"
+  },
+  "brief": {
+    "zh": "按底数和指数计数。主站 L-goldbach-power-index-count 已给出 Mangoldt 非零真幂的有限计数形式，可复用再作渐近简化。",
+    "en": "Count by base and exponent. Reuse the finite proper-power count in L-goldbach-power-index-count, then derive the asymptotic bound."
+  },
+  "source": "https://arxiv.org/abs/2610.32672",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

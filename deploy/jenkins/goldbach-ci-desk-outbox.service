@@ -1,0 +1,15 @@
+[Unit]
+Description=Send queued Goldbach task desk verdicts
+After=network-online.target goldbach-ci-webhook.service
+Wants=network-online.target
+Requires=goldbach-ci-webhook.service
+
+[Service]
+Type=oneshot
+LoadCredential=desk-secret:/etc/goldbach-ci/desk-secret
+ExecStart=/usr/bin/python3 -B /opt/goldbach-ci/controller/desk_outbox.py --database /var/lib/goldbach-ci-webhook/deliveries.db --verdict-url https://www.movan.tech/goldbach/api/verdict --secret-file %d/desk-secret
+NoNewPrivileges=yes
+ProtectSystem=strict
+ReadWritePaths=/var/lib/goldbach-ci-webhook
+ProtectHome=yes
+PrivateTmp=yes

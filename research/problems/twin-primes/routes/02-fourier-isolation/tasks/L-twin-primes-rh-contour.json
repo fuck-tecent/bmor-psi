@@ -1,0 +1,20 @@
+{
+  "id": "L-twin-primes-rh-contour",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_rh_contour.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_rh_contour",
+  "statement": "RiemannHypothesis → ∀ s : ℂ, 9/16 ≤ s.re → s.re < 1 → riemannZeta s ≠ 0",
+  "plain_statement": {
+    "zh": "新路线 · Fourier 选频 · TP-0016 · 在 9/16 移线上排除临界带零点",
+    "en": "New route · Fourier isolation · TP-0016 · Exclude strip zeros on and to the right of the 9/16 contour"
+  },
+  "brief": {
+    "zh": "在开临界带调用零点位置并比较实部。",
+    "en": "Use the zero location in the open critical strip and compare real parts."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Main.lean#L43",
+  "program": "foundation",
+  "role": "conditional",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

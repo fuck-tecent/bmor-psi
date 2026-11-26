@@ -1,0 +1,11 @@
+[Unit]
+Description=Renew the Goldbach Webhook IP certificate
+Wants=network-online.target
+After=network-online.target caddy.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/goldbach-ci/ip-certificate/venv/bin/certbot renew --quiet --no-random-sleep-on-renew --cert-name goldbach-webhook-ip --config-dir /opt/goldbach-ci/ip-certificate/production/config --work-dir /opt/goldbach-ci/ip-certificate/production/work --logs-dir /opt/goldbach-ci/ip-certificate/production/logs
+ExecStartPost=/bin/bash /opt/goldbach-ci/controller/reload-ip-certificate.sh
+PrivateTmp=yes
+NoNewPrivileges=yes

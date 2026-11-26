@@ -1,0 +1,22 @@
+{
+  "id": "L-twin-primes-sifted-correlation",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_sifted_correlation.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_sifted_correlation",
+  "statement": "let w := fun (X : ℕ) => (Finset.range (2*X+1)).filter (fun n => X < n ∧ 50*n < 51*X); ∀ X : ℕ, 9 ≤ X → let Q := ((Finset.range (Nat.sqrt (2*X+2)+1)).filter Nat.Prime).prod id; ((w X).filter (fun n => Nat.Coprime n Q ∧ Nat.Coprime (n+2) Q)) = ((w X).filter (fun n => n.Prime ∧ (n+2).Prime))",
+  "plain_statement": {
+    "zh": "新路线 · 指定平移的 Θ 提升 · TP-0048 · 在平方根筛界准确识别真正的差二相关",
+    "en": "New route · Theta lift for a prescribed shift · TP-0048 · Identify the exact two-prime correlation at the square-root sieve cutoff"
+  },
+  "brief": {
+    "zh": "合数有不大于平方根的素因子；窗中两端都超过筛界。可用作指定局部测试的精确算术参照。",
+    "en": "A composite has a prime divisor up to its square root. Both endpoints exceed the sieve cutoff. This gives an exact arithmetic test for the prescribed local data."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/twin-primes.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-crt-mask"
+  ],
+  "imports": []
+}

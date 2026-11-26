@@ -1,0 +1,21 @@
+{
+  "id": "L-twin-primes-window-surplus",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_window_surplus.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_window_surplus",
+  "statement": "let w := fun (X : ℕ) => (Finset.range (2*X+1)).filter (fun n => X < n ∧ 50*n < 51*X); let v := fun (n : ℕ) => ArithmeticFunction.vonMangoldt n * ArithmeticFunction.vonMangoldt (n+2); let M := fun (X : ℕ) => (w X).sum v / (X : ℝ); let e := fun (X : ℕ) => Real.log (2+(X:ℝ))^3 / Real.sqrt X; ∀ (K : ℝ) (B : ℕ), ∃ X : ℕ, B < X ∧ K * e X < M X",
+  "plain_statement": {
+    "zh": "新路线 · 差二窄窗 · TP-0005 · 沿无界窄窗超过任意固定污染倍数",
+    "en": "New route · Gap-two windows · TP-0005 · Exceed every fixed multiple of the power error on unbounded windows"
+  },
+  "brief": {
+    "zh": "在严格窗内给出带符号或单侧的下界，K 与要求的起点独立。",
+    "en": "Find a one-sided estimate inside the strict window for each multiplier K and lower cutoff."
+  },
+  "source": "https://arxiv.org/abs/2610.32672",
+  "program": "foundation",
+  "role": "target",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "challenge_only": true
+}

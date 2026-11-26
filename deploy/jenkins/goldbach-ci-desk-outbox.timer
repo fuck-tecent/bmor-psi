@@ -1,0 +1,9 @@
+[Unit]
+Description=Retry queued Goldbach task desk verdicts
+
+[Timer]
+OnBootSec=1min
+OnUnitInactiveSec=30s
+
+[Install]
+WantedBy=timers.target

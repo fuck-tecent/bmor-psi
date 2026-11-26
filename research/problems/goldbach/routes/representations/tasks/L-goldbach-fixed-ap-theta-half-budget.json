@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-fixed-ap-theta-half-budget",
+  "statement": "∀ (q a n : ℕ), 1 ≤ q → q ≤ 105 → Nat.Coprime a q → 10^16 ≤ n → (n:ℝ) < Real.exp (Real.exp (19/5)) → |(∑ k ∈ (Finset.range (n+1)).filter (fun k => k % q = a % q), (if k.Prime then ArithmeticFunction.vonMangoldt k else 0)) - (n:ℝ)/Nat.totient q| ≤ (n:ℝ)/200",
+  "plain_statement": {
+    "zh": "只计素数，给等差数列的误差留出 n/200",
+    "en": "Bound the prime-only progression error by n/200"
+  },
+  "brief": {
+    "zh": "对素数有 Λ(p)=log p。BMOR 定理 1.2 控制 q≥3；q=2 用模 4 的两个奇剩余类，q=1 再加素数 2。保留阈值 10¹⁶。",
+    "en": "Use Λ(p)=log p and Theorem 1.2 for q ≥ 3. For q=2 combine both odd classes modulo four. For q=1 also include the prime two. Keep the explicit threshold."
+  },
+  "source": "https://personal.math.ubc.ca/~bennett/BeMaObRe-IJM-2018.pdf",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "file": "lean/PEqualNP/Outside/L_goldbach_fixed_ap_theta_half_budget.lean",
+  "module": "PEqualNP.Outside.L_goldbach_fixed_ap_theta_half_budget",
+  "imports": [],
+  "track": "representations",
+  "role": "lemma"
+}

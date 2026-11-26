@@ -1,0 +1,22 @@
+{
+  "id": "L-twin-primes-positive-product",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_positive_product.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_positive_product",
+  "statement": "let f := fun (p : ℕ) => if p.Prime ∧ 2 < p then 1-1/((p:ℝ)-1)^2 else 1; let twinC := ∏' p : ℕ, f p; 0 < twinC",
+  "plain_statement": {
+    "zh": "新路线 · 短长除数与奇偶 · TP-0032 · 证明奇素数局部因子的无限乘积严格为正",
+    "en": "New route · Short and long divisors · TP-0032 · Prove positivity of the product of odd local factors"
+  },
+  "brief": {
+    "zh": "先以倒数平方和控制 log，再从有限乘积过渡；p=2 因子单独处理。",
+    "en": "Control logarithms by a convergent reciprocal-square sum and pass from finite products. Treat 2 separately."
+  },
+  "source": "https://arxiv.org/abs/2610.32672",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-euler-factor"
+  ],
+  "imports": []
+}

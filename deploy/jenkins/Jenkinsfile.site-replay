@@ -1,0 +1,24 @@
+pipeline {
+    agent { label 'goldbach-site-replay' }
+    options {
+        skipDefaultCheckout()
+        disableConcurrentBuilds()
+        timeout(time: 10, unit: 'MINUTES')
+    }
+    stages {
+        stage('Website release verification') {
+            steps {
+                deleteDir()
+                sh '''
+                    set -eu
+                    tar -xf /input/source.tar
+                    install -D /input/check-site.sh deploy/jenkins/check-site.sh
+                    bash deploy/jenkins/check-site.sh
+                '''
+            }
+        }
+    }
+    post {
+        cleanup { deleteDir() }
+    }
+}

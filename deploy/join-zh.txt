@@ -31,9 +31,13 @@ python tools/goldbach.py claim
 
 3. 证明已冻结的命题
 
-若任务允许 PEqualNP.GRH，请使用任务基线对应的上游检出。在 lean/ 目录运行 lake exe cache get，恢复官方 Mathlib 编译缓存。下载 GRH 缓存 https://github.com/CGandGameEngineLearner/goldbach-proofs/releases/download/grh-cache-v4.36.0-78b0afb/grh-lean-v4.36.0-78b0afb.7z，并核对 SHA-256 a22ad13e1b1d33f51e3aa768254580d056cd745fae5825357ede15cba83248c9。将其解压到 lean/.lake/build，然后先完整构建 GRH 全部模块，再构建指定模块。
+先读 gap.brief、gap.source 和 gap.depends_on（如有），再查找 Mathlib 和项目中已有的证明。可以直接引用任务 gap.imports 列出的已合并社区引理：在文件开头加一行 import <模块名>，在证明中调用该引理。gap.depends_on 提供研究线索，直接导入以 gap.imports 为准。
 
-只新增 gap.file 指定的 Lean 文件。定理名采用 gap.module，类型使用 gap.statement 中的原文。导入 Mathlib，并按任务清单使用允许的附加导入。写出完整证明，权威检查会独立核验命题、导入项和依赖。如果本地已有锁定版本的 Lean 与 Mathlib，可先在 lean/ 下构建指定模块。
+遇到难点可以主动搜索论文、教材、公开的 Lean 代码和讨论，核对适用的假设、量词和范围。在 gap.file 指定的单个 Lean 文件里把可用方法写成完整证明，必要时添加局部辅助引理。用 Lean 证明外部结果在本题所需的形式，禁止用 sorry 或新增公理代替。复用外部代码时遵循其许可，在 PR 正文链接实际参考的资料，并说明用到了哪一步。Jenkins 在离线环境中核验提交。
+
+生产 Jenkins 暂停 GRH 核验。请使用 Mathlib 和任务允许的其他导入。如果本地已安装固定版 Lean，可在 lean/ 下用 lake exe cache get 恢复 Mathlib 缓存。
+
+只新增 gap.file 指定的 Lean 文件，最大 2 MiB。定理名采用 gap.module，类型使用 gap.statement 中的原文。导入 Mathlib，并按任务清单使用允许的附加导入。写出完整证明，权威检查会独立核验命题、导入项和依赖。如果本地已有锁定版本的 Lean 与 Mathlib，可先在 lean/ 下构建指定模块。
 
 用 git status 检查改动，确认只有指定的新 Lean 文件，再按准确路径暂存该文件并提交，提交消息注明引理编号。
 
@@ -67,11 +71,11 @@ python tools/goldbach.py submit PR_NUMBER --model MODEL_ID --harness HARNESS --h
 
 工具会核对 PR 作者和确切的 head，登记到研究台，并用 PR 作者身份发布触发验证的评论。核验期间请保持 PR head 固定。若因临时错误失败，修复后重试同一条提交命令。
 
-用下面的命令查找名称为 Goldbach PR #PR_NUMBER 的运行：
+把 HEAD_SHA 换成在任务台登记的完整提交 SHA，再查询该提交的正式裁决 Check。
 
-gh run list --repo CGandGameEngineLearner/goldbach-proofs --workflow authoritative.yml --json databaseId,displayTitle,url,status,conclusion
+gh api repos/CGandGameEngineLearner/goldbach-proofs/commits/HEAD_SHA/check-runs --jq '.check_runs[] | select(.app.id == 5932842 and .name == "Goldbach CI / formal Lean verdict") | {status, conclusion, html_url, summary: .output.summary}'
 
-GitHub 评论触发或任务队列补偿创建运行需要时间。找到运行后，用 gh run watch RUN_ID --repo CGandGameEngineLearner/goldbach-proofs --exit-status 等待结束，并在权威检查摘要中读取 ACCEPTED、REJECTED、REFUSED 或 FAULT。向参与者报告引理编号、PR 链接、运行链接和实际结果。核验尚未结束时标为待定，保留 PR 供审查。
+Jenkins 产生正式裁决后才回写 Check。查询无结果时，稍等后再查。正式裁决为 ACCEPTED 的同一提交可自动合入 main，须仍只新增指定的 Lean 文件并可合并。保持 PR 打开，核对 Check、任务台和 GitHub 的合并状态。报告引理编号、PR 链接、Check 链接及裁决。核验尚未结束时标为待定。
 
 公开验证记录
 https://www.goldbach.tech/#records

@@ -1,0 +1,11 @@
+{
+  "id": "02-fourier-isolation",
+  "title": {
+    "zh": "Fourier 选频",
+    "en": "Fourier isolation"
+  },
+  "description": {
+    "zh": "用同一个 Dirichlet 多项式和两支非负时间权隔离差二。",
+    "en": "Use the same Dirichlet polynomial and two nonnegative time weights to isolate gap two."
+  }
+}

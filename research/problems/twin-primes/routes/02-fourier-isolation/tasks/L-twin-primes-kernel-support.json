@@ -1,0 +1,20 @@
+{
+  "id": "L-twin-primes-kernel-support",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_kernel_support.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_kernel_support",
+  "statement": "∀ K : ℝ → ℝ, (∀ v, 1/20 ≤ |v| → K v = 0) → (∀ v, |v| < 1/20 → 0 < K v) → let H := fun (v : ℝ) => K v / 2 - K (v-1/5)/4 - K (v+1/5)/4; (∀ v, 1/4 ≤ |v| → H v = 0) ∧ (∀ v, |v| < 1/20 → 0 < H v)",
+  "plain_statement": {
+    "zh": "新路线 · Fourier 选频 · TP-0011 · 从三个卷积平移导出中心正性与支撑",
+    "en": "New route · Fourier isolation · TP-0011 · Recover central positivity and support from three translates"
+  },
+  "brief": {
+    "zh": "分别代入三个平移处的支撑界，注意支撑端点。",
+    "en": "Apply the support bound at all three translates, including the endpoints."
+  },
+  "source": "https://arxiv.org/abs/2610.32672",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": false,
+  "depends_on": [],
+  "imports": []
+}

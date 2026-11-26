@@ -1,0 +1,9 @@
+[Unit]
+Description=Process Goldbach staging CI events
+
+[Timer]
+OnBootSec=1min
+OnUnitInactiveSec=20s
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,20 @@
+{
+  "id": "L-quadratic-primes-fixed-offset-endpoint-count",
+  "statement": "∀ a x l u : ℕ, 10 ≤ x → 1 ≤ a → a ≤ x → u ≤ 3 * x → (∑ n ∈ Finset.Icc l u, (((n ^ 2 + a).primeFactors.filter (fun p => x < p)).card)) ≤ 2 * (u + 1 - l)",
+  "plain_statement": {
+    "zh": "当 1≤a≤x 时，固定短窗口 [l,u] 中，n²+a 的大于 x 的不同素因子与整数 n 组成的对数至多是窗口长度的两倍。",
+    "en": "For 1≤a≤x, the number of pairs of an integer in the fixed interval and a distinct prime factor >x of n²+a is at most twice the interval length."
+  },
+  "brief": {
+    "zh": "若同一个 n 有三个不同大素因子，乘积大于 x³；n≤3x 且 x≥10 保证 n²+a<x³。逐项计数，允许空区间。",
+    "en": "Three distinct large prime factors would have product >x³, but n²+a<x³. Sum the per-integer bound."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2643",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "file": "lean/PEqualNP/Outside/L_quadratic_primes_fixed_offset_endpoint_count.lean",
+  "module": "PEqualNP.Outside.L_quadratic_primes_fixed_offset_endpoint_count",
+  "imports": [],
+  "role": "lemma"
+}

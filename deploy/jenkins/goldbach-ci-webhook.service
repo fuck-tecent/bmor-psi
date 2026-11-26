@@ -1,0 +1,21 @@
+[Unit]
+Description=Goldbach GitHub App webhook receiver
+After=network.target
+
+[Service]
+Type=simple
+DynamicUser=yes
+StateDirectory=goldbach-ci-webhook
+StateDirectoryMode=0700
+LoadCredential=webhook-secret:/etc/goldbach-ci/webhook-secret
+Environment=GOLDBACH_WEBHOOK_SECRET_FILE=%d/webhook-secret
+Environment=GOLDBACH_WEBHOOK_DB=/var/lib/goldbach-ci-webhook/deliveries.db
+ExecStart=/usr/bin/python3 -B /opt/goldbach-ci/controller/receive-webhook.py
+Restart=on-failure
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,35 @@
+pipeline {
+    agent { label 'goldbach-isolated-site' }
+    options {
+        skipDefaultCheckout()
+        timeout(time: 130, unit: 'MINUTES')
+    }
+    stages {
+        stage('Formal Lean proof verification') {
+            steps {
+                sh '''
+                    python3 - <<'PY'
+import os
+import re
+import socket
+
+job = os.environ["CI_JOB_ID"]
+if not re.fullmatch(r"[1-9][0-9]{0,17}", job):
+    raise SystemExit("Invalid formal proof job ID")
+with socket.socket(socket.AF_UNIX) as connection:
+    # Allow 16 dependency builds, the submission build, and the independent check.
+    connection.settimeout(7500)
+    connection.connect("/runner/runner.sock")
+    connection.sendall(("formal " + job + "\\n").encode())
+    with connection.makefile("rb") as response:
+        status = response.readline(8)
+if status == bytes([49, 10]):
+    raise SystemExit("Lean verifier rejected the proof")
+if status != bytes([48, 10]):
+    raise SystemExit("Formal Lean proof could not be checked: " + repr(status))
+print("Formal Lean proof accepted for job " + job)
+                '''
+            }
+        }
+    }
+}

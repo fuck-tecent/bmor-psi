@@ -1,0 +1,20 @@
+{
+  "id": "L-twin-primes-unit-band",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_unit_band.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_unit_band",
+  "statement": "let f := fun (x n j : ℝ) => x * Real.log (1+j/n); ∀ x n : ℝ, 1000 ≤ x → x ≤ n → 50*n ≤ 51*x → 1/4 < f x n 1 ∧ f x n 1 < 7/4",
+  "plain_statement": {
+    "zh": "新路线 · Fourier 选频 · TP-0007 · 排除相邻项的频率",
+    "en": "New route · Fourier isolation · TP-0007 · Exclude the frequency of adjacent indices"
+  },
+  "brief": {
+    "zh": "由 t/(1+t) ≤ log(1+t) ≤ t 对两端估计。",
+    "en": "Use t/(1+t) ≤ log(1+t) ≤ t at the endpoints."
+  },
+  "source": "https://arxiv.org/abs/2610.32672",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": false,
+  "depends_on": [],
+  "imports": []
+}

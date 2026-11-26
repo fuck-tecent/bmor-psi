@@ -13,7 +13,9 @@
   },
   "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/quadratic-primes-levent.md#levent-explicit-correlation",
   "program": "correlation",
-  "imports": [],
+  "imports": [
+    "PEqualNP.Outside.L_quadratic_primes_residue_invariance"
+  ],
   "parallel": false,
   "role": "target",
   "depends_on": [

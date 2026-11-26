@@ -1,0 +1,33 @@
+pipeline {
+    agent { label 'goldbach-isolated-site' }
+    options {
+        skipDefaultCheckout()
+        timeout(time: 35, unit: 'MINUTES')
+    }
+    stages {
+        stage('Isolated catalogue verification') {
+            steps {
+                sh '''
+                    python3 - <<'PY'
+import os
+import re
+import socket
+
+sha = os.environ["CI_HEAD"]
+if not re.fullmatch(r"[0-9a-f]{40}", sha):
+    raise SystemExit("Invalid commit SHA")
+with socket.socket(socket.AF_UNIX) as connection:
+    connection.settimeout(2000)
+    connection.connect("/runner/runner.sock")
+    connection.sendall(("catalogue " + sha + "\\n").encode())
+    with connection.makefile("rb") as response:
+        status = response.readline(8)
+if status != bytes([48, 10]):
+    raise SystemExit("Isolated catalogue check failed: " + repr(status))
+print("Isolated catalogue check passed for " + sha)
+PY
+                '''
+            }
+        }
+    }
+}

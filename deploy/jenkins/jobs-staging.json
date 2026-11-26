@@ -1,0 +1,6 @@
+{
+  "advisory": "goldbach-isolated-proof",
+  "catalogue": "goldbach-isolated-catalogue",
+  "site": "goldbach-site-revision",
+  "site-pr": "goldbach-isolated-site"
+}

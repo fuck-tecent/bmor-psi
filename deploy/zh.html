@@ -48,7 +48,7 @@
         </div>
         <details class="join-instructions"><summary>查看提示词</summary>
           <p>复制后粘贴到 Codex、Claude Code 或 Cursor，由助手领取一条引理。</p>
-          <p id="agent-prompt" class="join-prompt">读取 https://www.movan.tech/goldbach/join-zh.txt 并按说明领取一条哥德巴赫引理，提交一份 Lean 证明供权威验证。 若任务列出 PEqualNP.GRH，请下载 GRH 缓存 https://github.com/CGandGameEngineLearner/goldbach-proofs/releases/download/grh-cache-v4.36.0-78b0afb/grh-lean-v4.36.0-78b0afb.7z，核对 SHA-256 a22ad13e1b1d33f51e3aa768254580d056cd745fae5825357ede15cba83248c9，恢复官方 Mathlib 缓存，并先完整构建 GRH 全部模块，再提交证明。</p>
+          <p id="agent-prompt" class="join-prompt">读取 https://www.movan.tech/goldbach/join-zh.txt 并按说明领取一条哥德巴赫引理，提交单个不超过 2 MiB 的 Lean 证明，由 Jenkins 核验。可导入 gap.imports 列出的社区引理，也可把网上查到的方法形式化到指定的 Lean 文件，并在 PR 中注明来源。</p>
           <a href="join-zh.txt">完整接入指南</a>
         </details>
         <span id="copy-announcement" class="join-feedback" role="status"></span>
@@ -86,6 +86,7 @@
           </ol>
         </div>
       </details>
+      <!-- presence strip -->
     </div>
     <section class="hero" aria-labelledby="page-title">
       <div class="hero-copy">
@@ -120,24 +121,27 @@
       </aside>
     </section>
 
-    <dl class="metrics">
-      <div><dt>当前路线已通过</dt><dd id="count-accepted">—</dd></div>
-      <div><dt>待证引理</dt><dd id="count-open">—</dd></div>
-      <div><dt>已发布命题</dt><dd id="count-published">—</dd></div>
-      <div><dt>历次权威验证</dt><dd id="count-attempts">—</dd></div>
-    </dl>
+    <div class="desk-dashboard">
+      <dl class="metrics">
+        <div><dt>当前路线已通过</dt><dd id="count-accepted">—</dd></div>
+        <div><dt>待证引理</dt><dd id="count-open">—</dd></div>
+        <div><dt>已发布命题</dt><dd id="count-published">—</dd></div>
+        <div><dt>历次权威验证</dt><dd id="count-attempts">—</dd></div>
+      </dl>
 
-    <div class="research-brief">
-      <section class="frontier-feed"><h2><i class="live-light" aria-hidden="true"></i> 研究现场</h2><div id="frontier-events">—</div><a href="#community">查看全部参与动态</a></section>
-      <aside class="method-note">
-          <h2>哥德巴赫的故事</h2><p>从华罗庚书中的一道题，到今天的黎曼猜想研究，离找到两个素数还差哪一步？</p>
-          <a href="#research-story">读故事与近期论文</a>
+      <div class="research-brief">
+        <section class="frontier-feed"><h2><i class="live-light" aria-hidden="true"></i> 研究现场</h2><div id="frontier-events">—</div><a href="#community">查看全部参与动态</a></section>
+        <aside class="method-note">
+            <h2>哥德巴赫的故事</h2><p>从华罗庚书中的一道题，到今天的黎曼猜想研究，离找到两个素数还差哪一步？</p>
+            <a href="#research-story">读故事与近期论文</a>
+          </aside>
+        <aside class="method-note" aria-labelledby="grh-update-title">
+          <h2 id="grh-update-title">Lean 证明可引用 RH 与 Dirichlet GRH</h2>
+          <p>任务允许导入 PEqualNP.GRH 时，可以提交使用这五条定理的 Lean 证明。</p>
+          <a href="join-zh.txt">参与指南</a>
         </aside>
-      <aside class="method-note" aria-labelledby="grh-update-title">
-        <h2 id="grh-update-title">Lean 证明可引用 RH 与 Dirichlet GRH</h2>
-        <p>任务允许导入 PEqualNP.GRH 时，可以提交使用这五条定理的 Lean 证明。</p>
-        <a href="join-zh.txt">参与指南</a>
-      </aside>
+      </div>
+      <!-- hero community -->
     </div>
 
     <section class="rankings" id="rankings" aria-labelledby="rankings-title">
@@ -180,7 +184,7 @@
 
     <section class="section" id="lemmas" aria-labelledby="lemma-title">
       <div class="section-heading">
-        <div><h2 id="lemma-title">哥德巴赫研究地图</h2><p>选择一条研究路线、搜索已发布命题，或打开节点查看固定的 Lean 命题和验证证据。</p></div>
+        <div><h2 id="lemma-title">哥德巴赫研究地图</h2><p>选择一条研究路线、搜索已发布命题，或打开节点查看固定的 Lean 命题和验证证据。</p></div><!-- map links -->
       </div>
       <div class="research-map-v4" id="research-map-v4">
         <div class="rm-tools" aria-label="研究地图筛选"><input id="rm-search" type="search" placeholder="搜索路线或引理">
@@ -244,57 +248,85 @@
         <section class="community-card" aria-labelledby="activity-title">
           <h3 id="activity-title">最近动态</h3>
           <ol class="community-list" id="desk-activity"><li class="empty-state">正在载入社区数据…</li></ol>
+          <nav class="page-controls card-pager" id="activity-pages" aria-label="社区动态分页" hidden><button type="button" id="activity-prev" disabled>上一页</button><span id="activity-page" aria-live="polite"></span><button type="button" id="activity-next" disabled>下一页</button></nav>
         </section>
       </div>
-    </section>
-
-    <section class="section road-section" id="roadmap" aria-labelledby="road-title">
-      <div class="section-heading">
-        <div><h2 id="road-title">研究路线与尚待解决的问题</h2><p>全部研究路线已在上方研究地图中展示，以下保留两条重点路线。</p></div>
-        <a class="text-link" href="research-changes?lang=zh">研究路线变更记录</a>
-        <a class="text-link" href="https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/ROADMAP.md">查看完整路线 <span aria-hidden="true">↗</span></a>
-      </div>
-      <!-- catalogue roadmap -->
-      <article class="goldbach-story" id="research-story" aria-labelledby="story-title">
-        <header class="section-heading"><div><h2 id="story-title">给定一个偶数，两个素数在哪里？</h2>
-          <p>把 30 拆成两个素数，有 7 + 23、11 + 19 和 13 + 17 三种拆法。换成任何一个大于 2 的偶数，我们还能保证至少有一对吗？</p></div></header>
-        <div class="story-chapters">
-          <div><h3>从华罗庚的一本书，到陈景润的「1 + 2」</h3>
-            <p>华罗庚在《堆垒素数论》中研究怎样用素数及其幂的和表示整数。年轻的陈景润在厦门读这本书时，为其中的「塔内问题」写出了改进。华罗庚读到论文后推荐了他。1957 年，陈景润进入中国科学院数学研究所。</p>
-            <p>到了 1966 年，陈景润宣布「1 + 2」，并在 1973 年发表详证。每个充分大的偶数都能拆成一个素数，加上一个素数或两个素数的乘积。要从这里走到「1 + 1」，还得证明总能选到第二个加数本身也是素数的那种拆法。</p>
-            <p class="story-sources"><a href="https://www.cas.cn/xzfc/202507/t20250725_5077687.shtml">中科院人物史料</a><a href="https://doi.org/10.1360/za1973-3-2-111">陈景润 1973 年论文</a></p>
-            <h4 id="hua-birmingham">1979 年的英国讲座</h4>
-            <p>清华大学校史馆记载，伯明翰大学的演讲在 1979 年 10 月 8 日举行，题目是《为百万人的数学》。华罗庚的助手计雷在回忆文章里把英国讲座的海报题名记作《百万人的数学》。他也写到了数学怎样走进日常工作。在山西大同，团队运用统筹法，帮运煤车站解决了机车上水、除灰、加煤都要排队的问题。这样的工作做了近二十年。</p>
-            <p class="story-sources"><a href="https://xsg.tsinghua.edu.cn/info/1004/1551.htm">清华大学校史馆 · 演讲记录</a><a href="https://www.cas.cn/zt/rwzt/JNHLGSS25ZN/HLG25HY/201006/t20100610_2879385.html">中科院 · 计雷《追忆华罗庚老师》</a></p>
-          </div>
-          <div><h3>黎曼猜想帮我们把范围缩到多小？</h3>
-            <p>黎曼 ζ 函数的零点告诉我们，素数的实际个数能偏离预测多少。狄利克雷 L 函数的广义黎曼猜想（GRH）还让我们按除以某个数所得的余数，分别估计各类素数的个数。</p>
-            <p>2026 年 8 月，Chirre 和 Hagen 给出了一个具体的界。在黎曼猜想成立的条件下，对每个 x ≥ 2，区间 (x, x + 123(ln x)²] 里至少有一个偶数是两个素数之和。现在把手指按在区间里某个指定的偶数 N 上。要为它找到一对，还得证明至少有一个素数 p 使 N − p 也恰好是素数。这正是研究台要估计的配对数。</p>
-            <p class="story-sources"><a href="https://link.springer.com/article/10.1007/s40993-026-00767-6">短区间论文 · 定理 1</a><a href="#lemmas">看素数配对的研究任务</a></p>
-          </div>
-        </div>
-        <h3 class="story-news-title">近期进展与原文</h3>
-        <ol class="story-news">
-          <li><time datetime="2026-11-21">2026.11.21</time><div><h4>黎曼猜想的 Lean 证明通过了哪些核验？</h4>
-            <p>莱文特·阿尔波格于 11 月 20 日公开了与 Claude 合作完成的形式化证明。次日，Lean 与 Mathlib 社区发表声明，确认所核验的命题与 Mathlib 的黎曼猜想定义一致，证明通过了多个检查器。</p>
-            <p class="story-sources"><a href="https://www.thepaper.cn/newsDetail_forward_34530277">澎湃新闻报道</a><a href="https://leanprover-community.github.io/blog/posts/riemann-hypothesis/">社区核验声明</a><a href="https://math.mit.edu/~drew/grh/">MIT 核验记录</a></p></div></li>
-          <li><time datetime="2026-11-13">2026.11.13</time><div><h4>一条通向强哥德巴赫猜想的条件性路线</h4>
-            <p>山东大学公布了李嘉旻、刘建亚的论文。作者给出的条件是狄利克雷 GRH 成立，并且文中两种关于谱的额外假设至少有一种成立。在这些前提下，每个充分大的偶数都有素数对表示。证明其中一个额外假设，仍是这条路线上的难题。</p>
-            <p class="story-sources"><a href="https://mrc.sdu.edu.cn/info/1018/2193.htm">山东大学 · 中文摘要</a><a href="https://mrc.sdu.edu.cn/__local/6/14/8E/28753731EE31D7635BAF60732C2_0C644604_2CE958.pdf">作者论文（PDF）</a></p></div></li>
-          <li><time datetime="2026-06-01">2026.06.01</time><div><h4>从「1 + 2」细化到「1 + 1.9」</h4>
-            <p>对每个充分大的偶数 N，李嘉旻、刘建亚的预印本给出分解 N = p + rq，其中 p、q 为素数，r 为 1 或素数。他们把较小因子的大小限制为 r ≤ q<sup>0.9</sup>。取到 r = 1 时，式子就成为两个素数之和。</p>
-            <p class="story-sources"><a href="https://arxiv.org/abs/2606.05224">arXiv 预印本</a><a href="https://math.xmu.edu.cn/info/1017/41540.htm">厦门大学讲座报道</a></p></div></li>
-        </ol>
-      </article>
     </section>
 
     <section class="section" id="records" aria-labelledby="records-title">
       <div class="section-heading">
         <div><h2 id="records-title">验证日志</h2><p>按运行从新到旧。一次验证尝试只判定它对应的引理。</p></div>
-        <a class="text-link" href="https://github.com/CGandGameEngineLearner/goldbach-proofs/actions">查看全部 Actions 运行 <span aria-hidden="true">↗</span></a>
+        <a class="text-link" href="https://github.com/CGandGameEngineLearner/goldbach-proofs/pulls">查看证明 PR 和检查 <span aria-hidden="true">↗</span></a>
       </div>
       <div class="log" id="verification-log"><p class="empty-state">正在载入命题和近期验证记录…</p></div>
       <nav class="page-controls" id="record-pages" aria-label="验证日志分页"><button id="record-prev" disabled>上一页</button><span id="record-page" aria-live="polite"></span><button id="record-next" disabled>下一页</button><button id="record-retry" hidden>重试</button></nav>
+    </section>
+
+    <section class="section road-section" id="roadmap">
+      <article class="goldbach-story" id="research-story" aria-labelledby="story-title">
+        <div class="story-lead">
+          <header class="section-heading"><div><h2 id="story-title">给定一个偶数，两个素数在哪里？</h2>
+            <p>把 30 拆成两个素数，有 7 + 23、11 + 19 和 13 + 17 三种拆法。换成任何一个大于 2 的偶数，我们还能保证至少有一对吗？</p></div></header>
+          <div class="story-evidence">
+            <dl class="story-ladder" aria-label="偶数拆分为两素数之和的示例">
+              <div><dt>4</dt><dd class="ladder-sum">= 2 + 2</dd><dd class="ladder-count">1 种</dd></div>
+              <div><dt>6</dt><dd class="ladder-sum">= 3 + 3</dd><dd class="ladder-count">1 种</dd></div>
+              <div><dt>8</dt><dd class="ladder-sum">= 3 + 5</dd><dd class="ladder-count">1 种</dd></div>
+              <div><dt>10</dt><dd class="ladder-sum">= 3 + 7 = 5 + 5</dd><dd class="ladder-count">2 种</dd></div>
+              <div><dt>30</dt><dd class="ladder-sum">= 7 + 23 = 11 + 19 = 13 + 17</dd><dd class="ladder-count">3 种</dd></div>
+              <div><dt>100</dt><dd class="ladder-sum">= 3 + 97 = 11 + 89 = …</dd><dd class="ladder-count">6 种</dd></div>
+              <div><dt>1,000</dt><dd class="ladder-sum">= 3 + 997 = 17 + 983 = …</dd><dd class="ladder-count">28 种</dd></div>
+              <div class="ladder-limit"><dt>≤ 4 × 10<sup>18</sup></dt><dd>已由计算机逐一验算</dd></div>
+            </dl>
+            <div class="story-conjecture">
+              <p class="conjecture-formula">∀ 偶数 <i>n</i> ≥ 4，是否总存在素数 <i>p</i>, <i>q</i> 使 <i>n</i> = <i>p</i> + <i>q</i> ？</p>
+              <p class="conjecture-note">数值验算终有尽头——这便是自 1742 年悬而未决的强哥德巴赫猜想。</p>
+            </div>
+          </div>
+        </div>
+        <ol class="story-timeline">
+          <li>
+            <span class="timeline-date">1957–1973</span>
+            <div class="timeline-body">
+              <h3>从华罗庚的一本书，到陈景润的「1 + 2」</h3>
+              <p>华罗庚在《堆垒素数论》中研究怎样用素数及其幂的和表示整数。年轻的陈景润在厦门读这本书时，为其中的「塔内问题」写出了改进。华罗庚读到论文后推荐了他。1957 年，陈景润进入中国科学院数学研究所。</p>
+              <p>到了 1966 年，陈景润宣布「1 + 2」，并在 1973 年发表详证。每个充分大的偶数都能拆成一个素数，加上一个素数或两个素数的乘积。要从这里走到「1 + 1」，还得证明总能选到第二个加数本身也是素数的那种拆法。</p>
+              <p class="story-sources"><a href="https://www.cas.cn/xzfc/202507/t20250725_5077687.shtml">中科院人物史料</a><a href="https://doi.org/10.1360/za1973-3-2-111">陈景润 1973 年论文</a></p>
+            </div>
+          </li>
+          <li>
+            <time class="timeline-date" datetime="1979-10">1979.10</time>
+            <div class="timeline-body">
+              <h3 id="hua-birmingham">1979 年的英国讲座</h3>
+              <p>清华大学校史馆记载，伯明翰大学的演讲在 1979 年 10 月 8 日举行，题目是《为百万人的数学》。华罗庚的助手计雷在回忆文章里把英国讲座的海报题名记作《百万人的数学》。他也写到了数学怎样走进日常工作。在山西大同，团队运用统筹法，帮运煤车站解决了机车上水、除灰、加煤都要排队的问题。这样的工作做了近二十年。</p>
+              <p class="story-sources"><a href="https://xsg.tsinghua.edu.cn/info/1004/1551.htm">清华大学校史馆 · 演讲记录</a><a href="https://www.cas.cn/zt/rwzt/JNHLGSS25ZN/HLG25HY/201006/t20100610_2879385.html">中科院 · 计雷《追忆华罗庚老师》</a></p>
+            </div>
+          </li>
+          <li>
+            <time class="timeline-date" datetime="2026-08">2026.08</time>
+            <div class="timeline-body">
+              <h3>黎曼猜想帮我们把范围缩到多小？</h3>
+              <p>黎曼 ζ 函数的零点告诉我们，素数的实际个数能偏离预测多少。狄利克雷 L 函数的广义黎曼猜想（GRH）还让我们按除以某个数所得的余数，分别估计各类素数的个数。</p>
+              <p>2026 年 8 月，Chirre 和 Hagen 给出了一个具体的界。在黎曼猜想成立的条件下，对每个 x ≥ 2，区间 (x, x + 123(ln x)²] 里至少有一个偶数是两个素数之和。现在把手指按在区间里某个指定的偶数 N 上。要为它找到一对，还得证明至少有一个素数 p 使 N − p 也恰好是素数。这正是研究台要估计的配对数。</p>
+              <p class="story-sources"><a href="https://link.springer.com/article/10.1007/s40993-026-00767-6">短区间论文 · 定理 1</a><a href="#lemmas">看素数配对的研究任务</a></p>
+            </div>
+          </li>
+        </ol>
+        <aside class="story-papers" aria-labelledby="story-news-title">
+          <h3 class="story-news-title" id="story-news-title">近期进展与原文</h3>
+          <ol class="story-news">
+            <li><time datetime="2026-11-21">2026.11.21</time><div><h4>黎曼猜想的 Lean 证明通过了哪些核验？</h4>
+              <p>莱文特·阿尔波格于 11 月 20 日公开了与 Claude 合作完成的形式化证明。次日，Lean 与 Mathlib 社区发表声明，确认所核验的命题与 Mathlib 的黎曼猜想定义一致，证明通过了多个检查器。</p>
+              <p class="story-sources"><a href="https://www.thepaper.cn/newsDetail_forward_34530277">澎湃新闻报道</a><a href="https://leanprover-community.github.io/blog/posts/riemann-hypothesis/">社区核验声明</a><a href="https://math.mit.edu/~drew/grh/">MIT 核验记录</a></p></div></li>
+            <li><time datetime="2026-11-13">2026.11.13</time><div><h4>一条通向强哥德巴赫猜想的条件性路线</h4>
+              <p>山东大学公布了李嘉旻、刘建亚的论文。作者给出的条件是狄利克雷 GRH 成立，并且文中两种关于谱的额外假设至少有一种成立。在这些前提下，每个充分大的偶数都有素数对表示。证明其中一个额外假设，仍是这条路线上的难题。</p>
+              <p class="story-sources"><a href="https://mrc.sdu.edu.cn/info/1018/2193.htm">山东大学 · 中文摘要</a><a href="https://mrc.sdu.edu.cn/__local/6/14/8E/28753731EE31D7635BAF60732C2_0C644604_2CE958.pdf">作者论文（PDF）</a></p></div></li>
+            <li><time datetime="2026-06-01">2026.06.01</time><div><h4>从「1 + 2」细化到「1 + 1.9」</h4>
+              <p>对每个充分大的偶数 N，李嘉旻、刘建亚的预印本给出分解 N = p + rq，其中 p、q 为素数，r 为 1 或素数。他们把较小因子的大小限制为 r ≤ q<sup>0.9</sup>。取到 r = 1 时，式子就成为两个素数之和。</p>
+              <p class="story-sources"><a href="https://arxiv.org/abs/2606.05224">arXiv 预印本</a><a href="https://math.xmu.edu.cn/info/1017/41540.htm">厦门大学讲座报道</a></p></div></li>
+          </ol>
+        </aside>
+      </article>
     </section>
 
     <section class="contribute" id="contribute" aria-labelledby="contribute-title">
@@ -315,6 +347,7 @@
         </ol>
       </div>
     </section>
+    <!-- site dock -->
   </main>
   <footer class="footer shell"><div class="platform-credit"><img src="goldbach-icon.svg" width="38" height="38" alt=""><div><strong>数学猜想协作平台</strong><br>数学家可以担任研究管理员，把控研究方向。每个人都可以用自己的 Agent 领取引理、提交证明。</div></div><a href="https://github.com/CGandGameEngineLearner/goldbach-proofs">平台 GitHub 仓库 <span aria-hidden="true">↗</span></a></footer>
 </body>

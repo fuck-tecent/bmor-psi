@@ -1,0 +1,13 @@
+services:
+  jenkins:
+    image: goldbach-jenkins:locked
+    pull_policy: never
+    environment:
+      CASC_JENKINS_CONFIG: /etc/jenkins/jenkins.yaml
+      JAVA_OPTS: -Djenkins.install.runSetupWizard=false
+    ports:
+      - "127.0.0.1:18080:8080"
+    volumes:
+      - ./staging_home:/var/jenkins_home
+      - ./jenkins.yaml:/etc/jenkins/jenkins.yaml:ro
+      - /etc/goldbach-ci/jenkins-staging/goldbach_admin_password:/run/secrets/goldbach_admin_password:ro

@@ -1,0 +1,45 @@
+x-site-agent: &site-agent
+  image: goldbach-site-agent:site-check
+  pull_policy: never
+  entrypoint: [java]
+  restart: unless-stopped
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  pids_limit: 128
+  tmpfs:
+    - /workspace:rw,nosuid,nodev,size=2g,uid=1000,gid=1000
+
+services:
+  trusted-agent:
+    image: docker.m.daocloud.io/jenkins/jenkins@sha256:4d85f6cf5a8939647921564952d12a5a761f32a3bc520c2f4e5c3cafa7ea660f
+    entrypoint: [java]
+    command: [-jar, /agent.jar, -url, "http://jenkins:8080/", -name, goldbach-trusted, -secret, "@/run/agent-secret", -webSocket, -workDir, /workspace]
+    restart: unless-stopped
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 1g
+    pids_limit: 128
+    tmpfs:
+      - /workspace:rw,nosuid,nodev,size=2g,uid=1000,gid=1000
+    volumes:
+      - ./agent.jar:/agent.jar:ro
+      - /etc/goldbach-ci/jenkins-staging/trusted-agent-secret:/run/agent-secret:ro
+
+  isolated-site-agent:
+    <<: *site-agent
+    command: ["-XX:ActiveProcessorCount=4", -jar, /agent.jar, -url, "http://jenkins:8080/", -name, goldbach-isolated-site, -secret, "@/run/agent-secret", -webSocket, -workDir, /workspace]
+    mem_limit: 1g
+    pids_limit: 256
+    volumes:
+      - ./agent.jar:/agent.jar:ro
+      - /etc/goldbach-ci/jenkins-staging/isolated-site-agent-secret:/run/agent-secret:ro
+      - /run/goldbach-ci-site:/runner:ro
+
+  site-replay-agent:
+    <<: *site-agent
+    command: [-jar, /agent.jar, -url, "http://jenkins:8080/", -name, goldbach-site-replay, -secret, "@/run/agent-secret", -webSocket, -workDir, /workspace]
+    mem_limit: 2g
+    volumes:
+      - ./agent.jar:/agent.jar:ro
+      - /etc/goldbach-ci/jenkins-staging/site-agent-secret:/run/agent-secret:ro
+      - /opt/goldbach-ci/site-replay:/input:ro

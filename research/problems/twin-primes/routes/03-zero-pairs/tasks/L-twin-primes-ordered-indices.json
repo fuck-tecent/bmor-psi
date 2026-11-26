@@ -1,0 +1,20 @@
+{
+  "id": "L-twin-primes-ordered-indices",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_ordered_indices.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_ordered_indices",
+  "statement": "∀ m : ℕ, ((Finset.univ : Finset (Fin m × Fin m)).filter (fun z => z.1 ≠ z.2)).card = m*(m-1)",
+  "plain_statement": {
+    "zh": "新路线 · 零点对与相位 · TP-0020 · 精确保留重零点中相等纵坐标的异编号",
+    "en": "New route · Zero pairs and phases · TP-0020 · Count off-diagonal labels at repeated ordinates"
+  },
+  "brief": {
+    "zh": "对同一重数 m 的零点逐个固定第一编号，数剩余编号。",
+    "en": "Fix the first of m labels at one zero and count the remaining labels."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/GlobalInterpolation/TruncatedExplicitFormula.lean",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

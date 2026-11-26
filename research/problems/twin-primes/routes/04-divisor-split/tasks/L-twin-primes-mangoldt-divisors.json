@@ -1,0 +1,20 @@
+{
+  "id": "L-twin-primes-mangoldt-divisors",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_mangoldt_divisors.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_mangoldt_divisors",
+  "statement": "∀ n : ℕ, 0 < n → ArithmeticFunction.vonMangoldt n = n.divisors.sum (fun d => -(ArithmeticFunction.moebius d : ℝ)*Real.log d)",
+  "plain_statement": {
+    "zh": "新路线 · 短长除数与奇偶 · TP-0027 · 验证 Mangoldt 的带符号除数公式",
+    "en": "New route · Short and long divisors · TP-0027 · Recover Mangoldt from the signed divisor sum"
+  },
+  "brief": {
+    "zh": "对 log n 的除数分解作 Möbius 反演，检查 n=1。",
+    "en": "Apply Möbius inversion to the divisor decomposition of log n, including n=1."
+  },
+  "source": "https://arxiv.org/abs/2610.32672",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

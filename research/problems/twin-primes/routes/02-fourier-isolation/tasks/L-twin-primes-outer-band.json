@@ -1,0 +1,20 @@
+{
+  "id": "L-twin-primes-outer-band",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_outer_band.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_outer_band",
+  "statement": "let f := fun (x n j : ℝ) => x * Real.log (1+j/n); ∀ (x n : ℝ) (j : ℕ), 1000 ≤ x → x ≤ n → 50*n ≤ 51*x → 3 ≤ j → 9/4 < f x n j",
+  "plain_statement": {
+    "zh": "新路线 · Fourier 选频 · TP-0009 · 一致排除全部更大间距",
+    "en": "New route · Fourier isolation · TP-0009 · Exclude all gaps of at least three uniformly"
+  },
+  "brief": {
+    "zh": "先用对数单调性缩至 j=3，再使用窄窗右端点。",
+    "en": "Reduce to j=3 by monotonicity and use the right endpoint of the window."
+  },
+  "source": "https://arxiv.org/abs/2610.32672",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": false,
+  "depends_on": [],
+  "imports": []
+}

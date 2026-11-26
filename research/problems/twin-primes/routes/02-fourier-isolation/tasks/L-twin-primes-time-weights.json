@@ -1,0 +1,20 @@
+{
+  "id": "L-twin-primes-time-weights",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_time_weights.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_time_weights",
+  "statement": "∀ (l : ℝ → ℝ) (t : ℝ), let g := fun (σ : ℝ) => (l t)^2 * (1+σ*Real.cos (4*Real.pi*t)); 0 ≤ g 1 ∧ 0 ≤ g (-1) ∧ g 1 - g (-1) = 2*(l t)^2*Real.cos (4*Real.pi*t)",
+  "plain_statement": {
+    "zh": "新路线 · Fourier 选频 · TP-0010 · 构造同一基函数的两支非负权",
+    "en": "New route · Fourier isolation · TP-0010 · Prove positivity and the signed difference of the two time weights"
+  },
+  "brief": {
+    "zh": "使用余弦的取值区间，再在相减时保留因子二。",
+    "en": "Use the range of cosine and keep the factor two when subtracting."
+  },
+  "source": "https://arxiv.org/abs/2610.32672",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": false,
+  "depends_on": [],
+  "imports": []
+}

@@ -1,0 +1,20 @@
+{
+  "id": "L-twin-primes-local-residues",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_local_residues.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_local_residues",
+  "statement": "∀ p : ℕ, p.Prime → ((Finset.range p).filter (fun n => Nat.Coprime n p ∧ Nat.Coprime (n+2) p)).card = if p=2 then 1 else p-2",
+  "plain_statement": {
+    "zh": "新路线 · 指定平移的 Θ 提升 · TP-0045 · 分别计算 2 处和奇素数处的平移单位掩码",
+    "en": "New route · Theta lift for a prescribed shift · TP-0045 · Count the shifted unit mask at two and at odd primes"
+  },
+  "brief": {
+    "zh": "排除 0 与 −2 两个余类。在 2 处它们重合。",
+    "en": "Remove the classes 0 and −2 and account for their coincidence at 2."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/twin-primes.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

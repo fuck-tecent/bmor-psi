@@ -1,0 +1,21 @@
+{
+  "id": "L-twin-primes-theta-error-budget",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_theta_error_budget.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_theta_error_budget",
+  "statement": "∀ (A P M Q N C E e f : ℝ), 0 < A → |(P-Q)/A-4*C| ≤ E → |P/A-M| ≤ e → |Q/A-N| ≤ f → (M-N-E-e-f)/4 ≤ C",
+  "plain_statement": {
+    "zh": "新路线 · 指定平移的 Θ 提升 · TP-0047 · 在同一归一化下合并两支提升与算术误差",
+    "en": "New route · Theta lift for a prescribed shift · TP-0047 · Combine two lift errors and arithmetic matching in one normalization"
+  },
+  "brief": {
+    "zh": "参照 QP-0050 的一般绝对值误差界。取同一归一化和误差参数即可得到此单侧界。",
+    "en": "Specialize the shared absolute error bound QP-0050 to the same normalization and error parameters, then take one side."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AutomorphicArithmetic/ThetaCorrespondence/ThetaPairLifts/LocalTypeDictionary/ThetaLiftPeterssonNormEqRallisIntegral.lean#L972",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": false,
+  "depends_on": [],
+  "imports": [],
+  "challenge_only": true
+}

@@ -508,28 +508,30 @@ class Desk:
                 for row in conn.execute("""
                     WITH events AS (
                         SELECT claimed_at AS at, 'claimed' AS kind, gap AS lemma_id,
-                               NULL AS handle, NULL AS pr, NULL AS run_id, NULL AS reason, 0 AS stage
+                               NULL AS handle, NULL AS pr, NULL AS run_id,
+                               NULL AS head_sha, NULL AS reason, 0 AS stage
                         FROM goldbach_leases
                         UNION ALL
-                        SELECT submitted_at, 'submitted', gap, NULL, NULL, NULL, NULL, 1
+                        SELECT submitted_at, 'submitted', gap, NULL, NULL, NULL, NULL, NULL, 1
                         FROM goldbach_leases WHERE submitted_at IS NOT NULL
                         UNION ALL
-                        SELECT checking_at, 'checking', gap, handle, pr, run_id, NULL, 2
+                        SELECT checking_at, 'checking', gap, handle, pr, run_id, head, NULL, 2
                         FROM goldbach_leases WHERE checking_at IS NOT NULL
                         UNION ALL
-                        SELECT released_at, 'released', gap, NULL, NULL, NULL, release_reason, 3
+                        SELECT released_at, 'released', gap, NULL, NULL, NULL, NULL, release_reason, 3
                         FROM goldbach_leases WHERE released_at IS NOT NULL
                         UNION ALL
-                        SELECT finished_at, lower(verdict), gap, handle, pr, run_id, NULL, 3
+                        SELECT finished_at, lower(verdict), gap, handle, pr, run_id, head, NULL, 3
                         FROM goldbach_leases WHERE finished_at IS NOT NULL
                         UNION ALL
                         SELECT expires_at, 'expired', gap,
                                CASE WHEN run_id IS NOT NULL THEN handle END,
-                               CASE WHEN run_id IS NOT NULL THEN pr END, run_id, NULL, 3
+                               CASE WHEN run_id IS NOT NULL THEN pr END, run_id,
+                               CASE WHEN run_id IS NOT NULL THEN head END, NULL, 3
                         FROM goldbach_leases
                         WHERE expires_at <= ? AND released_at IS NULL AND finished_at IS NULL
                     )
-                    SELECT at, kind, lemma_id, handle, pr, run_id, reason FROM events
+                    SELECT at, kind, lemma_id, handle, pr, run_id, head_sha, reason FROM events
                     ORDER BY at DESC, stage DESC, lemma_id LIMIT 30
                 """, (now,))
             ]

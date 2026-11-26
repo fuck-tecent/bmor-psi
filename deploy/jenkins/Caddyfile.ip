@@ -1,0 +1,34 @@
+{
+    default_sni 114.55.113.128
+}
+
+:80 {
+    root * /usr/share/caddy
+    file_server
+}
+
+import /etc/caddy/goldbach-webhook.caddy
+
+http://114.55.113.128 {
+    handle /.well-known/acme-challenge/* {
+        root * /usr/share/caddy
+        file_server
+    }
+    handle {
+        respond 404
+    }
+}
+
+https://114.55.113.128 {
+    tls /etc/caddy/ip-tls/current/fullchain.pem /etc/caddy/ip-tls/current/privkey.pem
+    @webhook {
+        method POST
+        path /github/webhook
+    }
+    handle @webhook {
+        reverse_proxy 127.0.0.1:18081
+    }
+    handle {
+        respond 404
+    }
+}

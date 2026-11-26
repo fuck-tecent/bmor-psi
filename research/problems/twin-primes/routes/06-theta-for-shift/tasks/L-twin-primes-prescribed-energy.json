@@ -1,0 +1,25 @@
+{
+  "id": "L-twin-primes-prescribed-energy",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_prescribed_energy.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_prescribed_energy",
+  "statement": "let w := fun (X : ℕ) => (Finset.range (2*X+1)).filter (fun n => X < n ∧ 50*n < 51*X); let N := fun (X : ℕ) => 2*X+5; let f := fun (X n : ℕ) => if n ∈ w X ∧ n.Prime then Real.log n else 0; let energy := fun (X : ℕ) => letI : NeZero (N X) := ⟨by dsimp [N]; omega⟩; ∑ k : ZMod (N X), (ZMod.stdAddChar (N:=N X) (2*k)).re * ‖ZMod.dft (fun j : ZMod (N X) => ((f X j.val:ℝ):ℂ)) k‖^2; ∀ B : ℕ, ∃ X : ℕ, B<X ∧ 0<energy X",
+  "plain_statement": {
+    "zh": "新路线 · 指定平移的 Θ 提升 · TP-0052 · 在无界尺度估计指定差二测试的谱能量",
+    "en": "New route · Theta lift for a prescribed shift · TP-0052 · Bound the signed energy of the prescribed gap-two test on unbounded scales"
+  },
+  "brief": {
+    "zh": "与 TP-0054 等价。由 TP-0050、TP-0051 将正能量化为同窗孪生对；反向取足够大的孪生对 p,p+2，并令 X=p−1。",
+    "en": "This is equivalent to TP-0054. TP-0050 and TP-0051 convert positive energy into a twin pair in the window. For the converse, choose a sufficiently large twin pair p,p+2 and set X=p−1."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AutomorphicArithmetic/ThetaCorrespondence/ThetaPairLifts/LocalTypeDictionary/ThetaLiftPeterssonNormEqRallisIntegral.lean#L972",
+  "program": "correlation",
+  "role": "target",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-sifted-correlation",
+    "L-twin-primes-cosine-plancherel",
+    "L-twin-primes-theta-error-budget"
+  ],
+  "imports": [],
+  "challenge_only": true
+}

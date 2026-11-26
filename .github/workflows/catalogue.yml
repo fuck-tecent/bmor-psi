@@ -54,6 +54,22 @@ jobs:
           export PATH="$HOME/.elan/bin:$PATH"
           elan toolchain install "$(cat lean-toolchain)"
           lake exe cache get
+      - name: Check both fixed-progression reductions against the catalogue
+        working-directory: lean
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          gaps = {g['id']: g['statement'] for g in json.loads(Path('../research/gaps.json').read_text())['gaps']}
+          proof = Path('../research/problems/goldbach/routes/representations/fixed-ap.lean').read_text()
+          for name, theorem in [('bmor', 'fromBMOR'), ('theta', 'fromTheta')]:
+              statement = gaps[f'L-goldbach-fixed-ap-{name}-reduction']
+              proof += f'\nexample : ({statement}) := GoldbachFixedAP.{theorem}\n'
+          (Path(os.environ['RUNNER_TEMP']) / 'FixedAP.lean').write_text(proof)
+          PY
+          "$HOME/.elan/bin/lake" env lean "$RUNNER_TEMP/FixedAP.lean"
       - name: Elaborate every published proposition
         working-directory: lean
         run: |
@@ -65,8 +81,7 @@ jobs:
           gaps = json.loads(Path("../research/gaps.json").read_text())["gaps"]
           problems = json.loads(Path("../research/problems.json").read_text())
           gaps.extend(gap for problem in problems.values() for gap in problem['gaps'])
-          # All current gaps are independent and can be stated using Mathlib alone.
-          assert all(not gap["imports"] for gap in gaps)
+          # The imports field grants proof permissions. Statements still use Mathlib alone.
           endpoint = next(g["statement"] for g in gaps if g["id"] == "L-goldbach-binary-pointwise-positivity")
           lines = [Path("../research/strong-goldbach.lean").read_text(),
                    Path("../research/check-statement-scope.lean").read_text(),

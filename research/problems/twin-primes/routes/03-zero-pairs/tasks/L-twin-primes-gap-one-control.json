@@ -1,0 +1,20 @@
+{
+  "id": "L-twin-primes-gap-one-control",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_gap_one_control.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_gap_one_control",
+  "statement": "∀ n : ℕ, ArithmeticFunction.vonMangoldt n * ArithmeticFunction.vonMangoldt (n+1) ≠ 0 → (∃ k : ℕ, n = 2^k) ∨ (∃ k : ℕ, n+1 = 2^k)",
+  "plain_statement": {
+    "zh": "新路线 · 零点对与相位 · TP-0023 · 证明相邻 Mangoldt 对中偶数端必为二的幂",
+    "en": "New route · Zero pairs and phases · TP-0023 · Show the even member of an adjacent Mangoldt pair is a power of two"
+  },
+  "brief": {
+    "zh": "由支撑得到两个素数幂，在偶数端识别唯一素因子。",
+    "en": "Use the support of Mangoldt and determine the unique prime of the even endpoint."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/GlobalInterpolation/TruncatedExplicitFormula.lean",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

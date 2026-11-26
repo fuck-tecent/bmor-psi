@@ -1,0 +1,21 @@
+{
+  "id": "L-twin-primes-signed-moment-margin",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_signed_moment_margin.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_signed_moment_margin",
+  "statement": "let bump := fun (a b t : ℝ) => if a < t ∧ t < b then Real.exp (-1/((t-a)*(b-t))) else 0; let W := bump 1 (51/50); let b := bump (-1/40) (1/40); let k := fun (t : ℝ) => ∫ v : ℝ, b v * Real.cos (2*Real.pi*v*t); let l := fun (t : ℝ) => Real.sin (Real.pi*t/5)*k t; let T := fun (X : ℕ) => 2*Real.pi*(X:ℝ); let w := fun (X : ℕ) => (Finset.range (2*X+1)).filter (fun n => X < n ∧ 50*n < 51*X); let u := fun (X n : ℕ) => ArithmeticFunction.vonMangoldt n * W ((n:ℝ)/X) / Real.sqrt n; let P := fun (X : ℕ) (t : ℝ) => (w X).sum (fun n => (u X n : ℂ)*Complex.exp (-Complex.I*(t:ℂ)*(Real.log n : ℂ))); let I := fun (X : ℕ) (σ : ℝ) => ∫ t in Set.Ioi (0:ℝ), (l (t/T X))^2*(1+σ*Real.cos (4*Real.pi*t/T X))*‖P X t‖^2; ∃ δ : ℝ, 0 < δ ∧ ∀ B : ℕ, ∃ X : ℕ, B < X ∧ δ*T X < I X 1-I X (-1)",
+  "plain_statement": {
+    "zh": "新路线 · Fourier 选频 · TP-0014 · 在无界尺度取得实际双矩的线性余量",
+    "en": "New route · Fourier isolation · TP-0014 · Find a linear surplus in the two actual moments on unbounded scales"
+  },
+  "brief": {
+    "zh": "保留同一 T=2πX、同一 W 的符号，研究 Lee 的微分均值或零点配对。",
+    "en": "Keep T=2πX and W fixed in both terms and study Lee’s differentiated mean or its zero-pair expansion."
+  },
+  "source": "https://arxiv.org/abs/2610.32672",
+  "program": "foundation",
+  "role": "target",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "challenge_only": true
+}

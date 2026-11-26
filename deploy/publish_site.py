@@ -7,6 +7,7 @@ import subprocess
 import tempfile
 import time
 from pathlib import Path
+from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 REPO = "CGandGameEngineLearner/goldbach-proofs"
@@ -45,8 +46,37 @@ def atomic(path, data):
 def api(path):
     request = Request("https://api.github.com/repos/" + REPO + path,
                       headers={"Accept": "application/vnd.github+json"})
+    credentials = os.environ.get("CREDENTIALS_DIRECTORY")
+    if credentials:
+        token = Path(credentials) / "github-token"
+        if token.is_file():
+            request.add_unredirected_header("Authorization", f"Bearer {token.read_text().strip()}")
     with urlopen(request, timeout=12) as reply:
         return json.load(reply)
+
+
+def main_commit():
+    sha = api("/git/ref/heads/main")["object"]["sha"]
+    if not re.fullmatch(r"[a-f0-9]{40}", sha):
+        raise ValueError("GitHub did not identify the main commit")
+
+    def has_commit(repository):
+        result = subprocess.run(
+            ["git", "--git-dir", str(repository), "cat-file", "-e", sha + "^{commit}"],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=10,
+        )
+        return result.returncode == 0
+
+    repository = STORE / "git"
+    if not has_commit(repository):
+        catalogue = Path("/opt/goldbach-catalogues/git")
+        if has_commit(catalogue):
+            git("fetch", "--quiet", str(catalogue), sha)
+        else:
+            git("-c", "http.version=HTTP/1.1", "-c", "protocol.version=0",
+                "fetch", "--quiet", "https://github.com/" + REPO + ".git", sha)
+        git("cat-file", "-e", sha + "^{commit}")
+    return sha
 
 
 def verified(sha):
@@ -60,8 +90,23 @@ def verified(sha):
     allowed = {OWNER_ID, *(int(uid) for uid in os.environ.get("GOLDBACH_SITE_RELEASE_MERGER_IDS", "").split())}
     if (detail.get("merged_by") or {}).get("id") not in allowed:
         raise RuntimeError(f'PR #{pr["number"]} requires an authorized website publisher')
+    if os.environ.get("GOLDBACH_SITE_CI") == "jenkins":
+        return jenkins_release(sha) is not None
     runs = api("/actions/workflows/site-release.yml/runs?event=push&branch=main&head_sha=" + sha)["workflow_runs"]
     return any(run["head_sha"] == sha and run["conclusion"] == "success" for run in runs)
+
+
+def jenkins_release(sha):
+    name = "Goldbach CI / site release"
+    query = urlencode({"check_name": name, "app_id": 5932842, "per_page": 100})
+    runs = api(f"/commits/{sha}/check-runs?{query}")["check_runs"]
+    return next((run for run in runs
+                 if run.get("head_sha") == sha
+                 and run.get("name") == name
+                 and (run.get("app") or {}).get("id") == 5932842
+                 and run.get("external_id") == f"main:site:{sha}"
+                 and run.get("status") == "completed"
+                 and run.get("conclusion") == "success"), None)
 
 
 def restart(expected):
@@ -152,17 +197,17 @@ def main():
         PENDING.unlink()
     if not (STORE / "git").exists():
         subprocess.run(["git", "init", "--bare", str(STORE / "git")], check=True)
-    git("fetch", "--quiet", "https://github.com/" + REPO + ".git", "refs/heads/main")
+    head = main_commit()
     if args.bootstrap:
         if CHECKPOINT.exists() or not re.fullmatch(r"[a-f0-9]{40}", args.bootstrap):
             parser.error("bootstrap requires a fresh store and a full baseline SHA")
-        git("merge-base", "--is-ancestor", args.bootstrap, "FETCH_HEAD")
+        git("merge-base", "--is-ancestor", args.bootstrap, head)
         atomic(CHECKPOINT, args.bootstrap.encode())
         print(f"Recorded website baseline {args.bootstrap}", flush=True)
         return
     baseline = CHECKPOINT.read_text().strip()
-    git("merge-base", "--is-ancestor", baseline, "FETCH_HEAD")
-    for sha in git("rev-list", "--first-parent", "--reverse", baseline + "..FETCH_HEAD").decode().splitlines():
+    git("merge-base", "--is-ancestor", baseline, head)
+    for sha in git("rev-list", "--first-parent", "--reverse", baseline + ".." + head).decode().splitlines():
         changed = git("diff", "--no-renames", "--name-only", "-z", sha + "^1", sha, "--", "deploy/").decode().split("\0")
         files = [p.removeprefix("deploy/") for p in changed if RUNTIME.fullmatch(p.removeprefix("deploy/"))]
         if not files:

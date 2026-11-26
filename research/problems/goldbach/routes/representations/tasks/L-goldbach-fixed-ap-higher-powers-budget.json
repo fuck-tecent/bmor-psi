@@ -1,0 +1,24 @@
+{
+  "id": "L-goldbach-fixed-ap-higher-powers-budget",
+  "statement": "∀ n : ℕ, 10^16 ≤ n → (∑ k ∈ Finset.range (n+1), (if k.Prime then 0 else ArithmeticFunction.vonMangoldt k)) ≤ (n:ℝ)/200",
+  "plain_statement": {
+    "zh": "给所有高次素数幂一个显式的 n/200 总预算",
+    "en": "Give all higher prime powers a global n/200 budget"
+  },
+  "brief": {
+    "zh": "对 pᵏ≤n、k≥2，用已有底数上界 √n 和指数上界 log₂ n。于是总权重至多 √n·log₂(n)·log n；验证它从 10¹⁶ 起小于 n/200。可独立于等差数列完成。",
+    "en": "Use the base and exponent cutoffs for pᵏ ≤ n with k ≥ 2. Bound the total by √n log₂(n) log n and check the ratio from 10¹⁶ onward. No progression estimates are required."
+  },
+  "source": "https://personal.math.ubc.ca/~bennett/BeMaObRe-IJM-2018.pdf",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-pp-base-cutoff",
+    "L-goldbach-pp-exp-cutoff"
+  ],
+  "file": "lean/PEqualNP/Outside/L_goldbach_fixed_ap_higher_powers_budget.lean",
+  "module": "PEqualNP.Outside.L_goldbach_fixed_ap_higher_powers_budget",
+  "imports": [],
+  "track": "representations",
+  "role": "lemma"
+}

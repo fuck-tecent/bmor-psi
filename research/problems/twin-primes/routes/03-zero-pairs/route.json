@@ -1,0 +1,11 @@
+{
+  "id": "03-zero-pairs",
+  "title": {
+    "zh": "零点对与相位",
+    "en": "Zero pairs and phases"
+  },
+  "description": {
+    "zh": "在临界线上按重数编号，计算正对角并检验非对角能否抵消。",
+    "en": "Index critical-line zeros with multiplicity, compute the diagonal and test for cancellation."
+  }
+}

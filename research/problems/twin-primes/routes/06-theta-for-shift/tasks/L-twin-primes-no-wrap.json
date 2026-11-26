@@ -1,0 +1,22 @@
+{
+  "id": "L-twin-primes-no-wrap",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_no_wrap.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_no_wrap",
+  "statement": "∀ (N X : ℕ) [NeZero N] (f : ℕ → ℝ), X+2 < N → (∀ n, X < n → f n=0) → (∑ j : ZMod N, f j.val * f (j+2).val) = (Finset.range (X+1)).sum (fun n => f n*f (n+2))",
+  "plain_statement": {
+    "zh": "新路线 · 指定平移的 Θ 提升 · TP-0050 · 用补零将整数平移配对嵌入有限循环模型",
+    "en": "New route · Theta lift for a prescribed shift · TP-0050 · Embed the integer shift pairing into a padded cyclic model"
+  },
+  "brief": {
+    "zh": "两项可能回绕时第一项已在支撑外，排除循环产生的伪素数对。",
+    "en": "At both wraparound positions the first factor is outside the support, so neither creates a spurious pair."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/DecoratedLatticeProofs/ThetaKernelSplitPlacesEqJetClassicalThetaStatement.lean#L1335",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-zero-extension"
+  ],
+  "imports": []
+}

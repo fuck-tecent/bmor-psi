@@ -1,0 +1,27 @@
+{
+  "id": "L-twin-primes-spectral-comparison",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_spectral_comparison.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_spectral_comparison",
+  "statement": "RiemannHypothesis → (let bump := fun (a b t : ℝ) => if a < t ∧ t < b then Real.exp (-1/((t-a)*(b-t))) else 0; let W := bump 1 (51/50); let b := bump (-1/40) (1/40); let K := fun (v : ℝ) => ∫ u : ℝ, b u * b (v-u); let d := fun (h : ℝ) => (∫ u : ℝ, (W u)^2/u)/16 * (∫ v : ℝ, K v*(1/(h+v+1/5)+1/(h+v-1/5)-2/(h+v))); let k := fun (t : ℝ) => ∫ v : ℝ, b v*Real.cos (2*Real.pi*v*t); let omega := fun (t : ℝ) => (Real.sin (Real.pi*t/5)*k t)^2 * Real.cos (4*Real.pi*t); let z := fun (g : ℝ) => (1/2 : ℂ) + Complex.I*(g:ℂ); let m := fun (g : ℝ) => analyticOrderNatAt riemannZeta (z g); let M := fun (v : ℝ) => ∫ u : ℝ, ((W u/u : ℝ):ℂ)*Complex.exp (Complex.I*(v*Real.log u : ℝ)); let R := fun (X : ℕ) => let T : ℝ := 2*Real.pi*X; let L := (Real.log (2+T))^2; (∫ t in Set.Icc (-T*L) (T*L), omega (t/T) * (‖∑' g : {g : ℝ // |g-t| ≤ L ∧ riemannZeta (z g) = 0}, (m g.val : ℂ)*Complex.exp (Complex.I*(g.val*Real.log X : ℝ))*M (g.val-t)‖^2 - ∑' g : {g : ℝ // |g-t| ≤ L ∧ riemannZeta (z g) = 0}, (m g.val : ℝ)*‖M (g.val-t)‖^2))/(2*T); ∃ κ : ℝ, 0 < κ ∧ ∀ B : ℕ, ∃ X : ℕ, B < X ∧ κ < d 2 + R X) → (let bump := fun (a b t : ℝ) => if a < t ∧ t < b then Real.exp (-1/((t-a)*(b-t))) else 0; let W := bump 1 (51/50); let b := bump (-1/40) (1/40); let k := fun (t : ℝ) => ∫ v : ℝ, b v * Real.cos (2*Real.pi*v*t); let l := fun (t : ℝ) => Real.sin (Real.pi*t/5)*k t; let T := fun (X : ℕ) => 2*Real.pi*(X:ℝ); let w := fun (X : ℕ) => (Finset.range (2*X+1)).filter (fun n => X < n ∧ 50*n < 51*X); let u := fun (X n : ℕ) => ArithmeticFunction.vonMangoldt n * W ((n:ℝ)/X) / Real.sqrt n; let P := fun (X : ℕ) (t : ℝ) => (w X).sum (fun n => (u X n : ℂ)*Complex.exp (-Complex.I*(t:ℂ)*(Real.log n : ℂ))); let I := fun (X : ℕ) (σ : ℝ) => ∫ t in Set.Ioi (0:ℝ), (l (t/T X))^2*(1+σ*Real.cos (4*Real.pi*t/T X))*‖P X t‖^2; ∃ δ : ℝ, 0 < δ ∧ ∀ B : ℕ, ∃ X : ℕ, B < X ∧ δ*T X < I X 1-I X (-1))",
+  "plain_statement": {
+    "zh": "新路线 · 零点对与相位 · TP-0026 · 将带重数的实际谱余量接到双时间矩",
+    "en": "New route · Zero pairs and phases · TP-0026 · Transfer the actual multiplicity-weighted spectral margin to the signed moment"
+  },
+  "brief": {
+    "zh": "重型条件比较。RH 和 TP-0025 的谱余量均是前提。需证明移动零点截断与实际双矩的比较，计入留数、对角主项、截尾和极点误差。",
+    "en": "This comparison assumes RH and the margin from TP-0025. A proof must compare the moving zero cutoff with the actual moments and bound the residue, diagonal, tail and pole terms."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/GlobalInterpolation/TruncatedExplicitFormula.lean",
+  "program": "correlation",
+  "role": "conditional",
+  "parallel": false,
+  "depends_on": [
+    "L-twin-primes-diagonal-integral",
+    "L-twin-primes-ordered-indices",
+    "L-twin-primes-hermitian-pairs",
+    "L-twin-primes-mellin-tail",
+    "L-twin-primes-rh-contour"
+  ],
+  "imports": [],
+  "challenge_only": true
+}

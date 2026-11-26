@@ -1,0 +1,24 @@
+{
+  "id": "L-twin-primes-long-margin",
+  "file": "lean/PEqualNP/Outside/L_twin_primes_long_margin.lean",
+  "module": "PEqualNP.Outside.L_twin_primes_long_margin",
+  "statement": "let w := fun (X : ℕ) => (Finset.range (2*X+1)).filter (fun n => X < n ∧ 50*n < 51*X); let primes := fun X => (w X).filter Nat.Prime; let c := fun (d : ℕ) => -(ArithmeticFunction.moebius d : ℝ)*Real.log d; let long := fun (X D : ℕ) => (primes X).sum (fun p => Real.log p * (((p+2).divisors.filter (fun d => D < d)).sum c))/(X:ℝ); let D := fun (X : ℕ) => Nat.floor ((X:ℝ)^(1/3:ℝ)); let f := fun (p : ℕ) => if p.Prime ∧ 2 < p then 1-1/((p:ℝ)-1)^2 else 1; let twinC := ∏' p : ℕ, f p; ∃ κ : ℝ, 0 < κ ∧ ∀ B : ℕ, ∃ X : ℕ, B < X ∧ -2*twinC/50 + κ < long X (D X)",
+  "plain_statement": {
+    "zh": "新路线 · 短长除数与奇偶 · TP-0038 · 在同一立方根截点证明长除数的单侧增益",
+    "en": "New route · Short and long divisors · TP-0038 · Find a one-sided long-divisor gain at the same cube-root cutoff"
+  },
+  "brief": {
+    "zh": "分开 m=1 与 m>1，保留 μ(d) 和 md−2 的素性；需在同一 X 合并。",
+    "en": "Distinguish m=1 and m>1, retaining both μ(d) and primality of md−2. Recombine at the same X."
+  },
+  "source": "https://arxiv.org/abs/2610.32672",
+  "program": "correlation",
+  "role": "target",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-cofactor-switch",
+    "L-twin-primes-semiprime-cancellation"
+  ],
+  "imports": [],
+  "challenge_only": true
+}

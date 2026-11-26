@@ -6,10 +6,10 @@
 | --- | --- | --- |
 | 网站模板、静态资源和 Python 模块 | `deploy/` 下需要发布的运行文件 → `/opt/goldbach-web/` | 主入口和子路径入口都能加载相关页面、样式、脚本与图片 |
 | 研究任务 | `research/gaps.json` 或 `research/problems.json` → `/opt/goldbach-web/` 同名文件 | 核对受影响问题的任务 ID、命题和公开状态 |
-| GitHub Actions、Lean 和 checker | `.github/`、`lean/`、`tools/` 中的 Git 文件 | 查看目标提交对应的 Actions 运行和实际结果 |
+| Jenkins、Lean 和 checker | `deploy/jenkins/`、`lean/`、`tools/` 中的 Git 文件 | 查看目标提交对应的 GitHub Check 与 Jenkins 构建结果 |
 | nginx 及 systemd | 逐项对照 `deploy/nginx/`、`deploy/goldbach-web.service` 与对应 drop-in | 代理配置先过 `nginx -t`，服务单元变更先执行 `systemctl daemon-reload` |
 
-在仓库查看 `git status --short`、`git diff --check` 和目标提交差异。只暂存本次文件，用 `git diff --cached --name-status` 核对范围。Python 认证测试可运行 `python -B -m unittest deploy.test_zhihu deploy.test_github_identity`，研究清单可运行 `python -B -m unittest research.test_catalogue`。对改动的 JS 运行 `node --check`。Lean 类型检查以本次目标提交对应的 `catalogue.yml` 运行结果为准。验证生成的命题通过类型检查与证明已获得权威核验是不同结果。
+在仓库查看 `git status --short`、`git diff --check` 和目标提交差异。只暂存本次文件，用 `git diff --cached --name-status` 核对范围。Python 认证测试可运行 `python -B -m unittest deploy.test_zhihu deploy.test_github_identity`，研究清单可运行 `python -B -m unittest research.test_catalogue`。对改动的 JS 运行 `node --check`。Lean 类型检查以本次目标提交对应的 `Goldbach CI / catalogue release` 结果为准。验证生成的命题通过类型检查与证明已获得权威核验是不同结果。
 
 ## 更新正在运行的网站
 
@@ -42,7 +42,7 @@ curl -fsS https://www.goldbach.tech/api/status -o /dev/null
 curl -fsS https://www.movan.tech/goldbach/api/status -o /dev/null
 ```
 
-再检查这次变更的可见效果。页面用浏览器打开中英文入口及适用分站。任务台对照 `/problems/<slug>/api/status` 返回的任务。更换讨论群时对照图片中的截止日期、两种入口的图片以及浮窗是否能展开。OAuth 用已登记的主域名，通过授权测试账号或隔离数据核对权限。GitHub Actions 判定回传以真实受检提交的运行和公开记录为准。
+再检查这次变更的可见效果。页面用浏览器打开中英文入口及适用分站。任务台对照 `/problems/<slug>/api/status` 返回的任务。更换讨论群时对照图片中的截止日期、两种入口的图片以及浮窗是否能展开。OAuth 用已登记的主域名，通过授权测试账号或隔离数据核对权限。裁决回传以确切提交的 `Goldbach CI / formal Lean verdict` 和任务台公开记录为准。
 
 ## 回滚
 

@@ -1,0 +1,16 @@
+[Unit]
+Description=Route signed Goldbach events to staging Jenkins
+After=network-online.target goldbach-ci-webhook.service
+Wants=network-online.target
+Requires=goldbach-ci-webhook.service
+
+[Service]
+Type=oneshot
+LoadCredential=github-app.pem:/etc/goldbach-ci/github-app.pem
+LoadCredential=jenkins-password:/etc/goldbach-ci/jenkins-staging/goldbach_admin_password
+ExecStart=/usr/bin/python3 -B /opt/goldbach-ci/controller/dispatch_cycle.py --database /var/lib/goldbach-ci-webhook/deliveries.db --github-key %d/github-app.pem --jenkins-url http://127.0.0.1:18080 --jenkins-user goldbach-admin --jenkins-credential %d/jenkins-password --jobs /opt/goldbach-ci/controller/jobs-staging.json --site-input-root /opt/goldbach-ci
+NoNewPrivileges=yes
+ProtectSystem=strict
+ReadWritePaths=/var/lib/goldbach-ci-webhook /opt/goldbach-ci/site-replay
+ProtectHome=yes
+PrivateTmp=yes
