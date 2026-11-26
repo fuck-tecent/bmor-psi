@@ -56,3 +56,15 @@ Lean toolchain.
 via summation by parts. The variation sum is the Abel budget that Vaughan's
 Type-I/Type-II decomposition consumes. This file compiles with the pinned
 toolchain.
+
+## Type-I support bound
+
+`type1.lean` proves the elementary Type-I estimate
+
+```lean
+‖∑ k ∈ range (N+1), low U f k * E (k*t)‖ ≤ (U+1) * C
+```
+
+whenever `|f k| ≤ C` for `k ≤ U`. For `U = n^(1/16)` and
+`C = O(log n)`, this is `o(n)` without any prime-distribution input. The remaining
+hard part is therefore the Type-II range, not the low Type-I terms.
