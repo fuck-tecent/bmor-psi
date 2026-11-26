@@ -43,3 +43,16 @@ interface, not a claimable proof.
 when `sin (π*t) ≠ 0`. This is the elementary oscillation estimate behind the
 linear exponential-sum part of the minor-arc argument. It compiles with the pinned
 Lean toolchain.
+
+## Weighted Abel bound
+
+`weighted.lean` upgrades the geometric estimate to weighted sums:
+
+```lean
+‖∑ k ∈ range (n+1), a k * E (k*t)‖
+  ≤ (|a n| + ∑ k ∈ range n, |a k - a (k+1)|) / |sin (π*t)|
+```
+
+via summation by parts. The variation sum is the Abel budget that Vaughan's
+Type-I/Type-II decomposition consumes. This file compiles with the pinned
+toolchain.
