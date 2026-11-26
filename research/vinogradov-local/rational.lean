@@ -596,6 +596,84 @@ lemma norm_log_weighted_geometric_sum_le (L : ℕ) (t : ℝ)
 
 /-- Major-arc sine separation: for `t = a/q + β` with `gcd(a,q) = 1`,
 `1 <= d <= U < q` and `|β| <= 1/(16 q U)`, one has `|sin (π d t)| >= 1/q`. -/
+lemma abs_sin_pi_mul_majorArc_ge_of_not_dvd (q M a : ℕ) (β : ℝ) (hq : 0 < q)
+    (hcop : Nat.Coprime a q) (hM1 : 1 ≤ M)
+    (hndvd : ∀ h, 1 ≤ h → h ≤ M → ¬ q ∣ h)
+    (hβ : |β| ≤ 1 / (16 * (q:ℝ) * (M:ℝ))) :
+    ∀ d ∈ Finset.Icc 1 M,
+      (1:ℝ)/(q:ℝ) ≤
+        |Real.sin (Real.pi * ((d:ℝ) * ((a:ℝ)/(q:ℝ) + β)))| := by
+  intro d hd
+  obtain ⟨hd1, hdM⟩ := Finset.mem_Icc.mp hd
+  have hdpos : 0 < d := hd1
+  have hqR : (0:ℝ) < (q:ℝ) := by exact_mod_cast hq
+  have hqne : (q:ℝ) ≠ 0 := hqR.ne'
+  have hMpos : (0:ℝ) < (M:ℝ) := by exact_mod_cast hM1
+  have hMne : (M:ℝ) ≠ 0 := hMpos.ne'
+  have hdR : (0:ℝ) < (d:ℝ) := by exact_mod_cast hdpos
+  set A : ℕ := d * a with hAdef
+  have hmodne : A % q ≠ 0 := by
+    intro h0
+    have hdvd : q ∣ A := Nat.dvd_of_mod_eq_zero h0
+    have hdvd' : q ∣ d * a := by simpa [hAdef] using hdvd
+    have hqd : q ∣ d := hcop.symm.dvd_of_dvd_mul_right hdvd'
+    exact hndvd d hd1 hdM hqd
+  have hmodlt : A % q < q := Nat.mod_lt A hq
+  have hmod1 : 1 ≤ A % q := by omega
+  have hrat0 := abs_sin_pi_mul_div_ge q (A % q) hmod1 hmodlt
+  have hred := abs_sin_pi_mul_natCast_div_eq_mod q A hq
+  have hAeq : Real.pi * (d:ℝ) * ((a:ℝ)/(q:ℝ)) = Real.pi * (A:ℝ)/(q:ℝ) := by
+    rw [hAdef]
+    push_cast
+    ring
+  have hrat : (2:ℝ)/(q:ℝ) ≤
+      |Real.sin (Real.pi * (d:ℝ) * ((a:ℝ)/(q:ℝ)))| := by
+    rw [hAeq, hred]
+    exact hrat0
+  have ht : Real.pi * ((d:ℝ) * ((a:ℝ)/(q:ℝ) + β)) =
+      Real.pi * (d:ℝ) * ((a:ℝ)/(q:ℝ)) + Real.pi * (d:ℝ) * β := by ring
+  rw [ht]
+  have hsmallM : (M:ℝ) * |β| ≤ 1/(16*(q:ℝ)) := by
+    calc
+      (M:ℝ) * |β| ≤ (M:ℝ) * (1/(16*(q:ℝ)*(M:ℝ))) :=
+        mul_le_mul_of_nonneg_left hβ hMpos.le
+      _ = 1/(16*(q:ℝ)) := by
+        field_simp
+  have hsmalld : (d:ℝ) * |β| ≤ 1/(16*(q:ℝ)) := by
+    have hdM' : (d:ℝ) ≤ (M:ℝ) := by exact_mod_cast hdM
+    exact (mul_le_mul_of_nonneg_right hdM' (abs_nonneg β)).trans hsmallM
+  have hv : |Real.sin (Real.pi * (d:ℝ) * β)| ≤ 1/(4*(q:ℝ)) := by
+    have h1 : |Real.sin (Real.pi * (d:ℝ) * β)| ≤ |Real.pi * (d:ℝ) * β| :=
+      Real.abs_sin_le_abs
+    have h2 : |Real.pi * (d:ℝ) * β| = Real.pi * ((d:ℝ) * |β|) := by
+      rw [abs_mul, abs_mul, abs_of_pos Real.pi_pos, abs_of_pos hdR]
+      ring
+    calc
+      |Real.sin (Real.pi * (d:ℝ) * β)| ≤ |Real.pi * (d:ℝ) * β| := h1
+      _ = Real.pi * ((d:ℝ) * |β|) := h2
+      _ ≤ Real.pi * (1/(16*(q:ℝ))) :=
+        mul_le_mul_of_nonneg_left hsmalld Real.pi_pos.le
+      _ ≤ 1/(4*(q:ℝ)) := by
+        rw [show Real.pi * (1/(16*(q:ℝ))) = Real.pi/(16*(q:ℝ)) by ring]
+        rw [show (1:ℝ)/(4*(q:ℝ)) = 4/(16*(q:ℝ)) by field_simp; ring]
+        rw [div_le_div_iff_of_pos_right (by positivity : (0:ℝ) < 16*(q:ℝ))]
+        exact le_of_lt Real.pi_lt_four
+  have hlow := abs_sin_add_ge_sub
+    (Real.pi * (d:ℝ) * ((a:ℝ)/(q:ℝ))) (Real.pi * (d:ℝ) * β)
+  have hone : (1:ℝ)/(q:ℝ) ≤
+      |Real.sin (Real.pi * (d:ℝ) * ((a:ℝ)/(q:ℝ)))| -
+        |Real.sin (Real.pi * (d:ℝ) * β)| := by
+    have hnum : (2:ℝ)/(q:ℝ) - 1/(4*(q:ℝ)) = 7/(4*(q:ℝ)) := by
+      field_simp
+      ring
+    have htarget : (1:ℝ)/(q:ℝ) ≤ (2:ℝ)/(q:ℝ) - 1/(4*(q:ℝ)) := by
+      rw [hnum]
+      rw [show (1:ℝ)/(q:ℝ) = 4/(4*(q:ℝ)) by field_simp]
+      rw [div_le_div_iff_of_pos_right (by positivity : (0:ℝ) < 4*(q:ℝ))]
+      norm_num
+    linarith
+  linarith
+
 lemma abs_sin_pi_mul_majorArc_ge (q U a : ℕ) (β : ℝ) (hq : 0 < q)
     (hcop : Nat.Coprime a q) (hU1 : 1 ≤ U) (hUq : U < q)
     (hβ : |β| ≤ 1 / (16 * (q:ℝ) * (U:ℝ))) :

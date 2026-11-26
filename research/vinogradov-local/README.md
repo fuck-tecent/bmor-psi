@@ -560,3 +560,30 @@ the off-diagonal (resonant and non-resonant) part.
 
 These are the bookkeeping tools for the non-resonant off-diagonal part.  The
 resonant part still needs the divisor-correlation/large-sieve input.
+
+### Generalized major-arc sine separation
+
+`abs_sin_pi_mul_majorArc_ge_of_not_dvd`: for `1 ≤ h ≤ M`, `q ∤ h`, and
+`|β| ≤ 1/(16 q M)`,
+
+```lean
+1/q ≤ |sin (π h (a/q + β))|.
+```
+
+This removes the earlier restriction `h < q`, covering all non-resonant
+differences in the dispersion sum.
+
+### Non-resonant off-diagonal
+
+`typeIINonresonant q l1 l2 := ¬ (q : ℤ) ∣ (l1 : ℤ) - (l2 : ℤ)`, and
+
+```lean
+typeII_nonresonant_energy_le :
+  ‖∑ x, ∑ y ∈ s.filter (typeIINonresonant q x), c x * star (c y) * G x y‖
+    ≤ 2q (∑‖c‖)²
+```
+
+whenever the kernel is `≤ 2q` on non-resonant pairs.  Combined with the
+geometric bound and the generalized sine separation, this gives the full
+non-resonant off-diagonal estimate.  Only the resonant `q | (l1-l2)` part
+remains.

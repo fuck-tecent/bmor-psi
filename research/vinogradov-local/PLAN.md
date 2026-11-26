@@ -205,3 +205,11 @@ requires the divisor-correlation/large-sieve input.
 diagonal/off-diagonal split and the filtered triangle bound.  Next:
 instantiate with the non-resonance predicate `q ∤ (l1-l2)` and the geometric
 `2q` bound; then handle the resonant correlation.
+
+## Non-resonant off-diagonal done
+
+`typeII_nonresonant_energy_le` gives the `2q (∑‖c‖)²` bound for
+`q ∤ (l1-l2)`; the generalized sine lemma
+`abs_sin_pi_mul_majorArc_ge_of_not_dvd` supplies the separation for all
+`h ≤ M` (not just `h < q`).  The sole remaining off-diagonal input is the
+resonant `q | (l1-l2)` correlation.

@@ -1325,6 +1325,22 @@ lemma norm_filtered_double_sum_le {ι : Type*} [DecidableEq ι] (s : Finset ι)
       simp only [Finset.sum_mul]
     _ = C * (∑ x ∈ s, ‖c x‖) * (∑ y ∈ s, ‖c y‖) := by ring
 
+/-- Non-resonance condition `q ∤ (l1 - l2)` for a dispersion pair. -/
+def typeIINonresonant (q : ℕ) (l1 l2 : ℕ) : Prop :=
+  ¬ (q : ℤ) ∣ (l1 : ℤ) - (l2 : ℤ)
+
+/-- Non-resonant part of the dispersion off-diagonal is at most
+`2q (∑‖c‖)²`. -/
+lemma typeII_nonresonant_energy_le (s : Finset ℕ) (q : ℕ) (c : ℕ → ℂ)
+    (G : ℕ → ℕ → ℂ) [DecidableRel (typeIINonresonant q)]
+    (hG : ∀ x ∈ s, ∀ y ∈ s, typeIINonresonant q x y → ‖G x y‖ ≤ 2 * (q:ℝ)) :
+    ‖∑ x ∈ s, ∑ y ∈ s.filter (fun y => typeIINonresonant q x y),
+        c x * star (c y) * G x y‖ ≤
+      2 * (q:ℝ) * (∑ x ∈ s, ‖c x‖) * (∑ y ∈ s, ‖c y‖) := by
+  classical
+  exact norm_filtered_double_sum_le s c G (2 * (q:ℝ)) (by positivity)
+    (fun x y => typeIINonresonant q x y) hG
+
 /-- Dispersion/phase expansion of the Type-II energy: the squared sum becomes
 a double sum in `l1,l2` with an inner geometric sum in `d`. -/
 theorem typeII_energy_dispersion (n U : ℕ) (t : ℝ) :
