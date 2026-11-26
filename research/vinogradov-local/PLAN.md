@@ -126,3 +126,13 @@ The block decomposition lemmas
 (`sum_range_mul_eq_sum_blocks`, `sum_range_eq_blocks_add_rem`,
 `sum_Icc_eq_sum_range_shift`, `majorArc_block_energy_offset`) are in place for
 either route.
+
+
+## Fixed-box estimate completed
+
+`majorArc_box_energy` proves the fixed dyadic `(e,m)` box energy
+`(3EM + 1 + 2q)(3EM + 1)(log n)²` over a short `d`-block.  The last Type-II
+task is combinatorial: cover the region `{d > U, e > U, m ≥ 1, d e m ≤ n}`
+by dyadic boxes fully contained in it (so the box sums are subsets of the
+Type-II sum), then sum the bounds.  The boundary boxes need a standard
+dyadic refinement (or a trivial estimate on the thin boundary).

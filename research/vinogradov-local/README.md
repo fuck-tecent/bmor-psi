@@ -400,3 +400,26 @@ lemmas.  A naive Cauchy–Schwarz over `l`-blocks loses a factor
 `K_d ≈ n/(UB)`, cancelling the large-sieve saving (see `PLAN.md`).  The next
 step is a smooth cutoff/Abel summation or a bilinear Gallagher-type large
 sieve for the `d,e,m` double sum.
+
+## Fixed-box Type-II energy (trilinear large sieve)
+
+`type1_bound.lean` now has the fixed dyadic `(e,m)` box estimate:
+
+- `box_e_m_reindex`: collapse
+  `∑_{e∈[E,2E)} ∑_{m∈[M,2M)} Λ(e) e(dem t)` to a single divisor-convolution
+  sum over `l = em ∈ [EM, 4EM)`;
+- `typeIIBoxCoeff` and `norm_typeIIBoxCoeff_le` / interval energy bounds;
+- `majorArc_coeff_interval_energy`: core fixed-interval block large sieve;
+- `majorArc_box_energy`: for a dyadic `(e,m)` box with
+  `4 E M - 1 ≤ n`,
+
+```lean
+∑ d in a short d-block,
+  ‖∑ e∈[E,2E), m∈[M,2M), Λ e * E(d*e*m*t)‖²
+  ≤ (3EM + 1 + 2q) * (3EM + 1) * (log n)².
+```
+
+This is the fixed-box trilinear large sieve.  The remaining Type-II step is
+the dyadic covering of the region `d>U, e>U, m≥1, d e m ≤ n` by such boxes
+(fully contained, so no extra terms are added) and the summation of the box
+bounds.
