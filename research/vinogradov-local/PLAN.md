@@ -72,3 +72,30 @@ After the major arcs, the remaining `t` satisfy
 `|sin (π d t)|` lower bounds for all small `d`; the plan is to use the
 Weierstrass/Weyl or Vinogradov minor-arc machinery on the same Type-I/II
 decomposition.  Nothing in this direction is formalized yet.
+
+## Type-II block decomposition: the remaining arithmetic input
+
+The short-block major-arc energy bound
+`majorArc_block_energy` suggests the following route for the full Type-II
+energy: split the inner length `n/d` into aligned blocks of length `B`
+(e.g. `B = q`); each full block has fixed coefficients `c_U(l)`, so the
+separated large sieve applies to the `d`-blocks.  The single partial block
+for each `d` can be bounded trivially.
+
+The resulting estimate is
+
+```text
+∑_{d ≤ n/U} |B_d|²
+  ≲ (number of d-blocks) · (B + q) · ∑_{l in block} |c_U(l)|²
+```
+
+so everything reduces to the divisor-convolution moment
+
+```text
+∑_{l ∈ I} |c_U(l)|²,   c_U(l) = ∑_{e | l, e > U} Λ(e).
+```
+
+The pointwise divisor bound `τ(l) ≤ 2√l` is too lossy; the needed input is
+the classical average bound `∑_{l ≤ L} (Λ * 1)(l)² ≪ L (log L)^C` (or any
+`L^{1+ε}` bound with a small `ε`).  This moment is the remaining arithmetic
+input for the local Type-II large-sieve route.
