@@ -426,6 +426,27 @@ theorem norm_expSum_high_mu_zeta_highLambda_sq_le (n U : ℕ) (t : ℝ) :
     _ ≤ (s.card : ℝ) * ∑ d ∈ s, ‖B d‖ ^ 2 :=
       mul_le_mul_of_nonneg_left h3 (by positivity)
 
+/-- Squared-energy form of the collapsed Type-II term: the inner sums are now
+single Fourier transforms of the truncated divisor convolution. -/
+theorem norm_expSum_high_mu_zeta_highLambda_sq_le' (n U : ℕ) (t : ℝ) :
+    ‖expSum n (high U (μ : ArithmeticFunction ℝ) * (ζ : ArithmeticFunction ℝ) *
+        high U (Λ : ArithmeticFunction ℝ)) t‖ ^ 2 ≤
+      ((Finset.Icc (U + 1) n).card : ℝ) *
+        ∑ d ∈ Finset.Icc (U + 1) n,
+          ‖∑ l ∈ Finset.Icc 1 (n / d),
+            (∑ e ∈ l.divisors.filter (fun e => U < e),
+              ((Λ : ArithmeticFunction ℝ) e : ℂ)) *
+              E (((d * l : ℕ) : ℝ) * t)‖ ^ 2 := by
+  refine (norm_expSum_high_mu_zeta_highLambda_sq_le n U t).trans ?_
+  apply mul_le_mul_of_nonneg_left _ (by positivity)
+  apply le_of_eq
+  apply Finset.sum_congr rfl
+  intro d hd
+  have hdpos : 0 < d := by
+    have := (Finset.mem_Icc.mp hd).1
+    omega
+  rw [inner_high_sum_collapse n d U hdpos t]
+
 end
 
 end PEqualNP.Outside.Vaughan

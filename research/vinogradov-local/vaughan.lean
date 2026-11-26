@@ -570,6 +570,129 @@ theorem expSum_high_mu_zeta_highLambda_eq (n U : ℕ) (t : ℝ) :
   rw [show high U (Λ : ArithmeticFunction ℝ) e = (Λ : ArithmeticFunction ℝ) e by
     simp [high, heU]]
 
+/-- Collapse the inner `(e, m)` double sum of the Type-II term into a single
+divisor-convolution sum.  This is the form to which the large sieve applies. -/
+lemma inner_high_sum_collapse (n d U : ℕ) (hd : 0 < d) (t : ℝ) :
+    (∑ e ∈ Finset.Icc (U + 1) (n / d), ((Λ : ArithmeticFunction ℝ) e : ℂ) *
+        ∑ m ∈ Finset.Icc 1 (n / (d * e)),
+          E (((d * e * m : ℕ) : ℝ) * t)) =
+      ∑ l ∈ Finset.Icc 1 (n / d),
+        (∑ e ∈ l.divisors.filter (fun e => U < e),
+          ((Λ : ArithmeticFunction ℝ) e : ℂ)) *
+          E (((d * l : ℕ) : ℝ) * t) := by
+  classical
+  have hL : (∑ e ∈ Finset.Icc (U + 1) (n / d), ((Λ : ArithmeticFunction ℝ) e : ℂ) *
+        ∑ m ∈ Finset.Icc 1 (n / (d * e)),
+          E (((d * e * m : ℕ) : ℝ) * t)) =
+      ∑ p ∈ (Finset.Icc (U + 1) (n / d)).sigma
+          (fun e => Finset.Icc 1 (n / (d * e))),
+        ((Λ : ArithmeticFunction ℝ) p.1 : ℂ) *
+          E (((d * p.1 * p.2 : ℕ) : ℝ) * t) := by
+    simp only [Finset.mul_sum]
+    exact Finset.sum_sigma'
+      (s := Finset.Icc (U + 1) (n / d))
+      (t := fun e => Finset.Icc 1 (n / (d * e)))
+      (f := fun e m => ((Λ : ArithmeticFunction ℝ) e : ℂ) *
+        E (((d * e * m : ℕ) : ℝ) * t))
+  have hR : (∑ l ∈ Finset.Icc 1 (n / d),
+        (∑ e ∈ l.divisors.filter (fun e => U < e),
+          ((Λ : ArithmeticFunction ℝ) e : ℂ)) *
+          E (((d * l : ℕ) : ℝ) * t)) =
+      ∑ q ∈ (Finset.Icc 1 (n / d)).sigma
+          (fun l => l.divisors.filter (fun e => U < e)),
+        ((Λ : ArithmeticFunction ℝ) q.2 : ℂ) *
+          E (((d * q.1 : ℕ) : ℝ) * t) := by
+    simp only [Finset.sum_mul]
+    exact Finset.sum_sigma'
+      (s := Finset.Icc 1 (n / d))
+      (t := fun l => l.divisors.filter (fun e => U < e))
+      (f := fun l e => ((Λ : ArithmeticFunction ℝ) e : ℂ) *
+        E (((d * l : ℕ) : ℝ) * t))
+  rw [hL, hR]
+  refine Finset.sum_bij
+    (fun p _ => (⟨p.1 * p.2, p.1⟩ : Σ _ : ℕ, ℕ)) ?_ ?_ ?_ ?_
+  · intro p hp
+    obtain ⟨hpe, hpm⟩ := Finset.mem_sigma.mp hp
+    obtain ⟨hpe1, hpe2⟩ := Finset.mem_Icc.mp hpe
+    obtain ⟨hpm1, hpm2⟩ := Finset.mem_Icc.mp hpm
+    have hppos : 0 < p.1 := by omega
+    have hlpos : 0 < p.1 * p.2 := Nat.mul_pos hppos (by omega)
+    have hmn : p.1 * p.2 ≤ n / d := by
+      rw [Nat.le_div_iff_mul_le hd]
+      have h := (Nat.le_div_iff_mul_le (Nat.mul_pos hd hppos)).mp hpm2
+      calc p.1 * p.2 * d = p.2 * (d * p.1) := by ring
+        _ ≤ n := h
+    refine Finset.mem_sigma.mpr ⟨?_, ?_⟩
+    · exact Finset.mem_Icc.mpr ⟨hlpos, hmn⟩
+    · refine Finset.mem_filter.mpr ⟨?_, ?_⟩
+      · exact Nat.mem_divisors.mpr
+          ⟨dvd_mul_right p.1 p.2, Nat.ne_of_gt hlpos⟩
+      · show U < p.1
+        omega
+  · intro p hp p' hp' heq
+    simp only [Sigma.mk.injEq] at heq
+    obtain ⟨hprod, he⟩ := heq
+    have he' : p.1 = p'.1 := eq_of_heq he
+    have hp1pos : 0 < p.1 := by
+      have := (Finset.mem_sigma.mp hp).1
+      have := (Finset.mem_Icc.mp this).1
+      omega
+    have hm : p.2 = p'.2 := by
+      apply Nat.mul_left_cancel hp1pos
+      calc p.1 * p.2 = p'.1 * p'.2 := hprod
+        _ = p.1 * p'.2 := by rw [he']
+    exact Sigma.ext he' (heq_of_eq hm)
+  · intro q hq
+    obtain ⟨hql, hqe⟩ := Finset.mem_sigma.mp hq
+    obtain ⟨hql1, hql2⟩ := Finset.mem_Icc.mp hql
+    obtain ⟨hqediv, hqU⟩ := Finset.mem_filter.mp hqe
+    obtain ⟨hqedvd, -⟩ := Nat.mem_divisors.mp hqediv
+    have hqepos : 0 < q.2 := by omega
+    have hqle : q.2 ≤ q.1 := Nat.le_of_dvd (by omega) hqedvd
+    have hqe_mem : q.2 ∈ Finset.Icc (U + 1) (n / d) :=
+      Finset.mem_Icc.mpr ⟨by omega, le_trans hqle hql2⟩
+    have hmpos : 0 < q.1 / q.2 := Nat.div_pos hqle hqepos
+    have hmmem : q.1 / q.2 ∈ Finset.Icc 1 (n / (d * q.2)) := by
+      refine Finset.mem_Icc.mpr ⟨hmpos, ?_⟩
+      rw [Nat.le_div_iff_mul_le (Nat.mul_pos hd hqepos)]
+      have hcancel : (q.1 / q.2) * q.2 = q.1 := Nat.div_mul_cancel hqedvd
+      calc (q.1 / q.2) * (d * q.2) = d * ((q.1 / q.2) * q.2) := by ring
+        _ = d * q.1 := by rw [hcancel]
+        _ ≤ n := by
+            have h1 : d * q.1 ≤ d * (n / d) := Nat.mul_le_mul_left d hql2
+            exact le_trans h1 (Nat.mul_div_le n d)
+    refine ⟨⟨q.2, q.1 / q.2⟩, ?_, ?_⟩
+    · exact Finset.mem_sigma.mpr ⟨hqe_mem, hmmem⟩
+    · show (⟨q.2 * (q.1 / q.2), q.2⟩ : Σ _ : ℕ, ℕ) = q
+      rw [Nat.mul_div_cancel' hqedvd]
+  · intro p hp
+    obtain ⟨-, hpm⟩ := Finset.mem_sigma.mp hp
+    show ((Λ : ArithmeticFunction ℝ) p.1 : ℂ) *
+        E (((d * p.1 * p.2 : ℕ) : ℝ) * t) =
+      ((Λ : ArithmeticFunction ℝ) p.1 : ℂ) *
+        E (((d * (p.1 * p.2) : ℕ) : ℝ) * t)
+    have h : d * p.1 * p.2 = d * (p.1 * p.2) := by ring
+    rw [h]
+
+/-- Collapsed Type-II term: a single Fourier transform of the truncated
+divisor convolution in the inner variable. -/
+theorem expSum_high_mu_zeta_highLambda_eq' (n U : ℕ) (t : ℝ) :
+    expSum n (high U (μ : ArithmeticFunction ℝ) * (ζ : ArithmeticFunction ℝ) *
+        high U (Λ : ArithmeticFunction ℝ)) t =
+      ∑ d ∈ Finset.Icc (U + 1) n,
+        ((μ : ArithmeticFunction ℝ) d : ℂ) *
+          ∑ l ∈ Finset.Icc 1 (n / d),
+            (∑ e ∈ l.divisors.filter (fun e => U < e),
+              ((Λ : ArithmeticFunction ℝ) e : ℂ)) *
+              E (((d * l : ℕ) : ℝ) * t) := by
+  rw [expSum_high_mu_zeta_highLambda_eq n U t]
+  apply Finset.sum_congr rfl
+  intro d hd
+  have hdpos : 0 < d := by
+    have := (Finset.mem_Icc.mp hd).1
+    omega
+  rw [inner_high_sum_collapse n d U hdpos t]
+
 end
 
 end PEqualNP.Outside.Vaughan

@@ -36,10 +36,12 @@ The goal is a bound `o(n / (log n)^A)`, eventually for `U ≈ n^{2/5}` and
 
 ## Large-sieve route
 
-1. Collapse the `(e, m)` sum into a single divisor sum:
-   for `d ≥ 1`,
+1. ~~Collapse the `(e, m)` sum into a single divisor sum.~~ Done:
+   `inner_high_sum_collapse` proves
    `∑_e Λ e ∑_m E(d e m t) = ∑_{l ≤ n/d} c_U(l) E(l * d * t)`
-   with `c_U(l) = ∑_{e | l, e > U} Λ(e)`.
+   with `c_U(l) = ∑_{e | l, e > U} Λ(e)`, and
+   `norm_expSum_high_mu_zeta_highLambda_sq_le'` states the squared-energy
+   bound in this collapsed form.
 2. Dyadically split `d ∈ [D, 2D)` so that the length `n/d` is comparable to
    `n/D` inside each block.
 3. Apply Cauchy–Schwarz over `d` (already done at the squared-sum level) and

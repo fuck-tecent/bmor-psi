@@ -264,3 +264,23 @@ The accepted finite large sieve from PR #2641 is vendored locally as
 to bound the energy sum with the large sieve.  The technical obstruction is
 that the inner length `n/d` depends on `d`; a dyadic decomposition (or smooth
 cutoff) is needed before the finite large sieve can be applied uniformly.
+
+## Collapsed Type-II inner sum
+
+`vaughan.lean` now proves `inner_high_sum_collapse`: for `d > 0` and
+`M = n/d`,
+
+```lean
+∑ e ∈ Icc (U+1) M, Λ e * ∑ m ∈ Icc 1 (M/e), E (d*e*m*t)
+  = ∑ l ∈ Icc 1 M,
+      (∑ e ∈ l.divisors.filter (fun e => U < e), Λ e) * E (d*l*t).
+```
+
+This turns the Type-II inner sum into a single Fourier transform of the
+truncated divisor convolution `c_U(l) = ∑_{e | l, e > U} Λ(e)`.  Accordingly
+
+- `expSum_high_mu_zeta_highLambda_eq'` is the collapsed Type-II identity;
+- `norm_expSum_high_mu_zeta_highLambda_sq_le'` is the squared-energy bound
+  with the collapsed inner sums.
+
+The next step is the dyadic decomposition of `d` and the finite large sieve.
