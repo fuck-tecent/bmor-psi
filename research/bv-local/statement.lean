@@ -35,4 +35,4 @@ end
 end PEqualNP.Outside
 
 /-- The classical Bombieri–Vinogradov level-1/2 statement, stated but not proved here. -/
-example : Prop := BVLevel (1 / 2 : ℝ)
+example : Prop := PEqualNP.Outside.BVLevel (1 / 2 : ℝ)
