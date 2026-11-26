@@ -226,3 +226,21 @@ Together with the first Type-I term `(U+1) log n` and the second Type-I term
 `2 U q log n`, the whole Type-I part of Vaughan is `O(U^2 q log n)` on these
 major arcs.  The remaining piece is the Type-II bilinear sum
 `expSum_high_mu_zeta_highLambda_eq`, which needs the large sieve.
+
+## Type-I milestone
+
+`type1_bound.lean` assembles the three Type-I estimates into
+
+```lean
+‖expSum n Λ (a/q + β) - expSum n (high U μ * ζ * high U Λ) (a/q + β)‖
+  ≤ 6 * U^2 * q * log n
+```
+
+(`norm_expSum_vaughan_typeI_le_majorArc`), under
+`1 ≤ n`, `U ≤ n`, `gcd(a,q) = 1`, `1 ≤ U`, `U^2 < q` and
+`|β| ≤ 1/(16 q U^2)`.
+
+So on these major arcs the whole Type-I part of the Vaughan decomposition is
+controlled; the only remaining Vaughan piece is the Type-II bilinear sum
+`high U μ * ζ * high U Λ`, which requires the large sieve (and then the
+minor-arc treatment and the final assembly).

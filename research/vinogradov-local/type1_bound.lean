@@ -267,6 +267,112 @@ theorem norm_expSum_low_mu_lowLambda_zeta_le_majorArc (n q U a : ℕ) (β : ℝ)
           mul_le_mul_of_nonneg_right hmin hUC
         _ = 2 * ((U:ℝ) * (U:ℝ)) * (q:ℝ) * Real.log (n:ℝ) := by ring
 
+/- Milestone: on a major arc with `q > U^2`, the entire Type-I part of the
+Vaughan decomposition is bounded by `6 U^2 q log n`.  Only the Type-II
+bilinear term is left. -/
+set_option maxHeartbeats 1000000 in
+theorem norm_expSum_vaughan_typeI_le_majorArc (n q U a : ℕ) (β : ℝ)
+    (hn : 1 ≤ n) (hUn : U ≤ n) (hq : 0 < q) (hcop : Nat.Coprime a q)
+    (hU1 : 1 ≤ U) (hUq : U * U < q)
+    (hβ : |β| ≤ 1 / (16 * (q:ℝ) * ((U * U : ℕ) : ℝ))) :
+    ‖expSum n Λ ((a:ℝ)/(q:ℝ) + β) -
+        expSum n (high U (μ : ArithmeticFunction ℝ) * (ζ : ArithmeticFunction ℝ) *
+          high U (Λ : ArithmeticFunction ℝ)) ((a:ℝ)/(q:ℝ) + β)‖ ≤
+      6 * ((U:ℝ) * (U:ℝ)) * (q:ℝ) * Real.log (n:ℝ) := by
+  have hqR : (0:ℝ) < (q:ℝ) := by exact_mod_cast hq
+  have hU1R : (1:ℝ) ≤ (U:ℝ) := by exact_mod_cast hU1
+  have hlog : 0 ≤ Real.log (n:ℝ) := Real.log_natCast_nonneg n
+  have hcast : ((U * U : ℕ) : ℝ) = (U:ℝ) * (U:ℝ) := by push_cast; ring
+  have hβ2 : |β| ≤ 1 / (16 * (q:ℝ) * (U:ℝ)) := by
+    have hUU : (U:ℝ) ≤ (U:ℝ) * (U:ℝ) := by nlinarith
+    have hdenpos : (0:ℝ) < 16 * (q:ℝ) * (U:ℝ) := by positivity
+    have hdenle : 16 * (q:ℝ) * (U:ℝ) ≤ 16 * (q:ℝ) * ((U:ℝ)*(U:ℝ)) := by
+      nlinarith
+    rw [hcast] at hβ
+    exact hβ.trans (one_div_le_one_div_of_le hdenpos hdenle)
+  have hUqU : U < q := by
+    have hUle : U ≤ U * U := Nat.le_mul_of_pos_right U (by omega)
+    exact lt_of_le_of_lt hUle hUq
+  have hdecomp : expSum n Λ ((a:ℝ)/(q:ℝ) + β) -
+      expSum n (high U (μ : ArithmeticFunction ℝ) * (ζ : ArithmeticFunction ℝ) *
+        high U (Λ : ArithmeticFunction ℝ)) ((a:ℝ)/(q:ℝ) + β) =
+      expSum n (low U (Λ : ArithmeticFunction ℝ)) ((a:ℝ)/(q:ℝ) + β) +
+        expSum n (low U (μ : ArithmeticFunction ℝ) * ArithmeticFunction.log)
+          ((a:ℝ)/(q:ℝ) + β) -
+        expSum n (low U (μ : ArithmeticFunction ℝ) * low U (Λ : ArithmeticFunction ℝ) *
+          (ζ : ArithmeticFunction ℝ)) ((a:ℝ)/(q:ℝ) + β) := by
+    rw [expSum_vaughan n U]
+    ring
+  rw [hdecomp]
+  have h1 := norm_expSum_low_vonMangoldt_le n U hn hUn ((a:ℝ)/(q:ℝ) + β)
+  have h2 := norm_expSum_low_mu_mul_log_le_majorArc n q U a β hq hcop hU1 hUqU hβ2
+  have h3 := norm_expSum_low_mu_lowLambda_zeta_le_majorArc n q U a β hq hcop hU1 hUq hβ
+  calc
+    ‖expSum n (low U (Λ : ArithmeticFunction ℝ)) ((a:ℝ)/(q:ℝ) + β) +
+        expSum n (low U (μ : ArithmeticFunction ℝ) * ArithmeticFunction.log)
+          ((a:ℝ)/(q:ℝ) + β) -
+        expSum n (low U (μ : ArithmeticFunction ℝ) * low U (Λ : ArithmeticFunction ℝ) *
+          (ζ : ArithmeticFunction ℝ)) ((a:ℝ)/(q:ℝ) + β)‖
+        ≤ ‖expSum n (low U (Λ : ArithmeticFunction ℝ)) ((a:ℝ)/(q:ℝ) + β) +
+            expSum n (low U (μ : ArithmeticFunction ℝ) * ArithmeticFunction.log)
+              ((a:ℝ)/(q:ℝ) + β)‖ +
+          ‖expSum n (low U (μ : ArithmeticFunction ℝ) * low U (Λ : ArithmeticFunction ℝ) *
+            (ζ : ArithmeticFunction ℝ)) ((a:ℝ)/(q:ℝ) + β)‖ :=
+      norm_sub_le _ _
+    _ ≤ (‖expSum n (low U (Λ : ArithmeticFunction ℝ)) ((a:ℝ)/(q:ℝ) + β)‖ +
+          ‖expSum n (low U (μ : ArithmeticFunction ℝ) * ArithmeticFunction.log)
+            ((a:ℝ)/(q:ℝ) + β)‖) +
+        ‖expSum n (low U (μ : ArithmeticFunction ℝ) * low U (Λ : ArithmeticFunction ℝ) *
+          (ζ : ArithmeticFunction ℝ)) ((a:ℝ)/(q:ℝ) + β)‖ := by
+      gcongr
+      exact norm_add_le _ _
+    _ ≤ (((U:ℝ) + 1) * Real.log (n:ℝ) + 2 * (U:ℝ) * (q:ℝ) * Real.log (n:ℝ)) +
+          2 * ((U:ℝ) * (U:ℝ)) * (q:ℝ) * Real.log (n:ℝ) := by
+      apply add_le_add
+      · exact add_le_add h1 h2
+      · exact h3
+    _ ≤ 6 * ((U:ℝ) * (U:ℝ)) * (q:ℝ) * Real.log (n:ℝ) := by
+      have hQ1 : (1:ℝ) ≤ (q:ℝ) := by exact_mod_cast (by omega : 1 ≤ q)
+      have hUU : (U:ℝ) ≤ (U:ℝ) * (U:ℝ) := by nlinarith
+      have hA1 : ((U:ℝ) + 1) * Real.log (n:ℝ) ≤
+          2 * (U:ℝ) * Real.log (n:ℝ) := by
+        apply mul_le_mul_of_nonneg_right _ hlog
+        linarith
+      have hA2 : 2 * (U:ℝ) * Real.log (n:ℝ) ≤
+          2 * ((U:ℝ) * (U:ℝ)) * Real.log (n:ℝ) := by
+        calc
+          2 * (U:ℝ) * Real.log (n:ℝ) =
+              2 * Real.log (n:ℝ) * (U:ℝ) := by ring
+          _ ≤ 2 * Real.log (n:ℝ) * ((U:ℝ) * (U:ℝ)) :=
+            mul_le_mul_of_nonneg_left hUU (by positivity)
+          _ = 2 * ((U:ℝ) * (U:ℝ)) * Real.log (n:ℝ) := by ring
+      have hA3 : 2 * ((U:ℝ) * (U:ℝ)) * Real.log (n:ℝ) ≤
+          2 * ((U:ℝ) * (U:ℝ)) * (q:ℝ) * Real.log (n:ℝ) := by
+        calc
+          2 * ((U:ℝ) * (U:ℝ)) * Real.log (n:ℝ) =
+              (2 * ((U:ℝ) * (U:ℝ)) * Real.log (n:ℝ)) * 1 := by ring
+          _ ≤ (2 * ((U:ℝ) * (U:ℝ)) * Real.log (n:ℝ)) * (q:ℝ) :=
+            mul_le_mul_of_nonneg_left hQ1 (by positivity)
+          _ = 2 * ((U:ℝ) * (U:ℝ)) * (q:ℝ) * Real.log (n:ℝ) := by ring
+      have hB : 2 * (U:ℝ) * (q:ℝ) * Real.log (n:ℝ) ≤
+          2 * ((U:ℝ) * (U:ℝ)) * (q:ℝ) * Real.log (n:ℝ) := by
+        calc
+          2 * (U:ℝ) * (q:ℝ) * Real.log (n:ℝ) =
+              (2 * (q:ℝ) * Real.log (n:ℝ)) * (U:ℝ) := by ring
+          _ ≤ (2 * (q:ℝ) * Real.log (n:ℝ)) * ((U:ℝ) * (U:ℝ)) :=
+            mul_le_mul_of_nonneg_left hUU (by positivity)
+          _ = 2 * ((U:ℝ) * (U:ℝ)) * (q:ℝ) * Real.log (n:ℝ) := by ring
+      calc
+        ((U:ℝ) + 1) * Real.log (n:ℝ) + 2 * (U:ℝ) * (q:ℝ) * Real.log (n:ℝ) +
+            2 * ((U:ℝ) * (U:ℝ)) * (q:ℝ) * Real.log (n:ℝ)
+            ≤ 2 * ((U:ℝ) * (U:ℝ)) * (q:ℝ) * Real.log (n:ℝ) +
+                2 * ((U:ℝ) * (U:ℝ)) * (q:ℝ) * Real.log (n:ℝ) +
+              2 * ((U:ℝ) * (U:ℝ)) * (q:ℝ) * Real.log (n:ℝ) := by
+          apply add_le_add
+          · exact add_le_add (hA1.trans (hA2.trans hA3)) hB
+          · exact le_rfl
+        _ = 6 * ((U:ℝ) * (U:ℝ)) * (q:ℝ) * Real.log (n:ℝ) := by ring
+
 end
 
 end PEqualNP.Outside.Vaughan
