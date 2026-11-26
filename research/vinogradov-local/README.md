@@ -68,3 +68,19 @@ toolchain.
 whenever `|f k| ≤ C` for `k ≤ U`. For `U = n^(1/16)` and
 `C = O(log n)`, this is `o(n)` without any prime-distribution input. The remaining
 hard part is therefore the Type-II range, not the low Type-I terms.
+
+## Residue-class decomposition
+
+`residue.lean` proves the exact finite decomposition
+
+```lean
+S n u t =
+  ∑ r ∈ range (min q (n+1)),
+    E (r*t) *
+      ∑ j ∈ range ((n-r)/q + 1),
+        u (r + j*q) * E ((j*q)*t)
+```
+
+for `0 < q`. This is the entry point for rational frequencies `a/q + β`;
+the next step is to combine it with the weighted Abel bound on each residue-class
+subsequence.
