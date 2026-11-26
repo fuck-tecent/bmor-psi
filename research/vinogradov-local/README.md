@@ -116,3 +116,14 @@ expSum n Λ t =
 
 The last term is the Type-II coefficient; the first three are the Type-I terms
 that the support/Abel estimates must bound.
+
+## Arithmetic-function Type-I support bound
+
+`vaughan.lean` also proves
+
+```lean
+‖expSum n (low U f) t‖ ≤ (U+1) * C
+```
+
+whenever `|f k| ≤ C` for `k ≤ U`. This is the Type-I support estimate in the
+same `ArithmeticFunction` language as the Vaughan decomposition.

@@ -75,6 +75,59 @@ theorem expSum_vaughan (n U : ℕ) (t : ℝ) :
   rw [h]
   rw [expSum_add, expSum_sub, expSum_add]
 
+
+lemma norm_expSum_le_of_support (n U : ℕ) (f : ArithmeticFunction ℝ) (C t : ℝ)
+    (hC : 0 ≤ C) (hsupp : ∀ k : ℕ, U < k → f k = 0)
+    (hbound : ∀ k : ℕ, k ≤ U → |f k| ≤ C) :
+    ‖expSum n f t‖ ≤ (U + 1 : ℝ) * C := by
+  classical
+  unfold expSum
+  let F : ℕ → ℂ := fun k => (f k : ℂ) * E ((k : ℝ) * t)
+  have hsum : (∑ k ∈ Finset.range (n + 1), (f k : ℂ) * E ((k : ℝ) * t)) =
+      ∑ k ∈ (Finset.range (n + 1)).filter (fun k => k ≤ U), F k := by
+    rw [Finset.sum_filter]
+    apply Finset.sum_congr rfl
+    intro k _
+    by_cases h : k ≤ U
+    · simp [F, h]
+    · have hk : U < k := lt_of_not_ge h
+      simp [F, h, hsupp k hk]
+  rw [hsum]
+  have hsubset : (Finset.range (n + 1)).filter (fun k => k ≤ U) ⊆ Finset.range (U + 1) := by
+    intro k hk
+    simp only [Finset.mem_filter, Finset.mem_range] at hk ⊢
+    omega
+  calc
+    ‖∑ k ∈ (Finset.range (n + 1)).filter (fun k => k ≤ U), F k‖
+        ≤ ∑ k ∈ (Finset.range (n + 1)).filter (fun k => k ≤ U), ‖F k‖ :=
+      norm_sum_le _ _
+    _ ≤ ∑ _k ∈ (Finset.range (n + 1)).filter (fun k => k ≤ U), C := by
+      apply Finset.sum_le_sum
+      intro k hk
+      simp only [Finset.mem_filter] at hk
+      dsimp only [F]
+      rw [norm_mul, Complex.norm_real, Real.norm_eq_abs]
+      have hEk : ‖E ((k : ℝ) * t)‖ = 1 := by
+        dsimp only [E]
+        simpa only [mul_comm] using Complex.norm_exp_ofReal_mul_I (2 * Real.pi * ((k : ℝ) * t))
+      rw [hEk, mul_one]
+      exact hbound k hk.2
+    _ ≤ ∑ _k ∈ Finset.range (U + 1), C := by
+      apply Finset.sum_le_sum_of_subset_of_nonneg hsubset
+      intro k _ _
+      exact hC
+    _ = (U + 1 : ℝ) * C := by simp
+
+
+lemma norm_expSum_low_le (n U : ℕ) (f : ArithmeticFunction ℝ) (C t : ℝ)
+    (hC : 0 ≤ C) (hbound : ∀ k : ℕ, k ≤ U → |f k| ≤ C) :
+    ‖expSum n (low U f) t‖ ≤ (U + 1 : ℝ) * C := by
+  apply norm_expSum_le_of_support n U (low U f) C t hC
+  · intro k hk
+    simp [low, not_le_of_gt hk]
+  · intro k hk
+    simpa [low, hk] using hbound k hk
+
 end
 
 end PEqualNP.Outside.Vaughan
