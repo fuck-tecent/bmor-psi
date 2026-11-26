@@ -98,6 +98,248 @@ theorem norm_expSum_low_mu_mul_log_le_majorArc (n q U a : ℕ) (β : ℝ)
     ((a:ℝ)/(q:ℝ) + β) hq
     (abs_sin_pi_mul_majorArc_ge q U a β hq hcop hU1 hUq hβ)
 
+lemma norm_log_weighted_geometric_sum_Icc_le_trivial (N : ℕ) (t : ℝ) :
+    ‖∑ l ∈ Finset.Icc 1 N, (Real.log l : ℂ) * E ((l : ℝ) * t)‖ ≤
+      (N : ℝ) * Real.log (N : ℝ) := by
+  have normE : ∀ x : ℝ, ‖E x‖ = 1 := by
+    intro x
+    dsimp only [E]
+    simpa only [mul_comm] using Complex.norm_exp_ofReal_mul_I (2 * Real.pi * x)
+  have h1 : ‖∑ l ∈ Finset.Icc 1 N, (Real.log l : ℂ) * E ((l : ℝ) * t)‖ ≤
+      ∑ l ∈ Finset.Icc 1 N, Real.log l := by
+    refine (norm_sum_le _ _).trans ?_
+    apply Finset.sum_le_sum
+    intro l _
+    rw [norm_mul, normE, mul_one, Complex.norm_real, Real.norm_eq_abs,
+      abs_of_nonneg (Real.log_natCast_nonneg l)]
+  have h2 : ∑ l ∈ Finset.Icc 1 N, Real.log l ≤
+      ∑ _l ∈ Finset.Icc 1 N, Real.log (N : ℝ) := by
+    apply Finset.sum_le_sum
+    intro l hl
+    obtain ⟨hl1, hlN⟩ := Finset.mem_Icc.mp hl
+    exact Real.log_le_log (by exact_mod_cast hl1) (by exact_mod_cast hlN)
+  have h3 : ∑ _l ∈ Finset.Icc 1 N, Real.log (N : ℝ) =
+      (N : ℝ) * Real.log (N : ℝ) := by
+    rw [Finset.sum_const, Nat.card_Icc, nsmul_eq_mul]
+    norm_num
+  exact h1.trans (h2.trans_eq h3)
+
+/-- The harmonic sum is at most `1 + log K`. -/
+
+lemma typeI_small_q_coeff_sum_le (n q U : ℕ) (hq : 0 < q) (hUn : U ≤ n) :
+    ∑ d ∈ Finset.Icc 1 U,
+        (if (q : ℕ) ∣ d then ((n / d : ℕ) : ℝ) * Real.log (n : ℝ)
+          else 2 * (q : ℝ) * Real.log (n : ℝ)) ≤
+      2 * (U : ℝ) * (q : ℝ) * Real.log (n : ℝ) +
+        2 * (n : ℝ) * Real.log (n : ℝ) * (1 + Real.log (n : ℝ)) / (q : ℝ) := by
+  classical
+  have hlog : 0 ≤ Real.log (n : ℝ) := Real.log_natCast_nonneg n
+  have hqR : (0 : ℝ) < (q : ℝ) := by exact_mod_cast hq
+  set s : Finset ℕ := Finset.Icc 1 U with hs
+  rw [Finset.sum_ite]
+  have hnon : ∑ d ∈ s.filter (fun d => ¬ (q : ℕ) ∣ d),
+      2 * (q : ℝ) * Real.log (n : ℝ) ≤
+        2 * (U : ℝ) * (q : ℝ) * Real.log (n : ℝ) := by
+    calc
+      ∑ d ∈ s.filter (fun d => ¬ (q : ℕ) ∣ d),
+          2 * (q : ℝ) * Real.log (n : ℝ)
+          ≤ ∑ _d ∈ s, 2 * (q : ℝ) * Real.log (n : ℝ) := by
+        apply Finset.sum_le_sum_of_subset_of_nonneg (Finset.filter_subset _ _)
+        intro d _ _
+        positivity
+      _ = 2 * (U : ℝ) * (q : ℝ) * Real.log (n : ℝ) := by
+        rw [Finset.sum_const, hs, Nat.card_Icc, nsmul_eq_mul]
+        norm_num
+        ring
+  have hmult : ∑ d ∈ s.filter (fun d => (q : ℕ) ∣ d),
+      ((n / d : ℕ) : ℝ) * Real.log (n : ℝ) ≤
+        (n : ℝ) * Real.log (n : ℝ) * (1 + Real.log (n : ℝ)) / (q : ℝ) := by
+    set t : Finset ℕ := Finset.Icc 1 (U / q) with ht
+    have hbij : ∑ d ∈ s.filter (fun d => (q : ℕ) ∣ d),
+        ((n / d : ℕ) : ℝ) = ∑ k ∈ t, ((n / q / k : ℕ) : ℝ) := by
+      refine Finset.sum_nbij' (fun d => d / q) (fun k => q * k) ?_ ?_ ?_ ?_ ?_
+      · intro d hd
+        simp only [hs, Finset.mem_filter, Finset.mem_Icc] at hd
+        obtain ⟨⟨hd1, hdU⟩, hqd⟩ := hd
+        simp only [ht, Finset.mem_Icc]
+        constructor
+        · exact Nat.div_pos (Nat.le_of_dvd (by omega) hqd) hq
+        · exact Nat.div_le_div_right hdU
+      · intro k hk
+        simp only [ht, Finset.mem_Icc] at hk
+        simp only [hs, Finset.mem_filter, Finset.mem_Icc]
+        have hkU : q * k ≤ U := by
+          rw [Nat.mul_comm]
+          exact (Nat.le_div_iff_mul_le hq).mp hk.2
+        exact ⟨⟨Nat.succ_le_of_lt (Nat.mul_pos hq (by omega)), hkU⟩, ⟨k, rfl⟩⟩
+      · intro d hd
+        simp only [hs, Finset.mem_filter, Finset.mem_Icc] at hd
+        obtain ⟨⟨hd1, _⟩, hqd⟩ := hd
+        exact Nat.mul_div_cancel' hqd
+      · intro k _
+        rw [Nat.mul_comm q k, Nat.mul_div_cancel _ hq]
+      · intro d hd
+        simp only [hs, Finset.mem_filter, Finset.mem_Icc] at hd
+        obtain ⟨⟨hd1, _⟩, hqd⟩ := hd
+        have hdq : d = q * (d / q) := (Nat.mul_div_cancel' hqd).symm
+        conv_lhs => rw [hdq]
+        rw [Nat.div_div_eq_div_mul]
+    calc
+      ∑ d ∈ s.filter (fun d => (q : ℕ) ∣ d), ((n / d : ℕ) : ℝ) * Real.log (n : ℝ)
+          = (∑ d ∈ s.filter (fun d => (q : ℕ) ∣ d), ((n / d : ℕ) : ℝ)) *
+              Real.log (n : ℝ) := by rw [Finset.sum_mul]
+      _ = (∑ k ∈ t, ((n / q / k : ℕ) : ℝ)) * Real.log (n : ℝ) := by rw [hbij]
+      _ ≤ ((∑ k ∈ t, (n : ℝ) / q / (k : ℝ))) * Real.log (n : ℝ) := by
+        apply mul_le_mul_of_nonneg_right _ hlog
+        apply Finset.sum_le_sum
+        intro k hk
+        calc ((n / q / k : ℕ) : ℝ) ≤ ((n / q : ℕ) : ℝ) / (k : ℝ) := Nat.cast_div_le
+          _ ≤ (n : ℝ) / q / (k : ℝ) := by
+              exact div_le_div_of_nonneg_right Nat.cast_div_le (by positivity)
+      _ = ((n : ℝ) / q * (∑ k ∈ t, (1 : ℝ) / (k : ℝ))) * Real.log (n : ℝ) := by
+        congr 1
+        rw [Finset.mul_sum]
+        apply Finset.sum_congr rfl
+        intro k hk
+        ring
+      _ ≤ ((n : ℝ) / q * (1 + Real.log ((U / q : ℕ) : ℝ))) * Real.log (n : ℝ) := by
+        apply mul_le_mul_of_nonneg_right _ hlog
+        apply mul_le_mul_of_nonneg_left _ (by positivity)
+        exact sum_inv_Icc_le_one_add_log (U / q)
+      _ ≤ ((n : ℝ) / q * (1 + Real.log (n : ℝ))) * Real.log (n : ℝ) := by
+        have hUq : U / q ≤ U := Nat.div_le_self _ _
+        have hlog_le : Real.log ((U / q : ℕ) : ℝ) ≤ Real.log (n : ℝ) := by
+          rcases Nat.eq_zero_or_pos (U / q) with h0 | hpos
+          · rw [h0]; simpa using hlog
+          · exact Real.log_le_log (by exact_mod_cast hpos)
+              (by exact_mod_cast le_trans hUq hUn)
+        have h1 : 1 + Real.log ((U / q : ℕ) : ℝ) ≤ 1 + Real.log (n : ℝ) := by linarith
+        exact mul_le_mul (mul_le_mul_of_nonneg_left h1 (by positivity)) le_rfl hlog (by positivity)
+      _ = (n : ℝ) * Real.log (n : ℝ) * (1 + Real.log (n : ℝ)) / (q : ℝ) := by ring
+  have htot := add_le_add hmult hnon
+  calc
+    ∑ d ∈ s.filter (fun d => (q : ℕ) ∣ d), ((n / d : ℕ) : ℝ) * Real.log (n : ℝ) +
+        ∑ d ∈ s.filter (fun d => ¬ (q : ℕ) ∣ d), 2 * (q : ℝ) * Real.log (n : ℝ)
+        ≤ (n : ℝ) * Real.log (n : ℝ) * (1 + Real.log (n : ℝ)) / (q : ℝ) +
+          2 * (U : ℝ) * (q : ℝ) * Real.log (n : ℝ) := htot
+    _ = 2 * (U : ℝ) * (q : ℝ) * Real.log (n : ℝ) +
+        (n : ℝ) * Real.log (n : ℝ) * (1 + Real.log (n : ℝ)) / (q : ℝ) := by ring
+    _ ≤ 2 * (U : ℝ) * (q : ℝ) * Real.log (n : ℝ) +
+        2 * (n : ℝ) * Real.log (n : ℝ) * (1 + Real.log (n : ℝ)) / (q : ℝ) := by
+      have hnq : 0 ≤ (n : ℝ) * Real.log (n : ℝ) * (1 + Real.log (n : ℝ)) / (q : ℝ) :=
+        div_nonneg (mul_nonneg (mul_nonneg (by positivity) hlog) (by linarith)) hqR.le
+      have hX : (n : ℝ) * Real.log (n : ℝ) * (1 + Real.log (n : ℝ)) / (q : ℝ) ≤
+          2 * (n : ℝ) * Real.log (n : ℝ) * (1 + Real.log (n : ℝ)) / (q : ℝ) := by
+        calc (n : ℝ) * Real.log (n : ℝ) * (1 + Real.log (n : ℝ)) / (q : ℝ)
+            ≤ 2 * ((n : ℝ) * Real.log (n : ℝ) * (1 + Real.log (n : ℝ)) / (q : ℝ)) :=
+              le_mul_of_one_le_left hnq (by norm_num)
+          _ = 2 * (n : ℝ) * Real.log (n : ℝ) * (1 + Real.log (n : ℝ)) / (q : ℝ) := by ring
+      exact add_le_add_right hX _
+
+
+/-- Type-I second term on a major arc, uniformly in `q` (in particular for the
+small-denominator range `q <= U`, where multiples of `q` must be treated
+trivially). -/
+theorem norm_expSum_low_mu_mul_log_le_majorArc_small_q (n q U a : ℕ) (β : ℝ)
+    (hq : 0 < q) (hcop : Nat.Coprime a q) (hU1 : 1 ≤ U) (hUn : U ≤ n)
+    (hβ : |β| ≤ 1 / (16 * (q:ℝ) * (U:ℝ))) :
+    ‖expSum n (low U (μ : ArithmeticFunction ℝ) * ArithmeticFunction.log)
+        ((a:ℝ)/(q:ℝ) + β)‖ ≤
+      2 * (U:ℝ) * (q:ℝ) * Real.log (n:ℝ) +
+        2 * (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) / (q:ℝ) := by
+  rw [expSum_low_mu_mul_log_eq n U ((a:ℝ)/(q:ℝ) + β)]
+  have hlog : 0 ≤ Real.log (n : ℝ) := Real.log_natCast_nonneg n
+  have hqR : (0:ℝ) < (q:ℝ) := by exact_mod_cast hq
+  have harg : ∀ d l : ℕ, ((d * l : ℕ) : ℝ) * ((a:ℝ)/(q:ℝ) + β) =
+      (l : ℝ) * ((d:ℝ) * ((a:ℝ)/(q:ℝ) + β)) := by
+    intro d l
+    push_cast
+    ring
+  have hstep : ‖∑ d ∈ Finset.Icc 1 U, ((μ : ArithmeticFunction ℝ) d : ℂ) *
+        ∑ l ∈ Finset.Icc 1 (n / d),
+          (ArithmeticFunction.log l : ℂ) *
+            E (((d * l : ℕ) : ℝ) * ((a:ℝ)/(q:ℝ) + β))‖ ≤
+      ∑ d ∈ Finset.Icc 1 U,
+        (if (q : ℕ) ∣ d then ((n / d : ℕ) : ℝ) * Real.log (n : ℝ)
+          else 2 * (q : ℝ) * Real.log (n : ℝ)) := by
+    refine (norm_sum_le _ _).trans ?_
+    apply Finset.sum_le_sum
+    intro d hd
+    obtain ⟨hd1, hdU⟩ := Finset.mem_Icc.mp hd
+    rw [norm_mul, Complex.norm_real, Real.norm_eq_abs]
+    have hμd : |(μ : ArithmeticFunction ℝ) d| ≤ 1 := by
+      have h : |(ArithmeticFunction.moebius d : ℤ)| ≤ 1 :=
+        ArithmeticFunction.abs_moebius_le_one
+      have h' : |((ArithmeticFunction.moebius d : ℤ) : ℝ)| ≤ 1 := by exact_mod_cast h
+      simpa using h'
+    have hmain : ‖∑ l ∈ Finset.Icc 1 (n / d),
+          (ArithmeticFunction.log l : ℂ) *
+            E (((d * l : ℕ) : ℝ) * ((a:ℝ)/(q:ℝ) + β))‖ ≤
+        (if (q : ℕ) ∣ d then ((n / d : ℕ) : ℝ) * Real.log (n : ℝ)
+          else 2 * (q : ℝ) * Real.log (n : ℝ)) := by
+      by_cases hdiv : (q : ℕ) ∣ d
+      · rw [if_pos hdiv]
+        simp_rw [harg d]
+        refine (norm_log_weighted_geometric_sum_Icc_le_trivial (n / d)
+          ((d:ℝ) * ((a:ℝ)/(q:ℝ) + β))).trans ?_
+        have hlogN : Real.log (((n / d : ℕ)) : ℝ) ≤ Real.log (n : ℝ) := by
+          rcases Nat.eq_zero_or_pos (n / d) with h0 | hpos
+          · rw [h0]
+            simpa using hlog
+          · exact Real.log_le_log (by exact_mod_cast hpos)
+              (by exact_mod_cast Nat.div_le_self n d)
+        exact mul_le_mul_of_nonneg_left hlogN (by positivity)
+      · rw [if_neg hdiv]
+        have hsine := abs_sin_pi_mul_majorArc_ge_pointwise q U a d β hq hcop hU1 hd1 hdU hdiv hβ
+        have hspos : (0:ℝ) <
+            |Real.sin (Real.pi * ((d:ℝ) * ((a:ℝ)/(q:ℝ) + β)))| :=
+          lt_of_lt_of_le (by positivity : (0:ℝ) < 1/(q:ℝ)) hsine
+        have hsin_ne : Real.sin (Real.pi * ((d:ℝ) * ((a:ℝ)/(q:ℝ) + β))) ≠ 0 :=
+          abs_pos.mp hspos
+        simp_rw [harg d]
+        refine (norm_log_weighted_geometric_sum_Icc_le (n / d)
+          ((d:ℝ) * ((a:ℝ)/(q:ℝ) + β)) hsin_ne).trans ?_
+        have hs' : (1:ℝ) ≤
+            |Real.sin (Real.pi * ((d:ℝ) * ((a:ℝ)/(q:ℝ) + β)))| * (q:ℝ) :=
+          (div_le_iff₀ hqR).mp hsine
+        have hunit : (1:ℝ) /
+            |Real.sin (Real.pi * ((d:ℝ) * ((a:ℝ)/(q:ℝ) + β)))| ≤ (q:ℝ) := by
+          rw [div_le_iff₀ hspos]
+          simpa [mul_comm] using hs'
+        have hlogN : Real.log (((n / d : ℕ)) : ℝ) ≤ Real.log (n : ℝ) := by
+          rcases Nat.eq_zero_or_pos (n / d) with h0 | hpos
+          · rw [h0]
+            simpa using hlog
+          · exact Real.log_le_log (by exact_mod_cast hpos)
+              (by exact_mod_cast Nat.div_le_self n d)
+        calc
+          2 * Real.log (((n / d : ℕ)) : ℝ) /
+              |Real.sin (Real.pi * ((d:ℝ) * ((a:ℝ)/(q:ℝ) + β)))|
+              ≤ 2 * Real.log (n : ℝ) /
+                |Real.sin (Real.pi * ((d:ℝ) * ((a:ℝ)/(q:ℝ) + β)))| := by
+            apply div_le_div_of_nonneg_right _ (abs_nonneg _)
+            exact mul_le_mul_of_nonneg_left hlogN (by norm_num)
+          _ = 2 * Real.log (n : ℝ) * (1 /
+                |Real.sin (Real.pi * ((d:ℝ) * ((a:ℝ)/(q:ℝ) + β)))|) := by
+            rw [div_eq_mul_one_div]
+          _ ≤ 2 * Real.log (n : ℝ) * (q:ℝ) :=
+            mul_le_mul_of_nonneg_left hunit (by positivity)
+          _ = 2 * (q:ℝ) * Real.log (n : ℝ) := by ring
+    calc
+      |(μ : ArithmeticFunction ℝ) d| * ‖∑ l ∈ Finset.Icc 1 (n / d),
+          (ArithmeticFunction.log l : ℂ) *
+            E (((d * l : ℕ) : ℝ) * ((a:ℝ)/(q:ℝ) + β))‖
+          ≤ 1 * ‖∑ l ∈ Finset.Icc 1 (n / d),
+              (ArithmeticFunction.log l : ℂ) *
+                E (((d * l : ℕ) : ℝ) * ((a:ℝ)/(q:ℝ) + β))‖ :=
+            mul_le_mul_of_nonneg_right hμd (norm_nonneg _)
+      _ = ‖∑ l ∈ Finset.Icc 1 (n / d),
+            (ArithmeticFunction.log l : ℂ) *
+              E (((d * l : ℕ) : ℝ) * ((a:ℝ)/(q:ℝ) + β))‖ := one_mul _
+      _ ≤ (if (q : ℕ) ∣ d then ((n / d : ℕ) : ℝ) * Real.log (n : ℝ)
+            else 2 * (q : ℝ) * Real.log (n : ℝ)) := hmain
+  exact hstep.trans (typeI_small_q_coeff_sum_le n q U hq hUn)
+
 /- Major-arc estimate for the third Vaughan term: when `q > U^2` and the
 perturbation is below `1/(16 q U^2)`, every product `d * e` stays below `q`,
 so the inner geometric sums contribute a factor `q` each. -/

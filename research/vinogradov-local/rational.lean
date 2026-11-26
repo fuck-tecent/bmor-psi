@@ -596,15 +596,12 @@ lemma norm_log_weighted_geometric_sum_le (L : ℕ) (t : ℝ)
 
 /-- Major-arc sine separation: for `t = a/q + β` with `gcd(a,q) = 1`,
 `1 <= d <= U < q` and `|β| <= 1/(16 q U)`, one has `|sin (π d t)| >= 1/q`. -/
-lemma abs_sin_pi_mul_majorArc_ge_of_not_dvd (q M a : ℕ) (β : ℝ) (hq : 0 < q)
-    (hcop : Nat.Coprime a q) (hM1 : 1 ≤ M)
-    (hndvd : ∀ h, 1 ≤ h → h ≤ M → ¬ q ∣ h)
+lemma abs_sin_pi_mul_majorArc_ge_pointwise (q M a d : ℕ) (β : ℝ) (hq : 0 < q)
+    (hcop : Nat.Coprime a q) (hM1 : 1 ≤ M) (hd1 : 1 ≤ d) (hdM : d ≤ M)
+    (hndvd : ¬ q ∣ d)
     (hβ : |β| ≤ 1 / (16 * (q:ℝ) * (M:ℝ))) :
-    ∀ d ∈ Finset.Icc 1 M,
-      (1:ℝ)/(q:ℝ) ≤
-        |Real.sin (Real.pi * ((d:ℝ) * ((a:ℝ)/(q:ℝ) + β)))| := by
-  intro d hd
-  obtain ⟨hd1, hdM⟩ := Finset.mem_Icc.mp hd
+    (1:ℝ)/(q:ℝ) ≤
+      |Real.sin (Real.pi * ((d:ℝ) * ((a:ℝ)/(q:ℝ) + β)))| := by
   have hdpos : 0 < d := hd1
   have hqR : (0:ℝ) < (q:ℝ) := by exact_mod_cast hq
   have hqne : (q:ℝ) ≠ 0 := hqR.ne'
@@ -617,7 +614,7 @@ lemma abs_sin_pi_mul_majorArc_ge_of_not_dvd (q M a : ℕ) (β : ℝ) (hq : 0 < q
     have hdvd : q ∣ A := Nat.dvd_of_mod_eq_zero h0
     have hdvd' : q ∣ d * a := by simpa [hAdef] using hdvd
     have hqd : q ∣ d := hcop.symm.dvd_of_dvd_mul_right hdvd'
-    exact hndvd d hd1 hdM hqd
+    exact hndvd hqd
   have hmodlt : A % q < q := Nat.mod_lt A hq
   have hmod1 : 1 ≤ A % q := by omega
   have hrat0 := abs_sin_pi_mul_div_ge q (A % q) hmod1 hmodlt
@@ -673,6 +670,19 @@ lemma abs_sin_pi_mul_majorArc_ge_of_not_dvd (q M a : ℕ) (β : ℝ) (hq : 0 < q
       norm_num
     linarith
   linarith
+
+/-- Uniform major-arc sine separation when no `d <= M` is divisible by `q`. -/
+lemma abs_sin_pi_mul_majorArc_ge_of_not_dvd (q M a : ℕ) (β : ℝ) (hq : 0 < q)
+    (hcop : Nat.Coprime a q) (hM1 : 1 ≤ M)
+    (hndvd : ∀ h, 1 ≤ h → h ≤ M → ¬ q ∣ h)
+    (hβ : |β| ≤ 1 / (16 * (q:ℝ) * (M:ℝ))) :
+    ∀ d ∈ Finset.Icc 1 M,
+      (1:ℝ)/(q:ℝ) ≤
+        |Real.sin (Real.pi * ((d:ℝ) * ((a:ℝ)/(q:ℝ) + β)))| := by
+  intro d hd
+  obtain ⟨hd1, hdM⟩ := Finset.mem_Icc.mp hd
+  exact abs_sin_pi_mul_majorArc_ge_pointwise q M a d β hq hcop hM1 hd1 hdM
+    (hndvd d hd1 hdM) hβ
 
 lemma abs_sin_pi_mul_majorArc_ge (q U a : ℕ) (β : ℝ) (hq : 0 < q)
     (hcop : Nat.Coprime a q) (hU1 : 1 ≤ U) (hUq : U < q)
@@ -811,6 +821,96 @@ lemma norm_type1_bilinear_log_le (n U : ℕ) (a : ℕ → ℝ) (t : ℝ)
         rw [hargh]
       rw [hphase]
       exact norm_log_weighted_geometric_sum_Icc_le (n / d) ((d : ℝ) * t) (hsin d hd)
+
+/-- A monotone weight with `0 ≤ w 0`, `w J ≤ C` gives the Abel bound
+`2C / |sin (π θ)|`. -/
+lemma norm_monotone_weighted_sum_le (J : ℕ) (w : ℕ → ℝ) (θ C : ℝ)
+    (hsin : Real.sin (Real.pi * θ) ≠ 0)
+    (hmono : ∀ j, w j ≤ w (j + 1)) (hw0 : 0 ≤ w 0)
+    (hC : 0 ≤ C) (hbound : w J ≤ C) :
+    ‖∑ j ∈ Finset.range (J + 1), (w j : ℂ) * E ((j : ℝ) * θ)‖ ≤
+      2 * C / |Real.sin (Real.pi * θ)| := by
+  have h := norm_weighted_geometric_sum_le J w θ hsin
+  have hterm : ∀ j ∈ Finset.range J, |w j - w (j + 1)| = w (j + 1) - w j := by
+    intro j _
+    rw [abs_sub_comm]
+    exact abs_of_nonneg (sub_nonneg.mpr (hmono j))
+  have hvar : ∑ j ∈ Finset.range J, |w j - w (j + 1)| = w J - w 0 := by
+    rw [Finset.sum_congr rfl hterm]
+    exact Finset.sum_range_sub w J
+  have hvar_le : ∑ j ∈ Finset.range J, |w j - w (j + 1)| ≤ C := by
+    rw [hvar]
+    linarith
+  have hJ_nonneg : 0 ≤ w J :=
+    Nat.le_induction hw0 (fun m _ ih => le_trans ih (hmono m)) J (Nat.zero_le J)
+  have hJ_abs : |w J| ≤ C := by
+    rw [abs_of_nonneg hJ_nonneg]
+    exact hbound
+  have hnum : |w J| + ∑ j ∈ Finset.range J, |w j - w (j + 1)| ≤ 2 * C := by
+    linarith
+  calc
+    ‖∑ j ∈ Finset.range (J + 1), (w j : ℂ) * E ((j : ℝ) * θ)‖
+        ≤ (|w J| + ∑ j ∈ Finset.range J, |w j - w (j + 1)|) /
+            |Real.sin (Real.pi * θ)| := h
+    _ ≤ (2 * C) / |Real.sin (Real.pi * θ)| :=
+      div_le_div_of_nonneg_right hnum (abs_nonneg _)
+
+/-- The harmonic sum over `{1, ..., K}` is at most `1 + log K`. -/
+lemma sum_inv_Icc_le_one_add_log (K : ℕ) :
+    ∑ k ∈ Finset.Icc 1 K, (1 : ℝ) / (k : ℝ) ≤ 1 + Real.log (K : ℝ) := by
+  have hcast : ((harmonic K : ℚ) : ℝ) = ∑ k ∈ Finset.Icc 1 K, ((k : ℚ) : ℝ)⁻¹ := by
+    rw [harmonic_eq_sum_Icc]
+    push_cast
+    rfl
+  have h := harmonic_le_one_add_log K
+  rw [hcast] at h
+  simpa [one_div] using h
+
+/-- Reindex a sum over the multiples of `q` in `{1, ..., K}` as `1/q` times a
+harmonic sum. -/
+lemma sum_inv_multiples_eq (K q : ℕ) (hq : 0 < q) :
+    ∑ k ∈ (Finset.Icc 1 K).filter (fun k => q ∣ k), (1 : ℝ) / (k : ℝ) =
+      (1 / (q : ℝ)) * ∑ j ∈ Finset.Icc 1 (K / q), (1 : ℝ) / (j : ℝ) := by
+  classical
+  rw [Finset.mul_sum]
+  refine Finset.sum_nbij' (fun k => k / q) (fun j => q * j) ?_ ?_ ?_ ?_ ?_
+  · intro k hk
+    rw [Finset.mem_filter, Finset.mem_Icc] at hk
+    obtain ⟨⟨hk1, hkK⟩, hqk⟩ := hk
+    rw [Finset.mem_Icc]
+    constructor
+    · exact Nat.div_pos (Nat.le_of_dvd (by omega) hqk) hq
+    · exact Nat.div_le_div_right hkK
+  · intro j hj
+    rw [Finset.mem_Icc] at hj
+    rw [Finset.mem_filter, Finset.mem_Icc]
+    refine ⟨⟨Nat.succ_le_of_lt (Nat.mul_pos hq (by omega)), ?_⟩, ⟨j, rfl⟩⟩
+    rw [Nat.mul_comm]
+    exact (Nat.le_div_iff_mul_le hq).mp hj.2
+  · intro k hk
+    rw [Finset.mem_filter] at hk
+    exact Nat.mul_div_cancel' hk.2
+  · intro j _
+    rw [Nat.mul_comm q j, Nat.mul_div_cancel _ hq]
+  · intro k hk
+    rw [Finset.mem_filter, Finset.mem_Icc] at hk
+    obtain ⟨⟨hk1, _⟩, hqk⟩ := hk
+    have hkq : k = q * (k / q) := (Nat.mul_div_cancel' hqk).symm
+    have hqk' : q * (k / q) / q = k / q := by
+      rw [Nat.mul_comm q (k / q), Nat.mul_div_cancel _ hq]
+    rw [hkq]
+    push_cast
+    field_simp
+    rw [hqk']
+
+/-- The sum of `1/k` over the multiples of `q` up to `K` is at most
+`(1 + log(K/q))/q`. -/
+lemma sum_inv_filter_le (K q : ℕ) (hq : 0 < q) :
+    ∑ k ∈ (Finset.Icc 1 K).filter (fun k => q ∣ k), (1 : ℝ) / (k : ℝ) ≤
+      (1 / (q : ℝ)) * (1 + Real.log ((K / q : ℕ) : ℝ)) := by
+  rw [sum_inv_multiples_eq K q hq]
+  apply mul_le_mul_of_nonneg_left _ (by positivity)
+  exact sum_inv_Icc_le_one_add_log (K / q)
 
 noncomputable def S (n : ℕ) (u : ℕ → ℝ) (t : ℝ) : ℂ :=
   ∑ k ∈ Finset.range (n + 1), (u k : ℂ) * E ((k : ℝ) * t)
