@@ -185,3 +185,11 @@ divisor-correlation saving.
 `diagonal_dispersion_le` gives the `l1 = l2` contribution
 `n (log n)² (1 + log n)`, hence `o(n²)` after the outer factor `n/U`.
 Remaining: off-diagonal, especially the resonant `q | (l1-l2)` case.
+
+## Baseline and gap
+
+`norm_typeIIFourier_le` gives the pointwise bound `(n/d) log n`; the trivial
+energy is `(n²/U)(log n)²`, giving `n³/U²` after the outer factor — still
+above `n²`.  The dispersion diagonal is much smaller (`n log³`).  The gap is
+entirely in the off-diagonal (especially resonant `q | (l1-l2)`) terms and
+requires the divisor-correlation/large-sieve input.

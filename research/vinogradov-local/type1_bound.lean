@@ -1197,6 +1197,33 @@ lemma diagonal_dispersion_le (n U : ℕ) :
       linarith
     _ = (n : ℝ) * (Real.log (n : ℝ)) ^ 2 * (1 + Real.log (n : ℝ)) := by ring
 
+/-- Pointwise trivial bound for the collapsed Type-II inner sum. -/
+lemma norm_typeIIFourier_le (n U d : ℕ) (t : ℝ) :
+    ‖typeIIFourier n U t d‖ ≤ ((n / d : ℕ) : ℝ) * Real.log (n : ℝ) := by
+  classical
+  unfold typeIIFourier
+  calc
+    ‖∑ l ∈ Finset.Icc 1 (n / d), typeIICoeff U l * E (((d * l : ℕ) : ℝ) * t)‖
+        ≤ ∑ l ∈ Finset.Icc 1 (n / d),
+            ‖typeIICoeff U l * E (((d * l : ℕ) : ℝ) * t)‖ := norm_sum_le _ _
+    _ ≤ ∑ _l ∈ Finset.Icc 1 (n / d), Real.log (n : ℝ) := by
+      apply Finset.sum_le_sum
+      intro l hl
+      have hln : l ≤ n := by
+        have hln' : l ≤ n / d := (Finset.mem_Icc.mp hl).2
+        calc l ≤ n / d := hln'
+          _ ≤ n := Nat.div_le_self n d
+      have hc := norm_typeIICoeff_le n U l hln
+      rw [norm_mul, norm_E, mul_one]
+      exact hc
+    _ = ((Finset.Icc 1 (n / d)).card : ℝ) * Real.log (n : ℝ) := by
+      rw [Finset.sum_const, nsmul_eq_mul]
+    _ ≤ ((n / d : ℕ) : ℝ) * Real.log (n : ℝ) := by
+      apply mul_le_mul_of_nonneg_right _ (by positivity)
+      have hcard : (Finset.Icc 1 (n / d)).card ≤ n / d := by
+        rw [Nat.card_Icc, Nat.add_sub_cancel]
+      exact_mod_cast hcard
+
 /-- Dispersion/phase expansion of the Type-II energy: the squared sum becomes
 a double sum in `l1,l2` with an inner geometric sum in `d`. -/
 theorem typeII_energy_dispersion (n U : ℕ) (t : ℝ) :

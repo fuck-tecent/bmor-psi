@@ -510,3 +510,21 @@ Type-II energy is `n (log n)^3`, which after the outer factor `n/U` is
 
 The remaining off-diagonal part still needs the resonant `q | (l1-l2)` /
 large-sieve saving; the crude `2q` triangle bound is not enough.
+
+### Pointwise Type-II baseline
+
+`norm_typeIIFourier_le`:
+
+```lean
+‖typeIIFourier n U t d‖ ≤ (n/d) * log n.
+```
+
+Consequently the trivial energy bound is
+
+```text
+∑_d ‖typeIIFourier d‖² ≤ n² (log n)² ∑_{d>U} 1/d² ≲ (n²/U)(log n)²,
+```
+
+and after the outer factor `n/U` this is `n³/U² (log n)² = n^{11/5}...`,
+which is **not** enough.  The off-diagonal dispersion/large-sieve saving is
+essential; the diagonal bound alone is `n (log n)^3`.
