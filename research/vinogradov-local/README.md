@@ -528,3 +528,20 @@ Consequently the trivial energy bound is
 and after the outer factor `n/U` this is `n³/U² (log n)² = n^{11/5}...`,
 which is **not** enough.  The off-diagonal dispersion/large-sieve saving is
 essential; the diagonal bound alone is `n (log n)^3`.
+
+### Actual diagonal term bound
+
+`diagonal_dispersion_part_le` bounds the **actual** `l1 = l2` term of the
+dispersion expansion (not just its majorant):
+
+```lean
+‖∑ l, c(l) \bar c(l) * ∑_d E(0)‖
+  ≤ n (log n)² (1 + log n).
+```
+
+Indeed `E(0) = 1`, so the inner `d`-sum is the interval length, which is at
+most `n/l`; the rest is the previous diagonal majorant.
+
+So the diagonal part of the Type-II energy is rigorously `n (log n)^3`, and
+after the outer factor `n/U` it is `o(n²)`.  The remaining gap is entirely
+the off-diagonal (resonant and non-resonant) part.

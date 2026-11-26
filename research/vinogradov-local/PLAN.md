@@ -193,3 +193,8 @@ energy is `(n²/U)(log n)²`, giving `n³/U²` after the outer factor — still
 above `n²`.  The dispersion diagonal is much smaller (`n log³`).  The gap is
 entirely in the off-diagonal (especially resonant `q | (l1-l2)`) terms and
 requires the divisor-correlation/large-sieve input.
+
+## Actual diagonal term done
+
+`diagonal_dispersion_part_le` bounds the actual `l1 = l2` term by
+`n (log n)² (1 + log n)`.  The off-diagonal remains the sole Type-II gap.

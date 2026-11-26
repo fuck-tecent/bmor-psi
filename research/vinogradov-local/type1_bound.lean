@@ -1224,6 +1224,57 @@ lemma norm_typeIIFourier_le (n U d : ℕ) (t : ℝ) :
         rw [Nat.card_Icc, Nat.add_sub_cancel]
       exact_mod_cast hcard
 
+/-- The actual diagonal term of the Type-II dispersion expansion is bounded by
+`n (log n)^2 (1 + log n)`. -/
+lemma diagonal_dispersion_part_le (n U : ℕ) (t : ℝ) :
+    ‖∑ l ∈ Finset.Icc 1 (n / (U + 1)),
+        typeIICoeff U l * star (typeIICoeff U l) *
+          ∑ d ∈ Finset.Icc (U + 1) (min (n / (U + 1)) (n / l)),
+            E (((d : ℝ) * ((l : ℝ) - (l : ℝ))) * t)‖ ≤
+      (n : ℝ) * (Real.log (n : ℝ)) ^ 2 * (1 + Real.log (n : ℝ)) := by
+  classical
+  calc
+    ‖∑ l ∈ Finset.Icc 1 (n / (U + 1)),
+        typeIICoeff U l * star (typeIICoeff U l) *
+          ∑ d ∈ Finset.Icc (U + 1) (min (n / (U + 1)) (n / l)),
+            E (((d : ℝ) * ((l : ℝ) - (l : ℝ))) * t)‖
+        ≤ ∑ l ∈ Finset.Icc 1 (n / (U + 1)),
+            ‖typeIICoeff U l * star (typeIICoeff U l) *
+              ∑ d ∈ Finset.Icc (U + 1) (min (n / (U + 1)) (n / l)),
+                E (((d : ℝ) * ((l : ℝ) - (l : ℝ))) * t)‖ := norm_sum_le _ _
+    _ = ∑ l ∈ Finset.Icc 1 (n / (U + 1)),
+          ‖typeIICoeff U l‖ ^ 2 *
+            (((Finset.Icc (U + 1) (min (n / (U + 1)) (n / l))).card : ℝ)) := by
+      apply Finset.sum_congr rfl
+      intro l _
+      have harg : ∀ d : ℕ, E (((d : ℝ) * ((l : ℝ) - (l : ℝ))) * t) = 1 := by
+        intro d
+        simp [E]
+      simp_rw [harg]
+      rw [Finset.sum_const, nsmul_eq_mul, mul_one]
+      change ‖typeIICoeff U l * (starRingEnd ℂ) (typeIICoeff U l) *
+          ((Finset.Icc (U + 1) (min (n / (U + 1)) (n / l))).card : ℂ)‖ =
+        ‖typeIICoeff U l‖ ^ 2 *
+          ((Finset.Icc (U + 1) (min (n / (U + 1)) (n / l))).card : ℝ)
+      rw [Complex.mul_conj']
+      rw [norm_mul, norm_pow, Complex.norm_real, Real.norm_eq_abs,
+        abs_of_nonneg (norm_nonneg _), Complex.norm_natCast]
+    _ ≤ ∑ l ∈ Finset.Icc 1 (n / (U + 1)),
+          ‖typeIICoeff U l‖ ^ 2 * ((n / l : ℕ) : ℝ) := by
+      apply Finset.sum_le_sum
+      intro l hl
+      apply mul_le_mul_of_nonneg_left _ (by positivity)
+      have hcard : ((Finset.Icc (U + 1) (min (n / (U + 1)) (n / l))).card : ℝ) ≤
+          ((n / l : ℕ) : ℝ) := by
+        have hcard_nat : (Finset.Icc (U + 1) (min (n / (U + 1)) (n / l))).card ≤ n / l := by
+          rw [Nat.card_Icc, Nat.sub_le_iff_le_add]
+          have h2 : min (n / (U + 1)) (n / l) ≤ n / l := min_le_right _ _
+          omega
+        exact_mod_cast hcard_nat
+      exact hcard
+    _ ≤ (n : ℝ) * (Real.log (n : ℝ)) ^ 2 * (1 + Real.log (n : ℝ)) := by
+      simpa using diagonal_dispersion_le n U
+
 /-- Dispersion/phase expansion of the Type-II energy: the squared sum becomes
 a double sum in `l1,l2` with an inner geometric sum in `d`. -/
 theorem typeII_energy_dispersion (n U : ℕ) (t : ℝ) :
