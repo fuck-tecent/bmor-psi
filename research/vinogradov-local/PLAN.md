@@ -198,3 +198,10 @@ requires the divisor-correlation/large-sieve input.
 
 `diagonal_dispersion_part_le` bounds the actual `l1 = l2` term by
 `n (log n)² (1 + log n)`.  The off-diagonal remains the sole Type-II gap.
+
+## Off-diagonal structure ready
+
+`sum_diagonal_add_offdiag` and `norm_filtered_double_sum_le` provide the
+diagonal/off-diagonal split and the filtered triangle bound.  Next:
+instantiate with the non-resonance predicate `q ∤ (l1-l2)` and the geometric
+`2q` bound; then handle the resonant correlation.

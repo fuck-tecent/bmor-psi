@@ -545,3 +545,18 @@ most `n/l`; the rest is the previous diagonal majorant.
 So the diagonal part of the Type-II energy is rigorously `n (log n)^3`, and
 after the outer factor `n/U` it is `o(n²)`.  The remaining gap is entirely
 the off-diagonal (resonant and non-resonant) part.
+
+### Off-diagonal split and filtered triangle bound
+
+- `sum_diagonal_add_offdiag`: any double sum splits into its diagonal plus
+  the sum over `y ∈ s.erase x`;
+- `norm_filtered_double_sum_le`: if the kernel is `≤ C` on the filtered
+  pairs `p x y`, then
+
+```lean
+‖∑ x, ∑ y ∈ s.filter (p x), c x * star (c y) * G x y‖
+  ≤ C * (∑ x, ‖c x‖) * (∑ y, ‖c y‖).
+```
+
+These are the bookkeeping tools for the non-resonant off-diagonal part.  The
+resonant part still needs the divisor-correlation/large-sieve input.

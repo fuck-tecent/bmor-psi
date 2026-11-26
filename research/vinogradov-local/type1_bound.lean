@@ -1275,6 +1275,56 @@ lemma diagonal_dispersion_part_le (n U : ℕ) (t : ℝ) :
     _ ≤ (n : ℝ) * (Real.log (n : ℝ)) ^ 2 * (1 + Real.log (n : ℝ)) := by
       simpa using diagonal_dispersion_le n U
 
+/-- Split a double sum into its diagonal and off-diagonal parts. -/
+lemma sum_diagonal_add_offdiag {ι : Type*} [DecidableEq ι] (s : Finset ι)
+    (f : ι → ι → ℂ) :
+    ∑ x ∈ s, ∑ y ∈ s, f x y =
+      (∑ x ∈ s, f x x) + ∑ x ∈ s, ∑ y ∈ s.erase x, f x y := by
+  rw [← Finset.sum_add_distrib]
+  apply Finset.sum_congr rfl
+  intro x hx
+  rw [← Finset.sum_erase_add _ _ hx]
+  ring
+
+/-- Triangle bound for a filtered double sum: if the kernel is at most `C` on
+the filtered pairs, the sum is at most `C * (∑‖c‖)²`. -/
+lemma norm_filtered_double_sum_le {ι : Type*} [DecidableEq ι] (s : Finset ι)
+    (c : ι → ℂ) (G : ι → ι → ℂ) (C : ℝ) (hC : 0 ≤ C)
+    (p : ι → ι → Prop) [DecidableRel p]
+    (hG : ∀ x ∈ s, ∀ y ∈ s, p x y → ‖G x y‖ ≤ C) :
+    ‖∑ x ∈ s, ∑ y ∈ s.filter (fun y => p x y), c x * star (c y) * G x y‖ ≤
+      C * (∑ x ∈ s, ‖c x‖) * (∑ y ∈ s, ‖c y‖) := by
+  calc
+    ‖∑ x ∈ s, ∑ y ∈ s.filter (fun y => p x y), c x * star (c y) * G x y‖
+        ≤ ∑ x ∈ s,
+            ‖∑ y ∈ s.filter (fun y => p x y), c x * star (c y) * G x y‖ :=
+      norm_sum_le _ _
+    _ ≤ ∑ x ∈ s, ∑ y ∈ s.filter (fun y => p x y),
+          ‖c x * star (c y) * G x y‖ := by
+      apply Finset.sum_le_sum
+      intro x _
+      exact norm_sum_le _ _
+    _ ≤ ∑ x ∈ s, ∑ y ∈ s.filter (fun y => p x y), ‖c x‖ * ‖c y‖ * C := by
+      apply Finset.sum_le_sum
+      intro x hx
+      apply Finset.sum_le_sum
+      intro y hy
+      have hyp : p x y := (Finset.mem_filter.mp hy).2
+      have h := hG x hx y (Finset.mem_filter.mp hy).1 hyp
+      rw [norm_mul, norm_mul, norm_star]
+      have hc : 0 ≤ ‖c x‖ * ‖c y‖ := by positivity
+      exact mul_le_mul_of_nonneg_left h hc
+    _ ≤ ∑ x ∈ s, ∑ y ∈ s, ‖c x‖ * ‖c y‖ * C := by
+      apply Finset.sum_le_sum
+      intro x _
+      apply Finset.sum_le_sum_of_subset_of_nonneg (Finset.filter_subset _ _)
+      intro y _ _
+      exact mul_nonneg (mul_nonneg (norm_nonneg _) (norm_nonneg _)) hC
+    _ = (∑ x ∈ s, ‖c x‖) * (∑ y ∈ s, ‖c y‖) * C := by
+      rw [Finset.sum_mul_sum]
+      simp only [Finset.sum_mul]
+    _ = C * (∑ x ∈ s, ‖c x‖) * (∑ y ∈ s, ‖c y‖) := by ring
+
 /-- Dispersion/phase expansion of the Type-II energy: the squared sum becomes
 a double sum in `l1,l2` with an inner geometric sum in `d`. -/
 theorem typeII_energy_dispersion (n U : ℕ) (t : ℝ) :
