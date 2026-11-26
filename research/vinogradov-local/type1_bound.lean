@@ -1095,6 +1095,47 @@ lemma sum_normSq_typeIICoeff_le (n U : ℕ) (s : Finset ℕ)
     _ = (s.card : ℝ) * (Real.log (n : ℝ)) ^ 2 := by
       rw [Finset.sum_const, nsmul_eq_mul]
 
+/-- A geometric sum over an arbitrary interval, bounded by `2q` when the
+frequency is `1/q`-separated from the integers. -/
+lemma norm_geometric_Icc_shift_le (A B : ℕ) (θ : ℝ) (q : ℕ) (hq : 0 < q)
+    (hsin : (1:ℝ)/(q:ℝ) ≤ |Real.sin (Real.pi * θ)|) :
+    ‖∑ d ∈ Finset.Icc A B, E ((d : ℝ) * θ)‖ ≤ 2 * (q : ℝ) := by
+  have hqR : (0:ℝ) < (q:ℝ) := by exact_mod_cast hq
+  have hsin_ne : Real.sin (Real.pi * θ) ≠ 0 := by
+    intro h0
+    rw [h0, abs_zero] at hsin
+    have : (0:ℝ) < 1/(q:ℝ) := by positivity
+    linarith
+  by_cases hAB : A ≤ B
+  · rw [sum_Icc_eq_sum_range_shift A B (fun d => E ((d:ℝ) * θ)) hAB]
+    have hfactor : (∑ x ∈ Finset.range (B + 1 - A), E (((A + x : ℕ) : ℝ) * θ))
+        = E ((A : ℝ) * θ) * ∑ x ∈ Finset.range (B + 1 - A), E ((x : ℝ) * θ) := by
+      rw [Finset.mul_sum]
+      apply Finset.sum_congr rfl
+      intro x _
+      rw [← E_add]
+      congr 1
+      push_cast
+      ring
+    rw [hfactor, norm_mul, norm_E, one_mul]
+    have hlen : B + 1 - A = (B - A) + 1 := by omega
+    rw [hlen]
+    have hgeom := norm_geometric_sum_le (B - A) θ hsin_ne
+    have hrec : 1 / |Real.sin (Real.pi * θ)| ≤ (q:ℝ) := by
+      rw [div_le_iff₀ (abs_pos.mpr hsin_ne)]
+      have h' : (1:ℝ) ≤ |Real.sin (Real.pi * θ)| * (q:ℝ) := by
+        rw [← div_le_iff₀ hqR]
+        exact hsin
+      simpa [mul_comm] using h'
+    calc
+      ‖∑ x ∈ Finset.range ((B - A) + 1), E ((x : ℝ) * θ)‖
+          ≤ 1 / |Real.sin (Real.pi * θ)| := hgeom
+      _ ≤ (q:ℝ) := hrec
+      _ ≤ 2 * (q:ℝ) := by nlinarith
+  · have hempty : Finset.Icc A B = ∅ := Finset.Icc_eq_empty (by omega)
+    rw [hempty]
+    simp
+
 /-- Dispersion/phase expansion of the Type-II energy: the squared sum becomes
 a double sum in `l1,l2` with an inner geometric sum in `d`. -/
 theorem typeII_energy_dispersion (n U : ℕ) (t : ℝ) :

@@ -171,3 +171,11 @@ The inner `d`-sum is geometric.  Remaining:
 2. resonant `q | (l1-l2)`;
 3. non-resonant geometric bound;
 4. sum over `l1,l2` using `|c(l)| ≤ log n` and divisor correlation bounds.
+
+## Geometric `d`-sum bound
+
+`norm_geometric_Icc_shift_le` bounds any interval geometric sum by `2q` when
+`1/q ≤ |sin(πθ)|`.  Combined with `typeII_energy_dispersion`, the
+non-resonant terms are ready.  Remaining: diagonal, resonant
+`q | (l1-l2)`, and the `l1,l2` summation with the necessary large-sieve /
+divisor-correlation saving.

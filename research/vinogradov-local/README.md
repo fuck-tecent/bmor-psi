@@ -478,3 +478,18 @@ The inner sum over `d` is now a pure geometric sum with frequency
 
 Together with `|typeIICoeff U l| ≤ log n` and divisor bounds on the
 resonant correlations, this gives the Type-II dispersion estimate.
+
+### Geometric inner `d`-sum bound
+
+`norm_geometric_Icc_shift_le`: for any interval and any `θ` with
+`1/q ≤ |sin (π θ)|`,
+
+```lean
+‖∑ d ∈ Icc A B, E (d * θ)‖ ≤ 2q.
+```
+
+Together with `typeII_energy_dispersion`, this gives the geometric bound for
+each `(l1,l2)` pair in the non-resonant case.  The remaining dispersion work
+is the diagonal, the resonant `q | (l1-l2)` case, and the summation over
+`l1,l2` (the crude triangle bound still gives only `n²`; the resonant and
+off-diagonal terms need the large sieve/divisor-correlation saving).
