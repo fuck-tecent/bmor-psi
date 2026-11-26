@@ -1136,6 +1136,67 @@ lemma norm_geometric_Icc_shift_le (A B : ℕ) (θ : ℝ) (q : ℕ) (hq : 0 < q)
     rw [hempty]
     simp
 
+/-- Diagonal contribution of the dispersion expansion: bounded by
+`n (log n)^2 (1 + log n)`. -/
+lemma diagonal_dispersion_le (n U : ℕ) :
+    (∑ l ∈ Finset.Icc 1 (n / (U + 1)),
+        ‖typeIICoeff U l‖ ^ 2 * ((n / l : ℕ) : ℝ)) ≤
+      (n : ℝ) * (Real.log (n : ℝ)) ^ 2 * (1 + Real.log (n : ℝ)) := by
+  classical
+  let L := n / (U + 1)
+  have hcoeff : ∀ l ∈ Finset.Icc 1 L,
+      ‖typeIICoeff U l‖ ^ 2 ≤ (Real.log (n : ℝ)) ^ 2 := by
+    intro l hl
+    obtain ⟨hl1, hlL⟩ := Finset.mem_Icc.mp hl
+    have hLn : L ≤ n := Nat.div_le_self n (U + 1)
+    have hln : l ≤ n := by omega
+    have h0 : 0 < l := by omega
+    have h := norm_typeIICoeff_le n U l hln
+    nlinarith [norm_nonneg (typeIICoeff U l), h]
+  have hharm : (∑ l ∈ Finset.Icc 1 L, (1:ℝ)/(l:ℝ)) = (harmonic L : ℝ) := by
+    rw [harmonic_eq_sum_Icc]
+    push_cast
+    apply Finset.sum_congr rfl
+    intro i _
+    ring
+  calc
+    (∑ l ∈ Finset.Icc 1 L, ‖typeIICoeff U l‖ ^ 2 * ((n / l : ℕ) : ℝ))
+        ≤ ∑ l ∈ Finset.Icc 1 L, (Real.log (n : ℝ)) ^ 2 * ((n / l : ℕ) : ℝ) := by
+      apply Finset.sum_le_sum
+      intro l hl
+      exact mul_le_mul_of_nonneg_right (hcoeff l hl) (by positivity)
+    _ ≤ ∑ l ∈ Finset.Icc 1 L, (Real.log (n : ℝ)) ^ 2 * ((n : ℝ)/(l : ℝ)) := by
+      apply Finset.sum_le_sum
+      intro l hl
+      have hl1 : 1 ≤ l := (Finset.mem_Icc.mp hl).1
+      have hpos : (0:ℝ) < (l:ℝ) := by exact_mod_cast hl1
+      have hcast : ((n / l : ℕ) : ℝ) ≤ (n : ℝ)/(l : ℝ) := Nat.cast_div_le
+      exact mul_le_mul_of_nonneg_left hcast (by positivity)
+    _ = (Real.log (n : ℝ)) ^ 2 * ((n : ℝ) *
+          ∑ l ∈ Finset.Icc 1 L, (1:ℝ)/(l:ℝ)) := by
+      rw [← Finset.mul_sum]
+      congr 1
+      conv_rhs => rw [Finset.mul_sum]
+      apply Finset.sum_congr rfl
+      intro l _
+      ring
+    _ = (Real.log (n : ℝ)) ^ 2 * (n : ℝ) *
+          ∑ l ∈ Finset.Icc 1 L, (1:ℝ)/(l:ℝ) := by ring
+    _ = (Real.log (n : ℝ)) ^ 2 * (n : ℝ) * (harmonic L : ℝ) := by rw [hharm]
+    _ ≤ (Real.log (n : ℝ)) ^ 2 * (n : ℝ) * (1 + Real.log (L : ℝ)) := by
+      apply mul_le_mul_of_nonneg_left _ (by positivity)
+      exact_mod_cast harmonic_le_one_add_log L
+    _ ≤ (Real.log (n : ℝ)) ^ 2 * (n : ℝ) * (1 + Real.log (n : ℝ)) := by
+      apply mul_le_mul_of_nonneg_left _ (by positivity)
+      have hLn : L ≤ n := Nat.div_le_self n (U + 1)
+      have hlog : Real.log (L : ℝ) ≤ Real.log (n : ℝ) := by
+        rcases Nat.eq_zero_or_pos L with h0 | hpos
+        · rw [h0]
+          simpa using Real.log_natCast_nonneg n
+        · exact Real.log_le_log (by exact_mod_cast hpos) (by exact_mod_cast hLn)
+      linarith
+    _ = (n : ℝ) * (Real.log (n : ℝ)) ^ 2 * (1 + Real.log (n : ℝ)) := by ring
+
 /-- Dispersion/phase expansion of the Type-II energy: the squared sum becomes
 a double sum in `l1,l2` with an inner geometric sum in `d`. -/
 theorem typeII_energy_dispersion (n U : ℕ) (t : ℝ) :

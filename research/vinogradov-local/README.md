@@ -493,3 +493,20 @@ each `(l1,l2)` pair in the non-resonant case.  The remaining dispersion work
 is the diagonal, the resonant `q | (l1-l2)` case, and the summation over
 `l1,l2` (the crude triangle bound still gives only `n²`; the resonant and
 off-diagonal terms need the large sieve/divisor-correlation saving).
+
+### Diagonal dispersion contribution
+
+`diagonal_dispersion_le`:
+
+```lean
+∑ l ≤ n/(U+1), ‖typeIICoeff U l‖² * (n/l)
+  ≤ n (log n)² (1 + log n).
+```
+
+This is the diagonal majorant in the dispersion expansion (the `l1 = l2`
+term, whose geometric length is at most `n/l`).  So the diagonal part of the
+Type-II energy is `n (log n)^3`, which after the outer factor `n/U` is
+`n²/U (log n)^3 = o(n²)`.
+
+The remaining off-diagonal part still needs the resonant `q | (l1-l2)` /
+large-sieve saving; the crude `2q` triangle bound is not enough.
