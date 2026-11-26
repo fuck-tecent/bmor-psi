@@ -373,6 +373,79 @@ theorem norm_expSum_vaughan_typeI_le_majorArc (n q U a : ℕ) (β : ℝ)
           · exact le_rfl
         _ = 6 * ((U:ℝ) * (U:ℝ)) * (q:ℝ) * Real.log (n:ℝ) := by ring
 
+/-- Geometric bound for the innermost Type-II sum at frequency `d * e * t`. -/
+lemma norm_typeII_m_sum_le (n d e : ℕ) (t : ℝ)
+    (hsin : Real.sin (Real.pi * (((d * e : ℕ) : ℝ) * t)) ≠ 0) :
+    ‖∑ m ∈ Finset.Icc 1 (n / (d * e)), E (((d * e * m : ℕ) : ℝ) * t)‖ ≤
+      2 / |Real.sin (Real.pi * (((d * e : ℕ) : ℝ) * t))| := by
+  have hphase : (∑ m ∈ Finset.Icc 1 (n / (d * e)), E (((d * e * m : ℕ) : ℝ) * t)) =
+      ∑ m ∈ Finset.Icc 1 (n / (d * e)), E ((m : ℝ) * (((d * e : ℕ) : ℝ) * t)) := by
+    apply Finset.sum_congr rfl
+    intro m _
+    congr 1
+    push_cast
+    ring
+  rw [hphase]
+  exact norm_geometric_sum_Icc_le_two (n / (d * e)) (((d * e : ℕ) : ℝ) * t) hsin
+
+lemma norm_sum_mul_sq_le_sum_mul_sum_sq {ι : Type*} (s : Finset ι)
+    (w : ι → ℝ) (F : ι → ℂ) (hw : ∀ i ∈ s, 0 ≤ w i) :
+    ‖∑ i ∈ s, (w i : ℂ) * F i‖ ^ 2 ≤
+      (∑ i ∈ s, w i) * ∑ i ∈ s, w i * ‖F i‖ ^ 2 := by
+  have h1 : ‖∑ i ∈ s, (w i : ℂ) * F i‖ ≤ ∑ i ∈ s, w i * ‖F i‖ := by
+    calc
+      ‖∑ i ∈ s, (w i : ℂ) * F i‖ ≤ ∑ i ∈ s, ‖(w i : ℂ) * F i‖ := norm_sum_le _ _
+      _ = ∑ i ∈ s, w i * ‖F i‖ := by
+        apply Finset.sum_congr rfl
+        intro i hi
+        rw [norm_mul, Complex.norm_real, Real.norm_eq_abs, abs_of_nonneg (hw i hi)]
+  have h2 : (∑ i ∈ s, w i * ‖F i‖) ^ 2 ≤
+      (∑ i ∈ s, w i) * ∑ i ∈ s, w i * ‖F i‖ ^ 2 := by
+    have h := Finset.sum_mul_sq_le_sq_mul_sq s
+      (fun i => Real.sqrt (w i)) (fun i => Real.sqrt (w i) * ‖F i‖)
+    have hleft : (∑ i ∈ s, Real.sqrt (w i) * (Real.sqrt (w i) * ‖F i‖)) =
+        ∑ i ∈ s, w i * ‖F i‖ := by
+      apply Finset.sum_congr rfl
+      intro i hi
+      rw [← mul_assoc, Real.mul_self_sqrt (hw i hi)]
+    have hr1 : (∑ i ∈ s, (Real.sqrt (w i)) ^ 2) = ∑ i ∈ s, w i := by
+      apply Finset.sum_congr rfl
+      intro i hi
+      rw [Real.sq_sqrt (hw i hi)]
+    have hr2 : (∑ i ∈ s, (Real.sqrt (w i) * ‖F i‖) ^ 2) =
+        ∑ i ∈ s, w i * ‖F i‖ ^ 2 := by
+      apply Finset.sum_congr rfl
+      intro i hi
+      rw [mul_pow, Real.sq_sqrt (hw i hi)]
+    rw [hleft, hr1, hr2] at h
+    exact h
+  calc
+    ‖∑ i ∈ s, (w i : ℂ) * F i‖ ^ 2 ≤ (∑ i ∈ s, w i * ‖F i‖) ^ 2 := by
+      exact pow_le_pow_left₀ (norm_nonneg _) h1 2
+    _ ≤ _ := h2
+
+
+/-- Summing the weighted Cauchy–Schwarz over the outer `d` block. -/
+lemma sum_norm_mul_sq_le_sum_weight_mul_energy {ι κ : Type*} (s : Finset ι) (t : Finset κ)
+    (w : ι → ℝ) (G : κ → ι → ℂ) (hw : ∀ i ∈ s, 0 ≤ w i) :
+    ∑ d ∈ t, ‖∑ e ∈ s, (w e : ℂ) * G d e‖ ^ 2 ≤
+      (∑ e ∈ s, w e) * ∑ e ∈ s, w e * ∑ d ∈ t, ‖G d e‖ ^ 2 := by
+  have hpoint : ∀ d ∈ t, ‖∑ e ∈ s, (w e : ℂ) * G d e‖ ^ 2 ≤
+      (∑ e ∈ s, w e) * ∑ e ∈ s, w e * ‖G d e‖ ^ 2 :=
+    fun d _ => norm_sum_mul_sq_le_sum_mul_sum_sq s w (fun e => G d e) hw
+  calc
+    ∑ d ∈ t, ‖∑ e ∈ s, (w e : ℂ) * G d e‖ ^ 2
+        ≤ ∑ d ∈ t, (∑ e ∈ s, w e) * ∑ e ∈ s, w e * ‖G d e‖ ^ 2 :=
+      Finset.sum_le_sum hpoint
+    _ = (∑ e ∈ s, w e) * ∑ d ∈ t, ∑ e ∈ s, w e * ‖G d e‖ ^ 2 := by
+      rw [Finset.mul_sum]
+    _ = (∑ e ∈ s, w e) * ∑ e ∈ s, w e * ∑ d ∈ t, ‖G d e‖ ^ 2 := by
+      congr 1
+      rw [Finset.sum_comm]
+      apply Finset.sum_congr rfl
+      intro e _
+      rw [Finset.mul_sum]
+
 /-- The inner `(e, m)` sum of the Type-II term at a fixed outer `d`. -/
 noncomputable def typeIIInner (n U : ℕ) (t : ℝ) (d : ℕ) : ℂ :=
   ∑ e ∈ Finset.Icc (U + 1) (n / d), ((Λ : ArithmeticFunction ℝ) e : ℂ) *

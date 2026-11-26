@@ -434,3 +434,24 @@ Boxes with `8DEM ≤ n` cover the sub-region `dem ≤ n/8`.  The remaining thin
 top region `n/8 < dem ≤ n` needs the standard dyadic boundary refinement
 (or a separate bound); this is the last combinatorial step for the global
 Type-II estimate.
+
+## Bilinear saving via `e`-weighted Cauchy–Schwarz
+
+The fixed-box estimate `(EM+q)EM` treats the `(e,m)` coefficients as arbitrary
+and loses the geometric cancellation in `m`; for large `EM` it only gives an
+`n²`-type bound, not a power saving.  The correct bilinear step is
+
+```lean
+∑ d, ‖∑ e, Λ e * G_e(d)‖²
+  ≤ (∑ e, Λ e) * ∑ e, Λ e * ∑ d, ‖G_e(d)‖²,
+```
+
+where `G_e(d) = ∑_m E(d*e*m*t)`.  This is
+`sum_norm_mul_sq_le_sum_weight_mul_energy` plus
+`norm_sum_mul_sq_le_sum_mul_sum_sq`.
+
+For fixed `e`, `G_e(d)` is a geometric sum at frequency `d * (e t)`; the
+`d`-energy is where the large sieve saves.  The frequency set has modulus
+`q / gcd(e,q)`, so the remaining step is the standard gcd decomposition:
+apply the separated/finite large sieve to each `e` class and sum over `e`
+with the divisor bounds on `∑ Λ(e) / gcd(e,q)`.

@@ -144,3 +144,17 @@ dyadic refinement (or a trivial estimate on the thin boundary).
 region `n/8 < dem ≤ n` is the remaining boundary.  The next step is the
 standard dyadic refinement of this top region (or a direct bound on its
 energy using the same fixed-box estimate with shorter `d`-ranges).
+
+## The missing bilinear saving
+
+The fixed-box estimate alone cannot finish Type-II: for large `EM` it is
+`(EM+q)EM`, which loses the geometric cancellation in `m` and gives only
+`n²`.  The correct reduction is the `e`-weighted Cauchy–Schwarz
+
+`∑_d ‖∑_e Λ(e) G_e(d)‖²
+   ≤ (∑_e Λ(e)) ∑_e Λ(e) ∑_d ‖G_e(d)‖²`.
+
+Now `G_e(d) = ∑_m E(d e m t)` is a geometric sum at frequency `d (e t)`.
+For fixed `e`, the modulus is `q / gcd(e,q)`, so the remaining task is the
+gcd decomposition: apply the large sieve to each `e` class and sum over `e`
+using divisor bounds.  This is the genuine bilinear/Gallagher step.
