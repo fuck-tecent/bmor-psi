@@ -99,3 +99,20 @@ For `t = a/q + β` and `sin (π q β) ≠ 0` it proves
 where the numerator is exactly the Abel variation of the residue-class
 subsequence `j ↦ u (r + j*q)`. This is the rational point estimate needed before
 summing over Farey arcs.
+
+## Vaughan decomposition
+
+`vaughan.lean` contains the finite Vaughan identity (adapted from accepted
+PR #2430, Apache-2.0) and proves the corresponding decomposition of the
+exponential sum:
+
+```lean
+expSum n Λ t =
+  expSum n (low U Λ) t +
+  expSum n (low U μ * log) t -
+  expSum n (low U μ * low U Λ * ζ) t +
+  expSum n (high U μ * ζ * high U Λ) t
+```
+
+The last term is the Type-II coefficient; the first three are the Type-I terms
+that the support/Abel estimates must bound.
