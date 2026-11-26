@@ -50,8 +50,12 @@ The goal is a bound `o(n / (log n)^A)`, eventually for `U ≈ n^{2/5}` and
    `∑_{d ≤ D} ‖∑_{l ≤ L} c_l e(l d a/q)‖²
       ≤ (D/q + 1)(L + q)∑|c_l|²`
    for `gcd(a,q) = 1`.  What remains is the varying length `n/d` and `β`.
-4. Handle the `β` perturbation by Abel summation; the `e(d e m β)` phase
-   varies slowly when `d e m |β|` is small.
+4. Handle the `β` perturbation.  The sharp separated additive large sieve is
+   now vendored (`separated_large_sieve.lean`), and
+   `separated_frequency_energy` gives the fixed-length energy bound for any
+   `δ`-separated frequency family.  Remaining: prove `CircleSeparated` for
+   `x d = d (a/q + β)` on blocks of length `< q`, using `gcd(a,q) = 1` and
+   `|β| ≤ 1/(2 q D)`.
 
 The technical bottleneck is step 2: the finite large sieve needs a fixed
 coefficient length, so a smooth cutoff (or a dyadic block decomposition with

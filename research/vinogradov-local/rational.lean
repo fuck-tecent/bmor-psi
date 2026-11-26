@@ -1,5 +1,6 @@
 import Mathlib
 import finite_large_sieve
+import separated_large_sieve
 open scoped BigOperators
 noncomputable def E (x : ℝ) : ℂ := Complex.exp (((2 * Real.pi * x : ℝ) : ℂ) * Complex.I)
 
@@ -63,6 +64,50 @@ lemma sum_le_card_mul_sum_of_fiber_bound {ι κ : Type*} [Fintype κ] [Decidable
       exact mul_le_mul_of_nonneg_right (hcard k) (hG k)
     _ = C * ∑ k : κ, G k := by
       rw [Finset.mul_sum]
+
+/-- Bridge from the separated large sieve's half phase to our full phase. -/
+lemma sieveHalfPhase_two_mul (y : ℝ) :
+    GoldbachBDHSharp.OAI.Ostmann.sieveHalfPhase (2 * y) = E y := by
+  unfold GoldbachBDHSharp.OAI.Ostmann.sieveHalfPhase E
+  congr 1
+  push_cast
+  ring
+
+/-- Fixed-length energy bound for an arbitrary separated frequency set,
+using the sharp separated additive large sieve.  This covers the `β ≠ 0`
+major-arc perturbation, at the cost of a fixed coefficient length. -/
+theorem separated_frequency_energy (D L : ℕ) (x : Fin (D + 1) → ℝ) (δ : ℝ)
+    (hδ : 0 < δ)
+    (hx : GoldbachBDHSharp.OAI.Ostmann.CircleSeparated x δ)
+    (c : Fin (L + 1) → ℂ) :
+    ∑ d : Fin (D + 1),
+      ‖∑ n : Fin (L + 1), c n * E ((n : ℝ) * x d)‖ ^ 2
+      ≤ ((L + 1 : ℝ) + 1 / δ) * ∑ n : Fin (L + 1), ‖c n‖ ^ 2 := by
+  have h := GoldbachBDHSharp.OAI.Ostmann.separated_additive_sieve
+    (x := x) (δ := δ) hδ hx (L + 1) 0 c
+  have hLHS : (∑ d : Fin (D + 1),
+      ‖∑ n : Fin (L + 1), c n * E ((n : ℝ) * x d)‖ ^ 2)
+      = ∑ d : Fin (D + 1),
+          ‖∑ n : Fin (L + 1),
+            c n * GoldbachBDHSharp.OAI.Ostmann.sieveHalfPhase
+              (2 * (0 + (n : ℝ)) * x d)‖ ^ 2 := by
+    apply Finset.sum_congr rfl
+    intro d _
+    have hinner : (∑ n : Fin (L + 1), c n * E ((n : ℝ) * x d))
+        = ∑ n : Fin (L + 1),
+            c n * GoldbachBDHSharp.OAI.Ostmann.sieveHalfPhase
+              (2 * (0 + (n : ℝ)) * x d) := by
+      apply Finset.sum_congr rfl
+      intro n _
+      have harg : 2 * (0 + (n : ℝ)) * x d = 2 * ((n : ℝ) * x d) := by ring
+      rw [harg, sieveHalfPhase_two_mul]
+    rw [hinner]
+  rw [hLHS]
+  have hfactor : ((L + 1 : ℕ) : ℝ) + 1 / δ = (L : ℝ) + 1 + 1 / δ := by
+    push_cast
+    ring
+  rw [hfactor] at h
+  exact h
 
 /- Fixed-length frequency-energy form of the finite large sieve: for
 `gcd(a,q) = 1`, summing the squared Fourier transforms at the frequencies

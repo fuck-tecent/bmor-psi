@@ -305,3 +305,24 @@ Remaining for Type-II:
 
 - the inner length `n/d` varies with `d` (dyadic decomposition/smooth cutoff);
 - the `β ≠ 0` perturbation (separated large sieve or Abel summation).
+
+## Separated large sieve for major arcs
+
+`separated_large_sieve.lean` vendors the accepted sharp separated additive
+large sieve (upstream PR #2406, Apache-2.0), including
+`separated_additive_sieve`.
+
+`rational.lean` proves `separated_frequency_energy`: for a `δ`-separated
+family `x : Fin (D+1) → ℝ`,
+
+```lean
+∑ d : Fin (D+1), ‖∑ n : Fin (L+1), c n * E (n * x d)‖ ^ 2
+  ≤ (L + 1 + 1/δ) * ∑ n : Fin (L+1), ‖c n‖ ^ 2.
+```
+
+This is the fixed-length Type-II energy bound for arbitrary separated
+frequencies, so it covers the `β ≠ 0` major-arc perturbation.  Remaining:
+
+- prove `CircleSeparated` for `x d = d * (a/q + β)` on blocks of length
+  `< q` (using `gcd(a,q) = 1` and `|β| ≤ 1/(2qD)`);
+- combine with the varying length `n/d` (dyadic decomposition).
