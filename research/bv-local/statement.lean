@@ -33,3 +33,6 @@ theorem bv_three_fifths_target_iff :
 end
 
 end PEqualNP.Outside
+
+/-- The classical Bombieri–Vinogradov level-1/2 statement, stated but not proved here. -/
+example : Prop := BVLevel (1 / 2 : ℝ)
