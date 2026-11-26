@@ -127,3 +127,14 @@ that the support/Abel estimates must bound.
 
 whenever `|f k| ≤ C` for `k ≤ U`. This is the Type-I support estimate in the
 same `ArithmeticFunction` language as the Vaughan decomposition.
+
+## First Type-I term
+
+`vaughan.lean` now bounds the first Vaughan term:
+
+```lean
+‖expSum n (low U Λ) t‖ ≤ (U+1) * log n
+```
+
+for `1 ≤ n` and `U ≤ n`. Together with the support lemma, this makes the
+Type-I `Λ` term `o(n)` once `U = o(n / log n)`.

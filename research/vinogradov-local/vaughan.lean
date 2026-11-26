@@ -128,6 +128,22 @@ lemma norm_expSum_low_le (n U : ℕ) (f : ArithmeticFunction ℝ) (C t : ℝ)
   · intro k hk
     simpa [low, hk] using hbound k hk
 
+
+lemma norm_expSum_low_vonMangoldt_le (n U : ℕ) (hn : 1 ≤ n) (hUn : U ≤ n) (t : ℝ) :
+    ‖expSum n (low U (Λ : ArithmeticFunction ℝ)) t‖ ≤
+      (U + 1 : ℝ) * Real.log (n : ℝ) := by
+  apply norm_expSum_low_le n U (Λ : ArithmeticFunction ℝ) (Real.log (n : ℝ)) t
+  · exact Real.log_natCast_nonneg n
+  · intro k hk
+    rw [abs_of_nonneg ArithmeticFunction.vonMangoldt_nonneg]
+    by_cases hk0 : k = 0
+    · simp [hk0, Real.log_natCast_nonneg n]
+    · have hk_n : k ≤ n := hk.trans hUn
+      have hkpos : 0 < k := Nat.pos_of_ne_zero hk0
+      have hlog : Real.log (k : ℝ) ≤ Real.log (n : ℝ) :=
+        Real.log_le_log (by exact_mod_cast hkpos) (by exact_mod_cast hk_n)
+      exact ArithmeticFunction.vonMangoldt_le_log.trans hlog
+
 end
 
 end PEqualNP.Outside.Vaughan
