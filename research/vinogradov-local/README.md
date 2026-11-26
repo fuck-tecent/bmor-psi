@@ -587,3 +587,40 @@ whenever the kernel is `≤ 2q` on non-resonant pairs.  Combined with the
 geometric bound and the generalized sine separation, this gives the full
 non-resonant off-diagonal estimate.  Only the resonant `q | (l1-l2)` part
 remains.
+
+### Type-I major arcs for all denominators `q`
+
+The small-`q` gap (`q <= U` for the second term, `q <= U^2` for the third)
+is now closed.  The key is a pointwise sine separation lemma plus a trivial
+bound for the multiples of `q`:
+
+- `abs_sin_pi_mul_majorArc_ge_pointwise`: for a single `h <= M` with
+  `q ∤ h` and `|β| <= 1/(16 q M)`, `|sin (π h (a/q + β))| >= 1/q`;
+- `norm_log_weighted_geometric_sum_Icc_le_trivial`: the log-weighted
+  geometric sum is at most `N log N` (no oscillation needed);
+- `sum_inv_Icc_le_one_add_log`, `sum_inv_multiples_eq`,
+  `sum_inv_filter_le`: harmonic-sum bounds for the multiples of `q`;
+- `double_sum_vonMangoldt_div_le`: in the double sum over `d,e <= U` with
+  `q | de`, the von Mangoldt identity `∑_{e|k} Λ(e) = log k` removes the
+  divisor-counting loss and gives the saving `1/q`.
+
+Results:
+
+```lean
+-- second term, any q >= 1
+norm_expSum_low_mu_mul_log_le_majorArc_small_q :
+  |S_2| <= 2 U q log n + 2 n log n (1 + log n) / q
+
+-- third term, any q >= 1
+norm_expSum_low_mu_lowLambda_zeta_le_majorArc_small_q :
+  |S_3| <= 2 U^2 q log n + 4 n log n (1 + log n) / q
+
+-- combined Type-I, any q >= 1
+norm_expSum_vaughan_typeI_le_majorArc_small_q :
+  |S_I,full| <= 6 U^2 q log n + 6 n log n (1 + log n) / q
+```
+
+All assume `1 <= U <= n`, `gcd(a,q) = 1`, and `|β| <= 1/(16 q U^2)`.  Thus
+the Type-I major-arc estimate no longer needs `U^2 < q`; the previous
+`norm_expSum_vaughan_typeI_le_majorArc` is retained as the sharper
+large-`q` form.

@@ -213,3 +213,15 @@ instantiate with the non-resonance predicate `q ∤ (l1-l2)` and the geometric
 `abs_sin_pi_mul_majorArc_ge_of_not_dvd` supplies the separation for all
 `h ≤ M` (not just `h < q`).  The sole remaining off-diagonal input is the
 resonant `q | (l1-l2)` correlation.
+
+## Type-I small-q closed
+
+`norm_expSum_vaughan_typeI_le_majorArc_small_q` gives the combined Type-I
+major-arc bound for every `q >= 1`:
+
+  6 U^2 q log n + 6 n log n (1 + log n) / q.
+
+The small-`q` multiples of `q` are handled trivially; the integer
+coefficient sum uses `∑_{e|k} Λ(e) = log k` to avoid divisor-counting
+losses.  Remaining Type-I work is optimization for the eventual
+major/minor-arc assembly, not coverage.
