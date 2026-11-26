@@ -272,6 +272,304 @@ theorem expSum_low_mu_mul_log_eq (n U : ℕ) (t : ℝ) :
     rw [← hprod]
     ring
 
+
+lemma mul_zeta_mul_apply (f g : ArithmeticFunction ℝ) (k : ℕ) :
+    (f * (ζ : ArithmeticFunction ℝ) * g) k =
+      ∑ p ∈ k.divisorsAntidiagonal,
+        ∑ q ∈ p.1.divisorsAntidiagonal, f q.1 * g p.2 := by
+  rw [ArithmeticFunction.mul_apply]
+  apply Finset.sum_congr rfl
+  intro p _
+  rw [ArithmeticFunction.coe_mul_zeta_apply,
+    ← Nat.sum_divisorsAntidiagonal (fun i _ => f i)]
+  rw [Finset.sum_mul]
+
+/- Reindex `sum_{k <= n} (f * zeta * g)(k) e(k t)` as a triple sum over
+`d * e * m <= n`.  Both the third Type-I term and the Type-II term of the
+Vaughan decomposition have this shape. -/
+set_option maxHeartbeats 1000000 in
+theorem expSum_mul_zeta_eq (n : ℕ) (f g : ArithmeticFunction ℝ) (t : ℝ) :
+    expSum n (f * (ζ : ArithmeticFunction ℝ) * g) t =
+      ∑ d ∈ Finset.Icc 1 n,
+        (f d : ℂ) *
+          ∑ e ∈ Finset.Icc 1 (n / d),
+            (g e : ℂ) *
+              ∑ m ∈ Finset.Icc 1 (n / (d * e)),
+                E (((d * e * m : ℕ) : ℝ) * t) := by
+  classical
+  unfold expSum
+  have h1 : ∀ k ∈ Finset.range (n + 1),
+      (((f * (ζ : ArithmeticFunction ℝ) * g) k : ℝ) : ℂ) * E ((k : ℝ) * t) =
+        ∑ p ∈ k.divisorsAntidiagonal,
+          ∑ q ∈ p.1.divisorsAntidiagonal,
+            (f q.1 : ℂ) * (g p.2 : ℂ) * E ((k : ℝ) * t) := by
+    intro k _
+    rw [mul_zeta_mul_apply]
+    push_cast
+    rw [Finset.sum_mul]
+    apply Finset.sum_congr rfl
+    intro p _
+    rw [Finset.sum_mul]
+  rw [Finset.sum_congr rfl h1]
+  rw [Finset.sum_sigma']
+  rw [Finset.sum_sigma']
+  have h2 : (∑ d ∈ Finset.Icc 1 n, (f d : ℂ) *
+        ∑ e ∈ Finset.Icc 1 (n / d), (g e : ℂ) *
+          ∑ m ∈ Finset.Icc 1 (n / (d * e)),
+            E (((d * e * m : ℕ) : ℝ) * t)) =
+      ∑ d ∈ Finset.Icc 1 n, ∑ e ∈ Finset.Icc 1 (n / d),
+        ∑ m ∈ Finset.Icc 1 (n / (d * e)),
+          (f d : ℂ) * ((g e : ℂ) * E (((d * e * m : ℕ) : ℝ) * t)) := by
+    simp only [Finset.mul_sum]
+  rw [h2]
+  rw [Finset.sum_sigma']
+  rw [Finset.sum_sigma']
+  refine Finset.sum_bij
+    (fun X _ => (⟨⟨X.2.1, X.1.2.2⟩, X.2.2⟩ : Σ _ : (Σ _ : ℕ, ℕ), ℕ)) ?_ ?_ ?_ ?_
+  · intro X hX
+    obtain ⟨hX1, hX2⟩ := Finset.mem_sigma.mp hX
+    obtain ⟨hk_range, hp_mem⟩ := Finset.mem_sigma.mp hX1
+    obtain ⟨hpk, hkne⟩ := Nat.mem_divisorsAntidiagonal.mp hp_mem
+    obtain ⟨hqp, hpne⟩ := Nat.mem_divisorsAntidiagonal.mp hX2
+    have hp1pos : 0 < X.1.2.1 := by
+      rcases Nat.eq_zero_or_pos X.1.2.1 with h0 | hpos
+      · exfalso
+        rw [h0, zero_mul] at hpk
+        exact hkne hpk.symm
+      · exact hpos
+    have hp2pos : 0 < X.1.2.2 := by
+      rcases Nat.eq_zero_or_pos X.1.2.2 with h0 | hpos
+      · exfalso
+        rw [h0, mul_zero] at hpk
+        exact hkne hpk.symm
+      · exact hpos
+    have hq1pos : 0 < X.2.1 := by
+      rcases Nat.eq_zero_or_pos X.2.1 with h0 | hpos
+      · exfalso
+        rw [h0, zero_mul] at hqp
+        exact hpne hqp.symm
+      · exact hpos
+    have hq2pos : 0 < X.2.2 := by
+      rcases Nat.eq_zero_or_pos X.2.2 with h0 | hpos
+      · exfalso
+        rw [h0, mul_zero] at hqp
+        exact hpne hqp.symm
+      · exact hpos
+    have hkn : X.1.1 ≤ n := by
+      have := Finset.mem_range.mp hk_range
+      omega
+    have hq1n : X.2.1 ≤ n := by
+      have hle1 : X.2.1 ≤ X.1.2.1 := by
+        calc X.2.1 ≤ X.2.1 * X.2.2 := Nat.le_mul_of_pos_right X.2.1 hq2pos
+          _ = X.1.2.1 := hqp
+      have hle2 : X.1.2.1 ≤ X.1.1 := by
+        calc X.1.2.1 ≤ X.1.2.1 * X.1.2.2 := Nat.le_mul_of_pos_right X.1.2.1 hp2pos
+          _ = X.1.1 := hpk
+      omega
+    have hed : X.1.2.2 ≤ n / X.2.1 := by
+      rw [Nat.le_div_iff_mul_le hq1pos]
+      calc X.1.2.2 * X.2.1 ≤ X.1.2.2 * (X.2.1 * X.2.2) :=
+            Nat.mul_le_mul_left _ (Nat.le_mul_of_pos_right X.2.1 hq2pos)
+        _ = X.1.2.1 * X.1.2.2 := by rw [hqp]; ring
+        _ = X.1.1 := hpk
+        _ ≤ n := hkn
+    have hmd : X.2.2 ≤ n / (X.2.1 * X.1.2.2) := by
+      rw [Nat.le_div_iff_mul_le (Nat.mul_pos hq1pos hp2pos)]
+      calc X.2.2 * (X.2.1 * X.1.2.2) = (X.2.1 * X.2.2) * X.1.2.2 := by ring
+        _ = X.1.2.1 * X.1.2.2 := by rw [hqp]
+        _ = X.1.1 := hpk
+        _ ≤ n := hkn
+    refine Finset.mem_sigma.mpr ⟨?_, ?_⟩
+    · refine Finset.mem_sigma.mpr ⟨?_, ?_⟩
+      · exact Finset.mem_Icc.mpr ⟨hq1pos, hq1n⟩
+      · exact Finset.mem_Icc.mpr ⟨hp2pos, hed⟩
+    · exact Finset.mem_Icc.mpr ⟨hq2pos, hmd⟩
+  · intro X hX X' hX' heq
+    obtain ⟨hX1, hX2⟩ := Finset.mem_sigma.mp hX
+    obtain ⟨-, hp_mem⟩ := Finset.mem_sigma.mp hX1
+    obtain ⟨hpk, -⟩ := Nat.mem_divisorsAntidiagonal.mp hp_mem
+    obtain ⟨hqp, -⟩ := Nat.mem_divisorsAntidiagonal.mp hX2
+    obtain ⟨hX1', hX2'⟩ := Finset.mem_sigma.mp hX'
+    obtain ⟨-, hp_mem'⟩ := Finset.mem_sigma.mp hX1'
+    obtain ⟨hpk', -⟩ := Nat.mem_divisorsAntidiagonal.mp hp_mem'
+    obtain ⟨hqp', -⟩ := Nat.mem_divisorsAntidiagonal.mp hX2'
+    have hq1 : X.2.1 = X'.2.1 :=
+      congrArg (fun z : Σ _ : (Σ _ : ℕ, ℕ), ℕ => z.1.1) heq
+    have he : X.1.2.2 = X'.1.2.2 :=
+      congrArg (fun z : Σ _ : (Σ _ : ℕ, ℕ), ℕ => z.1.2) heq
+    have hq2 : X.2.2 = X'.2.2 :=
+      congrArg (fun z : Σ _ : (Σ _ : ℕ, ℕ), ℕ => z.2) heq
+    have hp1 : X.1.2.1 = X'.1.2.1 := by
+      rw [← hqp, ← hqp', hq1, hq2]
+    have hp : X.1.2 = X'.1.2 := Prod.ext hp1 he
+    have hk : X.1.1 = X'.1.1 := by
+      rw [← hpk, ← hpk', hp]
+    have hXinner : X.1 = X'.1 := Sigma.ext hk (heq_of_eq hp)
+    have hXq : X.2 = X'.2 := Prod.ext hq1 hq2
+    exact Sigma.ext hXinner (heq_of_eq hXq)
+  · intro Y hY
+    obtain ⟨hYi, hYm⟩ := Finset.mem_sigma.mp hY
+    obtain ⟨hYd, hYe⟩ := Finset.mem_sigma.mp hYi
+    obtain ⟨hd1, hdn⟩ := Finset.mem_Icc.mp hYd
+    obtain ⟨he1, hen⟩ := Finset.mem_Icc.mp hYe
+    obtain ⟨hm1, hmn⟩ := Finset.mem_Icc.mp hYm
+    refine ⟨⟨⟨Y.1.1 * Y.1.2 * Y.2, (Y.1.1 * Y.2, Y.1.2)⟩,
+      (Y.1.1, Y.2)⟩, ?_, ?_⟩
+    · refine Finset.mem_sigma.mpr ⟨?_, ?_⟩
+      · refine Finset.mem_sigma.mpr ⟨?_, ?_⟩
+        · rw [Finset.mem_range]
+          show Y.1.1 * Y.1.2 * Y.2 < n + 1
+          have h1 : Y.1.2 * Y.1.1 ≤ n :=
+            (Nat.le_div_iff_mul_le (by omega : 0 < Y.1.1)).mp hen
+          have h2 : Y.2 * (Y.1.1 * Y.1.2) ≤ n :=
+            (Nat.le_div_iff_mul_le
+              (Nat.mul_pos (by omega : 0 < Y.1.1) (by omega : 0 < Y.1.2))).mp hmn
+          have hk : Y.1.1 * Y.1.2 * Y.2 = Y.2 * (Y.1.1 * Y.1.2) := by ring
+          omega
+        · refine Nat.mem_divisorsAntidiagonal.mpr ⟨?_, ?_⟩
+          · show (Y.1.1 * Y.2) * Y.1.2 = Y.1.1 * Y.1.2 * Y.2
+            ring
+          · exact Nat.mul_ne_zero (Nat.mul_ne_zero (by omega) (by omega)) (by omega)
+      · refine Nat.mem_divisorsAntidiagonal.mpr ⟨?_, ?_⟩
+        · show Y.1.1 * Y.2 = Y.1.1 * Y.2
+          rfl
+        · exact Nat.mul_ne_zero (by omega) (by omega)
+    · rfl
+  · intro X hX
+    obtain ⟨hX1, hX2⟩ := Finset.mem_sigma.mp hX
+    obtain ⟨-, hp_mem⟩ := Finset.mem_sigma.mp hX1
+    obtain ⟨hpk, -⟩ := Nat.mem_divisorsAntidiagonal.mp hp_mem
+    obtain ⟨hqp, -⟩ := Nat.mem_divisorsAntidiagonal.mp hX2
+    show (f X.2.1 : ℂ) * (g X.1.2.2 : ℂ) * E ((X.1.1 : ℝ) * t) =
+      (f X.2.1 : ℂ) * ((g X.1.2.2 : ℂ) *
+        E (((X.2.1 * X.1.2.2 * X.2.2 : ℕ) : ℝ) * t))
+    have hk : X.1.1 = X.2.1 * X.1.2.2 * X.2.2 := by
+      rw [← hpk, ← hqp]
+      ring
+    rw [hk]
+    ring
+
+
+/-- Restrict a sum over `Icc 1 N` to `Icc 1 (min U N)` when `f` vanishes above `U`. -/
+lemma sum_Icc_eq_sum_Icc_min_of_eq_zero {f : ℕ → ℝ} {g : ℕ → ℂ} {U N : ℕ}
+    (hf : ∀ k, U < k → f k = 0) :
+    ∑ k ∈ Finset.Icc 1 N, (f k : ℂ) * g k =
+      ∑ k ∈ Finset.Icc 1 (min U N), (f k : ℂ) * g k := by
+  symm
+  apply Finset.sum_subset
+  · intro k hk
+    simp only [Finset.mem_Icc] at hk ⊢
+    omega
+  · intro k hk hks
+    have hk1 : 1 ≤ k := (Finset.mem_Icc.mp hk).1
+    have hk2 : k ≤ N := (Finset.mem_Icc.mp hk).2
+    have hks' : ¬ (k ≤ min U N) := by
+      intro h
+      exact hks (Finset.mem_Icc.mpr ⟨hk1, h⟩)
+    have hmin : min U N ≤ U := min_le_left _ _
+    have hkU : U < k := by omega
+    rw [hf k hkU]
+    simp
+
+/-- Restrict a sum over `Icc 1 N` to `Icc (U+1) N` when `f` vanishes up to `U`. -/
+lemma sum_Icc_eq_sum_Icc_succ_of_eq_zero {f : ℕ → ℝ} {g : ℕ → ℂ} {U N : ℕ}
+    (hf : ∀ k, k ≤ U → f k = 0) :
+    ∑ k ∈ Finset.Icc 1 N, (f k : ℂ) * g k =
+      ∑ k ∈ Finset.Icc (U + 1) N, (f k : ℂ) * g k := by
+  symm
+  apply Finset.sum_subset
+  · intro k hk
+    simp only [Finset.mem_Icc] at hk ⊢
+    omega
+  · intro k hk hks
+    have hk1 : 1 ≤ k := (Finset.mem_Icc.mp hk).1
+    have hk2 : k ≤ N := (Finset.mem_Icc.mp hk).2
+    have hks' : ¬ (U + 1 ≤ k) := by
+      intro h
+      exact hks (Finset.mem_Icc.mpr ⟨h, hk2⟩)
+    have hkU : k ≤ U := by omega
+    rw [hf k hkU]
+    simp
+
+/-- Third Vaughan term reindexed as a double Type-I sum over `d, e <= U`,
+each with an inner geometric sum in `m`. -/
+theorem expSum_low_mu_lowLambda_zeta_eq (n U : ℕ) (t : ℝ) :
+    expSum n (low U (μ : ArithmeticFunction ℝ) * low U (Λ : ArithmeticFunction ℝ) *
+        (ζ : ArithmeticFunction ℝ)) t =
+      ∑ d ∈ Finset.Icc 1 (min U n),
+        ((μ : ArithmeticFunction ℝ) d : ℂ) *
+          ∑ e ∈ Finset.Icc 1 (min U (n / d)),
+            ((Λ : ArithmeticFunction ℝ) e : ℂ) *
+              ∑ m ∈ Finset.Icc 1 (n / (d * e)),
+                E (((d * e * m : ℕ) : ℝ) * t) := by
+  have hζ : (low U (μ : ArithmeticFunction ℝ) * low U (Λ : ArithmeticFunction ℝ) *
+        (ζ : ArithmeticFunction ℝ)) =
+      (low U (μ : ArithmeticFunction ℝ) * (ζ : ArithmeticFunction ℝ) *
+        low U (Λ : ArithmeticFunction ℝ)) := by
+    ring
+  rw [hζ, expSum_mul_zeta_eq n (low U (μ : ArithmeticFunction ℝ))
+    (low U (Λ : ArithmeticFunction ℝ)) t]
+  rw [sum_Icc_eq_sum_Icc_min_of_eq_zero (U := U) (N := n) (f := low U (μ : ArithmeticFunction ℝ))
+    (g := fun d => ∑ e ∈ Finset.Icc 1 (n / d), (low U (Λ : ArithmeticFunction ℝ) e : ℂ) *
+      ∑ m ∈ Finset.Icc 1 (n / (d * e)), E (((d * e * m : ℕ) : ℝ) * t))
+    (fun k hk => by simp [low, not_le_of_gt hk])]
+  apply Finset.sum_congr rfl
+  intro d hd
+  have hdU : d ≤ U := by
+    have := (Finset.mem_Icc.mp hd).2
+    omega
+  rw [show low U (μ : ArithmeticFunction ℝ) d = (μ : ArithmeticFunction ℝ) d by
+    simp [low, hdU]]
+  congr 1
+  rw [sum_Icc_eq_sum_Icc_min_of_eq_zero (U := U) (N := n / d) (f := low U (Λ : ArithmeticFunction ℝ))
+    (g := fun e => ∑ m ∈ Finset.Icc 1 (n / (d * e)), E (((d * e * m : ℕ) : ℝ) * t))
+    (fun k hk => by simp [low, not_le_of_gt hk])]
+  apply Finset.sum_congr rfl
+  intro e he
+  have heU : e ≤ U := by
+    have := (Finset.mem_Icc.mp he).2
+    omega
+  rw [show low U (Λ : ArithmeticFunction ℝ) e = (Λ : ArithmeticFunction ℝ) e by
+    simp [low, heU]]
+
+/-- Type-II Vaughan term reindexed as a bilinear sum over `d, e > U`, each
+with an inner geometric sum in `m`. -/
+theorem expSum_high_mu_zeta_highLambda_eq (n U : ℕ) (t : ℝ) :
+    expSum n (high U (μ : ArithmeticFunction ℝ) * (ζ : ArithmeticFunction ℝ) *
+        high U (Λ : ArithmeticFunction ℝ)) t =
+      ∑ d ∈ Finset.Icc (U + 1) n,
+        ((μ : ArithmeticFunction ℝ) d : ℂ) *
+          ∑ e ∈ Finset.Icc (U + 1) (n / d),
+            ((Λ : ArithmeticFunction ℝ) e : ℂ) *
+              ∑ m ∈ Finset.Icc 1 (n / (d * e)),
+                E (((d * e * m : ℕ) : ℝ) * t) := by
+  rw [expSum_mul_zeta_eq n (high U (μ : ArithmeticFunction ℝ))
+    (high U (Λ : ArithmeticFunction ℝ)) t]
+  rw [sum_Icc_eq_sum_Icc_succ_of_eq_zero (U := U) (N := n)
+    (f := high U (μ : ArithmeticFunction ℝ))
+    (g := fun d => ∑ e ∈ Finset.Icc 1 (n / d), (high U (Λ : ArithmeticFunction ℝ) e : ℂ) *
+      ∑ m ∈ Finset.Icc 1 (n / (d * e)), E (((d * e * m : ℕ) : ℝ) * t))
+    (fun k hk => by simp [high, not_lt_of_ge hk])]
+  apply Finset.sum_congr rfl
+  intro d hd
+  have hdU : U < d := by
+    have := (Finset.mem_Icc.mp hd).1
+    omega
+  rw [show high U (μ : ArithmeticFunction ℝ) d = (μ : ArithmeticFunction ℝ) d by
+    simp [high, hdU]]
+  congr 1
+  rw [sum_Icc_eq_sum_Icc_succ_of_eq_zero (U := U) (N := n / d)
+    (f := high U (Λ : ArithmeticFunction ℝ))
+    (g := fun e => ∑ m ∈ Finset.Icc 1 (n / (d * e)), E (((d * e * m : ℕ) : ℝ) * t))
+    (fun k hk => by simp [high, not_lt_of_ge hk])]
+  apply Finset.sum_congr rfl
+  intro e he
+  have heU : U < e := by
+    have := (Finset.mem_Icc.mp he).1
+    omega
+  rw [show high U (Λ : ArithmeticFunction ℝ) e = (Λ : ArithmeticFunction ℝ) e by
+    simp [high, heU]]
+
 end
 
 end PEqualNP.Outside.Vaughan

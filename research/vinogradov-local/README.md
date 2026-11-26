@@ -183,3 +183,30 @@ and `|β| ≤ 1/(16 q U)`.
 
 To check the multi-file development, run `./check.sh` (it builds the two
 dependency `.olean`s into `build/` and then checks `type1_bound.lean`).
+
+## Triple reindexing: third Type-I term and Type-II term
+
+`vaughan.lean` proves the general reindexing
+
+```lean
+expSum n (f * ζ * g) t =
+  ∑ d ∈ Icc 1 n, f d *
+    ∑ e ∈ Icc 1 (n/d), g e *
+      ∑ m ∈ Icc 1 (n/(d*e)), E (d*e*m*t)
+```
+
+(`expSum_mul_zeta_eq`).  Support-restriction lemmas (`sum_Icc_eq_sum_Icc_min_of_eq_zero`
+and `sum_Icc_eq_sum_Icc_succ_of_eq_zero`) turn this into the two remaining
+Vaughan pieces:
+
+- the third Type-I term
+  `expSum n (low U μ * low U Λ * ζ) t`
+  as a double Type-I sum over `d, e <= U` (`expSum_low_mu_lowLambda_zeta_eq`);
+- the Type-II term
+  `expSum n (high U μ * ζ * high U Λ) t`
+  as a bilinear sum over `d, e > U` (`expSum_high_mu_zeta_highLambda_eq`).
+
+Both inner sums are geometric sums in `m`, ready for the geometric/Abel
+bounds.  The third term can be handled on major arcs with `q > U^2`, where
+every product `d * e` is still below `q`; the Type-II term needs the large
+sieve instead.
