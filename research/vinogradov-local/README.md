@@ -210,3 +210,19 @@ Both inner sums are geometric sums in `m`, ready for the geometric/Abel
 bounds.  The third term can be handled on major arcs with `q > U^2`, where
 every product `d * e` is still below `q`; the Type-II term needs the large
 sieve instead.
+
+## Third Type-I term on major arcs
+
+`type1_bound.lean` now also proves
+`norm_expSum_low_mu_lowLambda_zeta_le_majorArc`: for a major arc
+`t = a/q + β` with `gcd(a,q) = 1`, `q > U^2` and `|β| ≤ 1/(16 q U^2)`, the
+third Vaughan term satisfies
+
+```lean
+‖expSum n (low U μ * low U Λ * ζ) (a/q + β)‖ ≤ 2 U^2 q log n.
+```
+
+Together with the first Type-I term `(U+1) log n` and the second Type-I term
+`2 U q log n`, the whole Type-I part of Vaughan is `O(U^2 q log n)` on these
+major arcs.  The remaining piece is the Type-II bilinear sum
+`expSum_high_mu_zeta_highLambda_eq`, which needs the large sieve.

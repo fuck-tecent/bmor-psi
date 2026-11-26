@@ -215,6 +215,52 @@ lemma norm_weighted_geometric_sum_le (n : ℕ) (a : ℕ → ℝ) (t : ℝ)
       ring
 
 
+/-- Geometric sum over the interval `{1, ..., M}` (with the `m = 0` term
+removed). -/
+lemma norm_geometric_sum_Icc_le (M : ℕ) (t : ℝ)
+    (hsin : Real.sin (Real.pi * t) ≠ 0) :
+    ‖∑ m ∈ Finset.Icc 1 M, E ((m : ℝ) * t)‖ ≤
+      1 + 1 / |Real.sin (Real.pi * t)| := by
+  have hrange : Finset.range (M + 1) = insert 0 (Finset.Icc 1 M) := by
+    ext m
+    simp only [Finset.mem_range, Finset.mem_insert, Finset.mem_Icc]
+    omega
+  have hsplit : (∑ m ∈ Finset.range (M + 1), E ((m : ℝ) * t)) =
+      1 + ∑ m ∈ Finset.Icc 1 M, E ((m : ℝ) * t) := by
+    rw [hrange, Finset.sum_insert (by simp)]
+    simp [E]
+  have hgeom := norm_geometric_sum_le M t hsin
+  rw [hsplit] at hgeom
+  have hS : (∑ m ∈ Finset.Icc 1 M, E ((m : ℝ) * t)) =
+      (1 + ∑ m ∈ Finset.Icc 1 M, E ((m : ℝ) * t)) - 1 := by ring
+  rw [hS]
+  calc
+    ‖(1 + ∑ m ∈ Finset.Icc 1 M, E ((m : ℝ) * t)) - 1‖
+        ≤ ‖1 + ∑ m ∈ Finset.Icc 1 M, E ((m : ℝ) * t)‖ + ‖(1 : ℂ)‖ :=
+      norm_sub_le _ _
+    _ ≤ 1 / |Real.sin (Real.pi * t)| + 1 := by
+      exact add_le_add hgeom (by norm_num)
+    _ = 1 + 1 / |Real.sin (Real.pi * t)| := by ring
+
+/-- Crude form of the `Icc` geometric bound: at most `2 / |sin (π t)|`. -/
+lemma norm_geometric_sum_Icc_le_two (M : ℕ) (t : ℝ)
+    (hsin : Real.sin (Real.pi * t) ≠ 0) :
+    ‖∑ m ∈ Finset.Icc 1 M, E ((m : ℝ) * t)‖ ≤
+      2 / |Real.sin (Real.pi * t)| := by
+  have h := norm_geometric_sum_Icc_le M t hsin
+  have hs : 0 < |Real.sin (Real.pi * t)| := abs_pos.mpr hsin
+  have hs1 : |Real.sin (Real.pi * t)| ≤ 1 := Real.abs_sin_le_one _
+  have hone : (1 : ℝ) ≤ 1 / |Real.sin (Real.pi * t)| := by
+    rw [le_div_iff₀ hs]
+    simpa using hs1
+  calc
+    ‖∑ m ∈ Finset.Icc 1 M, E ((m : ℝ) * t)‖ ≤
+        1 + 1 / |Real.sin (Real.pi * t)| := h
+    _ ≤ 2 / |Real.sin (Real.pi * t)| := by
+      rw [show (2 : ℝ) / |Real.sin (Real.pi * t)| =
+        1 / |Real.sin (Real.pi * t)| + 1 / |Real.sin (Real.pi * t)| by ring]
+      linarith
+
 /-- The log-weighted Abel bound: the total variation of `log` telescopes, so the
 weighted exponential sum is bounded by `2 log L / |sin (pi t)|`. -/
 lemma norm_log_weighted_geometric_sum_le (L : ℕ) (t : ℝ)
