@@ -84,3 +84,18 @@ S n u t =
 for `0 < q`. This is the entry point for rational frequencies `a/q + β`;
 the next step is to combine it with the weighted Abel bound on each residue-class
 subsequence.
+
+## Rational-frequency bound
+
+`rational.lean` combines the residue decomposition with the weighted Abel estimate.
+For `t = a/q + β` and `sin (π q β) ≠ 0` it proves
+
+```lean
+‖S n u (a/q + β)‖
+  ≤ ∑ r < min q (n+1),
+      (a_r-variation + endpoint term) / |sin (π q β)|
+```
+
+where the numerator is exactly the Abel variation of the residue-class
+subsequence `j ↦ u (r + j*q)`. This is the rational point estimate needed before
+summing over Farey arcs.
