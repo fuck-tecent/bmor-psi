@@ -161,6 +161,117 @@ lemma norm_expSum_le_sum_abs (n : ℕ) (f : ArithmeticFunction ℝ) (t : ℝ) :
         simpa only [mul_comm] using Complex.norm_exp_ofReal_mul_I (2 * Real.pi * ((k : ℝ) * t))
       rw [hEk, mul_one]
 
+
+lemma low_mu_mul_log_apply (U k : ℕ) :
+    (low U (μ : ArithmeticFunction ℝ) * ArithmeticFunction.log) k =
+      ∑ x ∈ k.divisorsAntidiagonal.filter (fun x => x.1 ≤ U),
+        (μ : ArithmeticFunction ℝ) x.1 * ArithmeticFunction.log x.2 := by
+  rw [ArithmeticFunction.mul_apply, Finset.sum_filter]
+  apply Finset.sum_congr rfl
+  intro x _
+  by_cases h : x.1 ≤ U <;> simp [low, h]
+
+/-- Reindex the second Vaughan term as the classical Type-I bilinear sum
+`sum_{d <= U} mu(d) sum_{l <= n/d} log(l) e(d l t)`. -/
+theorem expSum_low_mu_mul_log_eq (n U : ℕ) (t : ℝ) :
+    expSum n (low U (μ : ArithmeticFunction ℝ) * ArithmeticFunction.log) t =
+      ∑ d ∈ Finset.Icc 1 U,
+        ((μ : ArithmeticFunction ℝ) d : ℂ) *
+          ∑ l ∈ Finset.Icc 1 (n / d),
+            (ArithmeticFunction.log l : ℂ) * E (((d * l : ℕ) : ℝ) * t) := by
+  classical
+  unfold expSum
+  have h1 : ∀ k ∈ Finset.range (n + 1),
+      (((low U (μ : ArithmeticFunction ℝ) * ArithmeticFunction.log) k : ℝ) : ℂ) *
+          E ((k : ℝ) * t) =
+        ∑ x ∈ k.divisorsAntidiagonal.filter (fun x => x.1 ≤ U),
+          ((μ : ArithmeticFunction ℝ) x.1 : ℂ) * (ArithmeticFunction.log x.2 : ℂ) *
+            E ((k : ℝ) * t) := by
+    intro k _
+    rw [low_mu_mul_log_apply]
+    push_cast
+    rw [Finset.sum_mul]
+  rw [Finset.sum_congr rfl h1]
+  rw [Finset.sum_sigma']
+  have h2 : (∑ d ∈ Finset.Icc 1 U, ((μ : ArithmeticFunction ℝ) d : ℂ) *
+        ∑ l ∈ Finset.Icc 1 (n / d),
+          (ArithmeticFunction.log l : ℂ) * E (((d * l : ℕ) : ℝ) * t)) =
+      ∑ d ∈ Finset.Icc 1 U, ∑ l ∈ Finset.Icc 1 (n / d),
+        ((μ : ArithmeticFunction ℝ) d : ℂ) *
+          ((ArithmeticFunction.log l : ℂ) * E (((d * l : ℕ) : ℝ) * t)) := by
+    apply Finset.sum_congr rfl
+    intro d _
+    rw [Finset.mul_sum]
+  rw [h2]
+  rw [Finset.sum_sigma']
+  refine Finset.sum_bij (fun p _ => (⟨p.2.1, p.2.2⟩ : Σ _ : ℕ, ℕ)) ?_ ?_ ?_ ?_
+  · intro p hp
+    obtain ⟨hpk, hpx⟩ := Finset.mem_sigma.mp hp
+    obtain ⟨hpx', hple⟩ := Finset.mem_filter.mp hpx
+    obtain ⟨hprod, hkne⟩ := Nat.mem_divisorsAntidiagonal.mp hpx'
+    have hp1pos : 0 < p.2.1 := by
+      rcases Nat.eq_zero_or_pos p.2.1 with h0 | hpos
+      · exfalso
+        rw [h0, zero_mul] at hprod
+        exact hkne hprod.symm
+      · exact hpos
+    have hp2pos : 0 < p.2.2 := by
+      rcases Nat.eq_zero_or_pos p.2.2 with h0 | hpos
+      · exfalso
+        rw [h0, mul_zero] at hprod
+        exact hkne hprod.symm
+      · exact hpos
+    have hpkn : p.1 ≤ n := by
+      have := Finset.mem_range.mp hpk
+      omega
+    have hdiv : p.2.2 ≤ n / p.2.1 := by
+      rw [Nat.le_div_iff_mul_le hp1pos]
+      calc
+        p.2.2 * p.2.1 = p.1 := by rw [Nat.mul_comm, hprod]
+        _ ≤ n := hpkn
+    simp only [Finset.mem_sigma, Finset.mem_Icc]
+    exact ⟨⟨by omega, hple⟩, ⟨by omega, hdiv⟩⟩
+  · intro p hp p' hp' heq
+    obtain ⟨-, hpx⟩ := Finset.mem_sigma.mp hp
+    obtain ⟨hpx', -⟩ := Finset.mem_filter.mp hpx
+    obtain ⟨hprod, -⟩ := Nat.mem_divisorsAntidiagonal.mp hpx'
+    obtain ⟨-, hpx₁⟩ := Finset.mem_sigma.mp hp'
+    obtain ⟨hpx₂, -⟩ := Finset.mem_filter.mp hpx₁
+    obtain ⟨hprod', -⟩ := Nat.mem_divisorsAntidiagonal.mp hpx₂
+    have hx1 : p.2.1 = p'.2.1 :=
+      congrArg (fun z : Σ _ : ℕ, ℕ => z.1) heq
+    have hx2 : p.2.2 = p'.2.2 :=
+      congrArg (fun z : Σ _ : ℕ, ℕ => z.2) heq
+    have hx : p.2 = p'.2 := Prod.ext hx1 hx2
+    refine Sigma.ext ?_ (heq_of_eq hx)
+    rw [← hprod, ← hprod', hx1, hx2]
+  · intro q hq
+    obtain ⟨hqd, hql⟩ := Finset.mem_sigma.mp hq
+    obtain ⟨hq1, hqU⟩ := Finset.mem_Icc.mp hqd
+    obtain ⟨hql1, hqln⟩ := Finset.mem_Icc.mp hql
+    refine ⟨⟨q.1 * q.2, (q.1, q.2)⟩, ?_, ?_⟩
+    · have hmul : q.1 * q.2 ≤ n := by
+        rw [Nat.mul_comm]
+        exact (Nat.le_div_iff_mul_le (by omega : 0 < q.1)).mp hqln
+      refine Finset.mem_sigma.mpr ⟨?_, ?_⟩
+      · rw [Finset.mem_range]
+        show q.1 * q.2 < n + 1
+        omega
+      · refine Finset.mem_filter.mpr ⟨?_, hqU⟩
+        exact Nat.mem_divisorsAntidiagonal.mpr
+          ⟨rfl, Nat.mul_ne_zero (by omega) (by omega)⟩
+    · rfl
+  · intro p hp
+    obtain ⟨-, hpx⟩ := Finset.mem_sigma.mp hp
+    obtain ⟨hpx', -⟩ := Finset.mem_filter.mp hpx
+    obtain ⟨hprod, -⟩ := Nat.mem_divisorsAntidiagonal.mp hpx'
+    show ((μ : ArithmeticFunction ℝ) p.2.1 : ℂ) * (ArithmeticFunction.log p.2.2 : ℂ) *
+        E ((p.1 : ℝ) * t) =
+      ((μ : ArithmeticFunction ℝ) p.2.1 : ℂ) *
+        ((ArithmeticFunction.log p.2.2 : ℂ) * E (((p.2.1 * p.2.2 : ℕ) : ℝ) * t))
+    rw [← hprod]
+    ring
+
 end
 
 end PEqualNP.Outside.Vaughan

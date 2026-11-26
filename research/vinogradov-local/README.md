@@ -149,3 +149,37 @@ Type-I `Λ` term `o(n)` once `U = o(n / log n)`.
 
 for every arithmetic function `f`. This is the crude L1 bridge that will be
 used to turn support bounds on Type-I coefficients into exponential-sum bounds.
+
+## Type-I pipeline for the second Vaughan term
+
+`vaughan.lean` proves the divisor reindexing
+
+```lean
+expSum n (low U μ * log) t =
+  ∑ d ∈ Icc 1 U, μ d * ∑ l ∈ Icc 1 (n/d), log l * E (d * l * t)
+```
+
+(`expSum_low_mu_mul_log_eq`).  The analytic pieces live in `rational.lean`:
+
+- `norm_log_weighted_geometric_sum_le` / `norm_log_weighted_geometric_sum_Icc_le`:
+  the log-weighted Abel bound `2 log N / |sin (π t)|` (the total variation of
+  `log` telescopes);
+- `abs_sin_pi_mul_div_ge`: `|sin (π r/q)| ≥ 2/q` for `1 ≤ r < q`, via Jordan's
+  inequality;
+- `abs_sin_pi_mul_majorArc_ge`: on a major arc `t = a/q + β` with
+  `Nat.Coprime a q`, `U < q` and `|β| ≤ 1/(16 q U)`, one has
+  `|sin (π d t)| ≥ 1/q` for every `1 ≤ d ≤ U`;
+- `norm_type1_bilinear_log_le`: the bilinear Type-I estimate with the
+  per-`d` weighted Abel bound.
+
+Finally `type1_bound.lean` (importing `rational` and `vaughan`) assembles these:
+
+```lean
+‖expSum n (low U μ * log) (a/q + β)‖ ≤ 2 * U * q * log n
+```
+
+(`norm_expSum_low_mu_mul_log_le_majorArc`), whenever `gcd(a,q) = 1`, `U < q`
+and `|β| ≤ 1/(16 q U)`.
+
+To check the multi-file development, run `./check.sh` (it builds the two
+dependency `.olean`s into `build/` and then checks `type1_bound.lean`).
