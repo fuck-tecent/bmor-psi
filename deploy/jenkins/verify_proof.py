@@ -6,7 +6,7 @@ import subprocess
 from pathlib import Path
 
 from lean_dep_cache import compile_cached, context as cache_context, key as cache_key
-from verdict_manifest import MODULE, build_manifest
+from verdict_manifest import MODULE, PROOF_MODULE, build_manifest, module_path
 
 PROOF_CPUS = 8
 IMAGE = "docker.m.daocloud.io/jenkins/jenkins@sha256:4d85f6cf5a8939647921564952d12a5a761f32a3bc520c2f4e5c3cafa7ea660f"
@@ -39,13 +39,14 @@ def check_cache(project, work):
 def verify(file, work, project, toolchain, ownership_check):
     check_cache(project, work)
     dependencies = (work / "outside-build-order.txt").read_text().splitlines()
-    if any(not MODULE.fullmatch(name) or not name.startswith("PEqualNP.Outside.")
-           for name in dependencies):
+    if any(not PROOF_MODULE.fullmatch(name) for name in dependencies):
         raise ValueError("Invalid outside dependency module")
-    leaf = Path(file).name
     module = (work / "pr.module").read_text().strip()
+    leaf = module_path(module)
+    if not PROOF_MODULE.fullmatch(module) or file != "lean/" + leaf:
+        raise ValueError("Invalid registered proof module or path")
     proof = work / "source"
-    proof.mkdir()
+    (proof / leaf).parent.mkdir(parents=True)
     (proof / leaf).write_bytes((work / "proof.lean").read_bytes())
     (proof / "statement.txt").write_bytes((work / "statement.txt").read_bytes())
     out = work / "build"
@@ -72,15 +73,15 @@ def verify(file, work, project, toolchain, ownership_check):
         "--env", f"LEAN_PATH={lean_path}", "--env", "LEAN_SYSROOT=/toolchain",
         "--env", "PATH=/toolchain/bin:/usr/bin:/bin",
     ]
-    outside = "/project/.lake/build/lib/lean/PEqualNP/Outside"
     # Only the guarded closure is visible to the submission and independent replay.
     compiled = work / "compiled"
-    compiled.mkdir()
+    for root in ("PEqualNP/Outside", "Conjectures"):
+        (compiled / root).mkdir(parents=True)
+        flags += ["--mount", f"type=bind,source={compiled / root},target=/project/.lake/build/lib/lean/{root},readonly"]
 
     def compile_module(source, seconds, *, submission=False):
         artifact = Path(source).with_suffix(".olean").name
         result = subprocess.run(flags + [
-            "--mount", f"type=bind,source={compiled},target={outside},readonly",
             "--mount", f"type=bind,source={out},target=/output",
             "--entrypoint", "/usr/bin/timeout", IMAGE, "--kill-after=10", str(seconds),
             "/toolchain/bin/lean", f"--threads={PROOF_CPUS}", "--root=/input", "-o", f"/output/{artifact}", f"/input/{source}",
@@ -94,25 +95,28 @@ def verify(file, work, project, toolchain, ownership_check):
         subprocess.run([
             "bash", str(ownership_check), str(out), str(marker), str(out / artifact), "0", "1000",
         ], check=True, timeout=30)
-        (out / artifact).replace(compiled / artifact)
+        destination = compiled / Path(source).with_suffix(".olean")
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        (out / artifact).replace(destination)
 
     cache_dir = os.environ.get("GOLDBACH_LEAN_DEP_CACHE")
     cache = Path(cache_dir) if cache_dir and dependencies else None
-    context = cache_context(project, work, f"goldbach-olean-v1:{IMAGE}:{PROOF_CPUS}".encode()) if cache else None
+    context = cache_context(project, work, f"goldbach-olean-v2:{IMAGE}:{PROOF_CPUS}".encode()) if cache else None
     keys = {}
     for name in dependencies:
-        source = project.joinpath(*name.split(".")).with_suffix(".lean")
-        content = source.read_bytes()
-        (proof / source.name).write_bytes(content)
+        source = module_path(name)
+        content = (project / source).read_bytes()
+        (proof / source).parent.mkdir(parents=True, exist_ok=True)
+        (proof / source).write_bytes(content)
         if cache is None:
-            compile_module(source.name, 240)
+            compile_module(source, 240)
             continue
         keys[name] = cache_key(context, name, content, keys)
-        compile_cached(cache, name, keys[name], compiled / source.with_suffix(".olean").name,
-                       lambda: compile_module(source.name, 240))
+        artifact = compiled / Path(source).with_suffix(".olean")
+        artifact.parent.mkdir(parents=True, exist_ok=True)
+        compile_cached(cache, name, keys[name], artifact, lambda: compile_module(source, 240))
     compile_module(leaf, 1200, submission=True)
     verification = subprocess.run(flags + [
-        "--mount", f"type=bind,source={compiled},target={outside},readonly",
         "--entrypoint", "/usr/bin/timeout", IMAGE, "--kill-after=10", "1200",
         "/project/.lake/build/bin/checklemma", module, "/input/statement.txt", "check",
     ], stdout=subprocess.PIPE, text=True)

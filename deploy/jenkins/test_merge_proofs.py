@@ -39,7 +39,9 @@ class MergeProofTests(unittest.TestCase):
         app = Mock()
         app.request.side_effect = [[{"filename": self.file, "status": "added"}],
                                    {"merged": True, "sha": self.merged}]
-        with patch("merge_proofs.pull_request", return_value=self.pr), \
+        # GitHub may still be computing mergeability. The SHA-bound merge endpoint
+        # can decide after the worker has checked the files and dependency hashes.
+        with patch("merge_proofs.pull_request", return_value=self.pr | {"mergeable": None}), \
              patch("merge_proofs.verify_dependency"), \
              patch("merge_proofs.metadata", return_value={"sha": git_blob(self.proof)}), \
              patch("merge_proofs.proven_content", return_value=self.proof):

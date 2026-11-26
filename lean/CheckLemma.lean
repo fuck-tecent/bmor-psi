@@ -40,7 +40,7 @@ namespace PEqualNPChecker
 def allowedAxioms : List Name := [``propext, ``Classical.choice, ``Quot.sound]
 
 /-- Roots of the libraries this project owns (lean/lakefile.toml). Everything else is a pinned dependency. -/
-def projectRoots : List Name := [`PEqualNP, `CheckerSuite]
+def projectRoots : List Name := [`PEqualNP, `Conjectures, `CheckerSuite]
 
 def isProject (m : Name) : Bool := projectRoots.contains m.getRoot
 

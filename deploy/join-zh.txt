@@ -37,7 +37,7 @@ python tools/goldbach.py claim
 
 生产 Jenkins 暂停 GRH 核验。请使用 Mathlib 和任务允许的其他导入。如果本地已安装固定版 Lean，可在 lean/ 下用 lake exe cache get 恢复 Mathlib 缓存。
 
-只新增 gap.file 指定的 Lean 文件，最大 2 MiB。定理名采用 gap.module，类型使用 gap.statement 中的原文。导入 Mathlib，并按任务清单使用允许的附加导入。写出完整证明，权威检查会独立核验命题、导入项和依赖。如果本地已有锁定版本的 Lean 与 Mathlib，可先在 lean/ 下构建指定模块。
+只新增 gap.file 指定的 Lean 文件，最大 2 MiB。新任务使用 lean/Conjectures 下按猜想划分的目录，已发布任务沿用登记路径。定理名采用 gap.module，类型使用 gap.statement 中的原文。导入 Mathlib，并按任务清单使用允许的附加导入。写出完整证明，权威检查会独立核验命题、导入项和依赖。如果本地已有锁定版本的 Lean 与 Mathlib，可先在 lean/ 下构建指定模块。
 
 用 git status 检查改动，确认只有指定的新 Lean 文件，再按准确路径暂存该文件并提交，提交消息注明引理编号。
 

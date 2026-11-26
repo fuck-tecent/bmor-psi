@@ -27,6 +27,8 @@ class RouteSourcesTest(unittest.TestCase):
                 save(k, v)
             self.assertEqual(build(root), first)
             self.assertEqual(first["gaps.json"]["gaps"][0], {"id": "legacy"})
+            self.assertEqual(first["gaps.json"]["gaps"][1]["file"], "lean/Conjectures/Goldbach/Sample.lean")
+            self.assertEqual(first["problems.json"]["log-rank"]["gaps"][0]["module"], "Conjectures.LogRank.Sample")
             self.assertEqual(first["problems.json"]["log-rank"]["roadmap"][0]["tasks"][0]["id"], ident)
             route = root / "problems/goldbach/routes/sample"
             route.rename(route.with_name("next"))

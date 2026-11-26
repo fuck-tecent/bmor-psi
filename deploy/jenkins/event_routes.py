@@ -32,7 +32,8 @@ def route(event, body, paths=(), *, grh_enabled=True):
             return []
         jobs = []
         if paths is None or any(
-            path.startswith("lean/PEqualNP/Outside/") and path.endswith(".lean") for path in paths
+            path.startswith(("lean/PEqualNP/Outside/", "lean/Conjectures/"))
+            and path.endswith(".lean") for path in paths
         ):
             jobs.append("advisory")
         if grh_enabled and (paths is None or any(path in GRH_PATHS or path.startswith((
