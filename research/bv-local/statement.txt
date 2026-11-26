@@ -1,0 +1,1 @@
+∀ A : ℝ, 0 < A → ∃ (C : ℝ) (X₀ : ℕ), 0 < C ∧ ∀ X : ℕ, X₀ ≤ X → ∃ B : ℕ → ℝ, (∀ q ∈ Finset.Icc 1 ⌊(X : ℝ) ^ (3 / 5 : ℝ)⌋₊, ∀ a : ℕ, Nat.Coprime a q → |(∑ k ∈ (Finset.Icc 1 X).filter (fun k => k % q = a % q), ArithmeticFunction.vonMangoldt k) - (X : ℝ) / (Nat.totient q : ℝ)| ≤ B q) ∧ (∑ q ∈ Finset.Icc 1 ⌊(X : ℝ) ^ (3 / 5 : ℝ)⌋₊, B q) ≤ C * (X : ℝ) / (Real.log (X : ℝ)) ^ A
