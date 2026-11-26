@@ -31,3 +31,15 @@ The accepted upstream material lives in:
 The repository account used here has only `pull` permission, so those PRs cannot be
 merged locally. Until they are merged, this branch is a local dependency map and
 interface, not a claimable proof.
+
+## First pointwise building block
+
+`geometric.lean` proves the standard geometric-sum bound
+
+```lean
+‖∑ k ∈ Finset.range (n+1), E (k*t)‖ ≤ 1 / |sin (π*t)|
+```
+
+when `sin (π*t) ≠ 0`. This is the elementary oscillation estimate behind the
+linear exponential-sum part of the minor-arc argument. It compiles with the pinned
+Lean toolchain.
