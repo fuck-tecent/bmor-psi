@@ -55,7 +55,10 @@ The goal is a bound `o(n / (log n)^A)`, eventually for `U ≈ n^{2/5}` and
    `separated_frequency_energy` gives the fixed-length energy bound for any
    `δ`-separated frequency family.  Remaining: prove `CircleSeparated` for
    `x d = d (a/q + β)` on blocks of length `< q`, using `gcd(a,q) = 1` and
-   `|β| ≤ 1/(2 q D)`.
+   `|β| ≤ 1/(2 q D)`.  Done: `circleSeparated_majorArc_shift` proves the
+   separation, and `majorArc_block_energy` gives
+   `∑_{d ≤ D} ‖∑_{n ≤ L} c_n e(n(d0+d)(a/q+β))‖²
+      ≤ (L + 1 + 2q)∑|c_n|²`.
 
 The technical bottleneck is step 2: the finite large sieve needs a fixed
 coefficient length, so a smooth cutoff (or a dyadic block decomposition with

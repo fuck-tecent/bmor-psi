@@ -326,3 +326,23 @@ frequencies, so it covers the `β ≠ 0` major-arc perturbation.  Remaining:
 - prove `CircleSeparated` for `x d = d * (a/q + β)` on blocks of length
   `< q` (using `gcd(a,q) = 1` and `|β| ≤ 1/(2qD)`);
 - combine with the varying length `n/d` (dyadic decomposition).
+
+## Major-arc Type-II block energy
+
+`rational.lean` now proves the major-arc separation and block-energy inputs:
+
+- `abs_int_mul_rat_sub_ge`: for `1 ≤ |h| < q` and `gcd(a,q) = 1`, the
+  distance of `h a/q` from any integer is at least `1/q`;
+- `circleSeparated_majorArc_shift`: on a block of `D+1` consecutive
+  frequencies `(d0+d)(a/q+β)`, if `D < q` and `|β| ≤ 1/(2qD)`, the points are
+  `1/(2q)`-separated on the circle;
+- `majorArc_block_energy`: consequently, for any coefficients `c`,
+
+```lean
+∑ d : Fin (D+1), ‖∑ n : Fin (L+1), c n * E (n (d0+d)(a/q+β))‖ ^ 2
+  ≤ (L + 1 + 2q) * ∑ n, ‖c n‖ ^ 2.
+```
+
+This is the Type-II energy bound on a short major-arc block.  Remaining:
+dyadic decomposition of the full `d`-range, the varying length `n/d`, and the
+minor arcs.

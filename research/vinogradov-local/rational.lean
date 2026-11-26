@@ -219,6 +219,134 @@ lemma abs_sin_pi_mul_natCast_div_eq_mod (q A : ℕ) (hq : 0 < q) :
       Real.pi * ((A % q : ℕ) : ℝ) / (q : ℝ) := by ring
   rw [hphase]
 
+/-- Distance of an integer multiple of a reduced rational from an integer. -/
+lemma abs_int_mul_rat_sub_ge (q : ℕ) (a : ℕ) (h : ℤ) (m : ℤ)
+    (hq : 0 < q) (hcop : Nat.Coprime a q)
+    (hh0 : h ≠ 0) (hhq : h.natAbs < q) :
+    (1:ℝ)/(q:ℝ) ≤ |(h:ℝ) * ((a:ℝ)/(q:ℝ)) - (m:ℝ)| := by
+  have hqR : (0:ℝ) < (q:ℝ) := by exact_mod_cast hq
+  have hnum_ne : h * (a:ℤ) - m * (q:ℤ) ≠ 0 := by
+    intro hzero
+    have hdvd : (q:ℤ) ∣ h * (a:ℤ) := ⟨m, by linarith⟩
+    have hdvd_nat : q ∣ h.natAbs * a := by
+      have := Int.natAbs_dvd_natAbs.mpr hdvd
+      simpa [Int.natAbs_mul, Int.natAbs_natCast] using this
+    have hqd : q ∣ h.natAbs := hcop.symm.dvd_of_dvd_mul_right hdvd_nat
+    have hle : q ≤ h.natAbs := Nat.le_of_dvd (Int.natAbs_pos.mpr hh0) hqd
+    omega
+  have habs : (1:ℤ) ≤ |h * (a:ℤ) - m * (q:ℤ)| := Int.one_le_abs hnum_ne
+  have heq : (h:ℝ) * ((a:ℝ)/(q:ℝ)) - (m:ℝ) =
+      ((h * (a:ℤ) - m * (q:ℤ) : ℤ) : ℝ) / (q:ℝ) := by
+    push_cast
+    field_simp
+  rw [heq, abs_div, abs_of_pos hqR]
+  have hcast : (1:ℝ) ≤ |((h * (a:ℤ) - m * (q:ℤ) : ℤ) : ℝ)| := by
+    rw [← Int.cast_abs]
+    exact_mod_cast habs
+  exact div_le_div_of_nonneg_right hcast (le_of_lt hqR)
+
+/-- On a major arc, a short block of frequencies `(d0 + d) * (a/q + β)` is
+`1/(2q)`-separated on the circle, provided the block length is `< q` and
+`|β| ≤ 1/(2 q D)`. -/
+lemma circleSeparated_majorArc_shift (q D d0 : ℕ) (a : ℕ) (β : ℝ)
+    (hq : 0 < q) (hcop : Nat.Coprime a q) (hDq : D < q)
+    (hβ : |β| ≤ 1 / (2 * (q:ℝ) * (D:ℝ))) :
+    GoldbachBDHSharp.OAI.Ostmann.CircleSeparated
+      (fun d : Fin (D + 1) =>
+        ((d0 : ℝ) + (d : ℝ)) * ((a:ℝ)/(q:ℝ) + β))
+      (1 / (2 * (q:ℝ))) := by
+  intro d1 d2 hne m
+  have hqR : (0:ℝ) < (q:ℝ) := by exact_mod_cast hq
+  have hDpos : 0 < D := by
+    by_contra h
+    have hD0 : D = 0 := by omega
+    subst D
+    exact hne (Fin.ext (by omega))
+  have hDR : (0:ℝ) < (D:ℝ) := by exact_mod_cast hDpos
+  set h : ℤ := (d1 : ℤ) - (d2 : ℤ) with hdef
+  have hh0 : h ≠ 0 := by
+    intro h0
+    apply hne
+    have hcast : (d1 : ℤ) = (d2 : ℤ) := by linarith
+    exact Fin.ext (by exact_mod_cast hcast)
+  have hhabs : |h| ≤ (D : ℤ) := by
+    have h1 : (d1 : ℤ) ≤ (D : ℤ) := by
+      have := d1.isLt
+      omega
+    have h2 : 0 ≤ (d1 : ℤ) := by exact_mod_cast Nat.zero_le d1.val
+    have h3 : (d2 : ℤ) ≤ (D : ℤ) := by
+      have := d2.isLt
+      omega
+    have h4 : 0 ≤ (d2 : ℤ) := by exact_mod_cast Nat.zero_le d2.val
+    rw [abs_le]
+    constructor <;> rw [hdef] <;> omega
+  have hhq : h.natAbs < q := by
+    have hcast : (h.natAbs : ℤ) = |h| := by rw [Int.abs_eq_natAbs]
+    have hle : (h.natAbs : ℤ) ≤ (D : ℤ) := by rw [hcast]; exact hhabs
+    have hle' : h.natAbs ≤ D := by exact_mod_cast hle
+    omega
+  have hdiff : ((d0:ℝ) + (d1:ℝ)) * ((a:ℝ)/(q:ℝ)+β) -
+      ((d0:ℝ) + (d2:ℝ)) * ((a:ℝ)/(q:ℝ)+β) - (m:ℝ)
+      = (h:ℝ) * ((a:ℝ)/(q:ℝ)+β) - (m:ℝ) := by
+    rw [hdef]
+    push_cast
+    ring
+  rw [hdiff]
+  have hrat := abs_int_mul_rat_sub_ge q a h m hq hcop hh0 hhq
+  have hhR : |(h:ℝ)| ≤ (D:ℝ) := by
+    rw [← Int.cast_abs]
+    exact_mod_cast hhabs
+  have hbeta : |(h:ℝ) * β| ≤ 1/(2*(q:ℝ)) := by
+    have h1 : |(h:ℝ) * β| ≤ (D:ℝ) * |β| := by
+      rw [abs_mul]
+      exact mul_le_mul_of_nonneg_right hhR (abs_nonneg β)
+    have h2 : (D:ℝ) * |β| ≤ 1/(2*(q:ℝ)) := by
+      calc
+        (D:ℝ) * |β| ≤ (D:ℝ) * (1/(2*(q:ℝ)*(D:ℝ))) :=
+          mul_le_mul_of_nonneg_left hβ (le_of_lt hDR)
+        _ = 1/(2*(q:ℝ)) := by field_simp
+    exact h1.trans h2
+  have htri : |(h:ℝ)*((a:ℝ)/(q:ℝ)) - (m:ℝ)| - |(h:ℝ)*β| ≤
+      |(h:ℝ)*((a:ℝ)/(q:ℝ)) - (m:ℝ) + (h:ℝ)*β| := by
+    have := abs_sub_abs_le_abs_sub
+      ((h:ℝ)*((a:ℝ)/(q:ℝ)) - (m:ℝ)) (-((h:ℝ)*β))
+    simpa [sub_neg_eq_add, abs_neg] using this
+  have hone : (1:ℝ)/(2*(q:ℝ)) ≤
+      |(h:ℝ)*((a:ℝ)/(q:ℝ)) - (m:ℝ)| - |(h:ℝ)*β| := by
+    have hq2 : (1:ℝ)/(q:ℝ) = 2*(1/(2*(q:ℝ))) := by field_simp
+    linarith
+  have hfinal : (1:ℝ)/(2*(q:ℝ)) ≤
+      |(h:ℝ)*((a:ℝ)/(q:ℝ)) - (m:ℝ) + (h:ℝ)*β| := hone.trans htri
+  have harg : (h:ℝ)*((a:ℝ)/(q:ℝ)+β) - (m:ℝ) =
+      (h:ℝ)*((a:ℝ)/(q:ℝ)) - (m:ℝ) + (h:ℝ)*β := by ring
+  rwa [harg]
+
+/-- Major-arc energy bound for a short block of `D+1` consecutive
+frequencies: if `D < q` and `|β| ≤ 1/(2 q D)`, then
+
+`∑_{d≤D} ‖∑_{n≤L} c n * E (n (d0+d)(a/q+β))‖²
+  ≤ (L + 1 + 2q) ∑_{n≤L} ‖c n‖²`.
+-/
+theorem majorArc_block_energy (q D d0 L : ℕ) (a : ℕ) (β : ℝ)
+    (c : Fin (L + 1) → ℂ) (hq : 0 < q) (hcop : Nat.Coprime a q)
+    (hDq : D < q) (hβ : |β| ≤ 1 / (2 * (q:ℝ) * (D:ℝ))) :
+    ∑ d : Fin (D + 1),
+      ‖∑ n : Fin (L + 1),
+        c n * E ((n : ℝ) * (((d0 : ℝ) + (d : ℝ)) * ((a:ℝ)/(q:ℝ) + β)))‖ ^ 2
+      ≤ ((L : ℝ) + 1 + 2 * (q:ℝ)) * ∑ n : Fin (L + 1), ‖c n‖ ^ 2 := by
+  have hqR : (q:ℝ) ≠ 0 := by exact_mod_cast hq.ne'
+  have hδ : (0:ℝ) < 1/(2*(q:ℝ)) := by
+    exact one_div_pos.mpr (by positivity)
+  have hx := circleSeparated_majorArc_shift q D d0 a β hq hcop hDq hβ
+  have h := separated_frequency_energy D L
+    (fun d : Fin (D + 1) => ((d0:ℝ) + (d:ℝ)) * ((a:ℝ)/(q:ℝ) + β))
+    (1/(2*(q:ℝ))) hδ hx c
+  have hfac : ((L + 1 : ℝ) + 1 / (1 / (2 * (q:ℝ)))) =
+      ((L : ℝ) + 1 + 2 * (q:ℝ)) := by
+    field_simp
+  rw [hfac] at h
+  exact h
+
 /-- A lower bound for `|sin (u + v)|` in terms of `|sin u|` and `|sin v|`. -/
 lemma abs_sin_add_ge_sub (u v : ℝ) :
     |Real.sin u| - |Real.sin v| ≤ |Real.sin (u + v)| := by
