@@ -11,10 +11,21 @@
 - `rational.lean`: geometric/Abel bounds, log-weighted bounds, rational and
   major-arc sine lower bounds, and the `Icc` geometric bounds.
 - `type1_bound.lean`:
-  - second Type-I term on major arcs: `2 U q log n`;
-  - third Type-I term on major arcs (`q > U^2`): `2 U^2 q log n`;
+  - second Type-I term on major arcs: `2 U q log n` for `q > U`
+    (`norm_expSum_low_mu_mul_log_le_majorArc`);
+  - third Type-I term on major arcs: `2 U^2 q log n` for `q > U^2`
+    (`norm_expSum_low_mu_lowLambda_zeta_le_majorArc`);
   - combined Type-I major-arc bound: `6 U^2 q log n`
     (`norm_expSum_vaughan_typeI_le_majorArc`);
+  - **small-`q` versions for every `q >= 1`** (new):
+    `2 U q log n + 2 n log n (1+log n)/q`,
+    `2 U^2 q log n + 4 n log n (1+log n)/q`, and combined
+    `6 U^2 q log n + 6 n log n (1+log n)/q`
+    (`norm_expSum_low_mu_mul_log_le_majorArc_small_q`,
+    `norm_expSum_low_mu_lowLambda_zeta_le_majorArc_small_q`,
+    `norm_expSum_vaughan_typeI_le_majorArc_small_q`);
+  - `double_sum_vonMangoldt_div_le` and harmonic-sum helpers for the
+    multiples of `q`;
   - Type-II Cauchy–Schwarz reduction
     (`norm_expSum_high_mu_zeta_highLambda_sq_le`).
 - `finite_large_sieve.lean`: the accepted finite `ZMod` large sieve
