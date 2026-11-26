@@ -244,3 +244,23 @@ So on these major arcs the whole Type-I part of the Vaughan decomposition is
 controlled; the only remaining Vaughan piece is the Type-II bilinear sum
 `high U μ * ζ * high U Λ`, which requires the large sieve (and then the
 minor-arc treatment and the final assembly).
+
+## Type-II preparation
+
+The accepted finite large sieve from PR #2641 is vendored locally as
+`finite_large_sieve.lean` (module `finite_large_sieve`, built by `check.sh`).
+
+`type1_bound.lean` now reduces the Type-II term by Cauchy–Schwarz:
+
+```lean
+‖expSum n (high U μ * ζ * high U Λ) t‖ ^ 2
+  ≤ #(Icc (U+1) n) *
+      ∑ d ∈ Icc (U+1) n,
+        ‖∑ e ∈ Icc (U+1) (n/d), Λ e *
+            ∑ m ∈ Icc 1 (n/(d*e)), E (d*e*m*t)‖ ^ 2
+```
+
+(`norm_expSum_high_mu_zeta_highLambda_sq_le`).  The remaining analytic task is
+to bound the energy sum with the large sieve.  The technical obstruction is
+that the inner length `n/d` depends on `d`; a dyadic decomposition (or smooth
+cutoff) is needed before the finite large sieve can be applied uniformly.

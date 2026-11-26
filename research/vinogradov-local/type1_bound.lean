@@ -373,6 +373,59 @@ theorem norm_expSum_vaughan_typeI_le_majorArc (n q U a : ℕ) (β : ℝ)
           · exact le_rfl
         _ = 6 * ((U:ℝ) * (U:ℝ)) * (q:ℝ) * Real.log (n:ℝ) := by ring
 
+/- Cauchy–Schwarz reduction of the Type-II term: the squared Type-II sum is
+controlled by the energy of the inner `(e, m)` sums.  This is exactly the
+quantity to which the large sieve is applied. -/
+theorem norm_expSum_high_mu_zeta_highLambda_sq_le (n U : ℕ) (t : ℝ) :
+    ‖expSum n (high U (μ : ArithmeticFunction ℝ) * (ζ : ArithmeticFunction ℝ) *
+        high U (Λ : ArithmeticFunction ℝ)) t‖ ^ 2 ≤
+      ((Finset.Icc (U + 1) n).card : ℝ) *
+        ∑ d ∈ Finset.Icc (U + 1) n,
+          ‖∑ e ∈ Finset.Icc (U + 1) (n / d),
+            ((Λ : ArithmeticFunction ℝ) e : ℂ) *
+              ∑ m ∈ Finset.Icc 1 (n / (d * e)),
+                E (((d * e * m : ℕ) : ℝ) * t)‖ ^ 2 := by
+  classical
+  rw [expSum_high_mu_zeta_highLambda_eq n U t]
+  let s : Finset ℕ := Finset.Icc (U + 1) n
+  let B : ℕ → ℂ := fun d =>
+    ∑ e ∈ Finset.Icc (U + 1) (n / d),
+      ((Λ : ArithmeticFunction ℝ) e : ℂ) *
+        ∑ m ∈ Finset.Icc 1 (n / (d * e)),
+          E (((d * e * m : ℕ) : ℝ) * t)
+  change ‖∑ d ∈ s, ((μ : ArithmeticFunction ℝ) d : ℂ) * B d‖ ^ 2 ≤
+    (s.card : ℝ) * ∑ d ∈ s, ‖B d‖ ^ 2
+  have h1 : ‖∑ d ∈ s, ((μ : ArithmeticFunction ℝ) d : ℂ) * B d‖ ≤
+      ∑ d ∈ s, ‖((μ : ArithmeticFunction ℝ) d : ℂ) * B d‖ := norm_sum_le _ _
+  have h2 : (∑ d ∈ s, ‖((μ : ArithmeticFunction ℝ) d : ℂ) * B d‖) ^ 2 ≤
+      (s.card : ℝ) * ∑ d ∈ s, ‖((μ : ArithmeticFunction ℝ) d : ℂ) * B d‖ ^ 2 := by
+    have := Finset.sum_mul_sq_le_sq_mul_sq s (fun _ : ℕ => (1:ℝ))
+      (fun d => ‖((μ : ArithmeticFunction ℝ) d : ℂ) * B d‖)
+    simpa using this
+  have h3 : ∑ d ∈ s, ‖((μ : ArithmeticFunction ℝ) d : ℂ) * B d‖ ^ 2 ≤
+      ∑ d ∈ s, ‖B d‖ ^ 2 := by
+    apply Finset.sum_le_sum
+    intro d _
+    have hμ : |(μ : ArithmeticFunction ℝ) d| ≤ 1 := by
+      have h : |(ArithmeticFunction.moebius d : ℤ)| ≤ 1 :=
+        ArithmeticFunction.abs_moebius_le_one
+      have h' : |((ArithmeticFunction.moebius d : ℤ) : ℝ)| ≤ 1 := by
+        exact_mod_cast h
+      simpa using h'
+    rw [norm_mul, Complex.norm_real, Real.norm_eq_abs, mul_pow]
+    have hμ2 : |(μ : ArithmeticFunction ℝ) d| ^ 2 ≤ 1 := by
+      nlinarith [abs_nonneg ((μ : ArithmeticFunction ℝ) d), hμ]
+    nlinarith [sq_nonneg ‖B d‖]
+  have hnorm : 0 ≤ ‖∑ d ∈ s, ((μ : ArithmeticFunction ℝ) d : ℂ) * B d‖ :=
+    norm_nonneg _
+  calc
+    ‖∑ d ∈ s, ((μ : ArithmeticFunction ℝ) d : ℂ) * B d‖ ^ 2
+        ≤ (∑ d ∈ s, ‖((μ : ArithmeticFunction ℝ) d : ℂ) * B d‖) ^ 2 :=
+      pow_le_pow_left₀ hnorm h1 2
+    _ ≤ (s.card : ℝ) * ∑ d ∈ s, ‖((μ : ArithmeticFunction ℝ) d : ℂ) * B d‖ ^ 2 := h2
+    _ ≤ (s.card : ℝ) * ∑ d ∈ s, ‖B d‖ ^ 2 :=
+      mul_le_mul_of_nonneg_left h3 (by positivity)
+
 end
 
 end PEqualNP.Outside.Vaughan
