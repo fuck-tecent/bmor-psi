@@ -346,3 +346,23 @@ frequencies, so it covers the `β ≠ 0` major-arc perturbation.  Remaining:
 This is the Type-II energy bound on a short major-arc block.  Remaining:
 dyadic decomposition of the full `d`-range, the varying length `n/d`, and the
 minor arcs.
+
+## Refined Type-II energy range
+
+The Type-II inner sum `typeIIInner n U t d` vanishes once `d > n/(U+1)`
+(the `e`-range is empty).  Accordingly `type1_bound.lean` proves
+
+```lean
+‖expSum n (high U μ * ζ * high U Λ) t‖ ^ 2
+  ≤ (n/(U+1)) *
+      ∑ d ∈ Icc (U+1) (n/(U+1)), ‖typeIIInner n U t d‖ ^ 2
+```
+
+(`norm_expSum_high_mu_zeta_highLambda_sq_le_range`, via the generic
+support-truncated Cauchy–Schwarz lemma `norm_sum_mu_mul_sq_le_of_support`).
+
+This removes the earlier spurious factor `n` in place of `n/U`; only
+`d ≤ n/(U+1)` can contribute to Type-II.
+
+Remaining for the Type-II estimate: dyadic decomposition of the inner
+length `n/d` and of the `d`-range, then the block large sieve.

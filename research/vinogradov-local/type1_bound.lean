@@ -373,6 +373,103 @@ theorem norm_expSum_vaughan_typeI_le_majorArc (n q U a : ℕ) (β : ℝ)
           · exact le_rfl
         _ = 6 * ((U:ℝ) * (U:ℝ)) * (q:ℝ) * Real.log (n:ℝ) := by ring
 
+/-- The inner `(e, m)` sum of the Type-II term at a fixed outer `d`. -/
+noncomputable def typeIIInner (n U : ℕ) (t : ℝ) (d : ℕ) : ℂ :=
+  ∑ e ∈ Finset.Icc (U + 1) (n / d), ((Λ : ArithmeticFunction ℝ) e : ℂ) *
+    ∑ m ∈ Finset.Icc 1 (n / (d * e)), E (((d * e * m : ℕ) : ℝ) * t)
+
+/-- Support-truncated Cauchy–Schwarz: if `B` vanishes above `n/(U+1)`, then
+the squared weighted sum only sees `d ≤ n/(U+1)`. -/
+lemma norm_sum_mu_mul_sq_le_of_support (n U : ℕ) (B : ℕ → ℂ)
+    (hsupp : ∀ d, n / (U + 1) < d → B d = 0) :
+    ‖∑ d ∈ Finset.Icc (U + 1) n, ((μ : ArithmeticFunction ℝ) d : ℂ) * B d‖ ^ 2 ≤
+      ((n / (U + 1) : ℕ) : ℝ) *
+        ∑ d ∈ Finset.Icc (U + 1) (n / (U + 1)), ‖B d‖ ^ 2 := by
+  classical
+  let s : Finset ℕ := Finset.Icc (U + 1) (n / (U + 1))
+  have hsub : s ⊆ Finset.Icc (U + 1) n := by
+    intro d hd
+    simp only [s, Finset.mem_Icc] at hd ⊢
+    have hdivle : n / (U + 1) ≤ n := Nat.div_le_self n (U + 1)
+    omega
+  have hzero : ∀ d ∈ Finset.Icc (U + 1) n, d ∉ s →
+      ((μ : ArithmeticFunction ℝ) d : ℂ) * B d = 0 := by
+    intro d hd hds
+    have hd1 : U + 1 ≤ d := (Finset.mem_Icc.mp hd).1
+    have hds' : d ∉ Finset.Icc (U + 1) (n / (U + 1)) := by
+      simpa only [s] using hds
+    have hdgt : n / (U + 1) < d := by
+      by_contra h
+      exact hds' (Finset.mem_Icc.mpr ⟨hd1, by omega⟩)
+    rw [hsupp d hdgt, mul_zero]
+  have hsum : (∑ d ∈ Finset.Icc (U + 1) n,
+      ((μ : ArithmeticFunction ℝ) d : ℂ) * B d)
+      = ∑ d ∈ s, ((μ : ArithmeticFunction ℝ) d : ℂ) * B d :=
+    (Finset.sum_subset hsub hzero).symm
+  rw [hsum]
+  have h1 : ‖∑ d ∈ s, ((μ : ArithmeticFunction ℝ) d : ℂ) * B d‖ ≤
+      ∑ d ∈ s, ‖((μ : ArithmeticFunction ℝ) d : ℂ) * B d‖ := norm_sum_le _ _
+  have h2 : (∑ d ∈ s, ‖((μ : ArithmeticFunction ℝ) d : ℂ) * B d‖) ^ 2 ≤
+      (s.card : ℝ) * ∑ d ∈ s, ‖((μ : ArithmeticFunction ℝ) d : ℂ) * B d‖ ^ 2 := by
+    have := Finset.sum_mul_sq_le_sq_mul_sq s (fun _ : ℕ => (1:ℝ))
+      (fun d => ‖((μ : ArithmeticFunction ℝ) d : ℂ) * B d‖)
+    simpa using this
+  have h3 : ∑ d ∈ s, ‖((μ : ArithmeticFunction ℝ) d : ℂ) * B d‖ ^ 2 ≤
+      ∑ d ∈ s, ‖B d‖ ^ 2 := by
+    apply Finset.sum_le_sum
+    intro d _
+    have hμ : |(μ : ArithmeticFunction ℝ) d| ≤ 1 := by
+      have h : |(ArithmeticFunction.moebius d : ℤ)| ≤ 1 :=
+        ArithmeticFunction.abs_moebius_le_one
+      have h' : |((ArithmeticFunction.moebius d : ℤ) : ℝ)| ≤ 1 := by
+        exact_mod_cast h
+      simpa using h'
+    rw [norm_mul, Complex.norm_real, Real.norm_eq_abs, mul_pow]
+    have hμ2 : |(μ : ArithmeticFunction ℝ) d| ^ 2 ≤ 1 := by
+      nlinarith [abs_nonneg ((μ : ArithmeticFunction ℝ) d), hμ]
+    nlinarith [sq_nonneg ‖B d‖]
+  have hcard : (s.card : ℝ) ≤ ((n / (U + 1) : ℕ) : ℝ) := by
+    have hcard_nat : s.card ≤ n / (U + 1) := by
+      simp only [s]
+      rw [Nat.card_Icc]
+      rw [Nat.sub_le_iff_le_add]
+      omega
+    exact_mod_cast hcard_nat
+  have hnorm : 0 ≤ ‖∑ d ∈ s, ((μ : ArithmeticFunction ℝ) d : ℂ) * B d‖ :=
+    norm_nonneg _
+  calc
+    ‖∑ d ∈ s, ((μ : ArithmeticFunction ℝ) d : ℂ) * B d‖ ^ 2
+        ≤ (∑ d ∈ s, ‖((μ : ArithmeticFunction ℝ) d : ℂ) * B d‖) ^ 2 :=
+      pow_le_pow_left₀ hnorm h1 2
+    _ ≤ (s.card : ℝ) * ∑ d ∈ s, ‖((μ : ArithmeticFunction ℝ) d : ℂ) * B d‖ ^ 2 := h2
+    _ ≤ ((n / (U + 1) : ℕ) : ℝ) *
+          ∑ d ∈ s, ‖((μ : ArithmeticFunction ℝ) d : ℂ) * B d‖ ^ 2 :=
+      mul_le_mul_of_nonneg_right hcard (by positivity)
+    _ ≤ ((n / (U + 1) : ℕ) : ℝ) * ∑ d ∈ s, ‖B d‖ ^ 2 :=
+      mul_le_mul_of_nonneg_left h3 (by positivity)
+
+/-- Refined Type-II Cauchy–Schwarz: the energy only runs over
+`d ≤ n/(U+1)`, which removes a spurious factor `U` from the earlier bound. -/
+theorem norm_expSum_high_mu_zeta_highLambda_sq_le_range (n U : ℕ) (t : ℝ) :
+    ‖expSum n (high U (μ : ArithmeticFunction ℝ) * (ζ : ArithmeticFunction ℝ) *
+        high U (Λ : ArithmeticFunction ℝ)) t‖ ^ 2 ≤
+      ((n / (U + 1) : ℕ) : ℝ) *
+        ∑ d ∈ Finset.Icc (U + 1) (n / (U + 1)), ‖typeIIInner n U t d‖ ^ 2 := by
+  rw [expSum_high_mu_zeta_highLambda_eq n U t]
+  apply norm_sum_mu_mul_sq_le_of_support n U (typeIIInner n U t)
+  intro d hd
+  dsimp only [typeIIInner]
+  have hnd : n / d < U + 1 := by
+    have hdpos : 0 < d := by
+      have hnn : 0 ≤ n / (U + 1) := Nat.zero_le _
+      omega
+    rw [Nat.div_lt_iff_lt_mul hdpos]
+    have h1 : n < d * (U + 1) :=
+      (Nat.div_lt_iff_lt_mul (by omega : 0 < U + 1)).mp hd
+    simpa [Nat.mul_comm] using h1
+  rw [Finset.Icc_eq_empty (by omega)]
+  simp
+
 /- Cauchy–Schwarz reduction of the Type-II term: the squared Type-II sum is
 controlled by the energy of the inner `(e, m)` sums.  This is exactly the
 quantity to which the large sieve is applied. -/

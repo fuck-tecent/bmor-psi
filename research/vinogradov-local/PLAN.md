@@ -43,7 +43,9 @@ The goal is a bound `o(n / (log n)^A)`, eventually for `U ≈ n^{2/5}` and
    `norm_expSum_high_mu_zeta_highLambda_sq_le'` states the squared-energy
    bound in this collapsed form.
 2. Dyadically split `d ∈ [D, 2D)` so that the length `n/d` is comparable to
-   `n/D` inside each block.
+   `n/D` inside each block.  The refined squared bound now restricts to
+   `d ≤ n/(U+1)` (`norm_expSum_high_mu_zeta_highLambda_sq_le_range`), removing
+   the spurious factor `U`.
 3. Apply Cauchy–Schwarz over `d` (done) and the finite large sieve to the
    Fourier transforms at `l * d * a/q`.  The fixed-length form is done:
    `largeSieve_frequency_energy` proves
