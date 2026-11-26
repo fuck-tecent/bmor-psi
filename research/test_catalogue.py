@@ -7,12 +7,19 @@ import unittest
 from pathlib import Path
 from urllib.parse import urlparse
 
+from research.build_catalogue import proof_location
 
 GAPS = json.loads(Path(__file__).with_name("gaps.json").read_text(encoding="utf-8"))["gaps"]
 PROBLEMS = json.loads(Path(__file__).with_name("problems.json").read_text(encoding="utf-8"))
 
 
 class CatalogueTests(unittest.TestCase):
+    def check_proof_location(self, slug, gap):
+        legacy = "PEqualNP.Outside." + gap["id"].replace("-", "_")
+        location = ({"module": legacy, "file": f"lean/{legacy.replace('.', '/')}.lean"}
+                    if gap["module"] == legacy else proof_location(slug, gap["id"]))
+        self.assertEqual({key: gap[key] for key in location}, location)
+
     def test_problem_tasks_have_unique_names_and_respect_scope(self):
         all_gaps = GAPS + [gap for problem in PROBLEMS.values() for gap in problem["gaps"]]
         for key in ("id", "file", "module"):
@@ -25,9 +32,7 @@ class CatalogueTests(unittest.TestCase):
                 with self.subTest(problem=slug, gap=gap["id"]):
                     self.assertRegex(gap["id"], rf"^L-{slug}-[a-z0-9]+(?:-[a-z0-9]+)*$")
                     self.assertLessEqual(len(gap["id"]), 64)
-                    name = gap["id"].replace("-", "_")
-                    self.assertEqual(gap["file"], f"lean/PEqualNP/Outside/{name}.lean")
-                    self.assertEqual(gap["module"], f"PEqualNP.Outside.{name}")
+                    self.check_proof_location(slug, gap)
                     self.assertIn(gap["program"], {"foundation", "correlation"})
                     for lang in ("en", "zh"):
                         self.assertTrue(gap["plain_statement"][lang].strip())
@@ -58,9 +63,7 @@ class CatalogueTests(unittest.TestCase):
             with self.subTest(gap=gap["id"]):
                 self.assertRegex(gap["id"], r"^L-goldbach-[a-z0-9]+(?:-[a-z0-9]+)*$")
                 self.assertLessEqual(len(gap["id"]), 64)
-                name = gap["id"].replace("-", "_")
-                self.assertEqual(gap["module"], f"PEqualNP.Outside.{name}")
-                self.assertEqual(gap["file"], f"lean/PEqualNP/Outside/{name}.lean")
+                self.check_proof_location("goldbach", gap)
                 for lang in ("en", "zh"):
                     self.assertTrue(gap["plain_statement"][lang].strip())
 

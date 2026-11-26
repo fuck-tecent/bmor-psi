@@ -10,6 +10,22 @@ SLUG = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
 MARK = "route_source"
 
 
+def proof_location(slug, ident):
+    prefix = f"L-{slug}-"
+    suffix = ident.removeprefix(prefix)
+    if suffix == ident or not SLUG.fullmatch(suffix):
+        raise ValueError(f"Invalid task ID for {slug}: {ident}")
+
+    def pascal(words):
+        return "".join(word.capitalize() for word in words.split("-"))
+
+    name = pascal(suffix)
+    if name[0].isdigit():
+        name = "Lemma" + name
+    module = f"Conjectures.{pascal(slug)}.{name}"
+    return {"module": module, "file": f"lean/{module.replace('.', '/')}.lean"}
+
+
 def read(path):
     return json.loads(path.read_text(encoding="utf-8"))
 
@@ -24,10 +40,12 @@ def build(root):
     desks = {"goldbach": gold, **others}
     seen = set()
     old_statements = {}
+    old_locations = {}
     for slug, desk in desks.items():
         for g in desk["gaps"]:
             if MARK in g:
                 old_statements[g["id"]] = g["statement"]
+                old_locations[g["id"]] = {key: g[key] for key in ("file", "module")}
             else:
                 seen.add(g["id"])
         desk["gaps"] = [g for g in desk["gaps"] if MARK not in g]
@@ -79,6 +97,14 @@ def build(root):
                 raise ValueError(f"Missing bilingual task description: {task}")
             if ident in old_statements and g["statement"] != old_statements[ident]:
                 raise ValueError(f"Frozen statement changed: {ident}; create a new ID")
+            location = old_locations.get(ident) or proof_location(slug, ident)
+            for key, expected in location.items():
+                # Old authoring tools may still emit the legacy path for a new ID.
+                legacy_module = "PEqualNP.Outside." + ident.replace("-", "_")
+                legacy = legacy_module if key == "module" else f"lean/{legacy_module.replace('.', '/')}.lean"
+                if g.get(key, expected) not in (expected, legacy):
+                    raise ValueError(f"Unexpected {key} for {ident}")
+            g.update(location)
             seen.add(ident)
             consumed.add(task)
             g.update(track=route, route_source=route)
@@ -89,6 +115,10 @@ def build(root):
         raise ValueError(f"Unclassified JSON: {sources - consumed}")
     if old_statements.keys() - seen:
         raise ValueError("A published task source was removed")
+    for key in ("file", "module"):
+        paths = [g[key].casefold() for desk in desks.values() for g in desk["gaps"] if key in g]
+        if len(paths) != len(set(paths)):
+            raise ValueError(f"Conflicting proof {key} in the catalogue")
     for desk in desks.values():
         ids = {g["id"] for g in desk["gaps"]}
         graph = TopologicalSorter()

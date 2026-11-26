@@ -34,8 +34,9 @@ from pathlib import Path
 
 def catalogue_config(project):
     config = tomllib.loads((Path(project) / "lakefile.toml").read_text(encoding="utf-8"))
-    # Catalogue statements use Mathlib. The GRH build target is unused here.
-    config["lean_lib"] = [target for target in config["lean_lib"] if target["name"] != "GRHCompact"]
+    # The catalogue type-checks frozen statements without loading proof libraries.
+    config["lean_lib"] = [target for target in config["lean_lib"]
+                          if target["name"] not in {"GRHCompact", "Conjectures"}]
     return config
 
 

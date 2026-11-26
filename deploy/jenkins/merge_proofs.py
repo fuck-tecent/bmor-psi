@@ -17,9 +17,8 @@ from urllib.error import HTTPError, URLError
 from github_app import GitHubApp, INSTALLATION_ID, RateLimited
 from github_revision import REPO, SHA, pull_request
 from proof_blob import proof_blob
-from verdict_manifest import MODULE
+from verdict_manifest import MODULE, PROOF_MODULE, module_path
 
-FILE = re.compile(r"lean/PEqualNP/Outside/L_[a-z0-9_]+\.lean")
 CONTENTS_WRITE = {"contents": "write", "pull_requests": "read"}
 TRUST_FILES = ("lean-toolchain", "lake-manifest.json", "lakefile.toml", "CheckLemma.lean")
 BATCH = 4
@@ -35,7 +34,7 @@ def task(base, gap_id):
     for problem in json.loads((research / "problems.json").read_bytes()).values():
         gaps.extend(problem["gaps"])
     matches = [gap for gap in gaps if gap["id"] == gap_id]
-    if len(matches) != 1 or not FILE.fullmatch(matches[0]["file"]):
+    if len(matches) != 1 or not PROOF_MODULE.fullmatch(matches[0]["module"]):
         raise SkipMerge("No current registered community proof file")
     return matches[0]
 
@@ -95,7 +94,7 @@ def merge(app, number, head, record, base, *, dry_run=False):
     gap = task(base, record["lemma_id"])
     path = gap["file"]
     module = path.removeprefix("lean/").removesuffix(".lean").replace("/", ".")
-    if gap["module"] != module:
+    if gap["module"] != module or path != "lean/" + module_path(module):
         raise SkipMerge("The task does not map to its registered module")
     hashes = manifest_hashes(record, module)
     pr = pull_request(app, number)
@@ -112,8 +111,8 @@ def merge(app, number, head, record, base, *, dry_run=False):
         return commit, path, content
     if pr["state"] != "open":
         raise SkipMerge("The pull request was closed")
-    if pr["draft"] or pr["mergeable"] is not True:
-        raise ValueError("The pull request is draft, conflicted or awaiting GitHub")
+    if pr["draft"] or pr["mergeable"] is False:
+        raise ValueError("The pull request is draft or conflicted")
 
     files = app.request("GET", f"{REPO}/pulls/{number}/files?per_page=2")
     if (pr["changed_files"] != 1 or len(files) != 1 or files[0]["filename"] != path
@@ -150,6 +149,7 @@ def publish_source(store, base, revision, path, content):
     with tempfile.TemporaryDirectory(prefix="stage-", dir=store) as folder:
         snapshot = Path(folder) / "base"
         subprocess.run(["cp", "-al", base, snapshot], check=True, timeout=90)
+        (snapshot / path).parent.mkdir(parents=True, exist_ok=True)
         (snapshot / path).write_bytes(content)
         # The copied files are hard-linked. Replace any marker before writing.
         marker = snapshot / "PROOF_MERGE_REVISION"

@@ -8,7 +8,9 @@ import shutil
 import tempfile
 from pathlib import Path
 
-OUTSIDE_IMPORT = re.compile(rb"^import (PEqualNP\.Outside\.[A-Za-z0-9_]+)[ \t]*\r?$", re.MULTILINE)
+OUTSIDE_IMPORT = re.compile(
+    rb"^import ((?:PEqualNP\.Outside|Conjectures)\.[A-Za-z0-9_.]+)[ \t]*\r?$", re.MULTILINE,
+)
 LOCK_FILES = ("lean-toolchain", "lake-manifest.json", "lakefile.toml")
 
 

@@ -91,6 +91,16 @@ test('closure: a listed outside module is never handed to the base step; the bas
 });
 closureRefused('the judged file itself', [judged], {}, 'the file being judged');
 closureRefused('an outside module that imports the judged file', ['PEqualNP.Outside.L_x_2'], { 'PEqualNP.Outside.L_x_2': proof([judged]) }, 'the file being judged');
+test('closure: new module may import a legacy proof', () => {
+  const old = 'PEqualNP.Outside.L_x_2';
+  const current = 'Conjectures.Goldbach.Sample';
+  const order = [];
+  importClosure([current], tree({
+    [current]: proof([old], current),
+    [old]: proof(['Mathlib'], old),
+  }), 'Conjectures.Goldbach.Downstream', order);
+  assert.deepEqual(order, [old, current]);
+});
 closureRefused('a listed module missing from the base', ['PEqualNP.Outside.L_x_9'], {}, 'not a plain file of the base tree');
 closureRefused('a listed base module missing from the base', ['PEqualNP.Gct.Nope'], {}, 'not a plain file of the base tree');
 closureRefused('a base module that imports an outside module', ['PEqualNP.Gct.A'], { 'PEqualNP.Gct.A': 'import PEqualNP.Gct.B\n', 'PEqualNP.Gct.B': '/- x -/ import PEqualNP.Outside.L_x_2\n', 'PEqualNP.Outside.L_x_2': proof(['Mathlib']) }, 'imports the outside-written');
@@ -113,9 +123,9 @@ test('header: an import line below the header is refused, never passed over', ()
 
 // Reached base modules are under the PEqualNP root only, and outside modules are capped.
 import { MAX_OUTSIDE } from './outside-guard.mjs';
-closureRefused('a listed fixture module', ['CheckerSuite.Pass'], { 'CheckerSuite.Pass': 'import Mathlib\n' }, 'not under the PEqualNP root');
-closureRefused('a base module that imports a fixture module', ['PEqualNP.Gct.A'], { 'PEqualNP.Gct.A': 'import CheckerSuite.Pass\n', 'CheckerSuite.Pass': 'import Mathlib\n' }, 'not under the PEqualNP root');
-closureRefused('an outside module that imports a fixture module', ['PEqualNP.Outside.L_x_2'], { 'PEqualNP.Outside.L_x_2': proof(['CheckerSuite.Pass']), 'CheckerSuite.Pass': 'import Mathlib\n' }, 'not under the PEqualNP root');
+closureRefused('a listed fixture module', ['CheckerSuite.Pass'], { 'CheckerSuite.Pass': 'import Mathlib\n' }, 'not under an allowed project root');
+closureRefused('a base module that imports a fixture module', ['PEqualNP.Gct.A'], { 'PEqualNP.Gct.A': 'import CheckerSuite.Pass\n', 'CheckerSuite.Pass': 'import Mathlib\n' }, 'not under an allowed project root');
+closureRefused('an outside module that imports a fixture module', ['PEqualNP.Outside.L_x_2'], { 'PEqualNP.Outside.L_x_2': proof(['CheckerSuite.Pass']), 'CheckerSuite.Pass': 'import Mathlib\n' }, 'not under an allowed project root');
 const many = (n) => Object.fromEntries(Array.from({ length: n }, (_, k) => [`PEqualNP.Outside.L_x_${k + 10}`, proof(['Mathlib'], `PEqualNP.Outside.L_x_${k + 10}`)]));
 test(`closure: ${MAX_OUTSIDE} outside modules pass`, () => {
   assert.equal(MAX_OUTSIDE, 16);

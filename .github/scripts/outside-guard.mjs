@@ -13,9 +13,9 @@
 import { lstatSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-export const FILE_RE = /^lean\/PEqualNP\/Outside\/L_[a-z0-9_]+\.lean$/;
+export const FILE_RE = /^lean\/(?:PEqualNP\/Outside\/L_[a-z0-9_]+|Conjectures\/[A-Z][A-Za-z0-9]*\/[A-Z][A-Za-z0-9]*)\.lean$/;
 export const GAP_RE = /^L-[a-z0-9]+(-[a-z0-9]+)*$/;
-export const MODULE_RE = /^PEqualNP(\.[A-Za-z][A-Za-z0-9_]*)+$/;
+export const MODULE_RE = /^(?:PEqualNP|Conjectures)(\.[A-Za-z][A-Za-z0-9_]*)+$/;
 export const MAX_BYTES = 2 * 1024 * 1024;
 const SHA_RE = /^[0-9a-f]{40}$/;
 const LOGIN_RE = /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})(\[bot\])?$/;
@@ -39,7 +39,7 @@ export function checkPr(pr, files, tree, repo, defaultBranch) {
   if (pr.changed_files !== 1) refuse(`the pull request changes ${pr.changed_files} files; it must add exactly one`);
   if (!Array.isArray(files) || files.length !== 1) refuse('the pull request must add exactly one file');
   const f = files[0];
-  if (typeof f.filename !== 'string' || !FILE_RE.test(f.filename)) refuse('the one file must be lean/PEqualNP/Outside/L_<gap>.lean');
+  if (typeof f.filename !== 'string' || !FILE_RE.test(f.filename)) refuse('the one file must be a registered community proof path');
   if (f.status !== 'added') refuse(`the file must be added, not ${f.status}`);
   if (!SHA_RE.test(f.sha ?? '')) refuse('the file list names no content hash');
   // The tree says what kind of entry it is. 100644 is a plain file: a symbolic link is 120000,
@@ -159,11 +159,11 @@ export function checkPlain(text) {
 // CONSEQUENCE: a fleet module that imports an outside proof can never be a listed import. A
 // file that builds on outside proofs imports the outside modules themselves, and the gap lists
 // them; fleet helpers built on outside proofs stay off the lists.
-export const OUTSIDE_MODULE_RE = /^PEqualNP\.Outside\.L_[a-z0-9_]+$/;
+export const OUTSIDE_MODULE_RE = /^(?:PEqualNP\.Outside\.L_[a-z0-9_]+|Conjectures\.[A-Z][A-Za-z0-9]*\.[A-Z][A-Za-z0-9]*)$/;
 export const MAX_OUTSIDE = 16;
-const PROJECT_RE = /^(PEqualNP|CheckerSuite)(\.[A-Za-z][A-Za-z0-9_]*)*$/;
-const BASE_ROOT_RE = /^PEqualNP(\.[A-Za-z][A-Za-z0-9_]*)*$/;
-const isOutside = (m) => m === 'PEqualNP.Outside' || m.startsWith('PEqualNP.Outside.');
+const PROJECT_RE = /^(PEqualNP|Conjectures|CheckerSuite)(\.[A-Za-z][A-Za-z0-9_]*)*$/;
+const BASE_ROOT_RE = /^(?:PEqualNP|Conjectures)(\.[A-Za-z][A-Za-z0-9_]*)*$/;
+const isOutside = (m) => ['PEqualNP.Outside', 'Conjectures'].some(root => m === root || m.startsWith(root + '.'));
 
 // The import lines of a base module, read the way Lean reads a header: comments, `module`,
 // `prelude` and the modifiers `public`, `meta`, `private`, `all` are passed over. Base files are
@@ -210,7 +210,7 @@ export function importClosure(listed, read, judged, buildOrder = []) {
   const outside = new Set(), base = new Set();
   const visit = (m, from) => {
     if (outside.has(m) || base.has(m)) return;
-    if (!BASE_ROOT_RE.test(m)) refuse(`${from ? `${from} imports` : 'the gap lists'} ${m}, which is not under the PEqualNP root`);
+    if (!BASE_ROOT_RE.test(m)) refuse(`${from ? `${from} imports` : 'the gap lists'} ${m}, which is not under an allowed project root`);
     if (m === judged) refuse(`${from ? `${from} imports` : 'the gap lists'} ${m}, the file being judged`);
     const bytes = read(m);
     if (bytes === null) refuse(`${from ? `${from} imports` : 'the gap lists'} ${m}, which is not a plain file of the base tree`);
@@ -258,7 +258,7 @@ const main = () => {
     process.stdout.write(`imports allowed: ${seen.join(' ') || '(none)'}\n`);
   } else if (cmd === 'closure' && a.length === 4) {
     const [baseDir, importsPath, judgedFile, out] = a;
-    if (!FILE_RE.test(judgedFile)) refuse('the judged file is not lean/PEqualNP/Outside/L_<gap>.lean');
+    if (!FILE_RE.test(judgedFile)) refuse('the judged file is not a registered community proof path');
     const listed = json(importsPath);
     if (!Array.isArray(listed) || !listed.every((m) => typeof m === 'string' && MODULE_RE.test(m))) refuse('the listed imports are malformed');
     // A module's file in the base tree: a plain file (not a link), at most 2 MiB, else null.
