@@ -423,3 +423,14 @@ This is the fixed-box trilinear large sieve.  The remaining Type-II step is
 the dyadic covering of the region `d>U, e>U, m≥1, d e m ≤ n` by such boxes
 (fully contained, so no extra terms are added) and the summation of the box
 bounds.
+
+### Dyadic containment
+
+`box_product_le_of_dyadic`: if `8 D E M ≤ n`, then every
+`d < 2D`, `e < 2E`, `m < 2M` satisfies `d e m ≤ n`, so the dyadic box is
+contained in the Type-II region.
+
+Boxes with `8DEM ≤ n` cover the sub-region `dem ≤ n/8`.  The remaining thin
+top region `n/8 < dem ≤ n` needs the standard dyadic boundary refinement
+(or a separate bound); this is the last combinatorial step for the global
+Type-II estimate.

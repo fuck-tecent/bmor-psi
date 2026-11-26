@@ -136,3 +136,11 @@ task is combinatorial: cover the region `{d > U, e > U, m ≥ 1, d e m ≤ n}`
 by dyadic boxes fully contained in it (so the box sums are subsets of the
 Type-II sum), then sum the bounds.  The boundary boxes need a standard
 dyadic refinement (or a trivial estimate on the thin boundary).
+
+## Dyadic containment and the top boundary
+
+`box_product_le_of_dyadic` proves that `8DEM ≤ n` puts the box inside
+`dem ≤ n`.  Thus the contained dyadic boxes cover `dem ≤ n/8`; the top
+region `n/8 < dem ≤ n` is the remaining boundary.  The next step is the
+standard dyadic refinement of this top region (or a direct bound on its
+energy using the same fixed-box estimate with shorter `d`-ranges).

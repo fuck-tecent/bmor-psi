@@ -700,6 +700,22 @@ lemma majorArc_coeff_interval_energy (n q D d0 s B : ℕ) (a : ℕ) (β : ℝ)
         ring
   exact hcoeff_sum
 
+/-- A dyadic box with `8 D E M ≤ n` is fully inside the Type-II region:
+every `d < 2D`, `e < 2E`, `m < 2M` satisfies `d * e * m ≤ n`. -/
+lemma box_product_le_of_dyadic (n D E M : ℕ) (h : 8 * D * E * M ≤ n) :
+    ∀ d e m : ℕ, D ≤ d → d < 2 * D → E ≤ e → e < 2 * E →
+      M ≤ m → m < 2 * M → d * e * m ≤ n := by
+  intro d e m hd1 hd2 he1 he2 hm1 hm2
+  have hd : d ≤ 2 * D := by omega
+  have he : e ≤ 2 * E := by omega
+  have hm : m ≤ 2 * M := by omega
+  have hde : d * e ≤ (2 * D) * (2 * E) := Nat.mul_le_mul hd he
+  have hdem : d * e * m ≤ ((2 * D) * (2 * E)) * (2 * M) :=
+    Nat.mul_le_mul hde hm
+  have hval : ((2 * D) * (2 * E)) * (2 * M) = 8 * D * E * M := by ring
+  rw [hval] at hdem
+  exact hdem.trans h
+
 /-- Major-arc energy for a fixed dyadic `(e,m)` box. -/
 theorem majorArc_box_energy (n q D d0 E0 M0 : ℕ) (a : ℕ) (β : ℝ)
     (hq : 0 < q) (hcop : Nat.Coprime a q) (hDq : D < q)
