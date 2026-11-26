@@ -138,3 +138,14 @@ same `ArithmeticFunction` language as the Vaughan decomposition.
 
 for `1 ≤ n` and `U ≤ n`. Together with the support lemma, this makes the
 Type-I `Λ` term `o(n)` once `U = o(n / log n)`.
+
+## Total L1 bound
+
+`vaughan.lean` also proves
+
+```lean
+‖expSum n f t‖ ≤ ∑ k ∈ range (n+1), |f k|
+```
+
+for every arithmetic function `f`. This is the crude L1 bridge that will be
+used to turn support bounds on Type-I coefficients into exponential-sum bounds.

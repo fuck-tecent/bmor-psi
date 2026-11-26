@@ -144,6 +144,23 @@ lemma norm_expSum_low_vonMangoldt_le (n U : ℕ) (hn : 1 ≤ n) (hUn : U ≤ n) 
         Real.log_le_log (by exact_mod_cast hkpos) (by exact_mod_cast hk_n)
       exact ArithmeticFunction.vonMangoldt_le_log.trans hlog
 
+
+lemma norm_expSum_le_sum_abs (n : ℕ) (f : ArithmeticFunction ℝ) (t : ℝ) :
+    ‖expSum n f t‖ ≤ ∑ k ∈ Finset.range (n + 1), |f k| := by
+  unfold expSum
+  calc
+    ‖∑ k ∈ Finset.range (n + 1), (f k : ℂ) * E ((k : ℝ) * t)‖
+        ≤ ∑ k ∈ Finset.range (n + 1), ‖(f k : ℂ) * E ((k : ℝ) * t)‖ :=
+      norm_sum_le _ _
+    _ = ∑ k ∈ Finset.range (n + 1), |f k| := by
+      apply Finset.sum_congr rfl
+      intro k _
+      rw [norm_mul, Complex.norm_real, Real.norm_eq_abs]
+      have hEk : ‖E ((k : ℝ) * t)‖ = 1 := by
+        dsimp only [E]
+        simpa only [mul_comm] using Complex.norm_exp_ofReal_mul_I (2 * Real.pi * ((k : ℝ) * t))
+      rw [hEk, mul_one]
+
 end
 
 end PEqualNP.Outside.Vaughan
