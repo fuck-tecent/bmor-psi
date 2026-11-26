@@ -378,6 +378,62 @@ noncomputable def typeIIInner (n U : ℕ) (t : ℝ) (d : ℕ) : ℂ :=
   ∑ e ∈ Finset.Icc (U + 1) (n / d), ((Λ : ArithmeticFunction ℝ) e : ℂ) *
     ∑ m ∈ Finset.Icc 1 (n / (d * e)), E (((d * e * m : ℕ) : ℝ) * t)
 
+/-- The truncated divisor convolution `c_U(l) = ∑_{e | l, e > U} Λ(e)`. -/
+noncomputable def typeIICoeff (U l : ℕ) : ℂ :=
+  ∑ e ∈ l.divisors.filter (fun e => U < e), ((Λ : ArithmeticFunction ℝ) e : ℂ)
+
+/-- Collapsed Fourier form of the Type-II inner sum. -/
+noncomputable def typeIIFourier (n U : ℕ) (t : ℝ) (d : ℕ) : ℂ :=
+  ∑ l ∈ Finset.Icc 1 (n / d), typeIICoeff U l * E (((d * l : ℕ) : ℝ) * t)
+
+lemma norm_typeIICoeff_le (n U l : ℕ) (hl : l ≤ n) :
+    ‖typeIICoeff U l‖ ≤ Real.log (n : ℝ) := by
+  classical
+  have hnonneg : 0 ≤ ∑ e ∈ l.divisors.filter (fun e => U < e),
+      (Λ : ArithmeticFunction ℝ) e :=
+    Finset.sum_nonneg (fun e _ => ArithmeticFunction.vonMangoldt_nonneg)
+  have hsub : l.divisors.filter (fun e => U < e) ⊆ l.divisors :=
+    Finset.filter_subset _ _
+  have hle : ∑ e ∈ l.divisors.filter (fun e => U < e),
+        (Λ : ArithmeticFunction ℝ) e ≤
+      ∑ e ∈ l.divisors, (Λ : ArithmeticFunction ℝ) e :=
+    Finset.sum_le_sum_of_subset_of_nonneg hsub
+      (fun e _ _ => ArithmeticFunction.vonMangoldt_nonneg)
+  have hfull : ∑ e ∈ l.divisors, (Λ : ArithmeticFunction ℝ) e = Real.log (l : ℝ) :=
+    ArithmeticFunction.vonMangoldt_sum
+  have hlog : Real.log (l : ℝ) ≤ Real.log (n : ℝ) := by
+    rcases Nat.eq_zero_or_pos l with h0 | hpos
+    · subst l
+      simpa using Real.log_natCast_nonneg n
+    · exact Real.log_le_log (by exact_mod_cast hpos) (by exact_mod_cast hl)
+  have hnorm : ‖typeIICoeff U l‖ =
+      ∑ e ∈ l.divisors.filter (fun e => U < e), (Λ : ArithmeticFunction ℝ) e := by
+    unfold typeIICoeff
+    rw [← Complex.ofReal_sum, Complex.norm_real, Real.norm_eq_abs, abs_of_nonneg hnonneg]
+  rw [hnorm]
+  calc
+    ∑ e ∈ l.divisors.filter (fun e => U < e), (Λ : ArithmeticFunction ℝ) e
+        ≤ ∑ e ∈ l.divisors, (Λ : ArithmeticFunction ℝ) e := hle
+    _ = Real.log (l : ℝ) := hfull
+    _ ≤ Real.log (n : ℝ) := hlog
+
+lemma sum_normSq_typeIICoeff_le (n U : ℕ) (s : Finset ℕ)
+    (hs : ∀ l ∈ s, l ≤ n) :
+    ∑ l ∈ s, ‖typeIICoeff U l‖ ^ 2 ≤ (s.card : ℝ) * (Real.log (n : ℝ)) ^ 2 := by
+  calc
+    ∑ l ∈ s, ‖typeIICoeff U l‖ ^ 2 ≤ ∑ l ∈ s, (Real.log (n : ℝ)) ^ 2 := by
+      apply Finset.sum_le_sum
+      intro l hl
+      have h := norm_typeIICoeff_le n U l (hs l hl)
+      nlinarith [norm_nonneg (typeIICoeff U l), h]
+    _ = (s.card : ℝ) * (Real.log (n : ℝ)) ^ 2 := by
+      rw [Finset.sum_const, nsmul_eq_mul]
+
+lemma typeIIInner_eq_typeIIFourier (n U d : ℕ) (hd : 0 < d) (t : ℝ) :
+    typeIIInner n U t d = typeIIFourier n U t d := by
+  unfold typeIIInner typeIIFourier typeIICoeff
+  rw [inner_high_sum_collapse n d U hd t]
+
 /-- Support-truncated Cauchy–Schwarz: if `B` vanishes above `n/(U+1)`, then
 the squared weighted sum only sees `d ≤ n/(U+1)`. -/
 lemma norm_sum_mu_mul_sq_le_of_support (n U : ℕ) (B : ℕ → ℂ)
@@ -469,6 +525,21 @@ theorem norm_expSum_high_mu_zeta_highLambda_sq_le_range (n U : ℕ) (t : ℝ) :
     simpa [Nat.mul_comm] using h1
   rw [Finset.Icc_eq_empty (by omega)]
   simp
+
+/-- Refined Type-II energy with the collapsed divisor-convolution inner sum. -/
+theorem norm_expSum_high_mu_zeta_highLambda_sq_le_range' (n U : ℕ) (t : ℝ) :
+    ‖expSum n (high U (μ : ArithmeticFunction ℝ) * (ζ : ArithmeticFunction ℝ) *
+        high U (Λ : ArithmeticFunction ℝ)) t‖ ^ 2 ≤
+      ((n / (U + 1) : ℕ) : ℝ) *
+        ∑ d ∈ Finset.Icc (U + 1) (n / (U + 1)), ‖typeIIFourier n U t d‖ ^ 2 := by
+  refine (norm_expSum_high_mu_zeta_highLambda_sq_le_range n U t).trans ?_
+  apply mul_le_mul_of_nonneg_left _ (by positivity)
+  apply Finset.sum_le_sum
+  intro d hd
+  have hdpos : 0 < d := by
+    have := (Finset.mem_Icc.mp hd).1
+    omega
+  rw [typeIIInner_eq_typeIIFourier n U d hdpos t]
 
 /- Cauchy–Schwarz reduction of the Type-II term: the squared Type-II sum is
 controlled by the energy of the inner `(e, m)` sums.  This is exactly the

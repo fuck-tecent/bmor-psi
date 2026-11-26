@@ -95,7 +95,12 @@ so everything reduces to the divisor-convolution moment
 ∑_{l ∈ I} |c_U(l)|²,   c_U(l) = ∑_{e | l, e > U} Λ(e).
 ```
 
-The pointwise divisor bound `τ(l) ≤ 2√l` is too lossy; the needed input is
-the classical average bound `∑_{l ≤ L} (Λ * 1)(l)² ≪ L (log L)^C` (or any
-`L^{1+ε}` bound with a small `ε`).  This moment is the remaining arithmetic
-input for the local Type-II large-sieve route.
+This moment is *not* a difficulty: `∑_{d | l} Λ(d) = log l`
+(`ArithmeticFunction.vonMangoldt_sum`), so `‖c_U(l)‖ ≤ log n` and
+`∑_{l ∈ I} ‖c_U(l)‖² ≤ |I| (log n)²`
+(`norm_typeIICoeff_le`, `sum_normSq_typeIICoeff_le`).
+
+What remains is purely combinatorial bookkeeping: aligned `l`-blocks of
+length `B`, `d`-blocks of length `D ≤ q` (chosen for the separation
+`|β| ≤ 1/(2qD)`), one partial `l`-block per `d`, and summing the block
+estimates.

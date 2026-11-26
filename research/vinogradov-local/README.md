@@ -366,3 +366,28 @@ This removes the earlier spurious factor `n` in place of `n/U`; only
 
 Remaining for the Type-II estimate: dyadic decomposition of the inner
 length `n/d` and of the `d`-range, then the block large sieve.
+
+## Type-II coefficient bound and collapsed energy
+
+`type1_bound.lean` now defines the truncated divisor convolution and its
+Fourier form:
+
+```lean
+typeIICoeff U l = ∑ e ∈ l.divisors.filter (U < e), Λ e
+typeIIFourier n U t d = ∑ l ∈ Icc 1 (n/d), typeIICoeff U l * E (d*l*t)
+```
+
+The key point is that the coefficient moment is trivial, because
+`∑_{d | l} Λ d = log l` (`ArithmeticFunction.vonMangoldt_sum`):
+
+- `norm_typeIICoeff_le`: `‖typeIICoeff U l‖ ≤ log n` for `l ≤ n`;
+- `sum_normSq_typeIICoeff_le`:
+  `∑_{l ∈ s} ‖typeIICoeff U l‖² ≤ #s * (log n)²`;
+- `typeIIInner_eq_typeIIFourier` identifies the `(e,m)` inner sum with the
+  collapsed Fourier sum;
+- `norm_expSum_high_mu_zeta_highLambda_sq_le_range'` is the refined squared
+  energy bound with `typeIIFourier`.
+
+So no divisor-moment estimate is needed; the remaining Type-II work is the
+block decomposition (aligned `l`-blocks of length `B`, `d`-blocks below `q`,
+one partial `l`-block per `d`).
