@@ -104,3 +104,25 @@ What remains is purely combinatorial bookkeeping: aligned `l`-blocks of
 length `B`, `d`-blocks of length `D ≤ q` (chosen for the separation
 `|β| ≤ 1/(2qD)`), one partial `l`-block per `d`, and summing the block
 estimates.
+
+## Why naive `l`-block Cauchy–Schwarz is insufficient
+
+The fixed-length block large sieve cannot be applied block-by-block to the
+cutoff `l ≤ n/d` without losing the saving.  If one splits `l` into aligned
+blocks and uses Cauchy–Schwarz over the blocks, a factor
+`K_d ≈ n/(U B)` appears; combined with the block estimates this gives only
+`n² (log n)^O(1)` for the squared Type-II term instead of `o(n²)`.
+The large-sieve saving is cancelled by the block count.
+
+The remaining viable routes are:
+
+1. a smooth cutoff/Abel summation in `l` before applying the large sieve, so
+   that the coefficient vector is fixed and only its Fourier transform
+   varies slowly; or
+2. a bilinear (Gallagher-type) large sieve for the `d, e, m` double sum,
+   which handles the product condition `d e m ≤ n` without a varying cutoff.
+
+The block decomposition lemmas
+(`sum_range_mul_eq_sum_blocks`, `sum_range_eq_blocks_add_rem`,
+`sum_Icc_eq_sum_range_shift`, `majorArc_block_energy_offset`) are in place for
+either route.

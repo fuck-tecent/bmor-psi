@@ -391,3 +391,12 @@ The key point is that the coefficient moment is trivial, because
 So no divisor-moment estimate is needed; the remaining Type-II work is the
 block decomposition (aligned `l`-blocks of length `B`, `d`-blocks below `q`,
 one partial `l`-block per `d`).
+
+### Status of the block route
+
+The fixed-length block large sieve and the offset block bound
+(`majorArc_block_energy_offset`) are in place, together with the range-block
+lemmas.  A naive Cauchy–Schwarz over `l`-blocks loses a factor
+`K_d ≈ n/(UB)`, cancelling the large-sieve saving (see `PLAN.md`).  The next
+step is a smooth cutoff/Abel summation or a bilinear Gallagher-type large
+sieve for the `d,e,m` double sum.

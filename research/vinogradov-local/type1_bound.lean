@@ -378,6 +378,107 @@ noncomputable def typeIIInner (n U : ℕ) (t : ℝ) (d : ℕ) : ℂ :=
   ∑ e ∈ Finset.Icc (U + 1) (n / d), ((Λ : ArithmeticFunction ℝ) e : ℂ) *
     ∑ m ∈ Finset.Icc 1 (n / (d * e)), E (((d * e * m : ℕ) : ℝ) * t)
 
+lemma E_add (x y : ℝ) : E (x + y) = E x * E y := by
+  unfold E
+  rw [← Complex.exp_add]
+  congr 1
+  push_cast
+  ring
+
+lemma norm_E (x : ℝ) : ‖E x‖ = 1 := by
+  dsimp only [E]
+  simpa only [mul_comm] using Complex.norm_exp_ofReal_mul_I (2 * Real.pi * x)
+
+/-- Shifting all phases by a common unit does not change the sum's norm. -/
+lemma norm_sum_shift {M : ℕ} (c : Fin M → ℂ) (θ shift : ℝ) :
+    ‖∑ n : Fin M, c n * E ((n : ℝ) * θ + shift)‖ =
+      ‖∑ n : Fin M, c n * E ((n : ℝ) * θ)‖ := by
+  have h : (∑ n : Fin M, c n * E ((n : ℝ) * θ + shift))
+      = (∑ n : Fin M, c n * E ((n : ℝ) * θ)) * E shift := by
+    rw [Finset.sum_mul]
+    apply Finset.sum_congr rfl
+    intro n _
+    rw [E_add]
+    ring
+  rw [h, norm_mul, norm_E, mul_one]
+
+/-- Split a multiple of `B` into `K` consecutive blocks of length `B`. -/
+lemma sum_range_mul_eq_sum_blocks (f : ℕ → ℝ) (B K : ℕ) :
+    ∑ i ∈ Finset.range (K * B), f i =
+      ∑ k ∈ Finset.range K, ∑ i ∈ Finset.range B, f (k * B + i) := by
+  induction K with
+  | zero => simp
+  | succ K ih =>
+      rw [Nat.succ_mul, Finset.sum_range_add, ih, Finset.sum_range_succ]
+
+/-- Split a range into full blocks of length `B` plus a remainder. -/
+lemma sum_range_eq_blocks_add_rem (f : ℕ → ℝ) (B M : ℕ) :
+    ∑ i ∈ Finset.range M, f i =
+      ∑ k ∈ Finset.range (M / B), ∑ i ∈ Finset.range B, f (k * B + i) +
+        ∑ i ∈ Finset.range (M % B), f ((M / B) * B + i) := by
+  conv_lhs => rw [← Nat.div_add_mod M B]
+  rw [Finset.sum_range_add]
+  have h1 : (∑ x ∈ Finset.range (B * (M / B)), f x) =
+      ∑ k ∈ Finset.range (M / B), ∑ i ∈ Finset.range B, f (k * B + i) := by
+    rw [Nat.mul_comm B (M / B), sum_range_mul_eq_sum_blocks]
+  rw [h1]
+  congr 1
+  rw [Nat.mul_comm B (M / B)]
+
+/-- Shift an `Icc` sum to a `range` sum. -/
+lemma sum_Icc_eq_sum_range_shift (A M : ℕ) (f : ℕ → ℝ) (hAM : A ≤ M) :
+    ∑ d ∈ Finset.Icc A M, f d = ∑ x ∈ Finset.range (M + 1 - A), f (A + x) := by
+  have hIcc : Finset.Icc A M = Finset.Ico A (M + 1) := by
+    ext x
+    simp only [Finset.mem_Icc, Finset.mem_Ico]
+    omega
+  rw [hIcc, Finset.sum_Ico_eq_sum_range]
+
+/-- Short-block energy with an arbitrary offset `jB` in the inner variable. -/
+lemma majorArc_block_energy_offset (q D B d0 jB : ℕ) (a : ℕ) (β : ℝ)
+    (c : ℕ → ℂ) (hq : 0 < q) (hcop : Nat.Coprime a q) (hDq : D < q)
+    (hβ : |β| ≤ 1 / (2 * (q:ℝ) * (D:ℝ))) :
+    ∑ d : Fin (D + 1),
+      ‖∑ n : Fin (B + 1),
+        (if n.val < B then c (jB + n.val) else 0) *
+          E (((jB + n.val : ℕ) : ℝ) *
+            (((d0 : ℝ) + (d : ℝ)) * ((a:ℝ)/(q:ℝ) + β)))‖ ^ 2
+      ≤ (B + 1 + 2 * (q:ℝ)) *
+          ∑ n : Fin (B + 1),
+            ‖(if n.val < B then c (jB + n.val) else 0)‖ ^ 2 := by
+  let c' : Fin (B + 1) → ℂ := fun n => if n.val < B then c (jB + n.val) else 0
+  have h := majorArc_block_energy q D d0 B a β c' hq hcop hDq hβ
+  have hshift : ∀ d : Fin (D + 1),
+      ‖∑ n : Fin (B + 1), c' n * E (((jB + n.val : ℕ) : ℝ) *
+          (((d0:ℝ) + (d:ℝ)) * ((a:ℝ)/(q:ℝ) + β)))‖
+      = ‖∑ n : Fin (B + 1), c' n * E ((n.val : ℝ) *
+          (((d0:ℝ) + (d:ℝ)) * ((a:ℝ)/(q:ℝ) + β)))‖ := by
+    intro d
+    have harg : ∀ n : Fin (B + 1),
+        ((jB + n.val : ℕ) : ℝ) * (((d0:ℝ) + (d:ℝ)) * ((a:ℝ)/(q:ℝ) + β)) =
+          (n.val : ℝ) * (((d0:ℝ) + (d:ℝ)) * ((a:ℝ)/(q:ℝ) + β)) +
+            (jB : ℝ) * (((d0:ℝ) + (d:ℝ)) * ((a:ℝ)/(q:ℝ) + β)) := by
+      intro n
+      push_cast
+      ring
+    simp_rw [harg]
+    exact norm_sum_shift c' _ _
+  have hLHS : (∑ d : Fin (D + 1),
+      ‖∑ n : Fin (B + 1), c' n * E (((jB + n.val : ℕ) : ℝ) *
+        (((d0:ℝ) + (d:ℝ)) * ((a:ℝ)/(q:ℝ) + β)))‖ ^ 2)
+      = ∑ d : Fin (D + 1),
+          ‖∑ n : Fin (B + 1), c' n * E ((n.val : ℝ) *
+            (((d0:ℝ) + (d:ℝ)) * ((a:ℝ)/(q:ℝ) + β)))‖ ^ 2 := by
+    apply Finset.sum_congr rfl
+    intro d _
+    rw [hshift d]
+  change (∑ d : Fin (D + 1),
+      ‖∑ n : Fin (B + 1), c' n * E (((jB + n.val : ℕ) : ℝ) *
+        (((d0:ℝ) + (d:ℝ)) * ((a:ℝ)/(q:ℝ) + β)))‖ ^ 2) ≤
+    (B + 1 + 2 * (q:ℝ)) * ∑ n : Fin (B + 1), ‖c' n‖ ^ 2
+  rw [hLHS]
+  exact h
+
 /-- The truncated divisor convolution `c_U(l) = ∑_{e | l, e > U} Λ(e)`. -/
 noncomputable def typeIICoeff (U l : ℕ) : ℂ :=
   ∑ e ∈ l.divisors.filter (fun e => U < e), ((Λ : ArithmeticFunction ℝ) e : ℂ)
