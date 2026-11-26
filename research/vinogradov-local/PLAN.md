@@ -44,8 +44,12 @@ The goal is a bound `o(n / (log n)^A)`, eventually for `U ≈ n^{2/5}` and
    bound in this collapsed form.
 2. Dyadically split `d ∈ [D, 2D)` so that the length `n/d` is comparable to
    `n/D` inside each block.
-3. Apply Cauchy–Schwarz over `d` (already done at the squared-sum level) and
-   the finite large sieve to the Fourier transforms at `l * d * a/q`.
+3. Apply Cauchy–Schwarz over `d` (done) and the finite large sieve to the
+   Fourier transforms at `l * d * a/q`.  The fixed-length form is done:
+   `largeSieve_frequency_energy` proves
+   `∑_{d ≤ D} ‖∑_{l ≤ L} c_l e(l d a/q)‖²
+      ≤ (D/q + 1)(L + q)∑|c_l|²`
+   for `gcd(a,q) = 1`.  What remains is the varying length `n/d` and `β`.
 4. Handle the `β` perturbation by Abel summation; the `e(d e m β)` phase
    varies slowly when `d e m |β|` is small.
 

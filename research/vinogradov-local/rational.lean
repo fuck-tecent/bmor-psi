@@ -1,6 +1,16 @@
 import Mathlib
+import finite_large_sieve
 open scoped BigOperators
 noncomputable def E (x : ℝ) : ℂ := Complex.exp (((2 * Real.pi * x : ℝ) : ℂ) * Complex.I)
+
+/-- The additive character `E (n/q)` is `ZMod.stdAddChar n`. -/
+lemma E_eq_stdAddChar (q n : ℕ) [NeZero q] :
+    E ((n : ℝ) / (q : ℝ)) = ZMod.stdAddChar (n : ZMod q) := by
+  rw [ZMod.stdAddChar_apply, ZMod.toCircle_natCast]
+  unfold E
+  congr 1
+  push_cast
+  ring
 
 lemma z_ne_one (t : ℝ) (hsin : Real.sin (Real.pi * t) ≠ 0) : E t ≠ 1 := by
   intro h
@@ -22,6 +32,122 @@ lemma z_ne_one (t : ℝ) (hsin : Real.sin (Real.pi * t) ≠ 0) : E t ≠ 1 := by
     rw [show Real.pi * t = (m : ℝ) * Real.pi by rw [ht]; ring]
     exact Real.sin_int_mul_pi m
   exact hsin hsin0
+
+/-- If every fiber of `g : ι → κ` over `s` has at most `C` elements, then a
+sum of `G (g i)` is at most `C` times the total mass of `G`. -/
+lemma sum_le_card_mul_sum_of_fiber_bound {ι κ : Type*} [Fintype κ] [DecidableEq κ]
+    (s : Finset ι) (g : ι → κ) (G : κ → ℝ) (C : ℝ)
+    (hG : ∀ k, 0 ≤ G k)
+    (hcard : ∀ k, (((s.filter (fun i => g i = k)).card : ℝ) ≤ C)) :
+    ∑ i ∈ s, G (g i) ≤ C * ∑ k, G k := by
+  classical
+  have hfiber : (∑ k : κ, ∑ i ∈ s.filter (fun i => g i = k), G (g i))
+      = ∑ i ∈ s, G (g i) :=
+    Finset.sum_fiberwise s g (fun i => G (g i))
+  rw [← hfiber]
+  have hcongr : ∀ k : κ,
+      ∑ i ∈ s.filter (fun i => g i = k), G (g i) =
+        ((s.filter (fun i => g i = k)).card : ℝ) * G k := by
+    intro k
+    rw [Finset.sum_congr rfl (fun i hi => by rw [(Finset.mem_filter.mp hi).2])]
+    rw [Finset.sum_const, nsmul_eq_mul]
+  calc
+    ∑ k : κ, ∑ i ∈ s.filter (fun i => g i = k), G (g i)
+        = ∑ k : κ, ((s.filter (fun i => g i = k)).card : ℝ) * G k := by
+      apply Finset.sum_congr rfl
+      intro k _
+      exact hcongr k
+    _ ≤ ∑ k : κ, C * G k := by
+      apply Finset.sum_le_sum
+      intro k _
+      exact mul_le_mul_of_nonneg_right (hcard k) (hG k)
+    _ = C * ∑ k : κ, G k := by
+      rw [Finset.mul_sum]
+
+/- Fixed-length frequency-energy form of the finite large sieve: for
+`gcd(a,q) = 1`, summing the squared Fourier transforms at the frequencies
+`d * a / q` over `d <= D` costs at most `(D/q + 1) (L + q)` times the
+coefficient energy. -/
+set_option maxHeartbeats 2000000 in
+theorem largeSieve_frequency_energy (q D L : ℕ) [NeZero q] (a : ℕ) (c : ℕ → ℂ)
+    (hcop : Nat.Coprime a q) :
+    ∑ d ∈ Finset.range (D + 1),
+      ‖∑ l ∈ Finset.range (L + 1),
+        c l * E ((l : ℝ) * ((d : ℝ) * ((a : ℝ) / (q : ℝ))))‖ ^ 2
+      ≤ ((D / q + 1 : ℕ) : ℝ) * ((L + q : ℝ) *
+          ∑ l ∈ Finset.range (L + 1), ‖c l‖ ^ 2) := by
+  classical
+  let u : (ZMod q)ˣ := ZMod.unitOfCoprime a hcop
+  have hu : ((u : ZMod q)) = (a : ZMod q) := ZMod.coe_unitOfCoprime a hcop
+  let G : ZMod q → ℝ := fun s =>
+    ‖∑ l ∈ Finset.range (L + 1), c l * ZMod.stdAddChar (s * (l : ZMod q))‖ ^ 2
+  have hterm : ∀ d ∈ Finset.range (D + 1),
+      ‖∑ l ∈ Finset.range (L + 1),
+        c l * E ((l : ℝ) * ((d : ℝ) * ((a : ℝ) / (q : ℝ))))‖ ^ 2
+      = G ((d : ZMod q) * (a : ZMod q)) := by
+    intro d _
+    have hargh : ∀ l : ℕ,
+        E ((l : ℝ) * ((d : ℝ) * ((a : ℝ) / (q : ℝ))))
+        = ZMod.stdAddChar (((d : ZMod q) * (a : ZMod q)) * (l : ZMod q)) := by
+      intro l
+      have harg : (l : ℝ) * ((d : ℝ) * ((a : ℝ) / (q : ℝ))) =
+          ((l * d * a : ℕ) : ℝ) / (q : ℝ) := by
+        push_cast
+        ring
+      rw [harg, E_eq_stdAddChar]
+      congr 1
+      push_cast
+      ring
+    dsimp only [G]
+    simp only [hargh]
+  have hsum1 : (∑ d ∈ Finset.range (D + 1),
+      ‖∑ l ∈ Finset.range (L + 1),
+        c l * E ((l : ℝ) * ((d : ℝ) * ((a : ℝ) / (q : ℝ))))‖ ^ 2)
+      = ∑ d ∈ Finset.range (D + 1), G ((d : ZMod q) * (a : ZMod q)) :=
+    Finset.sum_congr rfl hterm
+  rw [hsum1]
+  have hcard : ∀ s : ZMod q,
+      (((Finset.range (D + 1)).filter
+        (fun d : ℕ => (d : ZMod q) * (a : ZMod q) = s)).card : ℝ) ≤
+        ((D / q + 1 : ℕ) : ℝ) := by
+    intro s
+    have hset : (Finset.range (D + 1)).filter
+        (fun d : ℕ => (d : ZMod q) * (a : ZMod q) = s)
+        = (Finset.range (D + 1)).filter
+            (fun d : ℕ => (d : ZMod q) = ((u⁻¹ : (ZMod q)ˣ) : ZMod q) * s) := by
+      ext d
+      simp only [Finset.mem_filter, Finset.mem_range]
+      constructor
+      · rintro ⟨hd, hEq⟩
+        refine ⟨hd, ?_⟩
+        have hEq' : (d : ZMod q) * (u : ZMod q) = s := by
+          simpa [hu] using hEq
+        calc
+          (d : ZMod q) =
+              (d : ZMod q) * ((u : ZMod q) * ((u⁻¹ : (ZMod q)ˣ) : ZMod q)) := by
+            rw [Units.mul_inv, mul_one]
+          _ = ((d : ZMod q) * (u : ZMod q)) * ((u⁻¹ : (ZMod q)ˣ) : ZMod q) := by ring
+          _ = s * ((u⁻¹ : (ZMod q)ˣ) : ZMod q) := by rw [hEq']
+          _ = ((u⁻¹ : (ZMod q)ˣ) : ZMod q) * s := by ring
+      · rintro ⟨hd, hEq⟩
+        refine ⟨hd, ?_⟩
+        calc
+          (d : ZMod q) * (a : ZMod q) = (d : ZMod q) * (u : ZMod q) := by rw [← hu]
+          _ = (((u⁻¹ : (ZMod q)ˣ) : ZMod q) * s) * (u : ZMod q) := by rw [hEq]
+          _ = s * (((u⁻¹ : (ZMod q)ˣ) : ZMod q) * (u : ZMod q)) := by ring
+          _ = s := by rw [Units.inv_mul, mul_one]
+    rw [hset]
+    exact_mod_cast PEqualNP.Outside.fiber_card_le D q (((u⁻¹ : (ZMod q)ˣ) : ZMod q) * s)
+  calc
+    ∑ d ∈ Finset.range (D + 1), G ((d : ZMod q) * (a : ZMod q))
+        ≤ ((D / q + 1 : ℕ) : ℝ) * ∑ s : ZMod q, G s :=
+      sum_le_card_mul_sum_of_fiber_bound (s := Finset.range (D + 1))
+        (g := fun d => (d : ZMod q) * (a : ZMod q)) (G := G)
+        (C := ((D / q + 1 : ℕ) : ℝ)) (fun s => sq_nonneg _) hcard
+    _ ≤ ((D / q + 1 : ℕ) : ℝ) *
+          ((L + q : ℝ) * ∑ l ∈ Finset.range (L + 1), ‖c l‖ ^ 2) := by
+      apply mul_le_mul_of_nonneg_left _ (by positivity)
+      simpa only [G] using PEqualNP.Outside.L_goldbach_finite_large_sieve L q c
 
 /-- Reducing the numerator modulo `q` does not change the sine, up to sign. -/
 lemma abs_sin_pi_mul_natCast_div_eq_mod (q A : ℕ) (hq : 0 < q) :

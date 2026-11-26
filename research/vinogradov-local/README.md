@@ -284,3 +284,24 @@ truncated divisor convolution `c_U(l) = ∑_{e | l, e > U} Λ(e)`.  Accordingly
   with the collapsed inner sums.
 
 The next step is the dyadic decomposition of `d` and the finite large sieve.
+
+## Fixed-length frequency-energy large sieve
+
+`rational.lean` now imports `finite_large_sieve` and proves
+`largeSieve_frequency_energy`: for `gcd(a,q) = 1`,
+
+```lean
+∑ d ∈ range (D+1),
+    ‖∑ l ∈ range (L+1), c l * E (l * (d * a/q))‖ ^ 2
+  ≤ (D/q + 1) * (L + q) * ∑ l ∈ range (L+1), ‖c l‖ ^ 2.
+```
+
+The proof groups `d` by the residue `d * a mod q`, uses the fiber bound
+`fiber_card_le` from the vendored finite large sieve, and then applies
+`L_goldbach_finite_large_sieve`.  This is the core large-sieve input for the
+Type-II energy at `β = 0`.
+
+Remaining for Type-II:
+
+- the inner length `n/d` varies with `d` (dyadic decomposition/smooth cutoff);
+- the `β ≠ 0` perturbation (separated large sieve or Abel summation).
