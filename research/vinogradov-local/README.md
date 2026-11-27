@@ -1083,3 +1083,16 @@ one obtains `q` with `Q0 < q ≤ Q` and
 Compared with `norm_expSum_vaughan_typeI_le_uniform_threshold`, every
 `n log n (1+log n)/q` and `n log(U²)(1+log(U²))/q` term now carries the
 minor-arc lower bound `q > Q0` instead of `q ≥ 1`.
+
+### Vanishing of the third-term `q`-multiples for `q > U²`
+
+`double_sum_vonMangoldt_div_eq_zero` records that for `U² < q` no product
+`d * e` (`d, e ≤ U`) is divisible by `q`, so the correction term
+
+```text
+∑_{d,e ≤ U, q | de} Λ(e)/(de)
+```
+
+is exactly zero.  In the wide minor-arc regime `q > Q0` this applies
+whenever `Q0 ≥ U²`: the last summand of
+`norm_expSum_low_mu_lowLambda_zeta_le_truncated_tail` then disappears.

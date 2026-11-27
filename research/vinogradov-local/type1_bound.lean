@@ -1145,6 +1145,26 @@ lemma sum_div_vonMangoldt_tail_le (n U M : ℕ) (hUn : U ≤ n)
           (1 + Real.log (((U:ℝ) * (U:ℝ)) / (M:ℝ))) := by ring
 
 
+/-- When `U² < q`, no product `d * e` with `d, e ≤ U` is divisible by `q`,
+so the `q`-multiples correction in the third Type-I term vanishes. -/
+lemma double_sum_vonMangoldt_div_eq_zero (U q : ℕ) (h : U * U < q) :
+    (∑ d ∈ Finset.Icc 1 U, ∑ e ∈ Finset.Icc 1 U,
+        (if (q : ℕ) ∣ d * e then
+          ((Λ : ArithmeticFunction ℝ) e) / ((d * e : ℕ) : ℝ) else 0)) = 0 := by
+  apply Finset.sum_eq_zero
+  intro d hd
+  apply Finset.sum_eq_zero
+  intro e he
+  obtain ⟨hd1, hdU⟩ := Finset.mem_Icc.mp hd
+  obtain ⟨he1, heU⟩ := Finset.mem_Icc.mp he
+  have hde : d * e ≤ U * U := Nat.mul_le_mul hdU heU
+  have hlt : d * e < q := lt_of_le_of_lt hde h
+  rw [if_neg]
+  intro hdvd
+  have hpos : 0 < d * e := Nat.mul_pos (by omega) (by omega)
+  have := Nat.le_of_dvd hpos hdvd
+  omega
+
 /-- Trivial (no oscillation) bound for the second Type-I term. -/
 lemma norm_expSum_low_mu_mul_log_le_trivial (n U : ℕ) (t : ℝ) (hUn : U ≤ n) :
     ‖expSum n (low U (μ : ArithmeticFunction ℝ) * ArithmeticFunction.log) t‖ ≤

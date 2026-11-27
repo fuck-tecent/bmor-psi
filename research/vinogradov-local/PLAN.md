@@ -435,3 +435,14 @@ before a Type-I minor-arc saving:
   separation, replacing `2q` per `d` by the varying residues `r_d/q`);
 - the third-term `2qM` term (the bilinear analogue), which still needs
   the block/counting argument.
+
+## Third-term `q`-multiples vanish for `q > U²`
+
+`double_sum_vonMangoldt_div_eq_zero` proves the `q | de` correction sum is
+zero when `U² < q`.  With the wide minor arcs (`q > Q0`) this covers the
+regime `Q0 ≥ U²`, removing the `n log(U²)(1/q)(1+log(U²/q))` term.
+
+Still open on the Type-I side:
+- the residue refinement `2qU → 2q log q` for the second term (the
+  distinct-residue sum `∑_d 1/r_d ≤ 2(1+log q)`);
+- the bilinear analogue for the third term's `2qM`.
