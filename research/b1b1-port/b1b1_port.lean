@@ -1965,4 +1965,57 @@ theorem arcKernel_zero (n : ℕ) :
   rw [Set.inter_comm, MeasureTheory.setIntegral_const]
   simp
 
+/-- One term of the sinc sum. -/
+def sineFactor (n : ℕ) (m : ℤ) (q a : ℕ) : ℂ :=
+  phase ((m:ℝ)*((a:ℝ)/(q:ℝ))) *
+    (((Real.sin (2*Real.pi*(m:ℝ)*((cutoffH n:ℝ)/((q:ℝ)*(n:ℝ)))) : ℝ) : ℂ) /
+      ((Real.pi*(m:ℝ) : ℝ) : ℂ))
+
+/-- The sinc sum over the arc family (the closed form of `-arcKernel`). -/
+def sincSum (n : ℕ) (m : ℤ) : ℂ :=
+  ∑ q ∈ Finset.Icc 1 (cutoffB n),
+    ∑ a ∈ (Finset.range q).filter (fun a => Nat.Coprime a q), sineFactor n m q a
+
+/-- The arc kernel is minus the sinc sum at nonzero frequency. -/
+theorem arcKernel_eq_neg_sincSum (n : ℕ) (m : ℤ) (hm : m ≠ 0)
+    (hn : 512 * (cutoffB n)^2 * logSq n < n) (hQ : 1 ≤ cutoffB n)
+    (hρ0 : (0:ℝ) ≤ (cutoffH n : ℝ)/(n:ℝ))
+    (hρ1 : (cutoffH n : ℝ)/(n:ℝ) < 1)
+    (hint : ∀ q ∈ Finset.Icc 2 (cutoffB n),
+      ∀ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q),
+        0 < (a:ℝ)/(q:ℝ) - (cutoffH n:ℝ)/((q:ℝ)*(n:ℝ)) ∧
+          (a:ℝ)/(q:ℝ) + (cutoffH n:ℝ)/((q:ℝ)*(n:ℝ)) < 1) :
+    arcKernel n m = - sincSum n m := by
+  rw [arcKernel_eq_sinc n m hm hn hQ hρ0 hρ1 hint]
+  simp only [sincSum, sineFactor]
+
+/-- **The full `τ₁` `exact_split`**: `Jdeep` as a quadruple sum with the kernel in
+closed form (diagonal at `m = 0`, sinc sum otherwise). -/
+theorem deepIntegral_eq_diagonal_sub_sinc (n : ℕ)
+    (hn : 512 * (cutoffB n)^2 * logSq n < n) (hQ : 1 ≤ cutoffB n)
+    (hρ0 : (0:ℝ) ≤ (cutoffH n : ℝ)/(n:ℝ))
+    (hρ1 : (cutoffH n : ℝ)/(n:ℝ) < 1)
+    (hint : ∀ q ∈ Finset.Icc 2 (cutoffB n),
+      ∀ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q),
+        0 < (a:ℝ)/(q:ℝ) - (cutoffH n:ℝ)/((q:ℝ)*(n:ℝ)) ∧
+          (a:ℝ)/(q:ℝ) + (cutoffH n:ℝ)/((q:ℝ)*(n:ℝ)) < 1) :
+    deepIntegral n =
+      ∑ a ∈ Finset.Icc (cutoffU n + 1) (lowCut n),
+        ∑ a' ∈ Finset.Icc (cutoffU n + 1) (lowCut n),
+          ((lowMoebiusWeight (cutoffU n) a : ℂ) * (lowMoebiusWeight (cutoffU n) a' : ℂ)) *
+            ∑ j ∈ Finset.Ioc (cutoffU n) (n / a),
+              ∑ k ∈ Finset.Ioc (cutoffU n) (n / a'),
+                ((ArithmeticFunction.vonMangoldt j : ℂ) *
+                  (ArithmeticFunction.vonMangoldt k : ℂ)) *
+                  (if (((a*j : ℕ) : ℤ) + ((a'*k : ℕ) : ℤ) - (n : ℤ)) = 0
+                   then arcKernel n 0
+                   else - sincSum n (((a*j : ℕ) : ℤ) + ((a'*k : ℕ) : ℤ) - (n : ℤ))) := by
+  rw [deepIntegral_eq_quadruple_sum]
+  refine Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun a' _ => ?_
+  congr 1
+  refine Finset.sum_congr rfl fun j _ => Finset.sum_congr rfl fun k _ => ?_
+  by_cases hm : (((a*j : ℕ) : ℤ) + ((a'*k : ℕ) : ℤ) - (n : ℤ)) = 0
+  · rw [if_pos hm, hm]
+  · rw [if_neg hm, arcKernel_eq_neg_sincSum n _ hm hn hQ hρ0 hρ1 hint]
+
 end B1B1Port

@@ -1444,3 +1444,44 @@ the local-density aggregation (Milestone "second layer" in the handover).
 ### Dossier
 
 29 verified milestones, 1966 lines, no `sorry`, branch `research/b1b1-arcsplit`.
+
+## Milestone 30: the complete `τ₁` exact_split
+
+```lean
+def sineFactor (n) (m : ℤ) (q a : ℕ) : ℂ :=
+  e(m a/q) · sin(2π m H/(q n))/(π m)
+
+def sincSum (n) (m : ℤ) : ℂ :=
+  ∑_{q ≤ cutoffB n} ∑_{a ∈ (range q), (a,q)=1} sineFactor n m q a
+
+arcKernel_eq_neg_sincSum (n) (m) (hm : m ≠ 0) (…) :
+  arcKernel n m = - sincSum n m
+
+deepIntegral_eq_diagonal_sub_sinc (n) (hn) (hQ) (hρ0) (hρ1) (hint) :
+  Jdeep n
+    = ∑_{a,a'} (c a · c a') ∑_{j,k} (Λ j · Λ k) ·
+        if a j + a' k = n then arcKernel n 0 else - sincSum n (a j + a' k - n)
+```
+
+This is the **complete `τ₁`-analogue of `spatial_exact_split`**:
+
+```text
+Jdeep = D · (1 - |A|) - W
+D = ∑_{a j + a' k = n} c(a)c(a')Λ(j)Λ(k)          (the "q = ∞" local count)
+W = ∑_{quad} c(a)c(a')Λ(j)Λ(k) ∑_q c_q(m) sin(2π m H/(q n))/(π m)
+```
+
+### What is left for b1-b1
+
+Only the **local-density aggregation**:
+
+1. compute `D` (a weighted count of `a j + a' k = n` with `Λ` weights) to `o(n)`
+   precision — this needs an upper bound, not an asymptotic;
+2. aggregate the `q`-sum in `W` using `L_goldbach_finite_large_sieve` (accepted;
+   merge upstream `513184b2` to import it), replacing `1/φ(q)²` by the
+   `∑_a c(a)`-weighted local density;
+3. show `|D - W| = o(n)`.
+
+### Dossier
+
+30 verified milestones, 2035 lines, no `sorry`, branch `research/b1b1-arcsplit`.
