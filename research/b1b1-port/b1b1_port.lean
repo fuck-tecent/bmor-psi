@@ -582,6 +582,66 @@ theorem integral_wwave_norm_sq (c : ℕ → ℂ) {u : ℕ} (hu : 0 < u) (l r : �
   simp_rw [hsingle]
   exact Finset.sum_fiberwise_of_maps_to hmaps (fun h => ‖c h‖ ^ 2)
 
+/-! ### How close is a weighted progression to its total mass?
+
+On the archimedean core `|t| ≲ 1/(u N)` the weighted progression is essentially
+its total mass.  Off that core it is **not**: the correct error term carries a
+factor `h`, not just `Λ h`:
+
+```text
+‖wwave Λ u l r t - ∑_{h} Λ h‖ ≤ 2π |t| ∑_{h} u h · Λ h ,
+```
+
+and `∑_{h ≤ N} h Λ h ≈ N²/2` against `∑_{h ≤ N} Λ h ≈ N`, so the relative error is
+`≈ π u N |t|`.  Hence a constant approximation is only available on `|t| ≤ 1/(u N)`;
+the rest of the annulus needs the oscillation/window-kernel analysis.
+-/
+
+/-- The weighted progression minus its total mass, with the honest error term. -/
+theorem wwave_mangoldt_sub_total_norm_le (u l r : ℕ) (t : ℝ) :
+    ‖wwave (fun h => (ArithmeticFunction.vonMangoldt h : ℂ)) u l r t
+        - ∑ h ∈ Finset.Ioc l r, (ArithmeticFunction.vonMangoldt h : ℂ)‖
+      ≤ 2 * Real.pi * |t| *
+          ∑ h ∈ Finset.Ioc l r, ((u:ℝ) * (h:ℝ)) * ArithmeticFunction.vonMangoldt h := by
+  have hsplit : wwave (fun h => (ArithmeticFunction.vonMangoldt h : ℂ)) u l r t
+        - ∑ h ∈ Finset.Ioc l r, (ArithmeticFunction.vonMangoldt h : ℂ)
+      = ∑ h ∈ Finset.Ioc l r,
+          ((ArithmeticFunction.vonMangoldt h : ℂ) * (phase ((u*h:ℕ)*t) - 1)) := by
+    unfold wwave
+    rw [← Finset.sum_sub_distrib]
+    refine Finset.sum_congr rfl fun h _ => ?_
+    ring
+  rw [hsplit]
+  refine (norm_sum_le _ _).trans ?_
+  have hterm : ∀ h ∈ Finset.Ioc l r,
+      ‖(ArithmeticFunction.vonMangoldt h : ℂ) * (phase ((u*h:ℕ)*t) - 1)‖
+        ≤ ((u:ℝ)*(h:ℝ)) * ArithmeticFunction.vonMangoldt h * (2 * Real.pi * |t|) := by
+    intro h _
+    have hcast : |(((u*h:ℕ):ℝ) * t)| = (u:ℝ) * (h:ℝ) * |t| := by
+      rw [abs_mul, abs_of_nonneg (Nat.cast_nonneg (u*h))]
+      push_cast
+      ring
+    have hnorm : ‖phase ((u*h:ℕ)*t : ℝ) - 1‖ ≤ 2 * Real.pi * ((u:ℝ) * (h:ℝ) * |t|) := by
+      have := DyadicMixedB4ProgressionApprox.norm_phase_sub_one_le (((u*h:ℕ):ℝ) * t)
+      rwa [hcast] at this
+    calc ‖(ArithmeticFunction.vonMangoldt h : ℂ) * (phase ((u*h:ℕ)*t) - 1)‖
+        = ArithmeticFunction.vonMangoldt h * ‖phase ((u*h:ℕ)*t) - 1‖ := by
+          rw [norm_mul, Complex.norm_real, Real.norm_eq_abs,
+            abs_of_nonneg ArithmeticFunction.vonMangoldt_nonneg]
+      _ ≤ ArithmeticFunction.vonMangoldt h * (2 * Real.pi * ((u:ℝ) * (h:ℝ) * |t|)) :=
+          mul_le_mul_of_nonneg_left hnorm ArithmeticFunction.vonMangoldt_nonneg
+      _ = ((u:ℝ)*(h:ℝ)) * ArithmeticFunction.vonMangoldt h * (2 * Real.pi * |t|) := by ring
+  calc ∑ h ∈ Finset.Ioc l r,
+        ‖(ArithmeticFunction.vonMangoldt h : ℂ) * (phase ((u*h:ℕ)*t) - 1)‖
+      ≤ ∑ h ∈ Finset.Ioc l r,
+          ((u:ℝ)*(h:ℝ)) * ArithmeticFunction.vonMangoldt h * (2 * Real.pi * |t|) :=
+        Finset.sum_le_sum hterm
+    _ = 2 * Real.pi * |t| *
+          ∑ h ∈ Finset.Ioc l r, ((u:ℝ) * (h:ℝ)) * ArithmeticFunction.vonMangoldt h := by
+        rw [Finset.mul_sum]
+        refine Finset.sum_congr rfl fun h _ => ?_
+        ring
+
 /-- The `Λ` case of weighted Parseval. -/
 theorem integral_wwave_mangoldt_norm_sq (u l r : ℕ) (hu : 0 < u) :
     (∫ t in (0:ℝ)..1,

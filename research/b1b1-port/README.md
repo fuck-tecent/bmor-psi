@@ -445,3 +445,56 @@ In particular
 | weighted Parseval `∫‖wwave‖² = ∑‖c h‖²` | ✅ |
 | near field: `wwave ≈ ∑ Λ h` on the window, error `π/(4M)` | next |
 | weighted `L²` off-grid (`awayBound` analogue) | open — needs a second-moment/large-sieve input |
+
+## Milestone 8: the near field is NOT "constant on the window" (correction)
+
+I previously claimed that on the window `|x| ≤ radius M` the weighted progression
+is essentially its total mass, with relative error `π/(4M)`.  **That was wrong** —
+it dropped the `h` factor.  The verified honest statement is
+
+```lean
+wwave_mangoldt_sub_total_norm_le (u l r) (t) :
+  ‖wwave Λ u l r t - ∑_{h ∈ (l,r]} Λ h‖
+    ≤ 2π|t| · ∑_{h ∈ (l,r]} (u h) · Λ h
+```
+
+and `∑_{h ≤ N} h Λ h ≈ N²/2` against `∑_{h ≤ N} Λ h ≈ N`, so the relative error is
+
+```text
+≈ (π/2) · u · N · |t| = (π/2) n |t|      (since u N = n).
+```
+
+On the full window `|t| ≤ radius M = 1/(8M²)` with `M = maximumStep ≈ n^(19/48)`
+this is `≈ n^(5/24)`, i.e. **huge**.  So the constant approximation is only valid on
+the archimedean core
+
+```text
+|t| ≲ 1/n ,
+```
+
+and the rest of the annulus (`1/n ≤ |t| ≤ radius M`) genuinely needs the
+oscillation / window-kernel analysis — which is precisely the `sineKernel` /
+`scalarKernel` / `windowKernel` / `DyadicMixedB4Abel` stack that the verified
+`b3-b4` module adds on top of `b1-b4` (the extra ~2200 lines).
+
+So the near field splits as
+
+```text
+core   |x| ≤ 1/n        : wwave ≈ ∑ Λ h            (proved here)
+annulus 1/n ≤ |x| ≤ ρ_q : ∫ e(k t) wwave  — window kernel, Ramanujan weights
+```
+
+which is the classical major-arc structure, and the verified `windowKernel`
+machinery is exactly what handles the annulus.
+
+### Programme status
+
+| ingredient | status |
+|---|---|
+| atom expansion `S_{τ₁} = ∑_a c(a)·wwave Λ a U (n/a)` | ✅ |
+| exact far/near split `deepIntegral_split` | ✅ |
+| Fourier-mode orthogonality `integral_phase_int/sub` | ✅ |
+| weighted Parseval `∫‖wwave‖² = ∑‖c h‖²` | ✅ |
+| near core: `wwave = ∑ Λ h + O(2π|t|∑ h Λ h)` | ✅ |
+| near annulus: window-kernel analysis | open (machinery exists in `b3-b4`, needs weighted port) |
+| weighted `L²` off-grid (`awayBound` analogue) | open (needs second-moment/large-sieve input) |
