@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-packet-rational-peak-far-tails",
+  "statement": "let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∀ ε : ℝ, 0<ε → ∃ N : ℕ, ∀ n ≥ N, (∑ q ∈ Finset.Icc 1 ((Q n)^2), ∑ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q), m {t : ℝ | (Q n:ℝ)^2/(n:ℝ) < |t-(a:ℝ)/(q:ℝ)|} (fun t => 4*(n:ℝ)^2 / ((Nat.totient q:ℝ)^2*(1+((n:ℝ)*(t-(a:ℝ)/(q:ℝ)))^2)))) ≤ ε*(n:ℝ)",
+  "plain_statement": {
+    "zh": "同时截去全部有理峰远端，误差为 o(n)",
+    "en": "Cut all rational-peak tails simultaneously at sublinear cost"
+  },
+  "brief": {
+    "zh": "共同半径为 Q²/n。用洛伦兹尾积分、每个分母至多 2φ(q) 个分子，以及 ∑_{q≤Q²}1/φ(q)≤4Q，得到全体尾部至多 64πn/Q。包括 q=1 的两个端点。",
+    "en": "At common radius Q²/n, Lorentz integration, at most 2φ(q) centers and a reciprocal-totient sum ≤4Q give total leakage ≤64πn/Q. Both endpoints for q=1 are included."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "minor-truncation",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.PacketRationalPeakFarTails",
+  "file": "lean/Conjectures/Goldbach/PacketRationalPeakFarTails.lean"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "L-square-packing-seventeen-charge-angle-symmetry",
+  "statement": "let inside := fun (x y a b X Y : ℝ) => |a*(X-x)+b*(Y-y)| < 1/2 ∧ |(-b)*(X-x)+a*(Y-y)| < 1/2; ∀ (k q : ℕ) (X Y : Fin k → ℚ) (w : Fin k → ℕ), (∀ x y a b : ℝ, 0 ≤ b → b ≤ a → (a ^ 2 + b ^ 2 = 1 ∧ |a| + |b| ≤ 2*x ∧ |a| + |b| ≤ 2*((4661/1000:ℝ)-x) ∧ |a| + |b| ≤ 2*y ∧ |a| + |b| ≤ 2*((4661/1000:ℝ)-y)) → q ≤ (∑ j : Fin k, (if inside x y a b (X j) (Y j) then w j else 0))) → ∀ x y a b : ℝ, (a ^ 2 + b ^ 2 = 1 ∧ |a| + |b| ≤ 2*x ∧ |a| + |b| ≤ 2*((4661/1000:ℝ)-x) ∧ |a| + |b| ≤ 2*y ∧ |a| + |b| ≤ 2*((4661/1000:ℝ)-y)) → q ≤ (∑ j : Fin k, (if inside x y a b (X j) (Y j) then w j else 0))",
+  "plain_statement": {
+    "zh": "把单块的权重核验缩减到 0 至 45 度。",
+    "en": "Reduce single-square charge verification to orientations between 0 and 45 degrees."
+  },
+  "brief": {
+    "zh": "改变正方形局部坐标的符号或顺序，保持每个见证点的内部归属。",
+    "en": "Use sign changes and swaps of the local coordinates to preserve each site's interior membership."
+  },
+  "source": "https://squaremath.org/cases/17.html",
+  "program": "correlation",
+  "track": "seventeen-square-frontier",
+  "role": "input",
+  "depends_on": [
+    "L-square-packing-rotation-norm",
+    "L-square-packing-rotated-square-containment"
+  ],
+  "parallel": true,
+  "challenge_only": false,
+  "imports": [
+    "PEqualNP.Outside.L_square_packing_rotation_norm",
+    "PEqualNP.Outside.L_square_packing_rotated_square_containment"
+  ]
+}

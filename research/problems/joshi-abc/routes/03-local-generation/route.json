@@ -1,0 +1,11 @@
+{
+  "id": "03-local-generation",
+  "title": {
+    "zh": "29 进生成与反例族",
+    "en": "29-adic generation and counterfamilies"
+  },
+  "description": {
+    "zh": "检验 π¹⁴=29 的模 π⁴ 计算，并测试提高 Tate 重数后所需的新方向。",
+    "en": "Test the jets for π¹⁴=29 modulo π⁴ and count missing directions as Tate multiplicity increases."
+  }
+}

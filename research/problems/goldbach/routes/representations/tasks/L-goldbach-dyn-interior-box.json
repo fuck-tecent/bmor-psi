@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-dyn-interior-box",
+  "statement": "let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); let P := fun X : ℕ => (Finset.Icc (Nat.sqrt X) (2*Nat.sqrt X)).filter Nat.Prime; let H := fun (X n : ℕ) => ((P X).filter (fun p => p ≤ n ∧ Nat.Prime (n-p))).card; ∀ X : ℕ, 64 ≤ X → (P X).card * ((Finset.Icc X (3*X/2)).filter Nat.Prime).card ≤ ∑ n ∈ E X, H X n",
+  "plain_statement": {
+    "zh": "用一个完整素数矩形给路径总量下界",
+    "en": "Embed an interior prime rectangle into the path count"
+  },
+  "brief": {
+    "zh": "取小素数 p 和区间 [X,3X/2] 中的素数 q。证明 p+q 落在目标偶数区间，并保留第一步以免合并重数。",
+    "en": "Map the pair to its endpoint and first step. Bound endpoints and check parity before counting."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "module": "Conjectures.Goldbach.DynInteriorBox",
+  "file": "lean/Conjectures/Goldbach/DynInteriorBox.lean",
+  "imports": [],
+  "track": "representations",
+  "role": "lemma"
+}

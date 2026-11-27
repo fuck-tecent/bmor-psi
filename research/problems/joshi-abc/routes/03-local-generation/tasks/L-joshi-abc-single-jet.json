@@ -1,0 +1,24 @@
+{
+  "id": "L-joshi-abc-single-jet",
+  "statement": "∀ (K : Type) [NontriviallyNormedField K] [CompleteSpace K] [IsUltrametricDist K] [CharZero K], let theta := fun (q u : K) => ∑' n : ℤ, q^(n*(n+1)/2) * u^(2*n+1); ∀ (r z : K), r^14=(29:K) → 0 < ‖r‖ → ‖r‖ < 1 → z^7=1 → ‖z‖=1 → ‖1+z^2‖=1 → ‖theta (r^14) z / theta (r^14) (r^2*z) - (1+z^2)*r^2‖ ≤ ‖r‖^4",
+  "plain_statement": {
+    "zh": "新路线 · 29 进生成与反例族 · JA-0023 · 求单个 ξ₂ 在模 π⁴ 下的二阶项",
+    "en": "New route · 29-adic generation and counterfamilies · JA-0023 · Compute the quadratic jet of ξ₂ modulo π⁴"
+  },
+  "brief": {
+    "zh": "分子常数为 z+z⁻¹，分母主项为 r⁻²z⁻¹；分开估计两条尾。",
+    "en": "The leading terms are z+z⁻¹ and r⁻²z⁻¹. Bound the two tails separately."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/joshi-abc.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-joshi-abc-theta-minimum",
+    "L-joshi-abc-root-unit"
+  ],
+  "imports": [],
+  "track": "03-local-generation",
+  "module": "Conjectures.JoshiAbc.SingleJet",
+  "file": "lean/Conjectures/JoshiAbc/SingleJet.lean"
+}

@@ -1,0 +1,23 @@
+{
+  "id": "L-joshi-abc-rounding-radical",
+  "statement": "let rad := fun (n : ℕ) => n.primeFactors.prod id; ∀ (a b : ℕ) (S : Finset ℕ) (u : ℕ → ℝ), 0<a → 0<b → S ⊆ (2*a*b*(a+b)).primeFactors → (∀ p ∈ S, 0≤u p ∧ u p≤1) → S.sum (fun p => u p*Real.log p) ≤ Real.log (rad (a*b*(a+b)))+Real.log 2",
+  "plain_statement": {
+    "zh": "新路线 · 同一包络与局部 Szpiro · JA-0056 · 把 Frey 坏处的整层取整代价控制在全局根基内",
+    "en": "New route · Common hull and local Szpiro · JA-0056 · Bound whole-lattice rounding at Frey bad places by the global radical"
+  },
+  "brief": {
+    "zh": "用 S 中的素数互异和每处取整最多一层，再将素数 2 单列。",
+    "en": "Use distinct prime support and at most one rounding layer at each place. Account for two separately."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/joshi-abc.md",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-joshi-abc-codifferent-rounding"
+  ],
+  "imports": [],
+  "track": "06-common-hull-and-szpiro",
+  "module": "Conjectures.JoshiAbc.RoundingRadical",
+  "file": "lean/Conjectures/JoshiAbc/RoundingRadical.lean"
+}

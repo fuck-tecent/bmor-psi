@@ -1,0 +1,18 @@
+{
+  "id": "L-goldbach-finite-shared-lucas-certificates",
+  "statement": "let checked := fun (nodes : List (ℕ × ℕ × List ℕ)) => ∀ entry ∈ nodes, let p := entry.1; let a := entry.2.1; let fs := entry.2.2; 2 < p ∧ fs.prod = p-1 ∧ Nat.powMod a (p-1) p = 1 % p ∧ (∀ r ∈ fs, 2 ≤ r ∧ r < p ∧ (r = 2 ∨ ∃ item ∈ nodes, item.1 = r) ∧ Nat.powMod a ((p-1)/r) p ≠ 1 % p); ∀ nodes : List (ℕ × ℕ × List ℕ), checked nodes → ∀ entry ∈ nodes, Nat.Prime entry.1",
+  "plain_statement": {
+    "zh": "新路线 · 小偶数覆盖第三批 · FR-9001 · 核验共享因子节点的 Lucas 素性证书",
+    "en": "New route · Finite-range coverage III · FR-9001 · Verify Lucas certificates with shared factor nodes"
+  },
+  "brief": {
+    "zh": "按节点数值强归纳。每个 p−1 的因子只需在同一表中出现一次，2 作为基例。用 Nat.powMod 与 ZMod 幂的对应调用 Mathlib 的 lucas_primality。用于 FR-9002 的锚点表。",
+    "en": "Induct on the value of a node. Each factor of p−1 only needs one entry in the table. Use 2 as the base and the conversion from Nat.powMod to powers in ZMod to apply Mathlib's lucas_primality. FR-9002 uses the result for its anchor table."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/finite-rfc-third/README.md#prime-pair-certificates",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

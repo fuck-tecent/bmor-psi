@@ -1,0 +1,22 @@
+{
+  "id": "L-goldbach-dyadic-primitive-reflected-form",
+  "statement": "∀ (N k : ℕ), Even N → 1 ≤ k →\n  let q : ℕ := 2^k\n  let m : ℕ := 2^(k+1)\n  ∀ f : ZMod m → ℝ,\n    let D := fun r : ℕ => f (r : ZMod m) - f ((r+q : ℕ) : ZMod m)\n    let s := (Finset.univ : Finset (DirichletCharacter ℂ m)).filter (fun χ => χ.conductor = m)\n    let v := fun χ : DirichletCharacter ℂ m =>\n      (∑ x : (ZMod m)ˣ, (f (x : ZMod m) : ℂ) * star (χ (x : ZMod m))) /\n        (Real.sqrt (m.totient : ℝ) : ℂ)\n    let H := fun χ ψ : DirichletCharacter ℂ m =>\n      (∑ x : (ZMod m)ˣ, star (χ (x : ZMod m)) * ψ ((N : ZMod m) - (x : ZMod m))) / (m.totient : ℂ)\n    (∑ r ∈ (Finset.range q).filter (fun r => Odd r),\n      (if (N+2*q-r)%(2*q) < q then (1 : ℝ) else -1) * D r * D ((N+q-r)%q)) =\n      2 * (∑ χ ∈ s, ∑ ψ ∈ s, star (v χ) * H χ ψ * v ψ).re",
+  "plain_statement": {
+    "zh": "新路线 · 二进反射与 Levent GRH · DR-0012 · 用本原特征二次型精确计算奇余类的反射增量",
+    "en": "New route · Dyadic reflection and Levent GRH · DR-0012 · Compute the odd-residue increment exactly by a primitive-character quadratic form"
+  },
+  "brief": {
+    "zh": "用 f 的半差作本原投影。写成单位群正交归一基中的二次型后，两子类各贡献一次，粗类带符号的和等于二次型实部的两倍。",
+    "en": "Project f by taking its half-difference across the two children. In the orthonormal unit basis, the two children give the same contribution. The signed coarse sum equals twice the real part of the form."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/dyadic-reflection/README.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-dyadic-carry-increment",
+    "L-goldbach-dyadic-primitive-energy",
+    "L-goldbach-reflection-conductor-blocks"
+  ],
+  "imports": []
+}

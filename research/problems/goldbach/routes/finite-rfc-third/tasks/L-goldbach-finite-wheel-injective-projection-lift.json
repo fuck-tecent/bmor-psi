@@ -1,0 +1,18 @@
+{
+  "id": "L-goldbach-finite-wheel-injective-projection-lift",
+  "statement": "∀ (P S : Finset ℕ) (b W B n : ℕ), b<W → B+2≤n → Nat.Coprime ((n+W-b)%W) W → P.card<S.card → (∀ p ∈ S, Nat.Prime p ∧ p≤B ∧ p%W=b) → (∀ r ∈ P, Nat.Prime r ∧ Set.InjOn (fun p : ℕ => p%r) (S : Set ℕ)) → ∃ p ∈ S, p≤B ∧ 2≤n-p ∧ Nat.Coprime (n-p) (W*(∏ r ∈ P, r))",
+  "plain_statement": {
+    "zh": "新路线 · 小偶数覆盖第三批 · FR-9004 · 从单射投影推出一般轮筛的存活候选",
+    "en": "New route · Finite-range coverage III · FR-9004 · Produce a surviving wheel candidate from injective projections"
+  },
+  "brief": {
+    "zh": "对每个新增素数，坏候选是与 n 同余的一条纤维，至多含一个元素。并集最多删去 P.card 个素数。非空剩余集给出保留 p≤B 的实际候选。",
+    "en": "Each additional prime removes the candidates in one residue class, which has at most one element. The union removes at most P.card primes. A remaining prime gives a witness with p≤B."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/finite-rfc-third/README.md#rough-remainder-wheel",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

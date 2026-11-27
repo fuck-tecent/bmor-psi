@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-analytic-large-sieve",
+  "statement": "let E (x : ℝ) := Complex.exp (((2 * Real.pi * x : ℝ) : ℂ) * Complex.I); ∀ (M N Q : ℕ) (c : ℕ → ℂ), let S (t : ℝ) := ∑ k ∈ Finset.Ico M (M + N), c k * E ((k : ℝ) * t); (∑ q ∈ Finset.Icc 1 Q, ∑ a ∈ (Finset.range q).filter (fun a => Nat.Coprime a q), ‖S ((a : ℝ) / q)‖ ^ 2) ≤ (Real.pi * (N : ℝ) + (Q : ℝ) ^ 2) * ∑ k ∈ Finset.Ico M (M + N), ‖c k‖ ^ 2",
+  "plain_statement": {
+    "en": "For N consecutive frequencies, the sum of |S(a/q)|² over all reduced residues with q ≤ Q is at most (πN + Q²) times the squared coefficient norm.",
+    "zh": "对 N 个连续频率，在所有分母 q ≤ Q 的既约剩余类上求和，|S(a/q)|² 的总和不超过系数模平方和的 πN + Q² 倍。"
+  },
+  "brief": {
+    "en": "Center the frequencies and apply the midpoint bound on disjoint windows of length 1/Q². Parseval on a translated unit interval and Cauchy–Schwarz bound the derivative contribution by πN times the coefficient energy.",
+    "zh": "将频率移至以零为中心的位置，在长度为 1/Q² 的不交窗口上应用中点估计。用平移后的单位区间上的帕塞瓦尔恒等式和柯西–施瓦茨不等式，将导数贡献控制在系数模平方和的 πN 倍以内。"
+  },
+  "program": "correlation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://personal.science.psu.edu/rcv4/Vol2/Vol2.pdf",
+  "track": "large-sieve-dispersion",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.AnalyticLargeSieve",
+  "file": "lean/Conjectures/Goldbach/AnalyticLargeSieve.lean"
+}

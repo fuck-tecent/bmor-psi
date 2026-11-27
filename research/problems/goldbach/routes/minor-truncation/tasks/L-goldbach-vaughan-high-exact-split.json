@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-vaughan-high-exact-split",
+  "statement": "let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let Λ := ArithmeticFunction.vonMangoldt; let μ := fun d : ℕ => ((ArithmeticFunction.moebius d : ℤ) : ℝ); let U := fun n : ℕ => ⌊(n : ℝ) ^ (1 / 6 : ℝ)⌋₊; let u := fun (n m : ℕ) => if m ^ 3 ≤ n then 0 else (∑ d ∈ (Nat.divisors m).filter (fun d => d ≤ U n), μ d * Real.log ((m / d : ℕ) : ℝ)) - (∑ d ∈ (Nat.divisors m).filter (fun d => d ≤ U n), μ d * ∑ l ∈ (Nat.divisors (m / d)).filter (fun l => l ≤ U n), Λ l); let v := fun (n m : ℕ) => if m ^ 3 ≤ n then 0 else ∑ a ∈ (Nat.divisors m).filter (fun a => U n < m / a), (∑ d ∈ (Nat.divisors a).filter (fun d => U n < d), μ d) * Λ (m / a); let highLambda := fun (n k : ℕ) => if k ^ 3 ≤ n then 0 else Λ k; (∀ n m : ℕ, highLambda n m = u n m + v n m) ∧ (∀ n : ℕ, I n (highLambda n) (highLambda n) = I n (u n) (u n) + 2 * I n (u n) (v n) + I n (v n) (v n))",
+  "plain_statement": {
+    "zh": "新路线 · 高段次弧 · MA-7010 · 立方根高段上的 Vaughan 精确分拆",
+    "en": "New route · High-segment minor arcs · MA-7010 · Exact Vaughan split on the cube-root high segment"
+  },
+  "brief": {
+    "zh": "取截断 U=⌊n^(1/6)⌋，在 m³>n 上因 m>U 使 Λ_{≤U}(m)=0，由 Vaughan 卷积恒等式精确分解高段 von Mangoldt 权为 u+v，并拆分旧次弧积分 I(h_Λ,h_Λ)。",
+    "en": "With cutoff U=⌊n^(1/6)⌋, every m with m³>n satisfies m>U so Λ_{≤U}(m)=0, giving the exact Vaughan decomposition highLambda=u+v and bilinear expansion of I(highLambda,highLambda) on (arcs n)ᶜ."
+  },
+  "source": "https://www.goldbach.tech/?lemma=L-goldbach-bulk-signed-floor",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "minor-truncation",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.VaughanHighExactSplit",
+  "file": "lean/Conjectures/Goldbach/VaughanHighExactSplit.lean"
+}

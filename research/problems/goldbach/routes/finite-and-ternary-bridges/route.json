@@ -1,0 +1,16 @@
+{
+  "id": "finite-and-ternary-bridges",
+  "title": {
+    "en": "Finite verification, ternary representations, and exceptions",
+    "zh": "有限验证、三元素数表示与例外集"
+  },
+  "description": {
+    "en": "Verify binary Goldbach through one million, turn a ternary major-arc lower bound into a representation, and pass from dyadic exception counts to a cumulative bound.",
+    "zh": "验证一百万以内的二元哥德巴赫命题，将三元主弧下界转化为素数表示，并由倍增区间内的例外数推出累积上界。"
+  },
+  "feeds": [
+    "arc-budget",
+    "exceptions",
+    "representations"
+  ]
+}

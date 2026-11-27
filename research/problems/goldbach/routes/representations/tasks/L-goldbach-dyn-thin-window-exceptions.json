@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-dyn-thin-window-exceptions",
+  "statement": "let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); let P := fun X : ℕ => (Finset.Icc (Nat.sqrt X) (2*Nat.sqrt X)).filter Nat.Prime; let H := fun (X n : ℕ) => ((P X).filter (fun p => p ≤ n ∧ Nat.Prime (n-p))).card; ∀ ε : ℝ, 0 < ε → ∃ X₀ : ℕ, ∀ X ≥ X₀, (((E X).filter (fun n => H X n=0)).card:ℝ) ≤ ε*(X:ℝ)",
+  "plain_statement": {
+    "zh": "探索猜想：平方根步长窗口的漏点密度趋零",
+    "en": "Conjecture: vanishing density of missed square-root-window targets"
+  },
+  "brief": {
+    "zh": "这比正比例命中更强。尝试针对小素数区间建立均方误差，对照局部同余主项；仅有二阶矩上界尚不够。",
+    "en": "Try a mean-square approximation with a residue-sensitive main term for the short prime factor. A bounded second moment alone leaves exceptions."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "module": "Conjectures.Goldbach.DynThinWindowExceptions",
+  "file": "lean/Conjectures/Goldbach/DynThinWindowExceptions.lean",
+  "imports": [],
+  "track": "representations",
+  "role": "lemma"
+}

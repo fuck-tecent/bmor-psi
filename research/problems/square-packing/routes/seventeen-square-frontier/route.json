@@ -1,0 +1,11 @@
+{
+  "id": "seventeen-square-frontier",
+  "title": {
+    "zh": "17 块装填的上下界",
+    "en": "Seventeen-square packing bounds"
+  },
+  "description": {
+    "zh": "搜索更紧凑的可行布局，并尝试用加权击中点提高已复跑的下界。",
+    "en": "Search for a tighter layout and use weighted piercing certificates to improve the replayed lower bound."
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "id": "L-quadratic-primes-sieve-switched-fourier",
+  "statement": "let f := fun k : ℕ => 4*k^2+1; ∀ (d : ℕ) [NeZero d] (p r : ℕ) (u k : ZMod d), Nat.Coprime d p → (p : ZMod d)*u=1 → p ∣ f r →\n  let coeff := fun t : ZMod d => 4*(p : ZMod d)*t^2 + 8*(r : ZMod d)*t + (f r / p : ℕ);\n  (∑ t : ZMod d, if coeff t = 0 then ZMod.stdAddChar (k*t) else 0) =\n    ZMod.stdAddChar (-k*u*(r : ZMod d)) *\n       (∑ v : ZMod d, if 4*v^2+1 = 0 then ZMod.stdAddChar (k*u*v) else 0)",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然扩张 · QP-0081 · 传输切换余因子筛的完整 Fourier 系数",
+    "en": "New route · Levent GRH and natural extensions · QP-0081 · Transport the complete Fourier coefficients for the switched cofactor sieve"
+  },
+  "brief": {
+    "zh": "令 v=pt+r，在原模 d 上保留逆元 u 与平移相位。先以可逆的 p 将余因子零条件化回 4v²+1=0。该公式只处理完整根掩码，窗口余项继续使用 QP-0074。",
+    "en": "Set v=pt+r and retain the inverse u and the translation phase modulo d. First use the unit p to recover 4v²+1=0 from the cofactor zero. QP-0074 supplies the separate interval errors."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/FoundationProofs/DirichletCharFiniteFourierTransformProperties.lean#L85",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": false,
+  "depends_on": [
+    "L-quadratic-primes-sieve-switched-cofactor",
+    "L-quadratic-primes-levent-crt-root-bijection"
+  ],
+  "imports": []
+}

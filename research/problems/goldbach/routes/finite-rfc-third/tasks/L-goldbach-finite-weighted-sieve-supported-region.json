@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-finite-weighted-sieve-supported-region",
+  "statement": "let W := fun (z y s : ℕ) => let P := (Finset.Ico z y).filter Nat.Prime; (2:ℤ)-((P.filter (fun p => p∣s)).card:ℤ)-((P.filter (fun p => p^2∣s)).card:ℤ); let A := fun (n z : ℕ) => (Finset.range (n+1)).filter (fun p => p.Prime ∧ ¬ (p ∣ n) ∧ ((Finset.Ico 2 z).filter (fun q => Nat.Prime q ∧ q ∣ (n-p))) = ∅); ∀ (n z y : ℕ), 4≤n → 2<z → z<y → let A0 := Finset.filter (fun p => 2≤n-p) (A n z); let P := (Finset.Ico z y).filter Nat.Prime; (∑ p ∈ A0, W z y (n-p)) = (2:ℤ)*(A0.card:ℤ) - (∑ q ∈ P, ((Finset.filter (fun p => q ∣ n-p) A0).card:ℤ)) - (∑ q ∈ P, ((Finset.filter (fun p => q^2 ∣ n-p) A0).card:ℤ)) ∧ (∀ q ∈ P, q ∣ n → (Finset.filter (fun p => q ∣ n-p) A0) = ∅)",
+  "plain_statement": {
+    "zh": "新路线 · 小偶数覆盖第三批 · FR-9023 · 把去掉 1 的筛和化成同一底集上的一次与平方整除计数",
+    "en": "New route · Finite-range coverage III · FR-9023 · Express the sieve sum without remainder one using first and square divisibility counts"
+  },
+  "brief": {
+    "zh": "交换两次有限求和。q 整除 n 时，若也整除 n−p，素性迫使 p=q，与 p 不整除 n 矛盾。由此统一 F17–F18 的主项和误差对象。",
+    "en": "Exchange the two finite sums. If q divides both n and n−p, primality gives p=q, contradicting p∤n. This gives the common counting objects for F17 and F18."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/finite-rfc-third/README.md#weighted-sieve-and-chen-counts",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-finite-weighted-sieve-remove-unit"
+  ],
+  "imports": []
+}

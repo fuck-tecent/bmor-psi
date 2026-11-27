@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-type2-corner-fejer-square",
+  "statement": "let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); ∀ (h : ℕ) (θ : ℝ), ((‖∑ j ∈ Finset.range h, E (2*(j:ℝ)*θ)‖^2 : ℝ) : ℂ) = ∑ i ∈ Finset.range h, ∑ j ∈ Finset.range h, E (2*((i:ℝ)-(j:ℝ))*θ)",
+  "plain_statement": {
+    "zh": "Fejér 核的平方等于差变量双和：‖∑ᵢE(2iθ)‖² = ∑ᵢⱼE(2(i−j)θ)。",
+    "en": "The Fejér kernel square equals a two-variable difference sum: ‖∑ᵢE(2iθ)‖² = ∑ᵢⱼE(2(i−j)θ)."
+  },
+  "brief": {
+    "zh": "用 ‖z‖² = z·conj z、conj(E x) = E(−x)、E x·E y = E(x+y) 三项展开，是角胞 L⁴ 交叉项的纯代数一步。仍缺：交叉项在宽弧之外的积分估计。",
+    "en": "Expand with ‖z‖² = z·conj z, conj(E x) = E(−x) and E x·E y = E(x+y); this is the purely algebraic step behind the L⁴ cross terms. Still missing: the estimate of those cross terms off the wide arcs."
+  },
+  "source": "https://www.goldbach.tech/?lemma=L-goldbach-arc-minor-saving#roadmap",
+  "program": "correlation",
+  "parallel": true,
+  "imports": [],
+  "track": "type2-dyadic-corner",
+  "role": "lemma",
+  "depends_on": [],
+  "module": "Conjectures.Goldbach.Type2CornerFejerSquare",
+  "file": "lean/Conjectures/Goldbach/Type2CornerFejerSquare.lean"
+}

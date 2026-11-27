@@ -1,0 +1,14 @@
+{
+  "id": "arc-perturbation",
+  "title": {
+    "zh": "从单变量主弧逼近到二元系数误差",
+    "en": "Propagate major-arc approximation into the binary coefficient"
+  },
+  "description": {
+    "zh": "沿用有理频率附近的 Λ 指数和估计，量化平方、积分和多个弧段累加的损失。最后仍须单独证明逐点次弧下界。",
+    "en": "Start with the Mangoldt estimate near a rational frequency. Track the cost of squaring and integrating across arcs; pointwise minor-arc cancellation remains open."
+  },
+  "feeds": [
+    "arc-budget"
+  ]
+}

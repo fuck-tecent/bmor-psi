@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-theta-residue-overlap-minimum",
+  "statement": "∀ (H L : ℕ), 0 < L → ∀ A : Finset (Fin (2*H+1)), let cnt := fun (U : Finset (Fin (2*H+1))) (b : ℕ) => (U.filter (fun i => i.val%L=b)).card; let hit := fun (U : Finset (Fin (2*H+1))) => (U.filter (fun i => i.rev ∈ U)).card; let same := fun (U : Finset (Fin (2*H+1))) => ∀ b : Fin L, cnt U b.val=cnt A b.val; let lower := ∑ b : Fin L, (cnt A b.val + cnt A ((2*H+L-b.val)%L) - cnt Finset.univ b.val); (∀ U, same U → lower ≤ hit U) ∧ ∃ U, same U ∧ hit U=lower",
+  "plain_statement": {
+    "zh": "新路线 · TH-8001 · Theta 反射 · 给定剩余类计数时可达到的最小有序配对数",
+    "en": "TH-8001 · Theta reflection · Sharp minimum ordered overlap with prescribed residue counts"
+  },
+  "brief": {
+    "zh": "在闭整数区间 [0,2H]，按正模数 L 保留每个剩余类的精确占用数。证明反射重合数的逐类下界，并构造同时取到该下界的集合。计入中心固定点一次。",
+    "en": "On the integer interval [0,2H], keep each occupancy modulo a positive L fixed. Prove the classwise lower bound for ordered reflected overlap and construct a support attaining the sum. Count the central fixed point once."
+  },
+  "source": "https://github.com/LonelyQuantum/goldbach-proofs/blob/33e6b738a34e4d7cd6ae5565f01fad9255475be0/research/diagnostics/ReflectedResidualExterior.md",
+  "program": "correlation",
+  "parallel": true,
+  "imports": [],
+  "track": "theta-reflection",
+  "role": "lemma",
+  "depends_on": [],
+  "module": "Conjectures.Goldbach.ThetaResidueOverlapMinimum",
+  "file": "lean/Conjectures/Goldbach/ThetaResidueOverlapMinimum.lean"
+}

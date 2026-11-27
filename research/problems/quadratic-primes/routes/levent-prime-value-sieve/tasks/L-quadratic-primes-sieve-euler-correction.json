@@ -1,0 +1,18 @@
+{
+  "id": "L-quadratic-primes-sieve-euler-correction",
+  "statement": "let split := fun z : ℕ => (Finset.Icc 5 z).filter (fun p => Nat.Prime p ∧ p%4=1); let correction := fun z : ℕ => ∏ p ∈ split z, (1 - 2/(p : ℝ)) / (1 - 1/(p : ℝ))^2;\n∃ c : ℝ, 0<c ∧ Filter.Tendsto correction Filter.atTop (nhds c)",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然扩张 · QP-0075 · 证明模四分裂素数的局部因子修正积收敛为正数",
+    "en": "New route · Levent GRH and natural extensions · QP-0075 · Prove that the local correction product over split primes has a positive limit"
+  },
+  "brief": {
+    "zh": "每项等于 1−1/(p−1)²。把对数尾界到收敛的整数平方倒数和；从 p=5 开始保证真因子都严格为正。",
+    "en": "Each factor equals 1−1/(p−1)². Bound the log tail by a convergent sum over reciprocal integer squares. Starting at p=5 keeps each factor positive."
+  },
+  "source": "https://doi.org/10.1090/coll/057",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

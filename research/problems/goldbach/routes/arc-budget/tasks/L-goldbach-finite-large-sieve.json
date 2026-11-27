@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-finite-large-sieve",
+  "statement": "∀ (N Q : ℕ) [NeZero Q] (a : ℕ → ℂ), (∑ r : ZMod Q, ‖∑ n ∈ Finset.range (N + 1), a n * ZMod.stdAddChar (r * (n : ZMod Q))‖ ^ 2) ≤ (N + Q : ℝ) * ∑ n ∈ Finset.range (N + 1), ‖a n‖ ^ 2",
+  "plain_statement": {
+    "zh": "有限大筛法：ZMod Q 上 N+1 项指数和均方不超过 (N+Q) 倍系数能量。",
+    "en": "Finite large sieve: the mean square of N+1 exponential sums on ZMod Q is at most (N+Q) times the coefficient energy."
+  },
+  "brief": {
+    "zh": "用 ZMod 的 Parseval 与按余类分纤维的 Cauchy–Schwarz；不依赖素数，是 Type-II 色散估计的基础。",
+    "en": "Use ZMod Parseval and Cauchy–Schwarz on residue-class fibers; this is prime-independent and supports Type-II dispersion estimates."
+  },
+  "source": "https://www.goldbach.tech/?lemma=L-goldbach-arc-minor-saving#roadmap",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "arc-budget",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.FiniteLargeSieve",
+  "file": "lean/Conjectures/Goldbach/FiniteLargeSieve.lean"
+}

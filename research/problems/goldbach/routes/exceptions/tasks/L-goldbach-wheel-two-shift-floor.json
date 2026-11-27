@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-wheel-two-shift-floor",
+  "statement": "(∀ (Q : ℕ) [NeZero Q] (χ : DirichletCharacter ℂ Q) (s : ℂ), 0 < s.re → s.re < 1 → DirichletCharacter.LFunction χ s = 0 → s.re = 1 / 2) → let w : ℕ → ℝ := fun k => if Nat.Prime k then Real.log (k : ℝ) else 0; let R := fun n : ℕ => Finset.sum (Finset.range (n + 1)) (fun p => w p * w (n - p)); let U := fun W n : ℕ => (Finset.range W).filter (fun a => Nat.Coprime a W ∧ Nat.Coprime (n + W - a) W); ∃ (c : ℝ) (N₀ : ℕ), 0 < c ∧ ∀ N W : ℕ, N₀ ≤ N → Even N → 2 ≤ W → Even W → Squarefree W → W ^ 12 ≤ N → c * (N : ℝ) * W * ((U W N).card : ℝ) ≤ (Nat.totient W : ℝ) ^ 2 * (R N + R (N + W))",
+  "plain_statement": {
+    "zh": "假设 GRH。问是否存在统一常数 c>0，使对每个充分大的偶数 N 及事先给定的偶平方自由轮模 W（W¹²≤N），两点 N、N+W 的素数对数权表示数之和至少为 cNW·#U/φ(W)²。",
+    "en": "Assume GRH. Seek a uniform c>0 such that for every sufficiently large even N and every prescribed even squarefree wheel W with W¹²≤N, the sum of the prime-log representation counts at N and N+W is at least cNW·#U/φ(W)²."
+  },
+  "imports": [],
+  "program": "exceptions",
+  "brief": {
+    "zh": "这是开放的两点传递目标。按轮模局部密度归一化后，它等价于低表示数集与其指定平移不同时含有 N（可改变绝对阈值）。它允许 N 或 N+W 单独没有表示。 文献给出几乎所有偶数的密度结果，两点下界是本提案的新问题。",
+    "en": "Open two-target estimate. After normalizing by the wheel density, it excludes simultaneous membership in a low-representation set and its fixed translate, up to an absolute change of threshold. One of the two targets may still lack a representation. The cited paper concerns almost-all representations. The prescribed two-target bound is proposed here."
+  },
+  "source": "https://arxiv.org/abs/2405.18576v2",
+  "parallel": true,
+  "track": "exceptions",
+  "role": "conditional",
+  "module": "Conjectures.Goldbach.WheelTwoShiftFloor",
+  "file": "lean/Conjectures/Goldbach/WheelTwoShiftFloor.lean"
+}

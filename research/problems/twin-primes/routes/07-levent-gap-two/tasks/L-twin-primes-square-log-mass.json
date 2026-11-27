@@ -1,0 +1,18 @@
+{
+  "id": "L-twin-primes-square-log-mass",
+  "statement": "let Λ := ArithmeticFunction.vonMangoldt; ∀ Y : ℕ, ((Finset.range (Y+1)).filter (fun n => (Nat.sqrt n).Prime ∧ n = (Nat.sqrt n)^2)).sum (fun n => Λ n) ≤ Real.log 4 * Real.sqrt Y",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然推广 · TP-0055 · 给真素数平方的对数权分配平方根预算",
+    "en": "New route · Levent GRH methods and extensions · TP-0055 · Bound the log mass of prime squares by a square-root budget"
+  },
+  "brief": {
+    "zh": "平方位置按底素数唯一重排。Λ(p²)=log p，再用 Chebyshev.theta 的上界。该预算保留了一重对数权，供差二短窗的污染估计。",
+    "en": "Index the squares by their unique prime bases. Use Λ(p²)=log p and the upper bound for Chebyshev.theta. Keep the single log weight for the gap-two error."
+  },
+  "source": "https://github.com/leanprover-community/mathlib4/blob/fc4f59e577feb1a4956671bc04ac18aaaf8cd842/Mathlib/NumberTheory/Chebyshev.lean#L655",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

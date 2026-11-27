@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-packet-rational-center-stability",
+  "statement": "let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); ∃ N : ℕ, ∀ n ≥ N, ∀ x y : ℝ, |x-y| ≤ (Q n:ℝ)^2/(n:ℝ) → (1:ℝ)/2 < K n x → (1:ℝ)/3 < K n y",
+  "plain_statement": {
+    "zh": "共振峰在有理中心邻域保持可检测",
+    "en": "Detect resonances from a nearby rational center"
+  },
+  "brief": {
+    "zh": "对余弦和逐项应用 Lipschitz 界，最大频率为 2ᴸ。n≥2²⁵⁶ 时 Q²/n 邻域内的变化至多 1/6，连续共振可在有理中心检测。",
+    "en": "Bound the cosine variation term by term at top frequency 2ᴸ. For n≥2²⁵⁶ the change across Q²/n is at most 1/6, allowing detection at the rational center."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "minor-truncation",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.PacketRationalCenterStability",
+  "file": "lean/Conjectures/Goldbach/PacketRationalCenterStability.lean"
+}

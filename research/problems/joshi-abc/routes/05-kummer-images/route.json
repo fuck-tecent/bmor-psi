@@ -1,0 +1,11 @@
+{
+  "id": "05-kummer-images",
+  "title": {
+    "zh": "指定 Kummer 像与 Θ 测试",
+    "en": "Marked Kummer images and theta tests"
+  },
+  "description": {
+    "zh": "在带标记的同一局部域比较主单位和实际生成子群，逐个计算指定测试的质量。",
+    "en": "Compare principal units and the generated subgroup in one marked local field and evaluate the mass of prescribed tests."
+  }
+}

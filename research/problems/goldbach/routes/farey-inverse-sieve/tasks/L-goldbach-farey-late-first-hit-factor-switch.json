@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-farey-late-first-hit-factor-switch",
+  "statement": "∀ (n : ℕ) (J : Finset ℕ), 64 ≤ n → let I := Finset.Icc ((n+2)/3) ((2*n)/3); let mark := fun (u b : ℕ) => (J.filter (fun a => (a*u)%n = b)).Nonempty; let Hit := I.filter (fun u => u.Coprime n ∧ mark u 1 ∧ n < ((u*(n-u)).minFac)^3 ∧ ((u*(n-u)).minFac)^2 ≤ n); let P := (Finset.range (n+1)).filter (fun p => p.Prime ∧ n < p^3 ∧ p^2 ≤ n); let Q := fun (p b : ℕ) => (Finset.Icc p n).filter (fun q => q.Prime ∧ p*q ∈ I ∧ (p*q).Coprime n ∧ p ≤ (n-p*q).minFac ∧ mark (p*q) b); Hit.card = ∑ p ∈ P, ((Q p 1).card+(Q p (n-1)).card)",
+  "plain_statement": {
+    "zh": "新路线 · Farey 分母对与逆元筛 · HD-8013 · 在带逆元标记的末段按命中侧换元成半素数",
+    "en": "New route · Farey denominator pairs and inverse sieve · HD-8013 · Reindex inverse-labelled late first hits by the side with a semiprime"
+  },
+  "brief": {
+    "zh": "最小因子 p 大于立方根且至多平方根。一侧的分母是 p*q，p≤q 且 q 为素数。始终保留另一侧的最小因子限制。左侧要求 a*p*q≡1，右侧要求 a*p*q≡−1，p=q 也计入。",
+    "en": "The least factor p is above the cube root and at most the square root. The hit side is p*q with p≤q and q prime. Keep the least-factor condition on the other side. Use residues +1 and −1 for the two sides, and include p=q."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/farey-inverse-sieve/README.md",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-farey-insertion-inverse",
+    "L-goldbach-finite-rough-factor-power"
+  ],
+  "imports": []
+}

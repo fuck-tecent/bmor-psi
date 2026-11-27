@@ -6,6 +6,16 @@
 
 对每个偶数 $n\ge4$，要证明存在素数 $p,q$ 使 $p+q=n$。取素数权 $w(p)=\log p$，非素数处令 $w=0$。定义 $R(n)=\sum_{p=0}^n w(p)w(n-p)$。每项非负，每个真正的素数对贡献严格正值，故目标精确地等价于 $R(n)>0$。这给出了所有分析任务共用的终点。[强哥德巴赫命题](strong-goldbach.lean)
 
+## 2026-11-27 · 哥德巴赫研究任务拆分 #3
+
+本轮取样时，主站 689 题中已验收 669 题。第一章把第三因子带的盒计数和近对角能量接到真实 Möbius–Mangoldt 权，并为同一偶数的深弧系数给出公共中点网格。第二章在二幂商里分解反射相关，在 Farey 分母线上保留模逆元位置和筛的首次命中。第三章接续 Levent 工程的有限特征变换、导子分层及带重数的截断显式公式。逐偶数细层相关的符号仍是独立的算术问题。[因子线与深弧](problems/goldbach/routes/signed-factor-windows/split-3.md) · [二幂反射](problems/goldbach/routes/dyadic-reflection) · [Farey 逆元筛](problems/goldbach/routes/farey-inverse-sieve)
+
+第四章把已发表计算边界以外新取得的 16,320 对见证交给 Lean，并把旧轮筛的 14、47 因子上界推进到待核验的 10、33。局部模型、陈氏计数及其有限区间各自保留显式阈值。真素数覆盖只延伸到有见证的偶数，达到 $e^{e^{32.7}}$ 的 $p+P_2$ 和达到 $e^{e^{50}}$ 的双素数覆盖各有剩余计数。[RFC1](RFC1-小偶数上的Goldbach.md) · [有限覆盖第三批](problems/goldbach/routes/finite-rfc-third)
+
+两条裙边是 GRH 收件问题。LogTruSoul 在 #2829 提供了带 GRH 前提的两个原结论，沿用 DNZJSJ 在 #2486 的解析工作。生产 Jenkins 暂时关闭 GRH 核验。现行 guard 会将允许清单的全部模块列入构建，实测给旧题加入 `PEqualNP.GRH` 会连同 Mathlib-only 提交一起阻断。待生产恢复 GRH 核验后，将该模块加入两个原 ID 的允许清单并同步受信基线，才能逐题取得权威回执。低模已有原 ID 提交在途。[裙边证明与署名](https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2829) · [导入清单](../.github/scripts/outside-guard.mjs) · [核验入口](../deploy/jenkins/prepare_proof.py) · [原 ID 提交](https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2843)
+
+**English.** The factor-line tasks retain the actual arithmetic weights. The reflection tasks study dyadic layers at a fixed even integer, and the Farey tasks keep the target denominator line and inverse labels. Crossing from one-variable character estimates to signed fine-layer correlation still needs arithmetic cancellation. The finite branch supplies reproducible witnesses above the published computation and a stronger wheel for counting prime factors with multiplicity. Upper bounds for semiprime contamination and uniform finite-range coverage have their own acceptance conditions. The two skirt proofs await GRH intake. The current build list includes every module on the allowlist. Adding GRH while production verification is disabled would also block Mathlib-only submissions to those IDs.
+
 ## 2026-11-26 · 哥德巴赫研究任务拆分 #2
 
 本轮沿用 Levent GRH 工程中的有限特征 Fourier 变换、原始特征归约、截断显式公式这三种方法，研究哥德巴赫卷积中的具体输入。对有理中心先合并既约分子，对原始特征保留导子和奇偶，对同一零点先取两个端点之差再求和。可对照固定提交中的 `GlobalTheory.EisM.hat_mul_unit`、`hat_mul_coprime` 和 `GlobalTheory.ExplicitFormula.truncated_explicit_formula`。最后一条对原始特征、$2\le T\le u$ 成立，误差含存在常数和低零点项。本轮各题用本站 Mathlib 独立陈述。已有 GRH 中弧定理仍需其冻结的 Dirichlet GRH 前提。谱假设 R 已退出研究路线。[有限 Fourier 变换](https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/FoundationProofs/DirichletCharFiniteFourierTransformProperties.lean#L85) · [原始特征与零点](https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/GlobalInterpolation/DirichletLZerosEqPrimitiveCharacterZeros.lean) · [截断显式公式](https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/GlobalInterpolation/TruncatedExplicitFormula.lean#L607)

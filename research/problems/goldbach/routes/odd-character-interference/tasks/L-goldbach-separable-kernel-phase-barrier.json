@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-separable-kernel-phase-barrier",
+  "statement": "∀ (m : ℕ) (L : ℝ) (γ : ℕ → ℝ) (W₁ W₂ : ℕ → ℂ), let E : ℕ → ℂ := fun j => Complex.exp (((γ j * L : ℝ) : ℂ) * Complex.I); let cross : (ℕ → ℂ) → ℝ := fun W => ∑ j ∈ Finset.range m, ∑ l ∈ (Finset.range m).erase j, (W j * starRingEnd ℂ (W l) * E j * starRingEnd ℂ (E l)).re; cross W₁ + cross W₂ = ‖∑ j ∈ Finset.range m, W₁ j * E j‖ ^ 2 + ‖∑ j ∈ Finset.range m, W₂ j * E j‖ ^ 2 - ∑ j ∈ Finset.range m, (‖W₁ j‖ ^ 2 + ‖W₂ j‖ ^ 2) ∧ -(∑ j ∈ Finset.range m, (‖W₁ j‖ ^ 2 + ‖W₂ j‖ ^ 2)) ≤ cross W₁ + cross W₂",
+  "plain_statement": {
+    "zh": "新路线 · OC-7012 · 新路线 · 奇特征干涉 · OC-0102 · 二秩可分离零点对核的非对角平方完备化与相位无关下界",
+    "en": "OC-7012 · New route · Odd-character interference · OC-0102 · Off-diagonal square completion and phase-independent floor for rank-two separable zero-pair kernels"
+  },
+  "brief": {
+    "zh": "对每个索引补回对角项并利用单位模指数的范数不变性化为完整平方范数，由此导出与 log N 无关的对角负下界。",
+    "en": "Restore the diagonal index for each weight vector and use unit-modulus phase invariance to complete both squares and deduce the log-N-independent lower bound."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/ROADMAP.md",
+  "program": "correlation",
+  "parallel": true,
+  "imports": [],
+  "track": "odd-character-interference",
+  "role": "lemma",
+  "depends_on": [],
+  "module": "Conjectures.Goldbach.SeparableKernelPhaseBarrier",
+  "file": "lean/Conjectures/Goldbach/SeparableKernelPhaseBarrier.lean"
+}

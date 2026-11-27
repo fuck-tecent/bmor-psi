@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-dirichlet-minor-approximation",
+  "statement": "let Q (n : ℕ) := (Nat.log 2 (n + 2)) ^ 2; let arcs (n : ℕ) := {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ Q n ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t - (a : ℝ) / q| ≤ (Q n : ℝ) / ((q : ℝ) * n)}; ∀ (n : ℕ) (t : ℝ), 1 ≤ Q n → Q n ≤ n → t ∈ Set.Icc (0 : ℝ) 1 → t ∉ arcs n → ∃ q a : ℕ, Q n < q ∧ q ≤ n / Q n ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t - (a : ℝ) / q| ≤ 1 / ((q : ℝ) * (((n / Q n : ℕ) : ℝ) + 1))",
+  "plain_statement": {
+    "en": "Each point in [0,1] outside the Goldbach major arcs has a reduced approximation a/q with Q < q ≤ H and error at most 1/(q(H+1)), where H = ⌊n/Q⌋.",
+    "zh": "令 H = ⌊n/Q⌋。区间 [0,1] 内的每个次弧点都有既约逼近 a/q，满足 Q < q ≤ H、0 ≤ a ≤ q，且误差至多为 1/(q(H+1))。"
+  },
+  "brief": {
+    "en": "Use Dirichlet’s theorem of order H. The inequality n < Q(H+1) puts any candidate with q ≤ Q inside the posted major arc of radius Q/(qn).",
+    "zh": "应用 H 阶狄利克雷逼近定理。由 n < Q(H+1)，若候选分母 q ≤ Q，则该点必落入目录定义的半径为 Q/(qn) 的主弧。"
+  },
+  "program": "correlation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://github.com/leanprover-community/mathlib4/blob/fc4f59e577feb1a4956671bc04ac18aaaf8cd842/Mathlib/NumberTheory/DiophantineApproximation/Basic.lean#L144-L160",
+  "track": "bilinear-minor-dispersion",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.DirichletMinorApproximation",
+  "file": "lean/Conjectures/Goldbach/DirichletMinorApproximation.lean"
+}

@@ -1,0 +1,21 @@
+{
+  "id": "L-joshi-abc-tensor-balancing",
+  "statement": "∀ (p : ℕ) [Fact p.Prime] (E F : Type) [Field E] [Field F] [Algebra (Padic p) E] [Algebra (Padic p) F] (x : E) (y : F), TensorProduct.tmul (Padic p) ((p:Padic p) • x) y = TensorProduct.tmul (Padic p) x ((p:Padic p) • y)",
+  "plain_statement": {
+    "zh": "新路线 · 原文反例与 Haar 体积 · JA-0004 · 在 p 进张量内把标量移过槽位",
+    "en": "New route · Printed comparisons and Haar volume · JA-0004 · Move a scalar across the two slots of a p-adic tensor"
+  },
+  "brief": {
+    "zh": "在同一底域上使用张量的平衡关系，固定两个槽的标量规范。",
+    "en": "Use the balancing relation over the common base field with identical scalar normalizations."
+  },
+  "source": "https://arxiv.org/abs/2401.13508v4",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "01-haar-volume",
+  "module": "Conjectures.JoshiAbc.TensorBalancing",
+  "file": "lean/Conjectures/JoshiAbc/TensorBalancing.lean"
+}

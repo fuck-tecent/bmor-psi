@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-minor-sup-fourth-moment",
+  "statement": "let E (x : ℝ) := Complex.exp (((2 * Real.pi * x : ℝ) : ℂ) * Complex.I); let S (X : ℕ) (u : ℕ → ℝ) (t : ℝ) := ∑ k ∈ Finset.range (X+1), (u k : ℂ) * E ((k : ℝ)*t); ∀ (X M : ℕ) (u : ℕ → ℝ) (A : Set ℝ) (U : ℝ), MeasurableSet A → 0 ≤ U → (∀ t ∈ Set.Icc (0 : ℝ) 1, t ∉ A → ‖S X u t‖ ≤ U) → (∑ m ∈ Finset.range M, ‖intervalIntegral (Aᶜ.indicator (fun t => (S X u t)^2 * E (-(m : ℝ)*t))) (0 : ℝ) 1 MeasureTheory.volume‖^2) ≤ U^2 * ∑ k ∈ Finset.range (X+1), (u k)^2",
+  "plain_statement": {
+    "en": "If |S| ≤ U off A in [0,1], the squared norms of the first M minor-arc Fourier coefficients of S² sum to at most U² times the squared coefficient norm of S.",
+    "zh": "若 [0,1] 中 A 以外的点满足 |S| ≤ U，则 S² 的前 M 个次弧系数的模平方和不超过 U² 乘以 S 的系数模平方和。"
+  },
+  "brief": {
+    "en": "Use the masked Bessel bound on the complement, dominate |S|⁴ there by U²|S|², and evaluate the full-period second moment exactly.",
+    "zh": "在补集上应用贝塞尔不等式，再以 U²|S|² 控制 |S|⁴，最后精确计算整周期二阶矩。"
+  },
+  "program": "exceptions",
+  "imports": [],
+  "parallel": true,
+  "source": "https://arxiv.org/abs/2607.27282",
+  "track": "exception-density-bridge",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.MinorSupFourthMoment",
+  "file": "lean/Conjectures/Goldbach/MinorSupFourthMoment.lean"
+}

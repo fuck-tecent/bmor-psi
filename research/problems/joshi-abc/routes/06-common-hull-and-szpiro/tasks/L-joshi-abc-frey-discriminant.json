@@ -1,0 +1,21 @@
+{
+  "id": "L-joshi-abc-frey-discriminant",
+  "statement": "∀ a b : ℕ, let E : WeierstrassCurve ℚ := ⟨0,(b:ℚ)-a,0,-(a:ℚ)*b,0⟩; E.Δ = 16*(a:ℚ)^2*(b:ℚ)^2*((a:ℚ)+b)^2",
+  "plain_statement": {
+    "zh": "新路线 · 同一包络与局部 Szpiro · JA-0052 · 对有理 Frey 方程计算整模型判别式",
+    "en": "New route · Common hull and local Szpiro · JA-0052 · Compute the integral discriminant of the rational Frey model"
+  },
+  "brief": {
+    "zh": "将 y²=x(x−a)(x+b) 的系数代入 Weierstrass 判别式，保留 2 处的因子 16。",
+    "en": "Insert the coefficients of y²=x(x−a)(x+b) in the invariants and retain the factor 16 at two."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/joshi-abc.md",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "06-common-hull-and-szpiro",
+  "module": "Conjectures.JoshiAbc.FreyDiscriminant",
+  "file": "lean/Conjectures/JoshiAbc/FreyDiscriminant.lean"
+}

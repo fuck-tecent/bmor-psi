@@ -1,0 +1,18 @@
+{
+  "id": "L-goldbach-farey-hyperbola-shift",
+  "statement": "∀ (n d b l h s c : ℕ) (J : Finset ℕ), 1 < n → 0 < d → b < d → b ≤ h → l ≤ h → h < n → s < n → (d*s)%n = b%n → (d*c)%n = 1 → let lo := (l+d-1-b)/d; let hi := (h-b)/d; let I := Finset.Icc (lo+s) (hi+s); let count := fun (I : Finset ℕ) (k : ℕ) => ((I.product J).filter (fun (x : ℕ × ℕ) => (x.1*x.2)%n = k%n)).card; hi+s < n ∧ count ((Finset.Icc l h).filter (fun u => u%d = b)) 1 = count I c ∧ |(I.card:ℝ) - ((h-l+1 : ℕ):ℝ)/d| ≤ 1",
+  "plain_statement": {
+    "zh": "新路线 · Farey 分母对与逆元筛 · HD-8005 · 把一条筛根进程平移到单个模双曲线矩形",
+    "en": "New route · Farey denominator pairs and inverse sieve · HD-8005 · Shift a sieve root progression into one modular hyperbola rectangle"
+  },
+  "brief": {
+    "zh": "写 u=b+dt，将 t 平移 s，令 ds≡b，dc≡1 (mod n)。由标准代表 0≤b≤h<n、s<n 得 ds=b+kn 且 k<d。于是 d(t+s)=u+kn<dn，真实区间无需回绕。核对精确计数和长度的端点误差。",
+    "en": "Write u=b+dt and translate t by s, where ds is congruent to b and dc is congruent to 1 modulo n. For canonical representatives, write ds=b+kn with k<d. Then d(t+s)=u+kn<dn, so the translated interval stays within one period. Check the exact count and the length error."
+  },
+  "source": "https://arxiv.org/abs/1103.2879",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-rough-fifth-bridge",
+  "statement": "let C := fun N : ℕ => (Finset.range N).filter (fun p => Nat.Prime p ∧ N < 3*p ∧ 3*p < 2*N ∧ 1 < N-p ∧ N < (N-p).minFac^5); ∀ N : ℕ, 2*(((C N).filter (fun p => Nat.Prime (N-p))).card:ℝ) = ((C N).card:ℝ) - (C N).sum (fun p => (ArithmeticFunction.liouville (N-p) : ℝ)) - 2*(((C N).filter (fun p => ArithmeticFunction.cardFactors (N-p) = 3)).card:ℝ)",
+  "plain_statement": {
+    "zh": "对每个自然数 N，令 M 为同一候选数，L 为补数的 Liouville 符号和，T 为恰含三个素因子的补数计数，P 为素数补数计数，则 2P=M−L−2T。",
+    "en": "At every N on this common support, twice the number of prime complements equals the total count minus the Liouville sum minus twice the number with three prime factors."
+  },
+  "imports": [],
+  "program": "correlation",
+  "brief": {
+    "zh": "最小素因子的五次幂大于 N，因此补数的素因子个数只能是 1、2、3、4。逐项检验 Liouville 符号并求和，保留恰有三个素因子的扣减。",
+    "en": "The fifth power of the least prime factor exceeds N, so the multiplicity count is one, two, three or four. Sum the exact indicator identity over the shared candidates, including the subtraction for triples."
+  },
+  "source": "https://github.com/leanprover-community/mathlib4/blob/fc4f59e577feb1a4956671bc04ac18aaaf8cd842/Mathlib/NumberTheory/ArithmeticFunction/Liouville.lean",
+  "parallel": true,
+  "track": "rough-fifth-parity",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.RoughFifthBridge",
+  "file": "lean/Conjectures/Goldbach/RoughFifthBridge.lean"
+}

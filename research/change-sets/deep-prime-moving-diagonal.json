@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "problem": "goldbach",
+  "base_revision": "ea05a5d33e8d9d0978e738aebf04b28b20874d2d",
+  "request_id": "deep-prime-moving-diagonal",
+  "parent": {
+    "id": "L-goldbach-frontier-antispike-shift-transfer",
+    "statement_sha256": "866aaa0c2bf24cf706dafb5bcc373a84dd2221b3fb0a59a6d9a06d99a56ea287"
+  },
+  "motivation": {
+    "zh": "现有固定 n 的均方估计控制同一行的一组频率。原题取每一行的中心频率，需要对真正的移动对角线给出估计。",
+    "en": "The existing second moment controls many frequencies in a fixed row. The pointwise target takes the central frequency of each different row. A second moment on those central frequencies quantifies the remaining exceptional set."
+  },
+  "tasks": [
+    {
+      "id": "L-goldbach-deep-prime-moving-diagonal",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (u : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (u k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let Q₁ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊; let H := fun n : ℕ => 256 * Q₁ n * Q n; let wideArcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q₁ n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (H n:ℝ)/((q:ℝ)*(n:ℝ))}; let deepCoeff := fun (n m : ℕ) => intervalIntegral (fun t => (wideArcs n)ᶜ.indicator (fun u => (S n w u)^2 * E (-(m:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; ∀ η : ℝ, 0 < η → ∃ N : ℕ, ∀ X : ℕ, N ≤ X → (∑ n ∈ Finset.Icc X (2*X), ‖deepCoeff n n‖^2) ≤ (X:ℝ)^(8/3+η:ℝ)",
+      "plain_statement": {
+        "zh": "对任意 η > 0，所有足够大的 X 均满足：把素数权重的深次弧积分在实际目标 n 上取平方范数，再对 X ≤ n ≤ 2X 求和，结果至多为 X^(8/3+η)。",
+        "en": "For every η > 0 and all sufficiently large X, the sum over X ≤ n ≤ 2X of the squared norms of the prime-weighted deep minor arc integrals at their actual targets n is at most X^(8/3+η)."
+      },
+      "brief": {
+        "zh": "逐项使用 n 自己的素数和、宽弧和傅里叶频率。对每个素数和截断端点统一使用 Vaughan 估计；对两个截断的平方差分解出频率区间，再用 Parseval 和移动弧上的极大 Bessel 界求和。给定 ε > 0，误差至少为 εn 的偶数至多有 ε⁻² X^(2/3+η) 个。原题还需控制所有例外。",
+        "en": "The prime summation limit, arc mask and Fourier frequency all vary with n. Use a single rational approximation per target for all prime summation limits. Factor differences of squares to isolate frequency intervals, then apply Parseval and a maximal Bessel estimate for moving arcs. For ε > 0, at most ε⁻² X^(2/3+η) even targets have norm at least εn. Pointwise control of the remaining targets stays open."
+      },
+      "source": "https://www.movan.tech/goldbach/?lemma=L-goldbach-frontier-antispike-shift-transfer",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "route": "frontier-moment-antispike",
+      "assumptions": []
+    }
+  ],
+  "links": [
+    {
+      "kind": "exploration",
+      "inputs": [
+        "L-goldbach-deep-prime-moving-diagonal"
+      ],
+      "output": "L-goldbach-frontier-antispike-shift-transfer",
+      "explanation": {
+        "zh": "对每个阈值，所得均方界限制了哪些目标可能仍需非零平滑权重；逐个排除例外仍需点态估计。",
+        "en": "At any fixed threshold the diagonal bound limits how many targets can still require nonzero smoothing weights. The exceptional targets themselves still need a pointwise argument."
+      }
+    }
+  ],
+  "route_note": {
+    "zh": "区分固定行上的二阶矩和移动对角线上的二阶矩。后者把逐点反尖峰障碍集中到稀疏的偶数集合上。",
+    "en": "Distinguish a row second moment from a moving-diagonal second moment. The latter confines the remaining pointwise anti-spike problem to a sparse set of even targets."
+  }
+}

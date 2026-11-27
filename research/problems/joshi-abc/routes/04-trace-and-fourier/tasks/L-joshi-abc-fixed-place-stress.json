@@ -1,0 +1,21 @@
+{
+  "id": "L-joshi-abc-fixed-place-stress",
+  "statement": "∀ N : ℕ, let x := (N:ℝ); let lo := -(3*x+3)*Real.log 337; let hi := (-4*(3*x+15/7)+3*(6/7)+1)*Real.log 337; lo-hi=(9*x+2)*Real.log 337 ∧ hi<lo",
+  "plain_statement": {
+    "zh": "新路线 · 迹、不同理想与 Fourier 缺额 · JA-0032 · 在固定 337 处算出逐元组上界和整格的缺额",
+    "en": "New route · Trace, different and Fourier deficit · JA-0032 · Compute the growing mismatch of the tuple bound and lattice at 337"
+  },
+  "brief": {
+    "zh": "用 q=337^(42N+30)、e=7、不同指数 6。在三槽 j=2 模型内展开全部常数。",
+    "en": "Use q=337^(42N+30), e=7 and different exponent 6. Expand the constants for j=2 in the three-slot model."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/joshi-abc.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "04-trace-and-fourier",
+  "module": "Conjectures.JoshiAbc.FixedPlaceStress",
+  "file": "lean/Conjectures/JoshiAbc/FixedPlaceStress.lean"
+}

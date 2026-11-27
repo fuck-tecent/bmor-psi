@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-reflection-conductor-average",
+  "statement": "∀ (p j k : ℕ) [Fact p.Prime], 1 ≤ j → j ≤ k →\n  ∀ (h : p^j ∣ p^k) (N : ZMod (p^k)) (f : ZMod (p^k) → ℂ),\n    let π := ZMod.castHom h (ZMod (p^j))\n    let P := fun (g : ZMod (p^k) → ℂ) (x : ZMod (p^k)) =>\n      (∑ y ∈ (Finset.univ : Finset (ZMod (p^k))).filter (fun y => IsUnit y ∧ π y = π x), g y) /\n        ((p : ℂ)^(k-j))\n    let K := fun (g : ZMod (p^k) → ℂ) (x : ZMod (p^k)) =>\n      if IsUnit x ∧ IsUnit (N-x) then g (N-x) else 0\n    P (K f) = K (P f)",
+  "plain_statement": {
+    "zh": "新路线 · 二进反射与 Levent GRH · DR-0007 · 证明素幂纤维平均与单位反射交换",
+    "en": "New route · Dyadic reflection and Levent GRH · DR-0007 · Commute averaging over prime-power fibers with unit reflection"
+  },
+  "brief": {
+    "zh": "固定 1≤j≤k。模 p^j 的约化保留单位条件，并把反射后的纤维送到反射类，纤维大小是 p^(k−j)。最低模 p 留在分解内。",
+    "en": "Fix 1≤j≤k. Reduction to p^j preserves the unit mask and reflection sends each fiber to the reflected class. The fiber size is p^(k−j). Keep the level modulo p as the bottom block."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/dyadic-reflection/README.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-coset-primepower-lift"
+  ],
+  "imports": []
+}

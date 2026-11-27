@@ -1,0 +1,23 @@
+{
+  "id": "L-joshi-abc-constant-hull",
+  "statement": "∀ l Q R U δ : ℝ, 3 < l → -Q-δ ≤ R → R ≤ -(l*(l+1)/12)*Q+U → 2*l*Q/6 ≤ 4*l/((l-3)*(l+4))*(U+δ)",
+  "plain_statement": {
+    "zh": "新路线 · 同一包络与局部 Szpiro · JA-0049 · 从一次幂格下界导出对应的 Szpiro 系数",
+    "en": "New route · Common hull and local Szpiro · JA-0049 · Derive the Szpiro coefficient with a first-power lattice floor"
+  },
+  "brief": {
+    "zh": "因式分解 A−1，比较两种见证时保持 Q、U、δ 的规范。",
+    "en": "Factor A−1 and keep the same normalizations of Q, U and δ when comparing witnesses."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/joshi-abc.md",
+  "program": "foundation",
+  "role": "conditional",
+  "parallel": true,
+  "depends_on": [
+    "L-joshi-abc-mean-square"
+  ],
+  "imports": [],
+  "track": "06-common-hull-and-szpiro",
+  "module": "Conjectures.JoshiAbc.ConstantHull",
+  "file": "lean/Conjectures/JoshiAbc/ConstantHull.lean"
+}

@@ -1,0 +1,25 @@
+{
+  "id": "L-goldbach-dyn-first-mass",
+  "statement": "let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); let P := fun X : ℕ => (Finset.Icc (Nat.sqrt X) (2*Nat.sqrt X)).filter Nat.Prime; let H := fun (X n : ℕ) => ((P X).filter (fun p => p ≤ n ∧ Nat.Prime (n-p))).card; let M := fun X : ℕ => Real.sqrt (X:ℝ) / (Real.log (X:ℝ))^2; ∃ c : ℝ, 0 < c ∧ ∃ X₀ : ℕ, ∀ X ≥ X₀, c*(X:ℝ)*M X ≤ ∑ n ∈ E X, (H X n:ℝ)",
+  "plain_statement": {
+    "zh": "平方根步长窗口内的一阶矩下界",
+    "en": "Lower-bound total arrivals with a square-root-scale first prime"
+  },
+  "brief": {
+    "zh": "用素数定理分别估计矩形的两边。只控制路径总量，允许部分偶数没有路径。",
+    "en": "Apply interval prime counts to each side of the interior rectangle. This total permits missed endpoints."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-dyn-interior-box"
+  ],
+  "module": "Conjectures.Goldbach.DynFirstMass",
+  "file": "lean/Conjectures/Goldbach/DynFirstMass.lean",
+  "imports": [
+    "Conjectures.Goldbach.DynInteriorBox"
+  ],
+  "track": "representations",
+  "role": "lemma"
+}

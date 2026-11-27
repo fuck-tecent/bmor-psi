@@ -1,0 +1,23 @@
+{
+  "id": "L-joshi-abc-full-annihilator",
+  "statement": "∀ (G : Type) [AddCommGroup G] [Fintype G] (H : AddSubgroup G), Nat.card {χ : AddChar G ℂ // ∀ h : H, χ h.val=1} = H.index",
+  "plain_statement": {
+    "zh": "新路线 · 指定 Kummer 像与 Θ 测试 · JA-0044 · 在含高阶挠元的任意有限加法商上量出缺额",
+    "en": "New route · Marked Kummer images and theta tests · JA-0044 · Count the deficit in finite additive quotients with higher torsion"
+  },
+  "brief": {
+    "zh": "将零化字符与 G/H 的复加性字符双射，用有限阿贝尔对偶处理非初等 p 群。",
+    "en": "Identify annihilating characters with the complex characters of G/H and use finite abelian duality for non-elementary p-groups."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/DecoratedLatticeProofs/ThetaKernelSplitPlacesEqJetClassicalThetaStatement.lean#L1335",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-joshi-abc-finite-affine-transform"
+  ],
+  "imports": [],
+  "track": "05-kummer-images",
+  "module": "Conjectures.JoshiAbc.FullAnnihilator",
+  "file": "lean/Conjectures/JoshiAbc/FullAnnihilator.lean"
+}

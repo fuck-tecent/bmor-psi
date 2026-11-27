@@ -1,0 +1,25 @@
+{
+  "id": "L-square-packing-seventeen-charge-cell-transfer",
+  "statement": "∀ (a b a' b' u v u' v' r d e : ℝ), 0 ≤ r → 0 ≤ d → 0 ≤ e → |a| ≤ 1 → |b| ≤ 1 → |a'-a| ≤ e → |b'-b| ≤ e → |u'| ≤ r → |v'| ≤ r → |u'-u| ≤ d → |v'-v| ≤ d → |a*u+b*v| + 2*(d+e*r) < 1/2 → |(-b)*u+a*v| + 2*(d+e*r) < 1/2 → |a'*u'+b'*v'| < 1/2 ∧ |(-b')*u'+a'*v'| < 1/2",
+  "plain_statement": {
+    "zh": "给定中心和方向的误差预算，把基准姿态的严格击中推广到整个姿态单元。",
+    "en": "Transfer a strict hit from a reference pose to a cell with bounded center and orientation errors."
+  },
+  "brief": {
+    "zh": "拆开方向变化与中心变化，在两个局部坐标分别用三角不等式。误差余量可用于数值生成的覆盖证书。",
+    "en": "Separate orientation and position errors and bound both local coordinates by the triangle inequality."
+  },
+  "source": "https://squaremath.org/cases/17.html",
+  "program": "correlation",
+  "track": "seventeen-square-frontier",
+  "role": "input",
+  "depends_on": [
+    "L-square-packing-projection-radius",
+    "L-square-packing-axis-margin"
+  ],
+  "parallel": true,
+  "challenge_only": false,
+  "imports": [
+    "PEqualNP.Outside.L_square_packing_axis_margin"
+  ]
+}

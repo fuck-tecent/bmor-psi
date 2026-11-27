@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-binary-shift-order-tail",
+  "statement": "∃ C : ℝ, 0<C ∧ ∀ T D : ℕ, 2≤T → (∑ d ∈ (Finset.Icc 3 D).filter (fun d => Odd d ∧ (∀ p ∈ d.primeFactors, d.factorization p ≤ 1) ∧ T < orderOf (2 : ZMod d)), 1/((d:ℝ)*(orderOf (2 : ZMod d):ℝ))) ≤ C*Real.log (2*(T:ℝ))/(T:ℝ)",
+  "plain_statement": {
+    "zh": "文献推论：大乘法阶的平方自由模数贡献有可截断尾界",
+    "en": "Literature corollary: a truncation bound for squarefree moduli of large order"
+  },
+  "brief": {
+    "zh": "将论文式 (26) 按阶的二倍区间求和，核对奇数平方自由筛选、大于 T 的严格端点及与 D 无关的常数。",
+    "en": "Sum equation (26) over dyadic order intervals. Track squarefreeness, the strict cutoff and uniformity in the modulus bound D."
+  },
+  "source": "https://arxiv.org/pdf/math/0201299",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "series",
+  "role": "target",
+  "module": "Conjectures.Goldbach.BinaryShiftOrderTail",
+  "file": "lean/Conjectures/Goldbach/BinaryShiftOrderTail.lean"
+}

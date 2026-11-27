@@ -1,0 +1,29 @@
+{
+  "id": "L-goldbach-frozen-relative-major-margin",
+  "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let major := fun n : ℕ => intervalIntegral (fun t => (arcs n).indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; ∀ c : ℝ, 0 < c → (∃ N₁ : ℕ, ∀ n : ℕ, N₁ ≤ n → Even n → c * (n : ℝ) ≤ (major n).re) → (∃ N₂ : ℕ, ∀ n : ℕ, N₂ ≤ n → Even n → -(c * (n : ℝ) / 2) ≤ (I n (high n) (high n)).re) → ∃ N : ℕ, ∀ n : ℕ, N ≤ n → Even n → c * (n : ℝ) / 4 ≤ Finset.sum (Finset.range (n + 1)) (fun p => w p * w (n - p))",
+  "plain_statement": {
+    "zh": "新路线 · 高段次弧 · MA-7009 · 仅需大偶数存在性时的相对主弧高高项接口",
+    "en": "New route · High-segment minor arcs · MA-7009 · Relative major-arc bulk interface for eventual Goldbach"
+  },
+  "brief": {
+    "zh": "保持原冻结命题的素数权、弧宽与立方根截断：把主弧下界 c*n 与高高项相对下界 -(c/2)*n 合并，用 Parseval 吸收低低与两倍低高次线性误差，交付 R(n) ≥ (c/4)*n。",
+    "en": "Keep the frozen prime weight, arc radius, and cube-root cutoff: combine a major-arc floor c*n with a relative high-high lower bound -(c/2)*n via Parseval low-low/low-high bounds to obtain R(n) ≥ (c/4)*n."
+  },
+  "source": "https://www.goldbach.tech/?lemma=L-goldbach-bulk-signed-floor",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-arc-major-floor",
+    "L-goldbach-small-small-saving",
+    "L-goldbach-small-bulk-saving"
+  ],
+  "imports": [
+    "PEqualNP.Outside.L_goldbach_arc_major_floor",
+    "PEqualNP.Outside.L_goldbach_small_small_saving",
+    "PEqualNP.Outside.L_goldbach_small_bulk_saving"
+  ],
+  "track": "minor-truncation",
+  "role": "conditional",
+  "module": "Conjectures.Goldbach.FrozenRelativeMajorMargin",
+  "file": "lean/Conjectures/Goldbach/FrozenRelativeMajorMargin.lean"
+}

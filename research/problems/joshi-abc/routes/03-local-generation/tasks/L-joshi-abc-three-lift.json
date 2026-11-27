@@ -1,0 +1,23 @@
+{
+  "id": "L-joshi-abc-three-lift",
+  "statement": "∀ (G : Type) [AddCommGroup G] (C L : AddSubgroup G), L ≤ C → (∀ x : G, ∃ y ∈ C, x-y ∈ L) → C=⊤",
+  "plain_statement": {
+    "zh": "新路线 · 29 进生成与反例族 · JA-0025 · 把商格满生成提升回含底格的加法包络",
+    "en": "New route · 29-adic generation and counterfamilies · JA-0025 · Lift spanning in the quotient back to an additive hull containing the base lattice"
+  },
+  "brief": {
+    "zh": "取商格每一个类的代表并在 C 内补回 L；用于三个实际见证同标签时。",
+    "en": "Choose a representative in C and restore the element of L. Apply this when the actual three witnesses share a label."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/joshi-abc.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-joshi-abc-three-jet-span"
+  ],
+  "imports": [],
+  "track": "03-local-generation",
+  "module": "Conjectures.JoshiAbc.ThreeLift",
+  "file": "lean/Conjectures/JoshiAbc/ThreeLift.lean"
+}

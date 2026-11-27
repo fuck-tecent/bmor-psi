@@ -1,0 +1,14 @@
+{
+  "id": "effective-threshold-bridge",
+  "title": {
+    "en": "Effective cutoffs and the Goldbach endpoint",
+    "zh": "显式截断与哥德巴赫终点"
+  },
+  "description": {
+    "en": "Make the arc-disjointness cutoff numerical, join consecutive finite certificates, and connect finite positivity to major- and minor-arc bounds at a common threshold.",
+    "zh": "给出保证弧不相交的数值阈值，拼接连续区间的有限证书，并在同一阈值处衔接有限范围的正性与主弧、次弧估计。"
+  },
+  "feeds": [
+    "arc-budget"
+  ]
+}

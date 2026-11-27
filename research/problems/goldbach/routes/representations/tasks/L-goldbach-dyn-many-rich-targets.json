@@ -1,0 +1,26 @@
+{
+  "id": "L-goldbach-dyn-many-rich-targets",
+  "statement": "let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); let P := fun X : ℕ => (Finset.Icc (Nat.sqrt X) (2*Nat.sqrt X)).filter Nat.Prime; let H := fun (X n : ℕ) => ((P X).filter (fun p => p ≤ n ∧ Nat.Prime (n-p))).card; let M := fun X : ℕ => Real.sqrt (X:ℝ) / (Real.log (X:ℝ))^2; ∃ c δ : ℝ, 0 < c ∧ 0 < δ ∧ ∃ X₀ : ℕ, ∀ X ≥ X₀, δ*(X:ℝ) ≤ (((E X).filter (fun n => c*M X ≤ (H X n:ℝ))).card:ℝ)",
+  "plain_statement": {
+    "zh": "正比例的偶数拥有许多小步长表示",
+    "en": "Find a positive proportion of endpoints with many witnesses"
+  },
+  "brief": {
+    "zh": "先扣除低于阈值的终点贡献，再对余下终点用柯西不等式。结论允许有正比例的例外。",
+    "en": "Subtract the contribution below a small threshold and use Cauchy–Schwarz on the rest. Exceptions are still allowed."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-dyn-first-mass",
+    "L-goldbach-dyn-path-second-moment"
+  ],
+  "module": "Conjectures.Goldbach.DynManyRichTargets",
+  "file": "lean/Conjectures/Goldbach/DynManyRichTargets.lean",
+  "imports": [
+    "Conjectures.Goldbach.DynFirstMass"
+  ],
+  "track": "representations",
+  "role": "lemma"
+}

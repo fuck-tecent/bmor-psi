@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-minor-sine-energy-iff",
+  "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let minor := fun n : ℕ => intervalIntegral (fun t => (arcs n)ᶜ.indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume; let A := fun n : ℕ => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun x => ‖S n w x‖^2) t) (0:ℝ) 1 MeasureTheory.volume; let B := fun n : ℕ => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun x => ((S n w x)*E (-(n:ℝ)*x/2)).im^2) t) (0:ℝ) 1 MeasureTheory.volume; (∀ e : ℝ, 0<e → ∃ N : ℕ, ∀ n : ℕ, N≤n → Even n → -(e*(n:ℝ)) ≤ (minor n).re) ↔ (∀ e : ℝ, 0<e → ∃ N : ℕ, ∀ n : ℕ, N≤n → Even n → 2*B n ≤ A n+e*(n:ℝ))",
+  "plain_statement": {
+    "zh": "令 A(n) 为次弧上 |S|² 的积分，B(n) 为同一集合上 S(t)e(−nt/2) 的虚部平方的积分，e(x)=exp(2πix)。以下两项等价：对每个 ε>0，所有充分大的偶数 n 满足 Re(minor(n))≥−εn；对每个 ε>0，所有充分大的偶数 n 满足 2B(n)≤A(n)+εn。",
+    "en": "Let A(n) integrate |S|² over the minor arcs and let B(n) integrate the squared imaginary part of S(t)e(−nt/2) over the same set, with e(x)=exp(2πix). The following are equivalent: for every ε>0, all sufficiently large even n satisfy Re(minor(n))≥−εn; for every ε>0, all sufficiently large even n satisfy 2B(n)≤A(n)+εn."
+  },
+  "brief": {
+    "zh": "在已登记的素数对数权和弧宽下，去掉半个傅里叶相位后有 Re(minor(n))=A(n)−2B(n)。这给逐点估计提供了一个实二次型；所需的正弦能量上界仍待证明。",
+    "en": "Removing half the Fourier phase gives Re(minor(n))=A(n)−2B(n) for the registered prime weights and arc widths. This gives a real quadratic form for a pointwise estimate. The required upper bound for the sine energy remains open."
+  },
+  "program": "correlation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/de62db1e00c16ab20880e4628bbec6d4d0e25887/research/gaps.json#L1986-L2003",
+  "track": "arc-budget",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.MinorSineEnergyIff",
+  "file": "lean/Conjectures/Goldbach/MinorSineEnergyIff.lean"
+}

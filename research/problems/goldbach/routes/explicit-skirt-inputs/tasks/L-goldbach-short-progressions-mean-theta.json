@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-short-progressions-mean-theta",
+  "statement": "let theta := fun (q : ℕ) [NeZero q] (r : ZMod q) (y h : ℝ) => Finset.sum ((Finset.Icc (⌊y⌋₊+1) ⌊y+h⌋₊).filter (fun k : ℕ => (k:ZMod q)=r)) (fun k => if k.Prime then Real.log (k:ℝ) else 0); let E := fun (q : ℕ) (h y : ℝ) => if hq : q=0 then (0:ℝ) else (letI : NeZero q := ⟨hq⟩; (Finset.univ : Finset (ZMod q)).sup' Finset.univ_nonempty (fun r => if IsUnit r then |theta q r y h - h/(q.totient:ℝ)| else 0)); ∃ C : ℝ, 0<C ∧ ∃ X : ℕ, ∀ x t : ℝ, (X:ℝ)≤x → 1≤x → 5/8≤t → t≤1 → ∀ Q : ℕ, 1≤Q → (Q:ℝ)^2*x^((1-t)/3+1/16) ≤ x^t → intervalIntegral (fun y => Finset.sum (Finset.Icc 1 Q) (fun q => E q (x^t) y)) x (2*x) MeasureTheory.volume ≤ C*x*x^t/(Real.log x)^18",
+  "plain_statement": {
+    "zh": "设 h=xᵗ，5/8≤t≤1。在 Q²x^((1−t)/3+1/16)≤h 时，对 q≤Q 求和的短区间素数对数权最大既约剩余类误差，在 x≤y≤2x 上的积分至多为 Cxh/(log x)¹⁸。常数和起始点对 t、Q 一致。",
+    "en": "For h=xᵗ with 5/8≤t≤1 and Q²x^((1−t)/3+1/16)≤h, the integral over x≤y≤2x of the sum over q≤Q of the largest reduced-class prime-log discrepancy in (y,y+h] is at most Cxh/(log x)¹⁸. The constants are uniform in t and Q."
+  },
+  "brief": {
+    "zh": "形式化 Koukoulopoulos《Primes in short arithmetic progressions》定理 1.2 的高指数分支，固定 A=18、ε=1/16。使用素数的 log p 权及 h/φ(q) 主项。论文第 4 节给出证明；仍需将其解析估计移植到固定版 Lean。",
+    "en": "Formalize the upper-exponent branch of Koukoulopoulos, Theorem 1.2, with A=18 and ε=1/16. Use log p on primes and h/φ(q) for the main term. Section 4 proves the published theorem. Its analytic estimates require a port to the pinned Lean library."
+  },
+  "source": "https://dms.umontreal.ca/~koukoulo/documents/publications/shortaps.pdf#page=3",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "explicit-skirt-inputs",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.ShortProgressionsMeanTheta",
+  "file": "lean/Conjectures/Goldbach/ShortProgressionsMeanTheta.lean"
+}

@@ -1,0 +1,18 @@
+{
+  "id": "L-goldbach-character-window-fiber-energy",
+  "statement": "∀ (m : ℕ) [NeZero m] (N : ℕ) (w : ℕ → ℂ) (s : Finset (DirichletCharacter ℂ m)),\n  (∑ χ ∈ s, ‖(∑ n ∈ Finset.range (N+1), w n * star (χ (n : ZMod m))) /\n      (Real.sqrt (m.totient : ℝ) : ℂ)‖^2) ≤\n    (1 + (N/m : ℕ) : ℝ) * ∑ n ∈ Finset.range (N+1), ‖w n‖^2",
+  "plain_statement": {
+    "zh": "新路线 · 二进反射与 Levent GRH · DR-0015 · 按整数纤维长度控制任意特征频段的权能量",
+    "en": "New route · Dyadic reflection and Levent GRH · DR-0015 · Bound character-band energy by the integer fiber length"
+  },
+  "brief": {
+    "zh": "先在长度 N+1 的整数窗中逐同余类用 Cauchy–Schwarz，再用单位群 Parseval。显式因子 1+⌊N/m⌋ 允许细层模数超过 N。",
+    "en": "Apply Cauchy–Schwarz to each residue fiber of the N+1 integers, then use Parseval on the unit group. The factor 1+⌊N/m⌋ also covers a modulus above N."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/FoundationProofs/DirichletCharFiniteFourierTransformProperties.lean#L85",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-farey-terminal-survivors",
+  "statement": "∀ (n : ℕ) (J : Finset ℕ), 64 ≤ n → let I := (Finset.Icc ((n+2)/3) ((2*n)/3)).filter (fun u => u.Coprime n ∧ (J.filter (fun a => (a*u)%n = 1)).Nonempty); I.filter (fun u => Nat.sqrt n < (u*(n-u)).minFac) = I.filter (fun u => u.Prime ∧ (n-u).Prime)",
+  "plain_statement": {
+    "zh": "新路线 · Farey 分母对与逆元筛 · HD-8016 · 在任意逆元窗从终筛幸存者提取有序素数对",
+    "en": "New route · Farey denominator pairs and inverse sieve · HD-8016 · Identify terminal sieve survivors with ordered prime pairs in any inverse window"
+  },
+  "brief": {
+    "zh": "中心窗的两侧都大于 √n。若其中一侧为合数，其最小素因子的平方不超过该侧大小，于是该点已被筛去。逆元条件在两个集合中保持一致。",
+    "en": "Both denominator sides exceed the square root of n. A composite side has a prime factor at most its square root, so the terminal sieve removes that point. Keep the same inverse constraint on both sets."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/farey-inverse-sieve/README.md",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-farey-insertion-inverse"
+  ],
+  "imports": []
+}

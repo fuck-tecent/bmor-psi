@@ -1,0 +1,18 @@
+{
+  "id": "L-goldbach-reflection-partial-involution",
+  "statement": "∀ (m : ℕ) [NeZero m] (N : ZMod m),\n  let A := (Finset.univ : Finset (ZMod m)).filter (fun x => IsUnit x ∧ IsUnit (N-x))\n  let F := A.filter (fun x => N-x=x)\n  let K : Matrix (ZMod m) (ZMod m) ℂ := fun x y => if x ∈ A ∧ y=N-x then 1 else 0\n  (K*K = Matrix.diagonal (fun x => if x ∈ A then (1 : ℂ) else 0)) ∧\n    2 * Module.finrank ℂ (Module.End.eigenspace K.mulVecLin 1) = A.card+F.card ∧\n    2 * Module.finrank ℂ (Module.End.eigenspace K.mulVecLin (-1)) = A.card-F.card",
+  "plain_statement": {
+    "zh": "新路线 · 二进反射与 Levent GRH · DR-0005 · 计算单位反射矩阵的平方及其正负空间维数",
+    "en": "New route · Dyadic reflection and Levent GRH · DR-0005 · Compute the square and the two signed dimensions of the unit reflection matrix"
+  },
+  "brief": {
+    "zh": "在完整剩余系上以零填充，仅保留 x 与 N−x 都为单位的坐标。每个二循环贡献一个正方向和一个负方向，每个不动点贡献一个正方向。",
+    "en": "Use the whole residue ring with zeros outside the retained coordinates where both x and N−x are units. Each transposition contributes one direction of each sign and each fixed point contributes one positive direction."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/dyadic-reflection/README.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

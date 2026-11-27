@@ -82,13 +82,13 @@ class AttributionTests(unittest.TestCase):
                         'ACCEPTED','6.2 astrahigh','cline')""", (START+99,))
         ranks = self.helper.status(now=START+100)['agent_rankings']
         self.assertEqual(ranks['models'], [
-            {'name': 'gpt-6.2-astra', 'accepted': 26},
-            {'name': 'gpt-6.1-astra', 'accepted': 1},
-            {'name': 'gpt-6.2-sol', 'accepted': 1},
+            {'name': 'gpt-6.2-astra', 'accepted': 26, 'points': 26},
+            {'name': 'gpt-6.1-astra', 'accepted': 1, 'points': 1},
+            {'name': 'gpt-6.2-sol', 'accepted': 1, 'points': 1},
         ])
         self.assertEqual(ranks['harnesses'], [
-            {'name': 'codex', 'accepted': 17}, {'name': 'kimi-code', 'accepted': 9},
-            {'name': 'other', 'accepted': 1}, {'name': 'qwen-code', 'accepted': 1},
+            {'name': 'codex', 'accepted': 17, 'points': 17}, {'name': 'kimi-code', 'accepted': 9, 'points': 9},
+            {'name': 'other', 'accepted': 1, 'points': 1}, {'name': 'qwen-code', 'accepted': 1, 'points': 1},
         ])
         self.assertEqual(ranks['proofs'], 28)
         records = [{'run_id': 18, 'lemma_id': 'lemma-18'}]
@@ -145,7 +145,7 @@ class AttributionTests(unittest.TestCase):
         self.assertEqual([r['agent']['model'] for r in records], ['model-a-2026', 'model-b', 'unknown'])
         self.assertEqual(records[0]['agent']['source'], 'self_reported')
         ranks = self.helper.status(now=START+40)['agent_rankings']
-        self.assertEqual(ranks, {'models': [{'name': 'model-b', 'accepted': 1}], 'harnesses': [{'name': 'codex', 'accepted': 1}], 'proofs': 1})
+        self.assertEqual(ranks, {'models': [{'name': 'model-b', 'accepted': 1, 'points': 1}], 'harnesses': [{'name': 'codex', 'accepted': 1, 'points': 1}], 'proofs': 1})
 
     def test_first_acceptance_unknown_history_and_separate_models(self):
         with self.desk.transaction(write=True) as conn:
@@ -164,8 +164,8 @@ class AttributionTests(unittest.TestCase):
         ranks = status['agent_rankings']
         self.assertEqual(ranks['proofs'], 4)
         self.assertEqual(status['rankings']['proofs'], 5)
-        self.assertEqual(ranks['models'], [{'name': x, 'accepted': 1} for x in ['model-a', 'model-a-v2', 'model-c']])
-        self.assertEqual(ranks['harnesses'], [{'name': 'codex', 'accepted': 2}, {'name': 'cursor', 'accepted': 1}])
+        self.assertEqual(ranks['models'], [{'name': x, 'accepted': 1, 'points': 1} for x in ['model-a', 'model-a-v2', 'model-c']])
+        self.assertEqual(ranks['harnesses'], [{'name': 'codex', 'accepted': 2, 'points': 2}, {'name': 'cursor', 'accepted': 1, 'points': 1}])
         self.assertNotIn('ip_key', json.dumps(status))
         self.assertNotIn('token_hash', json.dumps(status))
 

@@ -1,0 +1,15 @@
+{
+  "id": "exception-density-bridge",
+  "title": {
+    "en": "Minor-arc moments and binary Goldbach exceptions",
+    "zh": "次弧矩与二元哥德巴赫例外数"
+  },
+  "description": {
+    "en": "Sum the squared Fourier coefficients of the masked prime square. A lower bound on each major coefficient and an upper bound on the minor-arc sum then bound the number of exceptions in a dyadic interval.",
+    "zh": "对指示函数截取的素数指数和平方，其傅里叶系数的模平方可求和估计。结合各主弧系数的下界与次弧指数和的上界，可控制倍增区间内的例外数。"
+  },
+  "feeds": [
+    "exceptions",
+    "arc-budget"
+  ]
+}

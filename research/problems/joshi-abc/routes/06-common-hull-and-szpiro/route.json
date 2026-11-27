@@ -1,0 +1,11 @@
+{
+  "id": "06-common-hull-and-szpiro",
+  "title": {
+    "zh": "同一包络与局部 Szpiro",
+    "en": "Common hull and local Szpiro"
+  },
+  "description": {
+    "zh": "在同一归一化体积 R 消去上下界，以有明确重数限制的 Frey 族检验根基代价。",
+    "en": "Eliminate the same normalized volume R and test radical costs on Frey families with explicit multiplicity restrictions."
+  }
+}

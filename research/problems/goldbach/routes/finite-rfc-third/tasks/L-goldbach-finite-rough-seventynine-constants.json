@@ -1,0 +1,18 @@
+{
+  "id": "L-goldbach-finite-rough-seventynine-constants",
+  "statement": "Real.exp (19/5) < 11*Real.log 79 ∧ Real.exp 5 < 34*Real.log 79 ∧ (19495926505 : ℕ) < 11^11",
+  "plain_statement": {
+    "zh": "新路线 · 小偶数覆盖第三批 · FR-9005 · 核验 79 粗余项的对数边界与小数段交接",
+    "en": "New route · Finite-range coverage III · FR-9005 · Certify the logarithmic bounds and small-range handoff for the 79-rough remainder"
+  },
+  "brief": {
+    "zh": "回放给出实指数的有理 Taylor 上界。低于轮筛起点时由模 210 的候选和 11^11 交接。",
+    "en": "The replay gives rational Taylor bounds for the exponentials. The bound by 11^11 lets the modulo-210 construction reach the start of the lifted wheel."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/finite-rfc-third/README.md#rough-remainder-wheel",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

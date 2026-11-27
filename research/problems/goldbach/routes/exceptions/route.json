@@ -1,0 +1,12 @@
+{
+  "id": "exceptions",
+  "title": {
+    "zh": "估计例外集合并识别平均界的局限",
+    "en": "Control exceptional sets and track what averages imply"
+  },
+  "description": {
+    "zh": "这些任务可给出几乎处处的结果。要排除最后一个例外，还需要逐点输入或把整数计数严格压到一以下。 可先研究减去正二次幂后哪些邻居有素数表示，分别考察逐点、例外集和频谱估计。已知移位结论回到原偶数仍需额外的逐点输入。",
+    "en": "These estimates can give almost-all results. Eliminating the last exception needs pointwise information or an exceptional count strictly below one. Study prime representations at positive binary shifts through individual targets, exceptions and spectral estimates. Returning to the original even integer requires additional pointwise input."
+  },
+  "feeds": []
+}

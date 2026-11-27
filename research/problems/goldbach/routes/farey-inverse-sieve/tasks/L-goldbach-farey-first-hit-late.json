@@ -1,0 +1,25 @@
+{
+  "id": "L-goldbach-farey-first-hit-late",
+  "statement": "let I := fun n : ℕ => Finset.Icc ((n+2)/3) ((2*n)/3); let P := fun z : ℕ => (Finset.Icc 2 z).filter Nat.Prime; let V := fun n z : ℕ => ((I n).card:ℝ)*(n.totient:ℝ)/n * ∏ p ∈ (P z).filter (fun p => ¬ p ∣ n), (1-2/(p:ℝ)); let Z₁ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊; let Z₂ := Nat.sqrt; ∃ N₀ : ℕ, 64 ≤ N₀ ∧ ∀ n : ℕ, N₀ ≤ n → Even n → let L := ((I n).filter (fun u => u.Coprime n ∧ Z₁ n < (u*(n-u)).minFac ∧ (u*(n-u)).minFac ≤ Z₂ n)).card; (L:ℝ) ≤ V n (Z₁ n) - V n (Z₂ n) + V n (Z₂ n)/2",
+  "plain_statement": {
+    "zh": "新路线 · Farey 分母对与逆元筛 · HD-8015 · 挑战 · 末段首次命中的二分之一终筛预算",
+    "en": "New route · Farey denominator pairs and inverse sieve · HD-8015 · Challenge · Cap late first hits with one half of the terminal main term"
+  },
+  "brief": {
+    "zh": "按半素数换元处理平方项与不同因子项。保留另一分母在最小因子 p 之前的粗糙条件。差值右端附加固定的 V_n(√n)/2 预算，与中段和初筛同时使用。",
+    "en": "Use the semiprime reindexing for squares and distinct factors. Keep the roughness condition on the other denominator before the first prime p. The fixed allowance V_n(√n)/2 is used together with the middle and initial sieve budgets."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/farey-inverse-sieve/README.md",
+  "program": "correlation",
+  "role": "target",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-farey-late-first-hit-factor-switch",
+    "L-goldbach-farey-late-prime-square-loss"
+  ],
+  "imports": [
+    "Conjectures.Goldbach.FareyLateFirstHitFactorSwitch",
+    "Conjectures.Goldbach.FareyLatePrimeSquareLoss"
+  ],
+  "challenge_only": true
+}

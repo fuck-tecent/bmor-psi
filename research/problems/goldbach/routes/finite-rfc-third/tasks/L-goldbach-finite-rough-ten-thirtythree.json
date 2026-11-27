@@ -1,0 +1,24 @@
+{
+  "id": "L-goldbach-finite-rough-ten-thirtythree",
+  "statement": "∀ n : ℕ, 4≤n → Even n → (n:ℝ)<Real.exp (Real.exp 5) → ∃ p : ℕ, Nat.Prime p ∧ 2≤n-p ∧ (n-p).primeFactorsList.length≤33 ∧ ((n:ℝ)<Real.exp (Real.exp (19/5)) → (n-p).primeFactorsList.length≤10)",
+  "plain_statement": {
+    "zh": "新路线 · 小偶数覆盖第三批 · FR-9006 · 把两个原型的素因子数界分别降至 10 和 33",
+    "en": "New route · Finite-range coverage III · FR-9006 · Reduce the two prototype factor bounds to ten and thirty-three"
+  },
+  "brief": {
+    "zh": "在轮筛起点以上用 FR-9003、9004 得 79 粗余项，再用 FR-7005 按重数计数。较小偶数用 FR-7006 和九个素数对。用同一个候选同时满足两条因子数界。",
+    "en": "Apply FR-9003 and FR-9004 above the wheel threshold and then FR-7005 to count factors with multiplicity. Use FR-7006 and nine prime pairs for smaller even inputs. The same prime must satisfy both factor bounds."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/finite-rfc-third/README.md#rough-remainder-wheel",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-finite-wheel-sixteen-prime-lifts",
+    "L-goldbach-finite-wheel-injective-projection-lift",
+    "L-goldbach-finite-rough-seventynine-constants",
+    "L-goldbach-finite-rough-factor-power",
+    "L-goldbach-finite-rough-candidate-lift"
+  ],
+  "imports": []
+}

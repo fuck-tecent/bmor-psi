@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-binary-shift-fourier-fourth",
+  "statement": "let T := fun (L : ℕ) (t : ℝ) => ∑ j ∈ Finset.range L, Complex.exp (((2*Real.pi*(2:ℝ)^(j+1)*t:ℝ):ℂ)*Complex.I); ∀ L : ℕ, intervalIntegral (fun t => ‖T L t‖^4) (0:ℝ) 1 MeasureTheory.volume = 2*(L:ℝ)^2-(L:ℝ)",
+  "plain_statement": {
+    "zh": "精确基准：二次幂频谱的四阶积分",
+    "en": "Exact benchmark: fourth moment of the binary spectrum"
+  },
+  "brief": {
+    "zh": "用正交性变为两项和的碰撞数。按二进制进位处理重复指数，扣掉两种排列重合的对角项。为大值测度提供可核对的基准。",
+    "en": "Use orthogonality to count equal two-term sums. Account for repeated exponents and subtract the double-counted diagonal. This gives a benchmark for the large-value analysis."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/f4f754c4709c0c1b2dbc67e4c8f74ce2475b8935/research/ROADMAP.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "fourier",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.BinaryShiftFourierFourth",
+  "file": "lean/Conjectures/Goldbach/BinaryShiftFourierFourth.lean"
+}

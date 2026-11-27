@@ -1,0 +1,24 @@
+{
+  "id": "L-joshi-abc-prescribed-test-mass",
+  "statement": "∀ (N : ℕ) [NeZero N] (S : Finset (ZMod N)), let u := fun x : ZMod N => if x ∈ S then (1:ℂ) else 0; (∑ k : ZMod N, ‖ZMod.dft u k‖^2)/(N:ℝ)^2 = (S.card:ℝ)/N",
+  "plain_statement": {
+    "zh": "新路线 · 指定 Kummer 像与 Θ 测试 · JA-0045 · 从给定局部 Θ 测试精确恢复可测余类的占比",
+    "en": "New route · Marked Kummer images and theta tests · JA-0045 · Recover the density of a specified union of residue classes from its Fourier test"
+  },
+  "brief": {
+    "zh": "对指定像的指示函数使用同一计数 Haar 测度，平方和给出占比；向实际 ATS 运输时需固定这个 S。",
+    "en": "Use counting Haar measure on the prescribed image. Parseval yields its density, which must be transported for this S in the ATS model."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AutomorphicArithmetic/ThetaCorrespondence/ThetaPairLifts/LocalTypeDictionary/ThetaLiftPeterssonNormEqRallisIntegral.lean#L972",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-joshi-abc-finite-affine-transform",
+    "L-joshi-abc-measurable-density"
+  ],
+  "imports": [],
+  "track": "05-kummer-images",
+  "module": "Conjectures.JoshiAbc.PrescribedTestMass",
+  "file": "lean/Conjectures/JoshiAbc/PrescribedTestMass.lean"
+}

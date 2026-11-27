@@ -1,0 +1,14 @@
+{
+  "id": "type2-dyadic-corner",
+  "title": {
+    "zh": "Type-II 二进角胞的结构输入",
+    "en": "Structural inputs for the Type-II dyadic corner cell"
+  },
+  "description": {
+    "zh": "把 Type-II 角胞 (1,1) 的深次弧积分拆成三块可独立验证的结构输入：宽弧带的闭性、Fejér 核的平方展开，以及 Möbius 截断恒等式。",
+    "en": "Split the deep-minor integral of the Type-II corner cell (1,1) into three independently checkable inputs: closedness of the wide-arc band, the Fejér square expansion, and the truncated Möbius identity."
+  },
+  "feeds": [
+    "frontier-type2-dyadic-matrix"
+  ]
+}

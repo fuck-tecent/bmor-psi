@@ -1,0 +1,20 @@
+{
+  "id": "L-quadratic-primes-sieve-first-hit",
+  "statement": "let f := fun k : ℕ => 4*k^2+1; let block := fun x : ℕ => Finset.Ioc (x/2) x; let primes := fun z : ℕ => (Finset.Icc 3 z).filter (fun p => Nat.Prime p); let wheel := fun z : ℕ => ∏ p ∈ primes z, p; let rough := fun x z : ℕ => (block x).filter (fun k => Nat.Coprime (f k) (wheel z)); ∀ x lo hi : ℕ, 0<x → lo≤hi →\n  (rough x lo).card =\n    (rough x hi).card + ((block x).filter (fun k => lo < (f k).minFac ∧ (f k).minFac ≤ hi)).card",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然扩张 · QP-0079 · 按真实最小素因子记账两个筛口之间的流失",
+    "en": "New route · Levent GRH and natural extensions · QP-0079 · Account for the losses between two cutoffs using the actual least prime factor"
+  },
+  "brief": {
+    "zh": "对 k>0，4k²+1 是大于一的奇数。逐点使用最小素因子所在的唯一带，包含右边界。此分割可在同一 x 上迭代。",
+    "en": "For k>0 the value 4k²+1 is odd and greater than one. Assign each point to the unique band of its least factor and include the right endpoint. Iterate the partition at the same x."
+  },
+  "source": "https://doi.org/10.1090/coll/057",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": false,
+  "depends_on": [
+    "L-quadratic-primes-sieve-mobius-count"
+  ],
+  "imports": []
+}

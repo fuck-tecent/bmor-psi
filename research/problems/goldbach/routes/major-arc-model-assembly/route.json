@@ -1,0 +1,15 @@
+{
+  "id": "major-arc-model-assembly",
+  "title": {
+    "en": "The major-arc model",
+    "zh": "主弧模型"
+  },
+  "description": {
+    "en": "Identify the reduced-frequency Ramanujan factor, control the prime sum near a rational center by progression discrepancies, and give an explicit floor for the truncated kernel integral.",
+    "zh": "确定既约频率处的拉马努金因子，以等差数列上的偏差估计有理中心附近的素数指数和，并给出截断核积分的显式下界。"
+  },
+  "feeds": [
+    "rational-model",
+    "arc-budget"
+  ]
+}

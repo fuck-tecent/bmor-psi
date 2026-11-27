@@ -19,6 +19,9 @@
     "L-twin-primes-divisor-split",
     "L-twin-primes-euler-factor"
   ],
-  "imports": [],
+  "imports": [
+    "PEqualNP.Outside.L_twin_primes_divisor_split",
+    "PEqualNP.Outside.L_twin_primes_euler_factor"
+  ],
   "challenge_only": true
 }

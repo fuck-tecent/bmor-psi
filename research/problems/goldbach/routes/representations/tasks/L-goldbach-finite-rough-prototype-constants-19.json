@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-finite-rough-prototype-constants-19",
+  "statement": "Real.exp 5 < 51 * Real.log 19",
+  "plain_statement": {
+    "zh": "新路线 · 小偶数覆盖 · FR-7033 · 19 粗候选在原型全域所需的指数比较",
+    "en": "New route · Finite-range coverage · FR-7033 · Exponential comparison for 19-rough candidates on the full prototype"
+  },
+  "brief": {
+    "zh": "用 e<2.7182818286 估计 exp 5<148.42，再由 log 19=4 log 2+log(19/16) 与 log x≥1−1/x 从下界定。",
+    "en": "Bound exp 5<148.42 from e<2.7182818286, and bound log 19=4 log 2+log(19/16) from below with log x≥1−1/x."
+  },
+  "source": "https://www.goldbach.tech/?lemma=L-goldbach-binary-pointwise-positivity",
+  "program": "foundation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "representations",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.FiniteRoughPrototypeConstants19",
+  "file": "lean/Conjectures/Goldbach/FiniteRoughPrototypeConstants19.lean"
+}

@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-vinogradov-polylog-minor-saving",
+  "statement": "let w (k : ℕ) := if Nat.Prime k then Real.log (k : ℝ) else 0; let E (x : ℝ) := Complex.exp (((2 * Real.pi * x : ℝ) : ℂ) * Complex.I); let S (n : ℕ) (u : ℕ → ℝ) (t : ℝ) := ∑ k ∈ Finset.range (n + 1), (u k : ℂ) * E ((k : ℝ) * t); let Qpow (B n : ℕ) := (Nat.log 2 (n + 2)) ^ B; let arcsPoly (B n : ℕ) := {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ Qpow B n ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t - (a : ℝ) / q| ≤ (Qpow B n : ℝ) / ((q : ℝ) * n)}; ∀ A : ℝ, 0 < A → ∃ N : ℕ, ∀ n : ℕ, N ≤ n → ∀ t ∈ Set.Icc (0 : ℝ) 1, t ∉ arcsPoly (2 * ⌈A⌉₊ + 16) n → ‖S n ArithmeticFunction.vonMangoldt t‖ ≤ (n : ℝ) * (Real.log (n : ℝ)) ^ (-A) ∧ ‖S n w t‖ ≤ (n : ℝ) * (Real.log (n : ℝ)) ^ (-A)",
+  "plain_statement": {
+    "en": "For every A > 0, the von Mangoldt and prime-log sums both have norm at most n/(log n)ᴬ on the specified minor arcs for all sufficiently large n. The cutoff exponent is 2⌈A⌉ + 16.",
+    "zh": "对每个 A > 0，当 n 充分大时，冯·曼戈尔特和及素数对数和在所给次弧上的范数均至多为 n/(log n)ᴬ。分母截断的指数为 2⌈A⌉ + 16。"
+  },
+  "brief": {
+    "en": "Approximate the frequency by a reduced fraction and apply the rational exponential-sum bound. The minor-arc cutoff restricts the denominator at both ends.",
+    "zh": "用既约分数逼近频率，再应用有理逼近处的指数和估计。次弧条件同时限制分母的上下界。"
+  },
+  "program": "correlation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/7c2aa7646fbad3c004c89d4c3a53c8f111afd065/research/gaps.json#L1985-L2004",
+  "track": "unconditional-circle-milestones",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.VinogradovPolylogMinorSaving",
+  "file": "lean/Conjectures/Goldbach/VinogradovPolylogMinorSaving.lean"
+}

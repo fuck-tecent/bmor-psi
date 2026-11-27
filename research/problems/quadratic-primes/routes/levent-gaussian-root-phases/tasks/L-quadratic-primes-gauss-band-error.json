@@ -1,0 +1,22 @@
+{
+  "id": "L-quadratic-primes-gauss-band-error",
+  "statement": "let block := fun x : ℕ => Finset.Ioc x (2*x); let window := fun x p : ℕ => (block x).filter (fun n => p^100000≤n^132301); let phase := fun p k (t : ℕ) => 2*Real.pi*(k : ℝ)*(t : ℝ)/(p : ℝ); let rootWave := fun q k t : ℕ => 2*Real.cos (phase q k t); let good := fun p a b r v : ℕ => p.Prime ∧ 2<p ∧ 0<a ∧ a≤b ∧ p=a^2+b^2 ∧ r<p ∧ v<b ∧ (b*r)%p=a%p ∧ (a*v)%b=1%b; let low := fun p : ℕ => (Finset.Ico 1 p).filter (fun k => min k (p-k)≤Nat.sqrt p); let amp := fun x p q t : ℕ => (∑ k ∈ low p, rootWave q (min k (p-k)) t * (∑ n ∈ window x p, Real.cos (phase p (min k (p-k)) n)) / (p : ℝ)) * Real.log p; let split := fun x : ℕ => (Finset.Ioc x ((2*x)^2+1)).filter (fun p => p.Prime ∧ p%4=1 ∧ p^100000≤(2*x)^132301); ∃ C : ℝ, 0<C ∧ ∀ x : ℕ, 4≤x → ∀ S : Finset ℕ, S⊆split x →\n  ∀ a b r v : ℕ → ℕ, (∀ p ∈ S, good p (a p) (b p) (r p) (v p)) →\n  |∑ p ∈ S, (amp x p p (r p) - amp x p (b p) (v p))| ≤\n    C * (x : ℝ)^(132301/200000 : ℝ) * (Real.log (2*(x : ℝ)))^2",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然扩张 · QP-0091 · 给两个原中段素数带统一的次线性替换预算",
+    "en": "New route · Levent GRH and natural extensions · QP-0091 · Give a uniform sublinear replacement budget for either original middle prime band"
+  },
+  "brief": {
+    "zh": "每个 p 将 k 和 p−k 配对，至多 2⌊√p⌋ 项。把 4π/√p·log p 累加至 (2x)^(132301/100000)。模型对 p−k 仍用模 p 配对后的 k；冻结式的 amp 以 min(k,p−k) 统一选择该代表。",
+    "en": "Pair k with p−k for each p, with at most 2⌊√p⌋ terms. Sum 4π log p/√p up to (2x)^(132301/100000). Both amplitudes use the paired representative min(k,p−k), including in the smaller modulus."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2487",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": false,
+  "depends_on": [
+    "L-quadratic-primes-gauss-mode-error",
+    "L-quadratic-primes-gauss-split-representation",
+    "L-quadratic-primes-levent-conjugate-frequency"
+  ],
+  "imports": []
+}

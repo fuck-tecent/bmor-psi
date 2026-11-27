@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-packet-remaining-peak-overlap",
+  "statement": "let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let W := fun (n : ℕ) (p : ℕ → Prop) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ (Q n)^2 ∧ a ≤ q ∧ Nat.Coprime a q ∧ p q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ ((Q n:ℝ)^2)/((q:ℝ)*(n:ℝ))}; let o := fun n q : ℕ => Odd q ∧ ∃ j : ℕ, 1 ≤ j ∧ j ≤ (Nat.log 2 (Q n)+1)^2 ∧ q ∣ 2^j-1; let G := fun (n : ℕ) (t : ℝ) => ∑ q ∈ Finset.Icc 1 ((Q n)^2), ∑ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q), 4*(n:ℝ)^2 / ((Nat.totient q:ℝ)^2 * (1+((n:ℝ)*(t-(a:ℝ)/(q:ℝ)))^2)); let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → m ((B n ∩ (W n (fun _ => True))) \\ W n (o n)) (G n) ≤ (n:ℝ)/4608",
+  "plain_statement": {
+    "zh": "剩余有理窗口中的模型峰质量",
+    "en": "Model peak mass in the remaining rational windows"
+  },
+  "brief": {
+    "zh": "此题不含素数指数和。对普通分母与偶分母分别分析倍增轨道，并保留所有有理中心的峰尾。",
+    "en": "Analyze ordinary and even denominators along doubling orbits, retaining tails from every rational center. No prime exponential sum appears."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "minor-truncation",
+  "role": "target",
+  "module": "Conjectures.Goldbach.PacketRemainingPeakOverlap",
+  "file": "lean/Conjectures/Goldbach/PacketRemainingPeakOverlap.lean"
+}

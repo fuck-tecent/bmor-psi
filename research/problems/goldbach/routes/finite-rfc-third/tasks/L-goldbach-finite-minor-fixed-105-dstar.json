@@ -1,0 +1,19 @@
+{
+  "id": "L-goldbach-finite-minor-fixed-105-dstar",
+  "statement": "let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (α : ℝ) => ∑ k ∈ Finset.Icc 1 n, (ArithmeticFunction.vonMangoldt k:ℂ)*E ((k:ℝ)*α); let arcs := fun (n : ℕ) => {t : ℝ | ∃ (q a : ℕ) (z : ℤ), 1≤q ∧ q≤105 ∧ a<q ∧ Nat.Coprime a q ∧ |t-((a:ℝ)/q+(z:ℝ))|≤105/((q:ℝ)*(n:ℝ))}; ∀ n : ℕ, 4000000000000000000<n → 30 ∣ n → (n:ℝ)<Real.exp (Real.exp (19/5)) → -(9/5:ℝ)*(n:ℝ) ≤ (MeasureTheory.integral (MeasureTheory.volume.restrict (Set.Icc (0:ℝ) 1 \\ arcs n)) (fun t => (S n t)^2*E (-(n:ℝ)*t))).re",
+  "plain_statement": {
+    "zh": "新路线 · 小偶数覆盖第三批 · FR-9015 · 在 D* 上控制固定 105 分母弧的实际补集",
+    "en": "New route · Finite-range coverage III · FR-9015 · Bound the actual complement of the fixed denominator-105 arcs on D*"
+  },
+  "brief": {
+    "zh": "补集按圆周定义，包含 q=1 在 0、1 处的两半弧。若该单侧界通过，FR-9014 的 37/20 主弧下界与 FR-7019 的素数幂预算给同一子域的余量。",
+    "en": "Define the complement on the circle, with the two halves of the q=1 arc at 0 and 1. If this signed bound holds, the 37/20 major-arc margin in FR-9014 and the prime-power budget in FR-7019 give a positive margin on the same subdomain."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/finite-rfc-third/README.md#fixed-major-arcs",
+  "program": "correlation",
+  "role": "target",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "challenge_only": true
+}

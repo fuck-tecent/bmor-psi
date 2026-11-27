@@ -1,0 +1,22 @@
+{
+  "id": "L-twin-primes-rough-window-prime-extraction",
+  "statement": "let w := fun (X : ℕ) => (Finset.range (2*X+1)).filter (fun n => X < n ∧ 50*n < 51*X); let z := fun (X : ℕ) => Nat.sqrt X / 2; let R := fun (X : ℕ) => ((w X).filter (fun p => p.Prime ∧ z X ≤ (p+2).minFac)); let T := fun (X : ℕ) => ((w X).filter (fun p => p.Prime ∧ (p+2).Prime)); let Q := fun (X : ℕ) => ((w X).filter (fun p => p.Prime ∧ (Nat.sqrt (p+2)).Prime ∧ p+2=(Nat.sqrt (p+2))^2)); let S := fun (X : ℕ) => @Finset.filter ℕ (fun p => p.Prime ∧ ∃ r s : ℕ, r.Prime ∧ s.Prime ∧ r < s ∧ Nat.sqrt X/2 ≤ r ∧ r ≤ Nat.sqrt (2*X+2) ∧ p+2=r*s) (fun _ => Classical.propDecidable _) (w X); let L := fun (p : ℕ) => Real.log p * Real.log (p+2); ∀ (X : ℕ) (M E F : ℝ), 4096 ≤ X → M ≤ (R X).sum L → (Q X).sum L ≤ E → (S X).sum L ≤ F → M-E-F ≤ (T X).sum L",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然推广 · TP-0069 · 由同一短窗的粗筛下界与两项污染预算提取真素数质量",
+    "en": "New route · Levent GRH methods and extensions · TP-0069 · Extract prime-pair mass from the rough count and both loss bounds in the same window"
+  },
+  "brief": {
+    "zh": "用 TP-0067 把粗筛和逐项覆盖到真素数、平方和两个不同素数。用 TP-0063、0068 的量纲同为对数权乘积。若 M−E−F>0，同一 X 有一对。用于 TP-0052R，仍需实际粗筛下界。",
+    "en": "Use TP-0067 to cover each rough survivor by a prime, a square or two distinct primes. TP-0063 and TP-0068 give bounds with the same log-product weights. A positive remainder supplies a pair at that X. TP-0052R still needs a lower bound on the actual rough count."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/twin-primes.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-rough-window-factor-shapes",
+    "L-twin-primes-shifted-square-window-loss",
+    "L-twin-primes-balanced-semiprime-window-loss"
+  ],
+  "imports": []
+}

@@ -1,0 +1,14 @@
+{
+  "id": "large-sieve-dispersion",
+  "title": {
+    "en": "Farey spacing and the analytic large sieve",
+    "zh": "法里分数间距与解析大筛"
+  },
+  "description": {
+    "en": "Bound the total squared size of a trigonometric sum sampled at reduced fractions with denominator at most Q. The estimate is uniform in the starting frequency.",
+    "zh": "估计三角和在分母不超过 Q 的既约分数处的模平方总和。该估计对起始频率一致成立。"
+  },
+  "feeds": [
+    "arc-budget"
+  ]
+}

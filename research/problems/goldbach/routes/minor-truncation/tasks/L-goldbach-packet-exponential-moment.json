@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-packet-exponential-moment",
+  "statement": "let T := fun (m : ℕ) (t : ℝ) => ∑ j ∈ Finset.range m, Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t); ∀ (m : ℕ) (s : ℝ), intervalIntegral (fun t => Real.exp (s*T m t)) (0:ℝ) 1 MeasureTheory.volume ≤ (Real.cosh s)^m",
+  "plain_statement": {
+    "zh": "所有层数的余弦和指数矩",
+    "en": "Exponential moments for every packet length"
+  },
+  "brief": {
+    "zh": "沿倍增映射归纳剥去最低频。频率从 2 开始，先用周期性把 x 换成 2x。",
+    "en": "Iterate the transfer inequality from the lowest frequency. Use invariance of the period integral under doubling for the initial frequency 2."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "minor-truncation",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.PacketExponentialMoment",
+  "file": "lean/Conjectures/Goldbach/PacketExponentialMoment.lean"
+}

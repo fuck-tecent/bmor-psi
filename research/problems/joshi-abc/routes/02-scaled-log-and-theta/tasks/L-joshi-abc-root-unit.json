@@ -1,0 +1,21 @@
+{
+  "id": "L-joshi-abc-root-unit",
+  "statement": "∀ (p l : ℕ) [Fact p.Prime] (z : ZMod p), p ≠ 2 → Odd l → z^l=1 → z+z⁻¹ ≠ 0",
+  "plain_statement": {
+    "zh": "新路线 · 缩放对数与 Theta 值 · JA-0013 · 排除奇阶单位根在首项中抵消",
+    "en": "New route · Scaled logarithms and theta values · JA-0013 · Exclude cancellation of the two leading root-of-unity terms"
+  },
+  "brief": {
+    "zh": "若和为零则 z²=−1，进而阶整除 4，与奇阶及奇特征矛盾。",
+    "en": "A zero sum implies z²=−1. Its order would divide four and also the odd l."
+  },
+  "source": "https://arxiv.org/abs/2303.01662",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "02-scaled-log-and-theta",
+  "module": "Conjectures.JoshiAbc.RootUnit",
+  "file": "lean/Conjectures/JoshiAbc/RootUnit.lean"
+}

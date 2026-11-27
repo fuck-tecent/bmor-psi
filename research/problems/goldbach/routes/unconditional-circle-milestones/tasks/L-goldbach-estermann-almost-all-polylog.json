@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-estermann-almost-all-polylog",
+  "statement": "let reps (n : ℕ) := (Finset.range (n + 1)).filter (fun p => Nat.Prime p ∧ Nat.Prime (n - p)); (∀ A : ℝ, 0 < A → ∃ X₀ : ℕ, ∀ X : ℕ, X₀ ≤ X → (((Finset.range (X + 1)).filter (fun n => 4 ≤ n ∧ Even n ∧ (reps n).card = 0)).card : ℝ) ≤ (X : ℝ) * (Real.log (X : ℝ)) ^ (-A)) ∧ Filter.Tendsto (fun X : ℕ => (((Finset.range (X + 1)).filter (fun n => 4 ≤ n ∧ Even n ∧ (reps n).card = 0)).card : ℝ) / (X : ℝ)) Filter.atTop (nhds 0)",
+  "plain_statement": {
+    "en": "For every A > 0, the number of even integers from 4 through X having no two-prime representation is eventually at most X/(log X)ᴬ. Their natural density is zero.",
+    "zh": "对每个 A > 0，当 X 充分大时，从 4 到 X 不能表示为两素数之和的偶数至多有 X/(log X)ᴬ 个，其自然密度为零。"
+  },
+  "brief": {
+    "en": "Count the empty computable sets of prime summands. The dyadic exceptional-set estimates give the cumulative logarithmic bound and its density limit.",
+    "zh": "用可计算的素数加数集合判定例外。由二进区间的例外估计得到累积的对数幂上界及密度极限。"
+  },
+  "program": "exceptions",
+  "imports": [],
+  "parallel": true,
+  "source": "https://doi.org/10.1112/plms/s2-44.4.307",
+  "track": "unconditional-circle-milestones",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.EstermannAlmostAllPolylog",
+  "file": "lean/Conjectures/Goldbach/EstermannAlmostAllPolylog.lean"
+}

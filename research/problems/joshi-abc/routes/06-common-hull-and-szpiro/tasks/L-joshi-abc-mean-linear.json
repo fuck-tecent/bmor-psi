@@ -1,0 +1,21 @@
+{
+  "id": "L-joshi-abc-mean-linear",
+  "statement": "∀ m : ℕ, 0 < m → ((Finset.Icc 1 m).sum (fun j => (j:ℝ)))/(m:ℝ) = ((2*(m:ℝ)+1)+1)/4",
+  "plain_statement": {
+    "zh": "新路线 · 同一包络与局部 Szpiro · JA-0046 · 求标签上线性权重的平均",
+    "en": "New route · Common hull and local Szpiro · JA-0046 · Average the linear weights over the labels"
+  },
+  "brief": {
+    "zh": "使用等差数列求和，再换 ℓ=2m+1。",
+    "en": "Sum the arithmetic progression and substitute ℓ=2m+1."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/joshi-abc.md",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "06-common-hull-and-szpiro",
+  "module": "Conjectures.JoshiAbc.MeanLinear",
+  "file": "lean/Conjectures/JoshiAbc/MeanLinear.lean"
+}

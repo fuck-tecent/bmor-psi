@@ -1,0 +1,18 @@
+{
+  "id": "L-no-three-in-line-fold-optimality-attained",
+  "statement": "∀ (p : ℕ) [NeZero p] (hp : Nat.Prime p), p ≠ 2 → (let det3 : ℤ × ℤ → ℤ × ℤ → ℤ × ℤ → ℤ := fun P Q R => (Q.1 - P.1) * (R.2 - P.2) - (Q.2 - P.2) * (R.1 - P.1); let cap : ZMod p → ZMod p → ZMod p × ZMod p := fun t x => (x + t, x⁻¹); let lift : ZMod p → ZMod p → Fin 2 → Fin 2 → ℤ × ℤ := fun t x i j => (((cap t x).1.val : ℤ) + (i.val : ℤ) * (p : ℤ), ((cap t x).2.val : ℤ) + (j.val : ℤ) * (p : ℤ)); let Mask : Type := ZMod p → Finset (Fin 2 × Fin 2); let points : ZMod p → Mask → Finset (ℤ × ℤ) := fun t R => (Finset.univ.filter (fun x : ZMod p => x ≠ 0)).biUnion (fun x => (R x).image (fun ij => lift t x ij.1 ij.2)); let NoThreeCollinear : Finset (ℤ × ℤ) → Prop := fun S => ∀ a ∈ S, ∀ b ∈ S, ∀ c ∈ S, a ≠ b → a ≠ c → b ≠ c → det3 a b c ≠ 0; ∃ t : ZMod p, ∃ R : Mask, NoThreeCollinear (points t R) ∧ (∑ x ∈ Finset.univ.filter (fun x : ZMod p => x ≠ 0), (R x).card) = 3 * (p - 1))",
+  "plain_statement": {
+    "zh": "对 HJSW 2-周期折叠族（平移 + 每纤维删角 mask）：存在平移与 mask，使 2p 网格上的 lift 点集无三点共线且恰有 3(p−1) 个点，与上界定理共同给出该族的精确最优值。",
+    "en": "For the HJSW 2-periodic fold family (translation plus a per-fibre deleted-corner mask): some translation and mask place exactly 3(p−1) lift points on the 2p grid with no three collinear, matching the sharp upper bound."
+  },
+  "brief": {
+    "zh": "等号侧。先取 HJSW 的平移 t=(p−1)/2 与删角规则，再用已有的 lift 单射性与三纤维行列式引理排除所有共线三元组，最后核对点数恒等式。",
+    "en": "Attainment side. Use the HJSW translation t=(p−1)/2 with the deleted-corner rule, exclude all collinear triples via the existing lift injectivity and three-fibre determinant lemmas, then check the point-count identity."
+  },
+  "program": "correlation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://epoch.ai/frontiermath/open-problems/no-three-in-line",
+  "module": "Conjectures.NoThreeInLine.FoldOptimalityAttained",
+  "file": "lean/Conjectures/NoThreeInLine/FoldOptimalityAttained.lean"
+}

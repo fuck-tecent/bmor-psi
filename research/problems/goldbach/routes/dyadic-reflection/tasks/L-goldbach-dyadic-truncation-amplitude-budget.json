@@ -1,0 +1,18 @@
+{
+  "id": "L-goldbach-dyadic-truncation-amplitude-budget",
+  "statement": "∀ (N m : ℕ) [NeZero m] (C B : ℝ), 2 ≤ N → 2 ≤ m → m ≤ 2*N → 0 ≤ C → 0 ≤ B →\n  let u : ℝ := (N : ℝ) + 1/2\n  let zeros := fun (χ : DirichletCharacter ℂ m) (T : ℝ) =>\n    {ρ : ℂ | 0 < ρ.re ∧ ρ.re < 1 ∧ |ρ.im| < T ∧ DirichletCharacter.LFunction χ ρ = 0}\n  let ord := fun (χ : DirichletCharacter ℂ m) (ρ : ℂ) => analyticOrderNatAt (DirichletCharacter.LFunction χ) ρ\n  let low := fun χ : DirichletCharacter ℂ m => ∑ᶠ ρ ∈ zeros χ 1, (ord χ ρ : ℝ) / ‖ρ‖\n  let V := fun χ : DirichletCharacter ℂ m =>\n    ∑ n ∈ Finset.range (N+1), (ArithmeticFunction.vonMangoldt n : ℂ) * χ⁻¹ (n : ZMod m)\n  let Z := fun χ : DirichletCharacter ℂ m =>\n    -(∑ᶠ ρ ∈ zeros χ⁻¹ N, (ord χ⁻¹ ρ : ℂ) * ((u : ℂ)^ρ / ρ))\n  let s := (Finset.univ : Finset (DirichletCharacter ℂ m)).filter (fun χ => χ.conductor = m)\n  (∀ χ ∈ s, (zeros χ⁻¹ N).Finite ∧\n    ‖V χ-Z χ‖ ≤ C * (u * (Real.log ((m : ℝ)*u*N))^2 / N + Real.log ((m : ℝ)*u) + low χ⁻¹)) →\n  (∀ χ ∈ s, low χ⁻¹ ≤ B * Real.log (2*m : ℝ)) →\n    (∑ χ ∈ s, ‖(V χ-Z χ) / (Real.sqrt (m.totient : ℝ) : ℂ)‖^2) ≤\n      (16*C*(1+B)*(Real.log (2*N : ℝ))^2)^2",
+  "plain_statement": {
+    "zh": "新路线 · 二进反射与 Levent GRH · DR-0019 · 将半整数截断显式公式的余项转为本原振幅误差",
+    "en": "New route · Dyadic reflection and Levent GRH · DR-0019 · Convert the half-integer explicit-formula remainders into a primitive amplitude error"
+  },
+  "brief": {
+    "zh": "按重数保留严格高度窗，取 u=N+1/2 和 T=N。冻结前提分别给出每个特征的 Perron 余项及低零点和。把两项统一为欧氏误差供 DR-0018 使用，允许模数超过 N。",
+    "en": "Keep multiplicities and the strict height cutoff at u=N+1/2 and T=N. The premises record the Perron remainder and the low-zero sum for each character. Convert them to one Euclidean error for DR-0018, including moduli above N."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/GlobalInterpolation/TruncatedExplicitFormula.lean#L607",
+  "program": "correlation",
+  "role": "conditional",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

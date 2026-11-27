@@ -1,0 +1,26 @@
+{
+  "id": "L-quadratic-primes-sieve-split-harmonic",
+  "statement": "let split := fun z : ℕ => (Finset.Icc 5 z).filter (fun p => Nat.Prime p ∧ p%4=1); (∀ (Q : ℕ) [NeZero Q] (χ : DirichletCharacter ℂ Q) (s : ℂ), 0<s.re → s.re<1 → DirichletCharacter.LFunction χ s=0 → s.re=1/2)→\n∃ b C : ℝ, 0<C ∧ ∀ z : ℕ, 5≤z →\n  |(∑ p ∈ split z, (1 : ℝ)/(p : ℝ)) - Real.log (Real.log z)/2 - b| ≤\n    C * (Real.log (2*(z : ℝ)))^2 / Real.sqrt z",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然扩张 · QP-0076 · 在 Dirichlet GRH 前提下给分裂素数倒数和的尾部定量",
+    "en": "New route · Levent GRH and natural extensions · QP-0076 · Quantify the tail of the split-prime harmonic sum under Dirichlet GRH"
+  },
+  "brief": {
+    "zh": "通过 QP-0005 和 QP-0006 把 ψ 换成真素数 θ，再以 1/(t log t) 分部求和。截断公式的零线假设保留在冻结类型中。",
+    "en": "Use QP-0005 and QP-0006 to pass from ψ to the true prime sum θ. Sum by parts with 1/(t log t). The frozen type retains the zero-line assumption used for the explicit formula."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/GlobalInterpolation/TruncatedExplicitFormula.lean#L607",
+  "program": "correlation",
+  "role": "conditional",
+  "parallel": true,
+  "depends_on": [
+    "L-quadratic-primes-levent-mod-four-psi",
+    "L-quadratic-primes-levent-mod-four-powers",
+    "L-quadratic-primes-levent-abel-reciprocal"
+  ],
+  "imports": [
+    "PEqualNP.Outside.L_quadratic_primes_levent_mod_four_psi",
+    "PEqualNP.Outside.L_quadratic_primes_levent_mod_four_powers",
+    "PEqualNP.Outside.L_quadratic_primes_levent_abel_reciprocal"
+  ]
+}

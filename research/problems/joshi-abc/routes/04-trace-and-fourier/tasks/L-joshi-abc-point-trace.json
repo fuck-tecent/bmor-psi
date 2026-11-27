@@ -1,0 +1,21 @@
+{
+  "id": "L-joshi-abc-point-trace",
+  "statement": "let A : Matrix (Fin 2) (Fin 2) ℚ := !![0,5;1,0]; A.trace=0 ∧ A.det ≠ 0",
+  "plain_statement": {
+    "zh": "新路线 · 迹、不同理想与 Fourier 缺额 · JA-0031 · 用非零迹零元素区分单点与整层迹",
+    "en": "New route · Trace, different and Fourier deficit · JA-0031 · Separate the trace of a point from the trace of its lattice"
+  },
+  "brief": {
+    "zh": "取基 1,√5，写出乘以 √5 的矩阵。单点取迹可完全抵消。",
+    "en": "Use the basis 1,√5 for multiplication by √5. The trace of one nonzero element can vanish."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/joshi-abc.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "04-trace-and-fourier",
+  "module": "Conjectures.JoshiAbc.PointTrace",
+  "file": "lean/Conjectures/JoshiAbc/PointTrace.lean"
+}

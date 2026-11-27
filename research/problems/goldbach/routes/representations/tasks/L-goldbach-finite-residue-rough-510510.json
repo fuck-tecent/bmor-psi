@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-finite-residue-rough-510510",
+  "statement": "∀ a : ℕ, a < 510510 → Even a → ∃ p ∈ ({3,5,7,11,41,61,79,149,167,769,1747,2297,2311} : Finset ℕ), Nat.Coprime ((a+510510-p)%510510) 510510",
+  "plain_statement": {
+    "zh": "新路线 · 小偶数覆盖 · FR-7032 · 十三个候选覆盖模 510510 的偶数类",
+    "en": "New route · Finite-range coverage · FR-7032 · Thirteen candidates cover even residues modulo 510510"
+  },
+  "brief": {
+    "zh": "逐类复核 255255 个偶类，可按 1001 个一块分 255 块由内核求值。再避开 17 后得到 19 粗的候选。",
+    "en": "Verify all 255255 even residues, e.g. by kernel evaluation in 255 blocks of 1001. Excluding 17 as well gives a 19-rough candidate."
+  },
+  "source": "https://www.goldbach.tech/?lemma=L-goldbach-binary-pointwise-positivity",
+  "program": "foundation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "representations",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.FiniteResidueRough510510",
+  "file": "lean/Conjectures/Goldbach/FiniteResidueRough510510.lean"
+}

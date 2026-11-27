@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-dyn-incidence-first",
+  "statement": "let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); let P := fun X : ℕ => (Finset.Icc (Nat.sqrt X) (2*Nat.sqrt X)).filter Nat.Prime; let H := fun (X n : ℕ) => ((P X).filter (fun p => p ≤ n ∧ Nat.Prime (n-p))).card; ∀ X : ℕ, ∑ n ∈ E X, H X n = ∑ p ∈ P X, ((E X).filter (fun n => p≤n ∧ Nat.Prime (n-p))).card",
+  "plain_statement": {
+    "zh": "将两步路径的一阶矩换成逐个小素数求和",
+    "en": "Double-count first arrivals by their small prime step"
+  },
+  "brief": {
+    "zh": "交换终点和第一步的求和顺序，使不同小素数可以共用长区间素数下界。",
+    "en": "Count the same incidences in the opposite order so each small prime can use a common long-interval estimate."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "module": "Conjectures.Goldbach.DynIncidenceFirst",
+  "file": "lean/Conjectures/Goldbach/DynIncidenceFirst.lean",
+  "imports": [],
+  "track": "representations",
+  "role": "lemma"
+}

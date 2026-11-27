@@ -1,0 +1,20 @@
+{
+  "id": "L-quadratic-primes-gauss-two-root-phase",
+  "statement": "∀ (p : ℕ) [Fact (Nat.Prime p)] (a b : ℕ), 2<p → 0<a → a≤b → p=a^2+b^2 →\n  let r : ZMod p := (a : ZMod p)/(b : ZMod p);\n  ∀ k : ZMod p, (∑ v : ZMod p, if v^2+1=0 then ZMod.stdAddChar (k*v) else 0) =\n    ZMod.stdAddChar (k*r) + ZMod.stdAddChar (-k*r)",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然扩张 · QP-0088 · 把二次根的 Fourier 和写成两个高斯分量比相位",
+    "en": "New route · Levent GRH and natural extensions · QP-0088 · Write the quadratic-root Fourier sum as two Gaussian-ratio phases"
+  },
+  "brief": {
+    "zh": "b 在模 p 可逆，a/b 与 −a/b 是不同的两个根。用分解 (v−r)(v+r) 排除多余根，保留两条相位的符号。",
+    "en": "The denominator b is a unit modulo p, and a/b and −a/b are distinct roots. Factor (v−r)(v+r) to exclude further roots and keep both phase signs."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/FoundationProofs/DirichletCharFiniteFourierTransformProperties.lean#L85",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-quadratic-primes-levent-root-card-splitting"
+  ],
+  "imports": []
+}

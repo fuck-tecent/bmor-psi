@@ -1,0 +1,26 @@
+{
+  "id": "L-joshi-abc-frey-hull-transfer",
+  "statement": "let rad := fun (n : ℕ) => n.primeFactors.prod id; let r := fun (a b : ℕ) => Real.log (rad (a*b*(a+b))); ∀ (l : ℕ) (K : ℝ) (Q R U δ A : ℕ → ℕ → ℝ), 7 ≤ l → let k := 4*(l:ℝ)/(((l:ℝ)-3)*(l+1)); let H := fun (a b : ℕ) => Real.log (16*((a:ℝ)^2+a*b+(b:ℝ)^2))/2; (∀ a b : ℕ, 0<a → 0<b → Nat.Coprime a b → -(((l:ℝ)+1)/4)*Q a b-δ a b ≤ R a b ∧ R a b ≤ -((l:ℝ)*(l+1)/12)*Q a b+U a b ∧ H a b ≤ 2*l*Q a b/6+A a b ∧ A a b + k*(U a b+δ a b) ≤ (1+k)*r a b+K) → ∀ a b : ℕ, 0<a → 0<b → Nat.Coprime a b → H a b ≤ (1+k)*r a b+K",
+  "plain_statement": {
+    "zh": "新路线 · 全局高度与 abc · JA-0060 · 从四条显式不等式推出统一 Frey 高度界",
+    "en": "New route · Global heights and abc · JA-0060 · Deduce a uniform Frey height bound from four stated inequalities"
+  },
+  "brief": {
+    "zh": "这是对实值函数的消元。应用于 Joshi 对象时须构造同一个标记包络，并另证两端体积界、高度比较和统一根基预算。",
+    "en": "Eliminate the real-valued functions using the four inequalities. An application to Joshi data requires a common marked hull and separate proofs of both volume bounds, the height comparison and the uniform radical budget."
+  },
+  "source": "https://arxiv.org/abs/2403.10430",
+  "program": "correlation",
+  "role": "conditional",
+  "parallel": true,
+  "depends_on": [
+    "L-joshi-abc-linear-hull",
+    "L-joshi-abc-rounding-radical",
+    "L-joshi-abc-frey-height",
+    "L-joshi-abc-adelic-error-sum"
+  ],
+  "imports": [],
+  "track": "07-global-heights",
+  "module": "Conjectures.JoshiAbc.FreyHullTransfer",
+  "file": "lean/Conjectures/JoshiAbc/FreyHullTransfer.lean"
+}

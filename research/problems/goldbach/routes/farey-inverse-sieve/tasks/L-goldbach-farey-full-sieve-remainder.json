@@ -1,0 +1,22 @@
+{
+  "id": "L-goldbach-farey-full-sieve-remainder",
+  "statement": "∀ n d l h : ℕ, 1 < n → 0 < d → Squarefree d → d.Coprime n → l ≤ h → h < n → let r : ℝ := (2 : ℝ)^d.primeFactors.card; let A := ((Finset.Icc l h).filter (fun u => u.Coprime n ∧ d ∣ u*(n-u))).card; |(A:ℝ) - ((h-l+1 : ℕ):ℝ)*(n.totient:ℝ)*r/((d:ℝ)*n)| ≤ r*(n.divisors.card:ℝ)",
+  "plain_statement": {
+    "zh": "新路线 · Farey 分母对与逆元筛 · HD-8004 · 在全分子窗给出二元筛的统一 CRT 余项",
+    "en": "New route · Farey denominator pairs and inverse sieve · HD-8004 · Bound the two-residue sieve remainder with all numerator labels included"
+  },
+  "brief": {
+    "zh": "先数允许根，再逐根应用带互素掩码的进程界。令 d 平方自由且与 n 互素。TH-0030、TH-0031 给出每个素因子的 0 与 n 两个根，两个根用同一实例的区间。",
+    "en": "Count the roots, then apply the masked progression estimate to each root. For squarefree d coprime to n, TH-0030 and TH-0031 identify the two roots 0 and n at each prime factor."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/farey-inverse-sieve/README.md",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-farey-coprime-progression-count",
+    "L-goldbach-sieve-residue-dimension",
+    "L-goldbach-sieve-residue-crt"
+  ],
+  "imports": []
+}

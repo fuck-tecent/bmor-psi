@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-binary-shift-large-spectrum",
+  "statement": "let T := fun (L : ℕ) (t : ℝ) => ∑ j ∈ Finset.range L, Complex.exp (((2*Real.pi*(2:ℝ)^(j+1)*t:ℝ):ℂ)*Complex.I); ∃ c C : ℝ, 0<c ∧ 0<C ∧ ∀ L : ℕ, intervalIntegral (fun t => if (9:ℝ)*(L:ℝ) ≤ 10*‖T L t‖ then (1:ℝ) else 0) (0:ℝ) 1 MeasureTheory.volume ≤ C*Real.exp (-c*(L:ℝ))",
+  "plain_statement": {
+    "zh": "估计候选：接近最大值的二次幂频谱占指数小的测度",
+    "en": "Candidate estimate: near-maximal binary spectrum has exponentially small measure"
+  },
+  "brief": {
+    "zh": "四阶矩只给多项式尾界。尝试把倍增映射分块，估计指数矩；须从实部推广到复模。文献中大值集的方法可供移植。",
+    "en": "Block the doubling map and control exponential moments, including the passage from real parts to modulus. A fourth moment alone yields only a polynomial tail."
+  },
+  "source": "https://arxiv.org/pdf/math/0201299",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "fourier",
+  "role": "target",
+  "module": "Conjectures.Goldbach.BinaryShiftLargeSpectrum",
+  "file": "lean/Conjectures/Goldbach/BinaryShiftLargeSpectrum.lean"
+}

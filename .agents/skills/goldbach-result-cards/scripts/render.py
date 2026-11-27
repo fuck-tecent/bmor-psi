@@ -34,21 +34,39 @@ def data_image(mime, content):
     return f"data:{mime};base64,{base64.b64encode(content).decode('ascii')}"
 
 
+def render_source(source):
+    url = https_url(source["url"])
+    link = f'<a href="{escape(source["url"])}">{escape(source["label"])}</a>'
+    attribution = source.get("attribution")
+    if attribution is None:
+        if url.hostname == "github.com" and "/pull/" in url.path:
+            raise ValueError("GitHub PR sources require attribution (use 未披露 for missing fields).")
+        return f'<li>{link}</li>'
+
+    user = escape(attribution["user"])
+    model = escape(attribution["model"])
+    harness = escape(attribution["harness"])
+    if attribution.get("harness_version"):
+        harness += f' {escape(attribution["harness_version"])}'
+    evidence = escape(attribution.get("evidence", ""))
+    if evidence and attribution.get("evidence_url"):
+        https_url(attribution["evidence_url"])
+        evidence = f'<a href="{escape(attribution["evidence_url"])}">{evidence}</a>'
+    return (
+        f'<li>{link}<div class="attribution">{user} · 模型 {model} · '
+        f'Harness {harness}</div><div class="evidence">{evidence}</div></li>'
+    )
+
+
 def render_card(card):
-    sources = []
-    for source in card["sources"]:
-        https_url(source["url"])
-        sources.append(
-            f'<a href="{escape(source["url"])}">{escape(source["label"])}</a>'
-        )
-    links = " · ".join(sources)
+    links = "".join(map(render_source, card["sources"]))
     return f"""
     <article>
       <div class="track">{escape(card["track"])}</div>
       <h2>{escape(card["title"])}</h2>
       <p>{escape(card["body"])}</p>
       <p class="scope">{escape(card["scope"])}</p>
-      <div class="sources">{links}</div>
+      <ul class="sources">{links}</ul>
     </article>"""
 
 

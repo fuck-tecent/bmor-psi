@@ -1,0 +1,21 @@
+{
+  "id": "L-joshi-abc-annihilator-index",
+  "statement": "∀ (p n : ℕ) [Fact p.Prime] (H : Submodule (ZMod p) (Fin n → ZMod p)), Nat.card H.dualAnnihilator = Nat.card ((Fin n → ZMod p) ⧸ H)",
+  "plain_statement": {
+    "zh": "新路线 · 迹、不同理想与 Fourier 缺额 · JA-0033 · 以对偶零化子基数计算缺方向的指数",
+    "en": "New route · Trace, different and Fourier deficit · JA-0033 · Count missing directions by the cardinality of the dual annihilator"
+  },
+  "brief": {
+    "zh": "用商空间的对偶与 H 的零化子的同构，再按有限维计算基数。",
+    "en": "Identify the annihilator with the dual of the quotient and count the finite vector spaces."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/joshi-abc.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "04-trace-and-fourier",
+  "module": "Conjectures.JoshiAbc.AnnihilatorIndex",
+  "file": "lean/Conjectures/JoshiAbc/AnnihilatorIndex.lean"
+}

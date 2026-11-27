@@ -1,0 +1,23 @@
+{
+  "id": "L-goldbach-dyadic-progression-countermodel",
+  "statement": "∀ W : ℕ, 0 < W → ∀ u : ℕ → ℝ, (∀ x, 0 ≤ u x) → (∀ x, u (x+W) = u x) → ∃ (f : ℕ → ℝ) (C : ℝ), 0 < C ∧ (∀ x, 0 ≤ f x ∧ f x ≤ 8 * u x) ∧ (∀ x H : ℕ, |(∑ j ∈ Finset.range H, f (x+j*W)) - (H:ℝ)*u x| ≤ C*u x) ∧ ∀ a b k : ℕ, a+b = 2^k → f a * f b = 0",
+  "plain_statement": {
+    "zh": "新路线 · 奇特征干涉 · OC-0108 · 保持任意固定周期分布而消去所有二次幂配对",
+    "en": "New route · Odd-character interference · OC-0108 · Preserve any fixed periodic profile while killing all dyadic pairs"
+  },
+  "brief": {
+    "zh": "用支撑内取 M/|S|、支撑外取零的掩码乘以 u。步长 W 在模 M 的每个整周期遍历全部余数；尾段掩码权与尾长都在 [0,M]，可取 C=M。u≡1 已能检验单侧短区间质量论证。",
+    "en": "Multiply u by M/|S| on the mask and zero elsewhere. The step W permutes the residues in each full period. Tail weight and tail length both lie in [0,M], so take C=M. The constant profile already tests a short-interval argument."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/5054190a0d5a7cec50b1a4fbee80f19b0c5084cc/research/change-sets/dyadic-reflected-cells.json",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-dyadic-sum-avoiding-mask"
+  ],
+  "imports": [],
+  "track": "odd-character-interference",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.DyadicProgressionCountermodel",
+  "file": "lean/Conjectures/Goldbach/DyadicProgressionCountermodel.lean"
+}

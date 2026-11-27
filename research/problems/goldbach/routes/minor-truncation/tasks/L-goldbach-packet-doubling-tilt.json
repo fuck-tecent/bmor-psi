@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-packet-doubling-tilt",
+  "statement": "∀ (s : ℝ) (g : ℝ → ℝ), Continuous g → Function.Periodic g 1 → (∀ t, 0 ≤ g t) → intervalIntegral (fun t => Real.exp (s*Real.cos (2*Real.pi*t))*g (2*t)) (0:ℝ) 1 MeasureTheory.volume ≤ Real.cosh s * intervalIntegral (g) (0:ℝ) 1 MeasureTheory.volume",
+  "plain_statement": {
+    "zh": "倍增映射下，剥去一层余弦指数权",
+    "en": "Remove one exponential cosine weight under doubling"
+  },
+  "brief": {
+    "zh": "把周期分成两半。两支上的余弦互为相反数，指数权平均为 cosh(s cos x)，再用 |cos x|≤1。",
+    "en": "Pair the two inverse branches. Their exponential weights average to cosh(s cos x), bounded by cosh s. The remaining weight may be any nonnegative continuous periodic function."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "minor-truncation",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.PacketDoublingTilt",
+  "file": "lean/Conjectures/Goldbach/PacketDoublingTilt.lean"
+}

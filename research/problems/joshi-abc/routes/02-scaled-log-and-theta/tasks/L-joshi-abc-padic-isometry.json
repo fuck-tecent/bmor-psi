@@ -1,0 +1,23 @@
+{
+  "id": "L-joshi-abc-padic-isometry",
+  "statement": "∀ (p : ℕ) [Fact p.Prime], let c : Padic p := if p=2 then 4 else (p:Padic p); let tau := fun (x : Padic p) => (∑' k : ℕ, (-1:Padic p)^k*(c*x)^(k+1)/((k+1:ℕ):Padic p))/c; ∀ x : Padic p, ‖x‖ ≤ 1 → ‖tau x‖ = ‖x‖",
+  "plain_statement": {
+    "zh": "新路线 · 缩放对数与 Theta 值 · JA-0010 · 证明实际 p 进缩放对数级数保持整元范数",
+    "en": "New route · Scaled logarithms and theta values · JA-0010 · Show the actual scaled p-adic log preserves the norm on integral elements"
+  },
+  "brief": {
+    "zh": "先证明定义级数可和，再用非阿基米德范数和首项严格占优，包括单位输入。",
+    "en": "Prove summability of the defining series and apply strict ultrametric dominance, including unit inputs."
+  },
+  "source": "https://arxiv.org/abs/2303.01662",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-joshi-abc-log-domination"
+  ],
+  "imports": [],
+  "track": "02-scaled-log-and-theta",
+  "module": "Conjectures.JoshiAbc.PadicIsometry",
+  "file": "lean/Conjectures/JoshiAbc/PadicIsometry.lean"
+}

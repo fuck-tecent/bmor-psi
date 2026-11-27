@@ -1,0 +1,25 @@
+{
+  "id": "L-goldbach-reflected-divisor-exact-split",
+  "statement": "∀ (N D : ℕ) (η : ℕ → ℝ), let μ := fun d : ℕ => ((ArithmeticFunction.moebius d : ℤ) : ℝ); let Λ := ArithmeticFunction.vonMangoldt; let P := (Finset.range N).filter (fun p => Nat.Prime p ∧ Nat.Coprime p N); (∑ p ∈ P, η p * Λ (N - p)) = (-(∑ d ∈ (Finset.Icc 1 D).filter (fun d => Nat.Coprime d N), μ d * Real.log (d : ℝ) * ∑ p ∈ P.filter (fun p => p % d = N % d), η p)) + (-(∑ p ∈ P, η p * ∑ d ∈ (Nat.divisors (N - p)).filter (fun d => D < d), μ d * Real.log (d : ℝ)))",
+  "plain_statement": {
+    "zh": "新路线 · 中央反射 · RD-7001 · 指定和的反射除数精确拆分",
+    "en": "New route · Central reflection · RD-7001 · Exact reflected-divisor split for a designated sum"
+  },
+  "brief": {
+    "zh": "把 Λ(N−p)=−∑_{d∣N−p} μ(d) log d 按 d≤D 与 d>D 精确拆分；对 (p,N)=1 的素数每个短除数自动满足 (d,N)=1 且 p≡N (mod d)，写成按模 d 单位剩余类分组的精确恒等式。",
+    "en": "Expand Λ(N−p)=−∑_{d∣N−p} μ(d) log d and split at d≤D vs d>D; for primes (p,N)=1 every short divisor is coprime to N and fixes p≡N (mod d), yielding an exact residue-class decomposition."
+  },
+  "source": "https://www.goldbach.tech/?lemma=L-goldbach-dyadic-correlation-floor",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-reflected-divisor-unit-progression"
+  ],
+  "imports": [
+    "PEqualNP.Outside.L_goldbach_reflected_divisor_unit_progression"
+  ],
+  "track": "representations",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.ReflectedDivisorExactSplit",
+  "file": "lean/Conjectures/Goldbach/ReflectedDivisorExactSplit.lean"
+}

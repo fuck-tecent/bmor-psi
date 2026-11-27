@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-rough-fifth-liouville",
+  "statement": "let C := fun N : ℕ => (Finset.range N).filter (fun p => Nat.Prime p ∧ N < 3*p ∧ 3*p < 2*N ∧ 1 < N-p ∧ N < (N-p).minFac^5); ∃ η : ℝ, 0 < η ∧ η < 2/5 ∧ ∃ N₀ : ℕ, ∀ N : ℕ, N₀ ≤ N → Even N → (C N).sum (fun p => (ArithmeticFunction.liouville (N-p) : ℝ)) ≤ (2/5-η)*((C N).card:ℝ)",
+  "plain_statement": {
+    "zh": "存在固定的 0<η<2/5，对每个充分大偶数 N，同一粗糙候选集 C 上补数的 Liouville 符号之和至多为 (2/5−η)|C|。",
+    "en": "For one fixed 0<η<2/5 and every sufficiently large even N, the sum of the Liouville signs of the complements on the same sifted set is at most (2/5−η)|C|."
+  },
+  "imports": [],
+  "program": "correlation",
+  "brief": {
+    "zh": "对各个指定偶数单侧控制 p 为素数时的 λ(N−p)。该和包括三个和四个素因子的补数；粗糙集合中不可预先只保留素数及半素数。文献提供相关的莫比乌斯扭曲分布思路，并未证明这个 Liouville 预算。",
+    "en": "Control the signed sum at each specified N. Complements with three or four prime factors remain in the common support. Huang and Li study related Möbius-twisted distribution estimates. Their paper does not supply this Liouville budget."
+  },
+  "source": "https://arxiv.org/abs/2005.03811",
+  "parallel": true,
+  "track": "rough-fifth-parity",
+  "role": "target",
+  "module": "Conjectures.Goldbach.RoughFifthLiouville",
+  "file": "lean/Conjectures/Goldbach/RoughFifthLiouville.lean"
+}

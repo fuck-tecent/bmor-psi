@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-short-square-window-collision",
+  "statement": "∀ (P H a b c d : ℤ), 0 ≤ P → 0 ≤ H → H ^ 2 ≤ 8 * P + 4 * H + 4 → P ≤ a → a ≤ b → b ≤ P + H → P ≤ c → c ≤ d → d ≤ P + H → a ^ 2 + b ^ 2 = c ^ 2 + d ^ 2 → a + b ≤ c + d → (a = c ∧ b = d) ∨ (H ^ 2 = 8 * P + 4 * H + 4 ∧ a = P ∧ b = P + H ∧ c = d ∧ 2 * c = 2 * P + H + 2)",
+  "plain_statement": {
+    "zh": "在 H² ≤ 8P+4H+4 的整数闭区间 [P,P+H] 中，若两个不同的无序对有相同的平方和，则必须取等号。一对是两个端点，另一对由同一个整数重复两次。",
+    "en": "If two different unordered pairs in the integer interval [P,P+H] have equal square sums and H² ≤ 8P+4H+4, equality holds in the width bound. The pairs are the two endpoints and a repeated integer."
+  },
+  "brief": {
+    "zh": "用于素数指标频率 2p² 的短块四阶矩。在配对内排序，并将指标和较小的一对放在前。两指标和模 2 同余；若不相等，至少相差 2。核验临界点 7²+17²=2·13²。",
+    "en": "Use this for a fourth moment of the frequencies 2p² in one short index interval. Sort each pair, then put the pair with the smaller index sum first. The two index sums have the same parity, so unequal sums differ by at least two. The boundary occurs for 7²+17²=2·13²."
+  },
+  "program": "exceptions",
+  "imports": [],
+  "parallel": true,
+  "source": "https://arxiv.org/abs/2602.08807",
+  "track": "exceptions",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.ShortSquareWindowCollision",
+  "file": "lean/Conjectures/Goldbach/ShortSquareWindowCollision.lean"
+}

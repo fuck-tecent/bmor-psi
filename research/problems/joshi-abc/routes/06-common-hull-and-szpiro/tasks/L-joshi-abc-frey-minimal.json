@@ -1,0 +1,23 @@
+{
+  "id": "L-joshi-abc-frey-minimal",
+  "statement": "∀ a b p : ℕ, 0<a → 0<b → Nat.Coprime a b → p.Prime → Odd p → p ∣ a*b*(a+b) → ¬ p ∣ 16*(a^2+a*b+b^2)",
+  "plain_statement": {
+    "zh": "新路线 · 同一包络与局部 Szpiro · JA-0054 · 在奇坏处检验 Frey 模型 c₄ 为单位",
+    "en": "New route · Common hull and local Szpiro · JA-0054 · Test that c₄ is a unit at each odd bad place of a Frey model"
+  },
+  "brief": {
+    "zh": "依 p 整除 a、b、a+b 分情况；该模型的 c₄=16(a²+ab+b²)。",
+    "en": "Split by divisibility of a, b or a+b. Here c₄=16(a²+ab+b²)."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/joshi-abc.md",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-joshi-abc-frey-discriminant"
+  ],
+  "imports": [],
+  "track": "06-common-hull-and-szpiro",
+  "module": "Conjectures.JoshiAbc.FreyMinimal",
+  "file": "lean/Conjectures/JoshiAbc/FreyMinimal.lean"
+}

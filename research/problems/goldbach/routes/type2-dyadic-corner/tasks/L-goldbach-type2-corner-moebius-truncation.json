@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-type2-corner-moebius-truncation",
+  "statement": "let μ := fun d : ℕ => ((ArithmeticFunction.moebius d : ℤ) : ℝ); ∀ (a U : ℕ), 1 < a → (∑ d ∈ (Nat.divisors a).filter (fun d => U < d), μ d) = - ∑ d ∈ (Nat.divisors a).filter (fun d => d ≤ U), μ d",
+  "plain_statement": {
+    "zh": "Möbius 截断恒等式：a>1 时，除数上 d>U 的 μ 和等于 d≤U 的 μ 和的相反数。",
+    "en": "Truncated Möbius identity: for a>1, the μ-sum over divisors d>U is minus the μ-sum over d≤U."
+  },
+  "brief": {
+    "zh": "对 a>1 有 ∑_{d|a} μ(d)=0，按 d≤U 与 d>U 切开即得；这是 Vaughan 平滑系数 τ₁ 的算术核心。仍缺：截断短和的均方或大筛估计。",
+    "en": "Use ∑_{d|a} μ(d)=0 for a>1 and split divisors at U; this is the arithmetic core of the Vaughan coefficient τ₁. Still missing: mean-square or large-sieve estimates for the truncated sum."
+  },
+  "source": "https://www.goldbach.tech/?lemma=L-goldbach-arc-minor-saving#roadmap",
+  "program": "correlation",
+  "parallel": true,
+  "imports": [],
+  "track": "type2-dyadic-corner",
+  "role": "lemma",
+  "depends_on": [],
+  "module": "Conjectures.Goldbach.Type2CornerMoebiusTruncation",
+  "file": "lean/Conjectures/Goldbach/Type2CornerMoebiusTruncation.lean"
+}

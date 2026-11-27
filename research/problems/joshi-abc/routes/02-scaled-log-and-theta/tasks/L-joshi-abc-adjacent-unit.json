@@ -1,0 +1,23 @@
+{
+  "id": "L-joshi-abc-adjacent-unit",
+  "statement": "∀ (K : Type) [NormedField K] (r : K) (ξ : ℕ → K) (j : ℕ), 0 < j → r ≠ 0 → ‖ξ j‖=‖r‖^j → ‖ξ (j-1)‖=‖r‖^(j-1) → ‖ξ j/ξ (j-1)‖=‖r‖",
+  "plain_statement": {
+    "zh": "新路线 · 缩放对数与 Theta 值 · JA-0016 · 由同标记相邻 Theta 比值恢复一次幂",
+    "en": "New route · Scaled logarithms and theta values · JA-0016 · Recover the first-power norm from adjacent marked theta ratios"
+  },
+  "brief": {
+    "zh": "仅在同一个 K 内取商，以非零范数消去分母。",
+    "en": "Take the quotient in the same K and cancel its nonzero denominator norm."
+  },
+  "source": "https://arxiv.org/abs/2303.01662",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-joshi-abc-theta-ratio-norm"
+  ],
+  "imports": [],
+  "track": "02-scaled-log-and-theta",
+  "module": "Conjectures.JoshiAbc.AdjacentUnit",
+  "file": "lean/Conjectures/JoshiAbc/AdjacentUnit.lean"
+}

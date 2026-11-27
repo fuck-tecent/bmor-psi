@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-explicit-major-progression-budget",
+  "statement": "let E (x : ℝ) := Complex.exp (((2 * Real.pi * x : ℝ) : ℂ) * Complex.I); let Q (n : ℕ) := (Nat.log 2 (n + 2)) ^ 2; let width (n q : ℕ) := (Q n : ℝ) / ((q : ℝ) * n); let K (n : ℕ) (β : ℝ) := ∑ k ∈ Finset.range (n + 1), E ((k : ℝ) * β); let ram (q h : ℕ) := ∑ a ∈ (Finset.range q).filter (fun a => Nat.Coprime a q), E ((h : ℝ) * a / q); let kernelMass (n : ℕ) (b : ℝ) := intervalIntegral (fun β => ‖K n β‖ ^ 2) (-b) b MeasureTheory.volume; let modeledMajor (n : ℕ) := ∑ q ∈ Finset.Icc 1 (Q n), ((ram q 1 / (q.totient : ℂ)) ^ 2 * (starRingEnd ℂ) (ram q n)) * (kernelMass n (width n q) : ℂ); let w (k : ℕ) := if Nat.Prime k then Real.log (k : ℝ) else 0; let S (n : ℕ) (t : ℝ) := ∑ k ∈ Finset.range (n + 1), (w k : ℂ) * E ((k : ℝ) * t); let center (q a : ℕ) := (a : ℝ) / q; let arcs (n : ℕ) := {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ Q n ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t - center q a| ≤ width n q}; let major (n : ℕ) := intervalIntegral ((arcs n).indicator (fun t => (S n t) ^ 2 * E (-(n : ℝ) * t))) (0 : ℝ) 1 MeasureTheory.volume; let classError (m q b : ℕ) := (∑ k ∈ (Finset.range m).filter (fun k => k % q = b), w k) - (if Nat.Coprime b q then (m : ℝ) / q.totient else 0); let discrepancy (n q a : ℕ) := (Finset.range (n + 2)).sup' ⟨0, Finset.mem_range.mpr (Nat.zero_lt_succ (n + 1))⟩ (fun m => ‖∑ b ∈ Finset.range q, (classError m q b : ℂ) * E ((b : ℝ) * center q a)‖); let unitMean (q a : ℕ) := (∑ r ∈ (Finset.range q).filter (fun r => Nat.Coprime r q), E ((r : ℝ) * center q a)) / (q.totient : ℂ); let leftEnd (n q a : ℕ) := max (center q a - width n q) 0 - center q a; let rightEnd (n q a : ℕ) := min (center q a + width n q) 1 - center q a; let amplified (n : ℕ) (D β : ℝ) := D * (1 + 2 * Real.pi * n * |β|); let prefixCost (n q a : ℕ) (D β : ℝ) := amplified n D β * (2 * ‖unitMean q a * K n β‖ + amplified n D β); let progressionBudget (n : ℕ) := ∑ q ∈ Finset.Icc 1 (Q n), ∑ a ∈ (Finset.range (q + 1)).filter (fun a => Nat.Coprime a q), intervalIntegral (prefixCost n q a (discrepancy n q a)) (leftEnd n q a) (rightEnd n q a) MeasureTheory.volume; ∀ n : ℕ, 1000000 ≤ n → ‖major n - modeledMajor n‖ ≤ progressionBudget n",
+  "plain_statement": {
+    "en": "For every n ≥ 1,000,000 the distance between the actual and modeled major-arc integrals is at most the sum of the local costs computed from prime-log progression discrepancies.",
+    "zh": "对每个 n ≥ 1,000,000，实际主弧积分与模型积分之差的范数至多为由素数对数等差数列偏差算出的各局部代价之和。"
+  },
+  "brief": {
+    "en": "On each disjoint rational window, Abel summation bounds the prime-sum error using the largest rationally weighted prefix discrepancy. Integrate the resulting quadratic error on the clipped window.",
+    "zh": "在每个互不相交的有理窗口内，用阿贝尔求和及有理相位加权前缀偏差的最大值控制素数和误差，再对截取窗口上的二次误差积分。"
+  },
+  "program": "correlation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/7c2aa7646fbad3c004c89d4c3a53c8f111afd065/research/gaps.json#L2025-L2044",
+  "track": "explicit-major-and-ten-billion",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.ExplicitMajorProgressionBudget",
+  "file": "lean/Conjectures/Goldbach/ExplicitMajorProgressionBudget.lean"
+}

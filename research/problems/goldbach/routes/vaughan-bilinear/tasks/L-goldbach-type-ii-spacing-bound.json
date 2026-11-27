@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-type-ii-spacing-bound",
+  "statement": "let E (x : ℝ) := Complex.exp (((2 * Real.pi * x : ℝ) : ℂ) * Complex.I); let cap (H : ℕ) (x : ℝ) := if E x = 1 then (H : ℝ) else min (H : ℝ) (2 / ‖1 - E x‖); ∀ (N M H : ℕ) (K : Finset ℕ) (a b : ℕ → ℂ) (t : ℝ), let I := Finset.Ico M (M+H); ‖∑ m ∈ I, a m * ∑ k ∈ K, (if m*k ≤ N then b k * E ((m : ℝ) * (k : ℝ) * t) else 0)‖ ^ 2 ≤ (∑ m ∈ I, ‖a m‖ ^ 2) * (∑ k ∈ K, ∑ l ∈ K, ‖b k‖ * ‖b l‖ * cap H (((k : ℝ) - (l : ℝ)) * t))",
+  "plain_statement": {
+    "en": "Type II bound in terms of frequency differences",
+    "zh": "由频率差控制的二类和估计"
+  },
+  "brief": {
+    "en": "Use Cauchy–Schwarz in the first factor. Two product cutoffs intersect in an initial segment of the row interval.",
+    "zh": "对第一个因子用柯西不等式，两道乘积截断把行区间截成一个初始子段。"
+  },
+  "program": "correlation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://personal.science.psu.edu/rcv4/Vol2/Vol2.pdf",
+  "track": "vaughan-bilinear",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.TypeIiSpacingBound",
+  "file": "lean/Conjectures/Goldbach/TypeIiSpacingBound.lean"
+}

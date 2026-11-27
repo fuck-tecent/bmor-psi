@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-ternary-minor-saving",
+  "statement": "let E (x : ℝ) := Complex.exp (((2 * Real.pi * x : ℝ) : ℂ) * Complex.I); let S (n : ℕ) (w : ℕ → ℝ) (t : ℝ) := ∑ k ∈ Finset.range (n+1), (w k : ℂ) * E ((k : ℝ)*t); ∀ (n : ℕ) (u v : ℕ → ℝ) (A : Set ℝ) (U : ℝ), MeasurableSet A → 0 ≤ U → (∀ t ∈ Set.Icc (0 : ℝ) 1, t ∉ A → ‖S n u t‖ ≤ U) → ‖intervalIntegral (Aᶜ.indicator (fun t => S n u t * (S n v t)^2 * E (-(n : ℝ)*t))) (0 : ℝ) 1 MeasureTheory.volume‖ ≤ U * ∑ k ∈ Finset.range (n+1), (v k)^2",
+  "plain_statement": {
+    "en": "A bound U on |Sᵤ| off a measurable arc set gives a bound U∑v(k)² for the norm of the complementary ternary coefficient SᵤSᵥ².",
+    "zh": "若在可测弧集的补集上有 |Sᵤ| ≤ U，则 SᵤSᵥ² 在该补集上的三元系数的模不超过 U∑v(k)²。"
+  },
+  "brief": {
+    "en": "In the integral, the phase has norm one and |Sᵤ| costs at most U. Integrating |Sᵥ|² over the full period gives the discrete coefficient energy by Parseval.",
+    "zh": "积分中的相位因子模为 1，|Sᵤ| 至多为 U。再由帕塞瓦尔恒等式，|Sᵥ|² 在整周期上的积分等于离散系数的平方和。"
+  },
+  "program": "correlation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://arxiv.org/abs/1312.7748",
+  "track": "bilinear-minor-dispersion",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.TernaryMinorSaving",
+  "file": "lean/Conjectures/Goldbach/TernaryMinorSaving.lean"
+}

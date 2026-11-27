@@ -1,0 +1,22 @@
+{
+  "id": "L-twin-primes-higher-power-log-mass",
+  "statement": "let Λ := ArithmeticFunction.vonMangoldt; ∃ C : ℝ, 0 < C ∧ ∀ Y : ℕ, 2 ≤ Y → (@Finset.filter ℕ (fun n => ∃ p k : ℕ, p.Prime ∧ 3 ≤ k ∧ n = p^k) (fun _ => Classical.propDecidable _) (Finset.range (Y+1))).sum (fun n => Λ n) ≤ C*(Y:ℝ)^(1/3:ℝ)*Real.log (2+(Y:ℝ))",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然推广 · TP-0056 · 给三次及以上真素数幂分配三次根预算",
+    "en": "New route · Levent GRH methods and extensions · TP-0056 · Bound the log mass of prime powers of exponent at least three"
+  },
+  "brief": {
+    "zh": "按指数层求和，底数均不超过 Y^(1/3)，指数层数至多 log Y/log 2。跨指数重复出现时保留上界方向。",
+    "en": "Sum over the exponents. The bases are at most Y^(1/3) and there are at most log Y/log 2 exponent levels. Repeated images only increase the upper bound."
+  },
+  "source": "https://github.com/leanprover-community/mathlib4/blob/fc4f59e577feb1a4956671bc04ac18aaaf8cd842/Mathlib/NumberTheory/Chebyshev.lean#L655",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-power-count"
+  ],
+  "imports": [
+    "PEqualNP.Outside.L_twin_primes_window_contamination"
+  ]
+}

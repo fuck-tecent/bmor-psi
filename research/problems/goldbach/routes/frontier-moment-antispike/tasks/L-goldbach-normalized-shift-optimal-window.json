@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-normalized-shift-optimal-window",
+  "statement": "∀ (I : Finset ℕ) (c : ℕ → ℝ) (m B : ℝ),\n      (∃ j ∈ I, c j = m) → (∀ j ∈ I, m ≤ c j) → 1 ≤ B * (I.card:ℝ) →\n      let v := fun (t : ℝ) (j : ℕ) => max (1 - t*(c j-m)) 0\n      let w := fun (t : ℝ) (j : ℕ) => v t j / (∑ k ∈ I, v t k)\n      ∃ t : ℝ, 0 ≤ t ∧ (∀ j ∈ I, 0 ≤ w t j) ∧ (∑ j ∈ I, w t j) = 1 ∧\n        (∑ j ∈ I, (w t j)^2) ≤ B ∧\n        ((∑ j ∈ I, (w t j)^2) = B ∨ ∀ j ∈ I, c j ≠ m → w t j = 0) ∧\n        (let P := I.filter (fun j => 0 < w t j)\n         let μ := (∑ j ∈ P, c j)/(P.card:ℝ)\n         P.Nonempty ∧ (∀ i ∈ P, ∀ j ∈ I, c j ≤ c i → j ∈ P) ∧\n           (∑ j ∈ I, w t j * c j) =\n             μ - Real.sqrt ((B - 1/(P.card:ℝ)) * (∑ j ∈ P, (c j-μ)^2))) ∧\n        ∀ u : ℕ → ℝ, (∀ j ∈ I, 0 ≤ u j) → (∑ j ∈ I, u j) = 1 →\n          (∑ j ∈ I, (u j)^2) ≤ B → (∑ j ∈ I, w t j * c j) ≤ ∑ j ∈ I, u j * c j",
+  "plain_statement": {
+    "zh": "在有限移位集合上，给定实系数、总质量一和平方和预算，求非负加权平均的最小值，并给出达到该值的权重。",
+    "en": "Compute the minimum of a weighted average of real shift coefficients on a finite set, with nonnegative weights of total mass one and a prescribed upper bound on their squared sum. Exhibit an attaining window."
+  },
+  "brief": {
+    "zh": "令 m 为最小系数。从均匀权开始，将 max(1−t(cᵢ−m),0) 归一化。选择 t 使平方和耗尽预算，或使权重仅支撑在最小系数上。若 P 为正支撑、μ 为 P 上的均值，则最小值为 μ−√((B−1/|P|)∑ᵢ∈P(cᵢ−μ)²)。可在偶移集合上取深次弧系数的实部；从该平均传回指定偶数仍需解析估计。",
+    "en": "Normalize max(1−t(cᵢ−m),0), starting at the uniform window. Choose t until the squared sum reaches B or only minimum-cost shifts remain. On the positive support P, an initial segment ordered by cost, the minimum is μ−√((B−1/|P|)∑ᵢ∈P(cᵢ−μ)²), with μ the mean on P. Apply this to real deep-arc coefficients on even shifts. Transfer to the specified target still needs an analytic estimate."
+  },
+  "source": "https://github.com/34245621/goldbach-proofs/blob/885b28b7645f447f590c5935ca5da0497a1b5171/lean/PEqualNP/Outside/L_goldbach_normalized_shift_optimal_window.lean",
+  "program": "correlation",
+  "parallel": true,
+  "imports": [],
+  "track": "frontier-moment-antispike",
+  "role": "lemma",
+  "depends_on": [],
+  "module": "Conjectures.Goldbach.NormalizedShiftOptimalWindow",
+  "file": "lean/Conjectures/Goldbach/NormalizedShiftOptimalWindow.lean"
+}

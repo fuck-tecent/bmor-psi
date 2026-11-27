@@ -1,0 +1,18 @@
+{
+  "id": "L-goldbach-farey-sieve-root-total",
+  "statement": "∀ D : ℕ, 1 ≤ D → (∑ d ∈ Finset.Icc 1 D, (2:ℝ)^d.primeFactors.card) ≤ (D:ℝ)*(1+Real.log D)",
+  "plain_statement": {
+    "zh": "新路线 · Farey 分母对与逆元筛 · HD-8008 · 给整个筛水平的平方自由根数权一个显式总预算",
+    "en": "New route · Farey denominator pairs and inverse sieve · HD-8008 · Bound the total root weight up to the sieve level"
+  },
+  "brief": {
+    "zh": "用 2^ω(d)≤τ(d) 将根权总和限制到除数和，再交换正约数与倍数。用调和和上界 1+log D，供全窗与逆元窗的绝对余项求和。",
+    "en": "Use 2^ω(d)≤τ(d), then exchange the divisor and multiple sums. The harmonic sum bound 1+log D controls accumulated errors in both the full and inverse-labelled windows."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/farey-inverse-sieve/README.md",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

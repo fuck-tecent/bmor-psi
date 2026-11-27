@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-three-quarters-exceptional-dirichlet-windows",
+  "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0\nlet E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I)\nlet S := fun (n : ℕ) (u : ℕ→ℝ) (t : ℝ) => ∑ k ∈ Finset.range (n+1), (u k:ℂ)*E ((k:ℝ)*t)\n(∀ n : ℕ, 0<n → ∀ η : ℝ, ∀ A : Finset (ℕ×ℕ),\n  (∀ p ∈ A, 0<p.1 ∧ (p.1:ℝ)≤Real.sqrt n ∧ p.2.Coprime p.1 ∧\n    ∃ t ∈ Set.Icc (0:ℝ) 1, |t-(p.2:ℝ)/p.1|≤1/((p.1:ℝ)*Real.sqrt n) ∧ (n:ℝ)^(3/4+η)≤‖S n w t‖) →\n  (A.card:ℝ) ≤ 7*(1+4*Real.pi)*Real.log 4*(n:ℝ)^(1/2-2*η)*Real.log n) ∧\n(∀ η : ℝ, 0<η → ∃ N : ℕ, ∀ n : ℕ, N≤n →\n  ∃ bad : Finset ℕ, (bad.card:ℝ) ≤ (n:ℝ)^(1/2-η) ∧\n    ∀ q : ℕ, 0<q → (q:ℝ)≤Real.sqrt n → q ∉ bad → ∀ a : ℕ, a≤q → a.Coprime q →\n    ∀ t ∈ Set.Icc (0:ℝ) 1, |t-(a:ℝ)/q|≤1/((q:ℝ)*Real.sqrt n) → ‖S n w t‖ < (n:ℝ)^(3/4+η))",
+  "plain_statement": {
+    "zh": "对所有分母不超过 √n 的既约分数，允许在各自完整的狄利克雷窗口中独立取点。给出超过 n^(3/4+η) 的窗口总数的显式界，并证明对任意 η>0、所有充分大的 n，至多排除 n^(1/2−η) 个分母后，余下每个分母的全部窗口都满足逐点界。",
+    "en": "Bound the number of reduced rational windows containing a value at least n^(3/4+η), allowing an independent point anywhere in each window. For every η>0 and sufficiently large n, at most n^(1/2−η) denominators must be set aside to obtain the pointwise bound everywhere in every remaining window."
+  },
+  "brief": {
+    "zh": "在长 1/n 的网格单元内，取分母最大的窗口作参照。既约性使整数行列式区分各窗口，其绝对值至多为 3。再用傅里叶和模平方的总变差、连续帕塞瓦尔公式和切比雪夫上界。原前沿任务还须处理异常分母。",
+    "en": "Anchor each mesh cell of length 1/n at its largest participating denominator. The signed integer determinants distinguish the reduced pairs and have absolute value at most three. Control arbitrary mesh samples by total variation and continuous Parseval, then use the Chebyshev bound for prime weights. The original frontier task still requires the exceptional denominators."
+  },
+  "source": "https://github.com/34245621/goldbach-proofs/blob/0706d414e060cf6f76c83ce6059c9413936c81b5/lean/PEqualNP/Outside/L_goldbach_three_quarters_exceptional_dirichlet_windows.lean",
+  "program": "correlation",
+  "parallel": true,
+  "imports": [],
+  "track": "frontier-moment-antispike",
+  "role": "lemma",
+  "depends_on": [],
+  "module": "Conjectures.Goldbach.ThreeQuartersExceptionalDirichletWindows",
+  "file": "lean/Conjectures/Goldbach/ThreeQuartersExceptionalDirichletWindows.lean"
+}

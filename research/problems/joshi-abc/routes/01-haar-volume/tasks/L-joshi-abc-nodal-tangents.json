@@ -1,0 +1,21 @@
+{
+  "id": "L-joshi-abc-nodal-tangents",
+  "statement": "∀ x y : ZMod 5, y^2+x*y=0 ↔ y=0 ∨ y= -x",
+  "plain_statement": {
+    "zh": "新路线 · 原文反例与 Haar 体积 · JA-0003 · 验证坏约化节点的两条有理切线",
+    "en": "New route · Printed comparisons and Haar volume · JA-0003 · Verify the two rational tangent directions at the bad reduction"
+  },
+  "brief": {
+    "zh": "在节点原点取 y²+xy−x³ 的最低次齐次项。",
+    "en": "Take the lowest homogeneous part of y²+xy−x³ at the origin."
+  },
+  "source": "https://arxiv.org/abs/2401.13508v4",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "01-haar-volume",
+  "module": "Conjectures.JoshiAbc.NodalTangents",
+  "file": "lean/Conjectures/JoshiAbc/NodalTangents.lean"
+}

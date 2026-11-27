@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-masked-weight-ltwo",
+  "statement": "let E (x : ℝ) := Complex.exp (((2 * Real.pi * x : ℝ) : ℂ) * Complex.I); let S (n : ℕ) (u : ℕ → ℝ) (t : ℝ) := ∑ k ∈ Finset.range (n+1), (u k : ℂ) * E ((k : ℝ)*t); let C (A : Set ℝ) (n : ℕ) (u : ℕ → ℝ) := intervalIntegral (A.indicator (fun t => (S n u t)^2 * E (-(n : ℝ)*t))) (0 : ℝ) 1 MeasureTheory.volume; ∀ (A : Set ℝ) (n : ℕ) (u v : ℕ → ℝ), MeasurableSet A → ‖C A n u - C A n v‖ ≤ Real.sqrt (∑ k ∈ Finset.range (n+1), (u k-v k)^2) * Real.sqrt (∑ k ∈ Finset.range (n+1), (u k+v k)^2)",
+  "plain_statement": {
+    "en": "Discrete ℓ² bound for changing the weights in any masked square coefficient",
+    "zh": "任意可测掩膜下平方系数的离散二范数换权界"
+  },
+  "brief": {
+    "en": "Factor the difference of squares and apply integral Cauchy–Schwarz and Parseval on the full period.",
+    "zh": "将平方差分解，用积分柯西不等式和整周期的帕塞瓦尔等式。"
+  },
+  "program": "correlation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/138",
+  "track": "integrals",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.MaskedWeightLtwo",
+  "file": "lean/Conjectures/Goldbach/MaskedWeightLtwo.lean"
+}

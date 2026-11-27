@@ -1,0 +1,23 @@
+{
+  "id": "L-joshi-abc-normalized-product",
+  "statement": "∀ (d e : ℕ) (x y : ℝ), 0 < d → 0 < e → 0 < x → 0 < y → Real.log (x^e*y^d)/((d:ℝ)*e) = Real.log x/d + Real.log y/e",
+  "plain_statement": {
+    "zh": "新路线 · 原文反例与 Haar 体积 · JA-0007 · 求两个槽的次数归一对数体积",
+    "en": "New route · Printed comparisons and Haar volume · JA-0007 · Compute degree-normalized logarithmic volume in two slots"
+  },
+  "brief": {
+    "zh": "将 x,y 取为局部范数的绝对值，展开乘积及幂的对数。",
+    "en": "Take x and y to be the absolute values of the local norms and expand the logarithm."
+  },
+  "source": "https://arxiv.org/abs/2401.13508v4",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-joshi-abc-kronecker-determinant"
+  ],
+  "imports": [],
+  "track": "01-haar-volume",
+  "module": "Conjectures.JoshiAbc.NormalizedProduct",
+  "file": "lean/Conjectures/JoshiAbc/NormalizedProduct.lean"
+}

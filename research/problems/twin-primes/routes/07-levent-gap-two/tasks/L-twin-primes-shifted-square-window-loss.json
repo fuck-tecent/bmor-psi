@@ -1,0 +1,20 @@
+{
+  "id": "L-twin-primes-shifted-square-window-loss",
+  "statement": "let w := fun (X : ℕ) => (Finset.range (2*X+1)).filter (fun n => X < n ∧ 50*n < 51*X); let Q := fun (X : ℕ) => ((w X).filter (fun p => p.Prime ∧ (Nat.sqrt (p+2)).Prime ∧ p+2=(Nat.sqrt (p+2))^2)); let L := fun (p : ℕ) => Real.log p * Real.log (p+2); ∃ C : ℝ, 0 < C ∧ ∀ X : ℕ, 2 ≤ X → (Q X).sum L ≤ C*Real.sqrt X*Real.log (2+(X:ℝ))",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然推广 · TP-0068 · 消去短窗中 p+2 为素数平方的加权贡献",
+    "en": "New route · Levent GRH methods and extensions · TP-0068 · Bound the weighted contribution when p+2 is a prime square in the window"
+  },
+  "brief": {
+    "zh": "将 p+2=r² 的权写为 2·log p·log r。p↦p+2 无重数，套 TP-0055 给所有平方底数的对数权总量。",
+    "en": "Write the weight for p+2=r² as 2·log p·log r. The map p↦p+2 is injective. Use TP-0055 for the total log weight of prime bases."
+  },
+  "source": "https://github.com/leanprover-community/mathlib4/blob/fc4f59e577feb1a4956671bc04ac18aaaf8cd842/Mathlib/NumberTheory/Chebyshev.lean#L655",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-square-log-mass"
+  ],
+  "imports": []
+}

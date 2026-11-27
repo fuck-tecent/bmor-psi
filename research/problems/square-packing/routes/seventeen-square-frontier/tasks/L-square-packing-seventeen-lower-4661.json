@@ -1,0 +1,25 @@
+{
+  "id": "L-square-packing-seventeen-lower-4661",
+  "statement": "let inside := fun (x y a b X Y : ℝ) => |a*(X-x)+b*(Y-y)| < 1/2 ∧ |(-b)*(X-x)+a*(Y-y)| < 1/2; let fits := fun (n : ℕ) (s : ℝ) => 0 ≤ s ∧ ∃ x y a b : Fin n → ℝ, (∀ i, a i ^ 2 + b i ^ 2 = 1 ∧ |a i| + |b i| ≤ 2*x i ∧ |a i| + |b i| ≤ 2*(s-x i) ∧ |a i| + |b i| ≤ 2*y i ∧ |a i| + |b i| ≤ 2*(s-y i)) ∧ (∀ i j, i ≠ j → ∀ X Y : ℝ, inside (x i) (y i) (a i) (b i) X Y → ¬ inside (x j) (y j) (a j) (b j) X Y); ¬ fits 17 (4661/1000)",
+  "plain_statement": {
+    "zh": "证明边长 4.661 的正方形无法容纳 17 个可自由旋转的单位正方形。",
+    "en": "Rule out an unrestricted seventeen-square packing at side 4.661."
+  },
+  "brief": {
+    "zh": "用击中点证书与权重预算，或给出独立的全角度排除。对更小边长可沿用同一装填到 4.661 的外框。",
+    "en": "Use the weighted certificate and budget, or give an independent all-angle exclusion. A smaller packing would also fit at side 4.661."
+  },
+  "source": "https://squaremath.org/cases/17.html",
+  "program": "correlation",
+  "track": "seventeen-square-frontier",
+  "role": "target",
+  "depends_on": [
+    "L-square-packing-seventeen-weighted-sites-4661",
+    "L-square-packing-seventeen-weighted-bridge-4661"
+  ],
+  "parallel": true,
+  "challenge_only": true,
+  "imports": [
+    "Conjectures.SquarePacking.SeventeenWeightedBridge4661"
+  ]
+}

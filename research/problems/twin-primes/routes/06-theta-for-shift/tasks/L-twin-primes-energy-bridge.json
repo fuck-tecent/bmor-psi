@@ -8,8 +8,8 @@
     "en": "New route · Theta lift for a prescribed shift · TP-0053 · Extract twin primes from positive energy in the prescribed arithmetic test"
   },
   "brief": {
-    "zh": "对同一补零序列应用带符号 Parseval；能量严格正给出两端同窗的素数。",
-    "en": "Apply signed Parseval to the same padded sequence. Positive energy yields two primes in the same window."
+    "zh": "旧声明在检查证明前触发 #2833 报告的辅助声明错误。新任务 L-twin-primes-energy-bridge-v2 接续，历史记录和原租约仍认此编号。",
+    "en": "The original type triggers the auxiliary declaration error reported in #2833. Use L-twin-primes-energy-bridge-v2 for new work. The original ID identifies its history and any prior lease."
   },
   "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AutomorphicArithmetic/ThetaCorrespondence/ThetaPairLifts/LocalTypeDictionary/ThetaLiftPeterssonNormEqRallisIntegral.lean#L972",
   "program": "correlation",
@@ -18,5 +18,7 @@
   "depends_on": [
     "L-twin-primes-prescribed-energy"
   ],
-  "imports": []
+  "imports": [],
+  "claims_closed": true,
+  "challenge_only": true
 }

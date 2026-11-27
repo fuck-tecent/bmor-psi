@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-dyadic-power-target-diagonal",
+  "statement": "∀ (N k : ℕ), Even N → 1 ≤ k →\n  let m : ℕ := 2^(k+1)\n  m ∣ 2*N →\n    ∀ (χ ψ : DirichletCharacter ℂ m), ψ.IsPrimitive →\n      (∑ x : (ZMod m)ˣ, star (χ (x : ZMod m)) * ψ ((N : ZMod m) - (x : ZMod m))) /\n        (m.totient : ℂ) =\n      if χ=ψ then if m ∣ N then ψ (-1) else -ψ (-1) else 0",
+  "plain_statement": {
+    "zh": "新路线 · 二进反射与 Levent GRH · DR-0014 · 在模数整除两倍目标时计算本原特征的对角符号",
+    "en": "New route · Dyadic reflection and Levent GRH · DR-0014 · Compute the primitive diagonal signs when the modulus divides twice the even target"
+  },
+  "brief": {
+    "zh": "在奇单位上把反射写成乘 N−1。若模数整除 N，符号为 χ(−1)。否则要额外乘 −1。此项刻画二次幂目标的最顶层及其以下各层。",
+    "en": "On odd units, reflection is multiplication by N−1. The sign is χ(−1) when the modulus divides N and gains a factor −1 otherwise. This gives the top and lower layers at a power-of-two target."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/FoundationProofs/DirichletCharFiniteFourierTransformProperties.lean#L85",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-dyadic-character-primitive-kernel",
+    "L-goldbach-reflection-stabilizer-conductor"
+  ],
+  "imports": []
+}

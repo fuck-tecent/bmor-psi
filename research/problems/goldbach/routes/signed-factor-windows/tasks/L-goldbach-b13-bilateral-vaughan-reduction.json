@@ -1,0 +1,19 @@
+{
+  "id": "L-goldbach-b13-bilateral-vaughan-reduction",
+  "statement": "let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I)\n    let S := fun (n : ℕ) (u : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (u k:ℂ)*E ((k:ℝ)*t))\n    let Q := fun n : ℕ => (Nat.log 2 (n+2))^2\n    let Q₁ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊\n    let H := fun n : ℕ => 256 * Q₁ n * Q n\n    let wideArcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q₁ n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (H n:ℝ)/((q:ℝ)*(n:ℝ))}\n    let Λ := ArithmeticFunction.vonMangoldt\n    let μ := fun d : ℕ => ((ArithmeticFunction.moebius d : ℤ) : ℝ)\n    let U := fun n : ℕ => ⌊(n:ℝ)^(1/16:ℝ)⌋₊\n    let B₁ := fun n : ℕ => ⌊(n:ℝ)^(1/4:ℝ)⌋₊\n    let B₂ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊\n    let B₃ := fun n : ℕ => ⌊(n:ℝ)^(2/3:ℝ)⌋₊\n    let τ₁ := fun (n m : ℕ) => ∑ a ∈ (Nat.divisors m).filter (fun a => U n < a ∧ a ≤ B₁ n ∧ U n < m / a), (∑ d ∈ (Nat.divisors a).filter (fun d => U n < d), μ d) * Λ (m / a)\n    let τ₃ := fun (n m : ℕ) => ∑ a ∈ (Nat.divisors m).filter (fun a => B₂ n < a ∧ a ≤ B₃ n ∧ U n < m / a), (∑ d ∈ (Nat.divisors a).filter (fun d => U n < d), μ d) * Λ (m / a)\n    let Jdeep := fun (n : ℕ) (u v : ℕ → ℝ) => intervalIntegral (fun t => (wideArcs n)ᶜ.indicator (fun x => S n u x * S n v x * E (-(n:ℝ)*x)) t) (0:ℝ) 1 MeasureTheory.volume\n    let M := (ArithmeticFunction.moebius : ArithmeticFunction ℝ)\n    let Z := (ArithmeticFunction.zeta : ArithmeticFunction ℝ)\n    let P := fun n : ℕ => ⌊(n : ℝ) ^ (1 / 256 : ℝ)⌋₊\n    let K := fun n : ℕ => ⌊(n : ℝ) ^ (33 / 64 : ℝ)⌋₊\n    let truncate : ArithmeticFunction ℝ → ℕ → ArithmeticFunction ℝ := fun f H => ⟨fun m => if m ≤ H then f m else 0, by simp⟩\n    let W := fun (n b : ℕ) => if K n < b then (((M - truncate M (P n)) * (Λ - truncate Λ (P n)) * Z : ArithmeticFunction ℝ) b) else Λ b\n    let τremain₃ := fun (n m : ℕ) => ∑ a ∈ (Nat.divisors m).filter (fun a => B₂ n < a ∧ a ≤ B₃ n ∧ U n < m / a), (∑ d ∈ (Nat.divisors a).filter (fun d => U n < d), μ d) * W n (m / a)\n    let PL := fun n : ℕ => ⌊(n : ℝ) ^ (1 / 96 : ℝ)⌋₊\n    let WL := fun (n b : ℕ) => (((M - truncate M (PL n)) * (Λ - truncate Λ (PL n)) * Z : ArithmeticFunction ℝ) b)\n    let τremain₁ := fun (n m : ℕ) => ∑ a ∈ (Nat.divisors m).filter (fun a => U n < a ∧ a ≤ B₁ n ∧ U n < m / a), (∑ d ∈ (Nat.divisors a).filter (fun d => U n < d), μ d) * WL n (m / a)\n    let rightShift := fun (n : ℕ) (t : ℝ) => ∑ m ∈ Finset.range (n + 1), (τremain₃ n m : ℂ) * E ((((m : ℤ) - (n : ℤ) : ℤ) : ℝ) * t)\n    let residual := fun n : ℕ => intervalIntegral (fun x => (wideArcs n)ᶜ.indicator (fun t => rightShift n t * S n (τremain₁ n) t) x) (0 : ℝ) 1 MeasureTheory.volume\n    (∀ e : ℝ, 0 < e → ∃ N : ℕ, ∀ n : ℕ, N ≤ n → Even n → ‖Jdeep n (τ₁ n) (τ₃ n)‖ ≤ e * (n : ℝ)) ↔ (∀ e : ℝ, 0 < e → ∃ N : ℕ, ∀ n : ℕ, N ≤ n → Even n → ‖residual n‖ ≤ e * (n : ℝ))",
+  "plain_statement": {
+    "zh": "B13 的双侧 Vaughan 余项归约",
+    "en": "Bilateral Vaughan reduction for B13"
+  },
+  "brief": {
+    "zh": "保持每个充分大偶数的量词。第一带把 Mangoldt 因子换为阈值 n^(1/96) 的截断卷积长项。第三带只在右侧余因子超过 floor(n^(33/64)) 时作阈值 n^(1/256) 的对应替换。用两侧 Type-I 散项的 o(n) 界证明两向归约。",
+    "en": "Keep the quantifier over sufficiently large even n. Replace the first-band Mangoldt factor by the long convolution at n^(1/96). Apply the corresponding n^(1/256) expansion in the third band for right cofactors above floor(n^(33/64)). Bound the discarded Type-I terms by o(n) in both directions."
+  },
+  "source": "https://github.com/skayla2007/goldbach-proofs/blob/a108a333dc8f5003979b2db07adf1ffcb0677a0b/lean/Conjectures/Goldbach/B13BilateralVaughanReduction.lean",
+  "program": "correlation",
+  "parallel": true,
+  "assumptions": [],
+  "depends_on": [],
+  "role": "lemma",
+  "imports": []
+}

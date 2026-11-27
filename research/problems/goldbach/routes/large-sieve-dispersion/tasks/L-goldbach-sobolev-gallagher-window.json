@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-sobolev-gallagher-window",
+  "statement": "let E (x : ℝ) := Complex.exp (((2 * Real.pi * x : ℝ) : ℂ) * Complex.I); ∀ (M N : ℕ) (c : ℕ → ℂ) (a δ : ℝ), 0 < δ → let S (t : ℝ) := ∑ k ∈ Finset.Ico M (M + N), c k * E ((k : ℝ) * t); ‖S a‖ ^ 2 ≤ (intervalIntegral (fun t => ‖S t‖ ^ 2) (a-δ) (a+δ) MeasureTheory.volume) / (2 * δ) + intervalIntegral (fun t => ‖S t‖ * ‖deriv S t‖) (a-δ) (a+δ) MeasureTheory.volume",
+  "plain_statement": {
+    "en": "At the midpoint of a window of radius δ, the squared norm of a trigonometric sum is bounded by its mean squared norm plus the integral of |S| |S′| on that window.",
+    "zh": "在半径为 δ 的窗口中点，三角和的模平方不超过窗口上的模平方均值加上 |S| |S′| 的积分。"
+  },
+  "brief": {
+    "en": "Integrate the variation estimate on each half of the window. Each half has length δ, giving coefficient one for the derivative term after averaging.",
+    "zh": "在窗口左右两半分别积分变差估计。每半段长度均为 δ，取平均后导数项的系数为 1。"
+  },
+  "program": "correlation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://personal.science.psu.edu/rcv4/Vol2/Vol2.pdf",
+  "track": "large-sieve-dispersion",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.SobolevGallagherWindow",
+  "file": "lean/Conjectures/Goldbach/SobolevGallagherWindow.lean"
+}

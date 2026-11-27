@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-bulk-signed-exception-density",
+  "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; ∀ e : ℝ, 0 < e → Filter.Tendsto (fun j : ℕ => (((Finset.Ico j (2*j)).filter (fun i => (I (2*i) (high (2*i)) (high (2*i))).re < -(e*(2*i:ℕ)))).card : ℝ) / j) Filter.atTop (nhds (0:ℝ))",
+  "plain_statement": {
+    "zh": "固定任意正容差，原高段素数次弧积分实部低于负容差乘以目标值的偶数，在每个二倍窗口中的比例趋于零。",
+    "en": "For each fixed positive tolerance, the proportion of even targets violating the signed high-prime minor-arc floor tends to zero in dyadic windows."
+  },
+  "brief": {
+    "zh": "保留原题的次弧宽度、素数截断和目标频率。用同一素数和处理窗口内所有傅里叶系数，以小弧四阶矩和主弧核的统一尾界控制平均绝对误差。可能仍有无穷多个例外。",
+    "en": "Keep the parent arc widths, prime cutoff and target frequency. Use one prime spectrum for all modes in a window. Bound the mean absolute error by a minor-arc fourth moment and a uniform tail estimate for the major-arc kernel. Infinitely many exceptional targets remain possible."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/1667",
+  "program": "correlation",
+  "parallel": true,
+  "imports": [],
+  "track": "minor-truncation",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.BulkSignedExceptionDensity",
+  "file": "lean/Conjectures/Goldbach/BulkSignedExceptionDensity.lean"
+}

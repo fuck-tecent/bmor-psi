@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-packet-short-period-large-prime-weight",
+  "statement": "let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let o := fun n q : ℕ => q % 2 = 1 ∧ ((Finset.Icc 1 ((Nat.log 2 (Q n)+1)^2)).filter (fun j => q ∣ 2^j-1)).Nonempty; let smooth := fun n q : ℕ => ∀ p ∈ q.primeFactors, p ≤ (1+Nat.log 2 (Q n))^8; ∀ ε : ℝ, 0<ε → ∃ N : ℕ, ∀ n ≥ N, (∑ q ∈ (Finset.Icc 1 ((Q n)^2)).filter (fun q => o n q ∧ ¬smooth n q), min (1:ℝ) ((q:ℝ)/(Q n:ℝ))/(Nat.totient q:ℝ)) ≤ ε",
+  "plain_statement": {
+    "zh": "短周期且含大素因子的分母总权趋零",
+    "en": "Vanishing weight of short-period moduli with a large prime factor"
+  },
+  "brief": {
+    "zh": "每个大素因子 p 必整除某个 2ʲ−1。对 j≤H 的所有候选大素数按重数求和，1/(p−1) 的总价至多 H²/Y。用 φ 的超乘性向余因子收费，再以 (⌊log₂ X⌋+2)² 控制余因子倒欧拉函数和。",
+    "en": "Every large prime factor divides some 2ʲ−1. Summing even with period multiplicities costs ≤H²/Y in reciprocal (p−1) weight. Charge the cofactor by supermultiplicativity of φ and use the bound (floor(log₂ X)+2)² for its reciprocal-totient sum."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "minor-truncation",
+  "role": "target",
+  "module": "Conjectures.Goldbach.PacketShortPeriodLargePrimeWeight",
+  "file": "lean/Conjectures/Goldbach/PacketShortPeriodLargePrimeWeight.lean"
+}

@@ -1,0 +1,21 @@
+{
+  "id": "L-joshi-abc-deep-tate-inclusion",
+  "statement": "∀ t : ℕ, 1 ≤ t → 14+(14*t+1) ≤ 4*(14*t+1)",
+  "plain_statement": {
+    "zh": "新路线 · 29 进生成与反例族 · JA-0026 · 判定深 Tate 参数何时把底格压进 29W",
+    "en": "New route · 29-adic generation and counterfamilies · JA-0026 · Check when a deep Tate parameter places the reference lattice in 29W"
+  },
+  "brief": {
+    "zh": "以 π 为赋值单位比较 29rₜ 与 rₜ⁴ 的阶；rₜ=29ᵗπ。",
+    "en": "Compare the orders of 29rₜ and rₜ⁴ in uniformizer units for rₜ=29ᵗπ."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/joshi-abc.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "03-local-generation",
+  "module": "Conjectures.JoshiAbc.DeepTateInclusion",
+  "file": "lean/Conjectures/JoshiAbc/DeepTateInclusion.lean"
+}

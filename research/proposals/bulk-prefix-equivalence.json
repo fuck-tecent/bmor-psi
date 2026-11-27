@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "problem": "goldbach",
+  "base_revision": "2aac62d8a61bd26b55a61623305544ece35907ca",
+  "request_id": "bulk-prefix-equivalence-v1",
+  "parent": {
+    "id": "L-goldbach-bulk-signed-floor",
+    "statement_sha256": "5cac9d374fe0214eb2fa65bcc0541c9b2dcf3f5f6ad52c7e9f5af0b41e39d37d"
+  },
+  "motivation": {
+    "zh": "给已登记的高高项目标提供保留零频和符号抵消的算术形式，使逐偶数估计可直接在有限素数对和上研究。",
+    "en": "Provide an arithmetic form of the registered high-high target that retains both the diagonal and signed cancellation, so its pointwise estimate can be studied on finite prime-pair sums."
+  },
+  "tasks": [
+    {
+      "id": "L-goldbach-bulk-prefix-equivalence",
+      "statement": "(let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; ∀ e:ℝ,0<e → ∃ N:ℕ,∀ n≥N, Even n → -(e*(n:ℝ))≤(I n (high n) (high n)).re) ↔ (\n  let Q (n : ℕ) := (Nat.log 2 (n+2))^2\n  let K (n : ℕ) := n / (Nat.log 2 (n+2) + 1)^4\n  let high (n p : ℕ) : ℝ := if p^3 ≤ n then 0 else if p.Prime then Real.log p else 0\n  let mass (n k : ℕ) : ℝ := ∑ p ∈ Finset.range (n+1), ∑ r ∈ Finset.range (n+1),\n    if ((p:ℤ) + r - n).natAbs = k then high n p * high n r else 0\n  let ram (q k : ℕ) : ℝ := ∑ d ∈ q.divisors,\n    (if d ∣ k then (d:ℝ) else 0) * (ArithmeticFunction.moebius (q/d):ℝ)\n  let length (n : ℕ) : ℝ := ∑ q ∈ Finset.Icc 1 (Q n),\n    q.totient * (2*(Q n:ℝ) / ((q:ℝ)*n))\n  let prefixSum (n t : ℕ) : ℝ := ∑ k ∈ Finset.Ioc (K n) t,\n    mass n k * ∑ q ∈ Finset.Icc 1 (Q n),\n      ram q k * Real.sin (2*Real.pi*(k:ℝ)*((Q n:ℝ)/((q:ℝ)*n)))\n  ∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ n ≥ N, Even n →\n    Real.pi⁻¹ * ((n:ℝ)⁻¹ * prefixSum n n + ∑ k ∈ Finset.Ioo (K n) n,\n      ((k:ℝ)⁻¹ - ((k+1:ℕ):ℝ)⁻¹) * prefixSum n k) ≤\n    mass n 0 * (1-length n) + ε*n)",
+      "plain_statement": {
+        "zh": "高高项的逐偶数单侧下界等价于一个算术估计：删去小非零频率后，按分部求和权重累加的有符号前缀和至多为零频贡献加任意正系数乘以目标偶数。",
+        "en": "The pointwise high-high floor is equivalent to an arithmetic bound. After removing small nonzero frequencies, the signed prefix loss from partial summation is at most the diagonal contribution plus an arbitrarily small positive multiple of the even target."
+      },
+      "brief": {
+        "zh": "将积分展开为按绝对频率分组的有序素数对之和。用拉马努金和与素数对数权的总量证明被删频带的贡献为 o(n)，保留零频项，对剩余频率作离散分部求和。所得等价式的两侧都对每个充分大的偶数成立。",
+        "en": "Group ordered prime pairs by absolute offset. Use Ramanujan sums and the total prime-log mass to show that the removed band contributes o(n). Keep the diagonal and apply discrete summation by parts to the remaining offsets. Both sides quantify over all sufficiently large even targets."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/2aac62d8a61bd26b55a61623305544ece35907ca/research/gaps.json#L7446",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": [
+        "L-goldbach-arc-disjoint",
+        "L-goldbach-arc-cutoff-scale"
+      ],
+      "route": "minor-truncation"
+    }
+  ],
+  "links": [
+    {
+      "kind": "input",
+      "inputs": [
+        "L-goldbach-bulk-prefix-equivalence"
+      ],
+      "output": "L-goldbach-bulk-signed-floor",
+      "explanation": {
+        "zh": "此等价式把剩余工作定位为前缀和上界。还需对每个充分大的偶数证明该上界。",
+        "en": "The equivalence identifies the outstanding signed prefix bound. That bound still needs to be established at every sufficiently large even target."
+      }
+    }
+  ],
+  "route_note": {
+    "zh": "保持原题的弧和频率；先用低段长度与 Parseval 控制低低、低高项，再单独攻高高项的有符号下界。 用远频率的带符号前缀和重写高高项，保留零频素数对的贡献；逐偶数估计仍由原高高项目标跟踪。",
+    "en": "Keep the original arcs and frequency. Use the short support and Parseval on the small terms, then study the signed bulk. Rewrite the bulk using signed prefixes of the remaining frequencies, retaining the diagonal prime pairs. The original bulk target tracks the pointwise estimate."
+  }
+}

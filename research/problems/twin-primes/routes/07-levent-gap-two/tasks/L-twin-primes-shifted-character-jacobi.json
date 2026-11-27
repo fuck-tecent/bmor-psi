@@ -1,0 +1,23 @@
+{
+  "id": "L-twin-primes-shifted-character-jacobi",
+  "statement": "∀ (p : ℕ) [Fact p.Prime], 2 < p → ∀ (χ ψ : DirichletCharacter ℂ p), (∑ x : ZMod p, χ x * ψ (x+2)) = χ (-2) * ψ 2 * (∑ y : ZMod p, χ y * ψ (1-y)) ∧ (χ ≠ 1 → (∑ x : ZMod p, χ x * (1 : DirichletCharacter ℂ p) (x+2)) = -χ (-2))",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然推广 · TP-0064 · 计算奇素模下差二混合特征的 Jacobi 相位和主特征列",
+    "en": "New route · Levent GRH methods and extensions · TP-0064 · Compute the Jacobi phase and the principal column for gap-two mixed characters"
+  },
+  "brief": {
+    "zh": "用单位换元 x=−2y 保留 χ(−2)ψ(2)。第二式拿掉 x=−2 的一项并用非主特征和为零。给指定平移局部试验核对实际混合系数。",
+    "en": "Change variables by the unit x=−2y, keeping χ(−2)ψ(2). For the second identity, delete x=−2 and use the vanishing sum of a nonprincipal character. This gives mixed coefficients for the local test at the prescribed shift."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/FoundationProofs/DirichletCharFiniteFourierTransformProperties.lean#L85",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-local-residues",
+    "L-twin-primes-shift-fourier-phase"
+  ],
+  "imports": [
+    "PEqualNP.Outside.L_twin_primes_shift_fourier_phase"
+  ]
+}

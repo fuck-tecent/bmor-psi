@@ -1,0 +1,21 @@
+{
+  "id": "L-square-packing-seventeen-weight-budget",
+  "statement": "∀ (n k q : ℕ) (S : Fin n → Finset (Fin k)) (w : Fin k → ℕ), (∀ i j, i ≠ j → Disjoint (S i) (S j)) → (∀ i, q ≤ ∑ j ∈ S i, w j) → n*q ≤ ∑ j, w j",
+  "plain_statement": {
+    "zh": "证明互不相交的击中点集合满足总权重预算。",
+    "en": "Prove the total weight budget for disjoint sets of hit sites."
+  },
+  "brief": {
+    "zh": "用双重求和或不交并，把每块需要的权重相加。",
+    "en": "Sum the required per-square weights using a disjoint union."
+  },
+  "source": "https://squaremath.org/cases/17.html",
+  "program": "correlation",
+  "track": "seventeen-square-frontier",
+  "role": "input",
+  "depends_on": [
+    "L-square-packing-piercing-count"
+  ],
+  "parallel": true,
+  "challenge_only": false
+}

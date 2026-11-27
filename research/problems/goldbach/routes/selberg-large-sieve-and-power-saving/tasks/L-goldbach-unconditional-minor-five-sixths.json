@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-unconditional-minor-five-sixths",
+  "statement": "∀ ε : ℝ, 0 < ε → let e := fun u : ℝ => Complex.exp (((2 * Real.pi * u : ℝ) : ℂ) * Complex.I); let w := fun k : ℕ => if Nat.Prime k then Real.log (k : ℝ) else 0; let Q := fun n : ℕ => ⌊(n : ℝ) ^ (1 / 3 : ℝ)⌋₊; let H : ℕ → ℕ := fun n => 256 * Q n * (Nat.log 2 (n + 2)) ^ 2; ∃ N : ℕ, ∀ n : ℕ, N ≤ n → ∀ t ∈ Set.Icc (0 : ℝ) 1, (¬ ∃ q a : ℕ, 1 ≤ q ∧ q ≤ Q n ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t - (a : ℝ) / q| ≤ (H n : ℝ) / ((q : ℝ) * n)) → ‖∑ k ∈ Finset.range (n + 1), (w k : ℂ) * e ((k : ℝ) * t)‖ ≤ (n : ℝ) ^ (5 / 6 + ε)",
+  "plain_statement": {
+    "en": "For every ε > 0 and all sufficiently large n, the prime-log sum on the minor arcs has norm at most n^(5/6 + ε). The denominator cutoff is the floor of the cube root of n, and the windows have the stated logarithmic width.",
+    "zh": "对任意 ε > 0 及充分大的 n，次弧上素数对数指数和的范数至多为 n^(5/6 + ε)。分母上限为 n 的立方根的下取整，窗口宽度含有给定的对数因子。"
+  },
+  "brief": {
+    "en": "Apply the rational-approximation bound outside the windows of width 256 Q (log₂(n+2))²/(q n), with the integral dyadic logarithm. Absorb the remaining logarithmic factors into n^ε.",
+    "zh": "在宽度为 256 Q (log₂(n+2))²/(q n) 的窗口之外应用有理逼近估计，其中对数取整数部分，再将其余对数因子吸收到 n^ε 中。"
+  },
+  "program": "correlation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/5c12780c17ea2303bdcca2226443828da679b137/research/gaps.json#L1985-L2004",
+  "track": "selberg-large-sieve-and-power-saving",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.UnconditionalMinorFiveSixths",
+  "file": "lean/Conjectures/Goldbach/UnconditionalMinorFiveSixths.lean"
+}

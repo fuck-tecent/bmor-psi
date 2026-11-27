@@ -1,0 +1,22 @@
+{
+  "id": "L-joshi-abc-weak-abc",
+  "statement": "let rad := fun (n : ℕ) => n.primeFactors.prod id; let h := fun (a b : ℕ) => Real.log ((a:ℝ)+b); let r := fun (a b : ℕ) => Real.log (rad (a*b*(a+b))); ∃ B C : ℝ, 1 < B ∧ ∀ a b : ℕ, 0<a → 0<b → Nat.Coprime a b → h a b ≤ B*r a b+C",
+  "plain_statement": {
+    "zh": "新路线 · 全局高度与 abc · JA-0059 · 对全部有理三元组取得一个固定指数",
+    "en": "New route · Global heights and abc · JA-0059 · Obtain one fixed exponent for all rational abc triples"
+  },
+  "brief": {
+    "zh": "给出独立于 a,b 的 B 和 C；其他坏素数都进入 rad(ab(a+b))。",
+    "en": "Produce B and C independent of a,b. Include every bad prime in rad(ab(a+b))."
+  },
+  "source": "https://arxiv.org/abs/2403.10430",
+  "program": "correlation",
+  "role": "target",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "challenge_only": true,
+  "track": "07-global-heights",
+  "module": "Conjectures.JoshiAbc.WeakAbc",
+  "file": "lean/Conjectures/JoshiAbc/WeakAbc.lean"
+}

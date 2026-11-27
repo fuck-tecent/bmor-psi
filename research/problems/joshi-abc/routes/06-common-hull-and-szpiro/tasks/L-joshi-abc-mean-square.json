@@ -1,0 +1,21 @@
+{
+  "id": "L-joshi-abc-mean-square",
+  "statement": "∀ m : ℕ, 0 < m → ((Finset.Icc 1 m).sum (fun j => (j:ℝ)^2))/(m:ℝ) = (2*(m:ℝ)+1)*(2*(m:ℝ)+2)/12",
+  "plain_statement": {
+    "zh": "新路线 · 同一包络与局部 Szpiro · JA-0047 · 求参考区域平方权重的平均",
+    "en": "New route · Common hull and local Szpiro · JA-0047 · Average the square weights of the reference region"
+  },
+  "brief": {
+    "zh": "使用连续平方和，先除以正的标签数 m。",
+    "en": "Use the consecutive square sum and divide by the positive label count."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/joshi-abc.md",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "06-common-hull-and-szpiro",
+  "module": "Conjectures.JoshiAbc.MeanSquare",
+  "file": "lean/Conjectures/JoshiAbc/MeanSquare.lean"
+}

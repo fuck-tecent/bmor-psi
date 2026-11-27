@@ -1,0 +1,21 @@
+{
+  "id": "L-joshi-abc-theta-exponent",
+  "statement": "∀ (l j : ℚ), l ≠ 0 → let b := fun (n : ℤ) => (n:ℚ)*(n+1)/2+(2*(n:ℚ)+1)*j/(2*l); ∀ n : ℤ, b (n+1)-b n = (n:ℚ)+1+j/l",
+  "plain_statement": {
+    "zh": "新路线 · 缩放对数与 Theta 值 · JA-0011 · 计算双边 Theta 级数相邻指数差",
+    "en": "New route · Scaled logarithms and theta values · JA-0011 · Compute the successive exponents in the bilateral theta series"
+  },
+  "brief": {
+    "zh": "清分母后核对负指标的线性项。",
+    "en": "Clear the denominator and keep the linear term for negative indices."
+  },
+  "source": "https://arxiv.org/abs/2303.01662",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "02-scaled-log-and-theta",
+  "module": "Conjectures.JoshiAbc.ThetaExponent",
+  "file": "lean/Conjectures/JoshiAbc/ThetaExponent.lean"
+}

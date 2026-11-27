@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-finite-wheel-sixteen-prime-lifts",
+  "statement": "let P : Finset ℕ := {17,19,23,29,31,37,41,43,47,53,59,61,67,71,73}; ∀ b ∈ ({17,19,23,181,29,37,41,43,31,47,53,67} : Finset ℕ), ∃ S : Finset ℕ, S.card=16 ∧ (∀ p ∈ S, Nat.Prime p ∧ p≤19495926503 ∧ p%30030=b) ∧ (∀ r ∈ P, Set.InjOn (fun p : ℕ => p%r) (S : Set ℕ))",
+  "plain_statement": {
+    "zh": "新路线 · 小偶数覆盖第三批 · FR-9003 · 核验十二组各十六个素数的轮筛证书",
+    "en": "New route · Finite-range coverage III · FR-9003 · Verify the sixteen-prime wheel certificate for each of twelve residues"
+  },
+  "brief": {
+    "zh": "逐行复核 wheel.csv 的素性、模 30030 的基类和十五个单射投影。整表为一项证书，最大素数为 19495926503。",
+    "en": "Check primality, the residue modulo 30030 and injectivity modulo each of the fifteen additional primes in wheel.csv. Verify the whole table as one certificate. Its largest prime is 19495926503."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/finite-rfc-third/README.md#rough-remainder-wheel",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-finite-wheel-unit-base"
+  ],
+  "imports": []
+}

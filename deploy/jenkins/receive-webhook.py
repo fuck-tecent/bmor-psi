@@ -3,9 +3,11 @@
 import hashlib
 import hmac
 import json
+import logging
 import os
 import re
 import sqlite3
+from contextlib import closing
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -58,7 +60,7 @@ class Receiver(BaseHTTPRequestHandler):
             self.send_error(403)
             return
         try:
-            with sqlite3.connect(self.server.database) as db:
+            with closing(sqlite3.connect(self.server.database)) as db, db:
                 inserted = db.execute(
                     "INSERT INTO deliveries (id,event,body) VALUES (?,?,?) ON CONFLICT(id) DO NOTHING",
                     (delivery.lower(), event, raw),
@@ -70,7 +72,8 @@ class Receiver(BaseHTTPRequestHandler):
                     if previous != (event, raw):
                         self.send_error(409)
                         return
-        except sqlite3.Error:
+        except sqlite3.Error as error:
+            logging.warning("Webhook queue write failed: %s", error)
             self.send_error(503)
             return
         self.respond(202)
@@ -83,7 +86,7 @@ class Receiver(BaseHTTPRequestHandler):
 
 def main():
     database = os.environ["GOLDBACH_WEBHOOK_DB"]
-    with sqlite3.connect(database) as db:
+    with closing(sqlite3.connect(database)) as db, db:
         db.execute("PRAGMA journal_mode=WAL")
         db.execute("""CREATE TABLE IF NOT EXISTS deliveries (
             id TEXT PRIMARY KEY, event TEXT NOT NULL, body BLOB NOT NULL,

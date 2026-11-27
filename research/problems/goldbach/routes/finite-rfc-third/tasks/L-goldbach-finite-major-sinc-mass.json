@@ -1,0 +1,18 @@
+{
+  "id": "L-goldbach-finite-major-sinc-mass",
+  "statement": "∀ h : ℝ, 0<h → let k := intervalIntegral (fun t : ℝ => Real.sinc (Real.pi*t)^2) (-h) h MeasureTheory.volume; 0≤k ∧ k≤1 ∧ 1-2/(9*h)≤k",
+  "plain_statement": {
+    "zh": "新路线 · 小偶数覆盖第三批 · FR-9008 · 给归一化 sinc 核一个显式截断尾界",
+    "en": "New route · Finite-range coverage III · FR-9008 · Bound the truncated mass of the normalized sinc kernel"
+  },
+  "brief": {
+    "zh": "从单位区间指示函数的 Plancherel 得全质量 1。用 |sin|≤1 和 π>3 控制两侧积分尾。对每个 h>0 同时适用。",
+    "en": "Use Plancherel on the indicator of the unit interval to obtain total mass one. Bound both tails with |sin|≤1 and π>3. The estimate is uniform for every h>0."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/finite-rfc-third/README.md#fixed-major-arcs",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

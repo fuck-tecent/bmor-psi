@@ -1,0 +1,11 @@
+{
+  "id": "levent-prime-value-sieve",
+  "title": {
+    "zh": "Levent GRH 的自然推广：近平方素数值的筛法",
+    "en": "A natural extension of Levent’s GRH methods for sieving quadratic prime values"
+  },
+  "description": {
+    "zh": "对偶参数 n=2k 筛 4k²+1。累计小除数误差和模四局部因子支撑初筛。末段由真实最小素因子、余因子素性和 Möbius 符号共同决定。下界初筛与到达全素数终点之间仍缺首次命中损失的估计。",
+    "en": "Sieve 4k²+1 on the even-parameter part of the sequence. Summed small-divisor errors and the local factors from the mod-four prime sums supply the initial sieve. The final range uses the actual least prime factor, the primality of the cofactor and the Möbius sign. Bounding the losses to first hits remains necessary before claiming prime values."
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-frontier-type2-b1-b1-bilinear-expansion",
+  "statement": "let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (u : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (u k:ℂ)*E ((k:ℝ)*t)); let U := fun n : ℕ => ⌊(n:ℝ)^(1/16:ℝ)⌋₊; let B₁ := fun n : ℕ => ⌊(n:ℝ)^(1/4:ℝ)⌋₊; let μ := fun d : ℕ => ((ArithmeticFunction.moebius d : ℤ) : ℝ); let τ₁ := fun (n m : ℕ) => ∑ a ∈ (Nat.divisors m).filter (fun a => U n < a ∧ a ≤ B₁ n ∧ U n < m / a), (∑ d ∈ (Nat.divisors a).filter (fun d => U n < d), μ d) * ArithmeticFunction.vonMangoldt (m / a); ∀ (n : ℕ) (t : ℝ), S n (τ₁ n) t = ∑ a ∈ Finset.Icc (U n + 1) (B₁ n), (∑ d ∈ (Nat.divisors a).filter (fun d => U n < d), μ d) * ∑ r ∈ Finset.Icc (U n + 1) (n / a), ArithmeticFunction.vonMangoldt r * E (((a*r:ℕ):ℝ)*t)",
+  "plain_statement": {
+    "zh": "τ₁ 的指数和展开为按除数 a 与商 r 的双线性形式。",
+    "en": "Expand the exponential sum of τ₁ into its bilinear divisor-and-quotient form."
+  },
+  "brief": {
+    "zh": "先按 a|m 交换两个有限和，再把 m=a·r 重指标化；这是应用 Type-II 双线性估计前的结构恒等式。",
+    "en": "Swap the finite sums over a|m, then reindex m=a·r; this is the structural identity before applying Type-II bilinear estimates."
+  },
+  "source": "https://www.goldbach.tech/?lemma=L-goldbach-frontier-type2-b1-b1#roadmap",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "frontier-type2-dyadic-matrix",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.FrontierType2B1B1BilinearExpansion",
+  "file": "lean/Conjectures/Goldbach/FrontierType2B1B1BilinearExpansion.lean"
+}

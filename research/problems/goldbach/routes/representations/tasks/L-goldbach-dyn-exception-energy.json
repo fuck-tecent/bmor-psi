@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-dyn-exception-energy",
+  "statement": "∀ (E : Finset ℕ) (r b : ℕ → ℝ) (L : ℝ), 0 < L → (∀ n ∈ E, L ≤ b n) → ((E.filter (fun n => r n=0)).card:ℝ)*L^2 ≤ ∑ n ∈ E, (r n-b n)^2",
+  "plain_statement": {
+    "zh": "用局部预测的均方误差约束漏点数",
+    "en": "Charge each missed endpoint to local prediction error"
+  },
+  "brief": {
+    "zh": "每个漏点的误差平方至少 L²。b 可随剩余类变化。后续若要推出漏点密度趋零，还须建立相应的小量误差。",
+    "en": "At each miss the squared error is at least L². The predictor may vary by residue; a little-o error estimate is still needed."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "module": "Conjectures.Goldbach.DynExceptionEnergy",
+  "file": "lean/Conjectures/Goldbach/DynExceptionEnergy.lean",
+  "imports": [],
+  "track": "representations",
+  "role": "lemma"
+}

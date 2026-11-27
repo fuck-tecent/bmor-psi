@@ -1,0 +1,23 @@
+{
+  "id": "L-joshi-abc-fourier-detection",
+  "statement": "∀ (p n : ℕ) [Fact p.Prime] (S : Set (Fin n → ZMod p)), Submodule.span (ZMod p) S = ⊤ ↔ ∀ f : Module.Dual (ZMod p) (Fin n → ZMod p), f ≠ 0 → ∃ v ∈ S, f v ≠ 0",
+  "plain_statement": {
+    "zh": "新路线 · 迹、不同理想与 Fourier 缺额 · JA-0037 · 以每个非零泛函的见证刻画满生成",
+    "en": "New route · Trace, different and Fourier deficit · JA-0037 · Characterize generation by detecting every nonzero linear functional"
+  },
+  "brief": {
+    "zh": "若生成空间真小，从商空间取非零泛函。反向在标准基上使用线性。",
+    "en": "For a proper span take a nonzero functional on the quotient. For the converse use linearity on the span."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/joshi-abc.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-joshi-abc-annihilator-index"
+  ],
+  "imports": [],
+  "track": "04-trace-and-fourier",
+  "module": "Conjectures.JoshiAbc.FourierDetection",
+  "file": "lean/Conjectures/JoshiAbc/FourierDetection.lean"
+}

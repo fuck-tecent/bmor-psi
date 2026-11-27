@@ -1,0 +1,24 @@
+{
+  "id": "L-joshi-abc-theta-ratio-norm",
+  "statement": "∀ (K : Type) [NontriviallyNormedField K] [CompleteSpace K] [IsUltrametricDist K], let theta := fun (q u : K) => ∑' n : ℤ, q^(n*(n+1)/2) * u^(2*n+1); ∀ (r z : K) (l j : ℕ), 0 < ‖r‖ → ‖r‖ < 1 → ‖z‖=1 → ‖z+z⁻¹‖=1 → 0 < j → j < l → ‖theta (r^(2*l)) z / theta (r^(2*l)) (r^j*z)‖ = ‖r‖^j",
+  "plain_statement": {
+    "zh": "新路线 · 缩放对数与 Theta 值 · JA-0015 · 从实际双边级数求单标签比值的范数",
+    "en": "New route · Scaled logarithms and theta values · JA-0015 · Evaluate the norm of the one-label ratio of actual theta series"
+  },
+  "brief": {
+    "zh": "证明两尾趋零；分子有两首项，分母在 −1 唯一取最大范数。",
+    "en": "Show convergence in both tails. The numerator has two leading terms and the denominator has a unique norm maximum at −1."
+  },
+  "source": "https://arxiv.org/abs/2303.01662",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-joshi-abc-theta-minimum",
+    "L-joshi-abc-root-unit"
+  ],
+  "imports": [],
+  "track": "02-scaled-log-and-theta",
+  "module": "Conjectures.JoshiAbc.ThetaRatioNorm",
+  "file": "lean/Conjectures/JoshiAbc/ThetaRatioNorm.lean"
+}

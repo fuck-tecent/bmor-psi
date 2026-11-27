@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-binary-shift-missed-center",
+  "statement": "∀ n L : ℕ, ((Finset.Icc 1 L).filter (fun e => n = 2^e + 2^(Nat.log 2 (n-2^e)))).card ≤ 2",
+  "plain_statement": {
+    "zh": "方法反例：每个目标至多两个移位落入二次幂例外集",
+    "en": "Obstruction: at most two binary shifts hit a dyadic exceptional set at any target"
+  },
+  "brief": {
+    "zh": "取二次幂为人工例外集。一个 n 至多有一种无序双幂分拆，因此最多两个坏指数；中心仍可属于无限例外集。说明即使几乎所有移位成功也不能自动移回中心。",
+    "en": "Use powers of two as synthetic exceptions. Binary expansion gives at most one unordered two-power decomposition, hence at most two bad exponents. Infinitely many centers remain exceptional."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/f4f754c4709c0c1b2dbc67e4c8f74ce2475b8935/research/ROADMAP.md",
+  "program": "exceptions",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "exceptions",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.BinaryShiftMissedCenter",
+  "file": "lean/Conjectures/Goldbach/BinaryShiftMissedCenter.lean"
+}

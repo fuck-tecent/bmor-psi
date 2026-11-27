@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-reflection-jacobi-phase",
+  "statement": "∀ (p : ℕ) [Fact p.Prime] (t : ZMod p) (χ ψ : DirichletCharacter ℂ p),\n  (∑ x : (ZMod p)ˣ, star (χ (x : ZMod p)) * ψ (t - (x : ZMod p))) =\n    if t = 0 then (if χ = ψ then (p.totient : ℂ) * ψ (-1) else 0)\n    else star (χ t) * ψ t * jacobiSum χ⁻¹ ψ",
+  "plain_statement": {
+    "zh": "新路线 · 二进反射与 Levent GRH · DR-0011 · 核对素模反射的 Jacobi 相位及零目标的对角项",
+    "en": "New route · Dyadic reflection and Levent GRH · DR-0011 · Compute the Jacobi phase at a prime modulus and the diagonal at target zero"
+  },
+  "brief": {
+    "zh": "非零 t 时换元 x=t·y，并保留两特征各自的相位。t=0 时用单位群正交性，实二次特征已有结论可用作检验。",
+    "en": "For t≠0 use x=t·y and keep the separate phases of both characters. For t=0 use orthogonality on the unit group. The existing real quadratic result supplies a check."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/FoundationProofs/DirichletCharFiniteFourierTransformProperties.lean#L85",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-exceptional-prime-jacobi",
+    "L-goldbach-exceptional-character-reflection"
+  ],
+  "imports": []
+}

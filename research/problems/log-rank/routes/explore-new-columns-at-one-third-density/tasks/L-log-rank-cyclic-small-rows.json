@@ -1,0 +1,18 @@
+{
+  "id": "L-log-rank-cyclic-small-rows",
+  "statement": "∀ k : ℕ, 6 ≤ k → let n := 3*k+1; let S := (Finset.univ : Finset (Fin n)).filter (fun i => i.val ≤ k-2 ∨ i.val = 2*k-3); let shift := fun (t : Fin n) => S.image (fun i => i+t); S.card = k ∧ ∀ A : Finset (Fin n), (A.card = 2 ∨ A.card = 3 ∨ Aᶜ.card = 2 ∨ Aᶜ.card = 3) → ∀ a : ℤ, ∃ t : Fin n, ¬ (((A ∩ shift t).card : ℤ) = a ∨ ((A ∩ shift t).card : ℤ) = a+1)",
+  "plain_statement": {
+    "zh": "当 k≥6、n=3k+1 时，集合 S={0,…,k−2}∪{2k−3} 恰含 k 个坐标。若一行或其补集的大小为 2 或 3，则 S 的循环平移与该行的交集大小不可能全落在任意指定的两个相邻整数中。",
+    "en": "For k≥6 and n=3k+1, the k-set S={0,…,k−2}∪{2k−3} has a translation orbit that detects every row of size 2 or 3 and every complement of such a row."
+  },
+  "brief": {
+    "zh": "种子的差覆盖所有非零循环位移，所以任意两点可被同一平移覆盖。每个点只出现在 k 个平移中，至多三个点时还有平移与整行不交。对补集使用交集大小之和等于 k。",
+    "en": "The seed realizes every nonzero cyclic difference, so some translate contains any chosen pair. At most 3k translations meet a row with at most three points. Complementary intersection sizes sum to k."
+  },
+  "program": "correlation",
+  "imports": [],
+  "source": "https://github.com/CGandGameEngineLearner/log-rank-spectral-hls/blob/20a856deb2a227f68f88f9e68193937e032ea11e/docs/CLAIMS_AND_LIMITATIONS.md",
+  "parallel": true,
+  "module": "Conjectures.LogRank.CyclicSmallRows",
+  "file": "lean/Conjectures/LogRank/CyclicSmallRows.lean"
+}

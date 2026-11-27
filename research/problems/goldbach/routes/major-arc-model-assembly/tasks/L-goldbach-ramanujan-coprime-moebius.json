@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-ramanujan-coprime-moebius",
+  "statement": "let E (x : ℝ) := Complex.exp (((2 * Real.pi * x : ℝ) : ℂ) * Complex.I); let ram (q h : ℕ) := ∑ a ∈ (Finset.range q).filter (fun a => Nat.Coprime a q), E ((h : ℝ) * (a : ℝ) / q); ∀ q h : ℕ, 1 ≤ q → Nat.Coprime h q → ram q h = (ArithmeticFunction.moebius q : ℂ)",
+  "plain_statement": {
+    "en": "At every frequency h coprime to a positive modulus q, the sum of exp(2πiha/q) over reduced residues a modulo q equals μ(q).",
+    "zh": "若 h 与正整数 q 互素，则 exp(2πiha/q) 在模 q 的简化剩余系上的和等于 μ(q)。"
+  },
+  "brief": {
+    "en": "The coprime powers of a primitive q-th root run through all primitive q-th roots. Partition the full root sum by exact order and apply Möbius inversion.",
+    "zh": "本原 q 次单位根的互素次幂恰遍历全部本原 q 次单位根。按阶划分所有单位根，再作莫比乌斯反演。"
+  },
+  "program": "correlation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://github.com/leanprover-community/mathlib4/blob/fc4f59e577feb1a4956671bc04ac18aaaf8cd842/Mathlib/NumberTheory/ArithmeticFunction/Moebius.lean#L256-L262",
+  "track": "major-arc-model-assembly",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.RamanujanCoprimeMoebius",
+  "file": "lean/Conjectures/Goldbach/RamanujanCoprimeMoebius.lean"
+}

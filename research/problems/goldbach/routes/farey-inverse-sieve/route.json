@@ -1,0 +1,14 @@
+{
+  "id": "farey-inverse-sieve",
+  "title": {
+    "zh": "新路线 · Farey 分母对与逆元筛",
+    "en": "New route · Farey denominator pairs and the inverse sieve"
+  },
+  "description": {
+    "zh": "在同一个偶数的 Farey 插入层上给中心窗分母加上逆元标记。比较全窗 CRT 和分窗模双曲线计数，再按最小素因子计算筛损失。",
+    "en": "Label the central denominator pairs on a single Farey insertion layer by their inverses. Compare full-window CRT counts with modular hyperbola counts in subwindows, then group sieve losses by the least prime factor."
+  },
+  "feeds": [
+    "representations"
+  ]
+}

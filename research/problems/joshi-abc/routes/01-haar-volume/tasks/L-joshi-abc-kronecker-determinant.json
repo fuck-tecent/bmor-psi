@@ -1,0 +1,21 @@
+{
+  "id": "L-joshi-abc-kronecker-determinant",
+  "statement": "∀ (m n : ℕ) (A : Matrix (Fin m) (Fin m) ℚ) (B : Matrix (Fin n) (Fin n) ℚ), (Matrix.kronecker A B).det = A.det^n * B.det^m",
+  "plain_statement": {
+    "zh": "新路线 · 原文反例与 Haar 体积 · JA-0006 · 计算纯张量乘法矩阵的行列式",
+    "en": "New route · Printed comparisons and Haar volume · JA-0006 · Compute the determinant of multiplication on a pure tensor"
+  },
+  "brief": {
+    "zh": "在积指标基中写矩阵，跟踪每个局部行列式的相对维数幂。",
+    "en": "Use a product basis and track the relative-dimension power of each determinant."
+  },
+  "source": "https://arxiv.org/abs/2401.13508v4",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "01-haar-volume",
+  "module": "Conjectures.JoshiAbc.KroneckerDeterminant",
+  "file": "lean/Conjectures/JoshiAbc/KroneckerDeterminant.lean"
+}

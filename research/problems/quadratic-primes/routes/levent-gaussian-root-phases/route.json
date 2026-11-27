@@ -1,0 +1,11 @@
+{
+  "id": "levent-gaussian-root-phases",
+  "title": {
+    "zh": "Levent GRH 的自然推广：移动窗上的高斯分裂与逆元相位",
+    "en": "A natural extension of Levent’s GRH methods for Gaussian splitting and inverse phases"
+  },
+  "description": {
+    "zh": "将冻结中段低频中的二次根换作 p=a²+b² 的逆元相位，统一控制两个真实素数段的替换误差。有限 Fourier 完全化保留素数条件与移动端点；开放的带符号抵消沿用 QP-0038 至 QP-0040。",
+    "en": "Replace the quadratic root in the frozen middle-band low modes by an inverse phase from p=a²+b², with a uniform replacement error on both prime bands. Finite Fourier completion retains the prime condition and the moving endpoint. QP-0038 through QP-0040 remain the signed cancellation challenges."
+  }
+}

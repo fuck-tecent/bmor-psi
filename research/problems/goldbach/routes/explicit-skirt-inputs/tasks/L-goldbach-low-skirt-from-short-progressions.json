@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-low-skirt-from-short-progressions",
+  "statement": "(let theta := fun (q : ℕ) [NeZero q] (r : ZMod q) (y h : ℝ) => Finset.sum ((Finset.Icc (⌊y⌋₊+1) ⌊y+h⌋₊).filter (fun k : ℕ => (k:ZMod q)=r)) (fun k => if k.Prime then Real.log (k:ℝ) else 0); let E := fun (q : ℕ) (h y : ℝ) => if hq : q=0 then (0:ℝ) else (letI : NeZero q := ⟨hq⟩; (Finset.univ : Finset (ZMod q)).sup' Finset.univ_nonempty (fun r => if IsUnit r then |theta q r y h - h/(q.totient:ℝ)| else 0)); ∃ C : ℝ, 0<C ∧ ∃ X : ℕ, ∀ x t : ℝ, (X:ℝ)≤x → 1≤x → 5/8≤t → t≤1 → ∀ Q : ℕ, 1≤Q → (Q:ℝ)^2*x^((1-t)/3+1/16) ≤ x^t → intervalIntegral (fun y => Finset.sum (Finset.Icc 1 Q) (fun q => E q (x^t) y)) x (2*x) MeasureTheory.volume ≤ C*x*x^t/(Real.log x)^18) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (u : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (u k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let Q₁ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊; let H := fun n : ℕ => 256 * Q₁ n * Q n; let lowWideArcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (H n:ℝ)/((q:ℝ)*(n:ℝ))}; let lowSkirt := fun n : ℕ => intervalIntegral (fun t => (lowWideArcs n \\ arcs n).indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume; ∀ e : ℝ, 0 < e → ∃ N : ℕ, ∀ n : ℕ, N ≤ n → Even n → -(e * (n : ℝ)) ≤ (lowSkirt n).re)",
+  "plain_statement": {
+    "zh": "上述短等差数列平均估计蕴含父题的完整小分母裙边下界，对每个充分大的偶数 n 成立。",
+    "en": "The short-progression mean estimate implies the full low-modulus skirt lower bound for every sufficiently large even n."
+  },
+  "brief": {
+    "zh": "取公共整数窗口 h=⌊n/(12H)⌋。将连续平均离散化，按二倍区间求和，分开两端截断及非互素剩余类，再用有限 Fourier 正交与局部能量控制有符号系数。组合命题保留解析输入。",
+    "en": "Use one integer window h=⌊n/(12H)⌋. Discretize the continuous mean and sum over dyadic intervals. Bound the clipped endpoints and nonunit residues, then use finite Fourier orthogonality and local energy to control the signed coefficient. The analytic input is explicit in the implication."
+  },
+  "source": "https://github.com/34245621/goldbach-proofs/blob/9307efdd28b54073bdac386f3bf9d9c7c091bda4/lean/Conjectures/Goldbach/LowSkirtFromShortProgressions.lean",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "explicit-skirt-inputs",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.LowSkirtFromShortProgressions",
+  "file": "lean/Conjectures/Goldbach/LowSkirtFromShortProgressions.lean"
+}

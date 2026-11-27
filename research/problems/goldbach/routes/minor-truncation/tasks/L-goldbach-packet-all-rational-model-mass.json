@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-packet-all-rational-model-mass",
+  "statement": "let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let G := fun (n : ℕ) (t : ℝ) => ∑ q ∈ Finset.Icc 1 ((Q n)^2), ∑ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q), 4*(n:ℝ)^2 / ((Nat.totient q:ℝ)^2 * (1+((n:ℝ)*(t-(a:ℝ)/(q:ℝ)))^2)); let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∀ ε : ℝ, 0<ε → ∃ N : ℕ, ∀ n ≥ N, m (B n) (G n) ≤ ε*(n:ℝ)",
+  "plain_statement": {
+    "zh": "整个共振区上全部有理峰的质量为 o(n)",
+    "en": "All rational peaks have sublinear mass on the full resonant mask"
+  },
+  "brief": {
+    "zh": "较强的共同目标。切去所有峰远尾；每个检测到的中心只收费一次。对原主弧分母保留中心切口 q/Q，并计入区间端点。",
+    "en": "A shared stronger target. Discard the combined far tails and charge each detected center once. Retain the q/Q core discount for original major-arc denominators, including endpoints."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "minor-truncation",
+  "role": "target",
+  "module": "Conjectures.Goldbach.PacketAllRationalModelMass",
+  "file": "lean/Conjectures/Goldbach/PacketAllRationalModelMass.lean"
+}

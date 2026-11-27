@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-arc-disjoint-explicit-cutoff",
+  "statement": "∀ n : ℕ, 1000000 ≤ n → 2 * ((Nat.log 2 (n + 2)) ^ 2) ^ 2 < n",
+  "plain_statement": {
+    "en": "Every n ≥ 1,000,000 satisfies the strict disjointness criterion for the catalogue cutoff Q = ⌊log₂(n+2)⌋².",
+    "zh": "对于目录中的截断 Q = ⌊log₂(n+2)⌋²，每个 n ≥ 1,000,000 都满足弧不相交所需的严格不等式。"
+  },
+  "brief": {
+    "en": "For k ≥ 19, prove 2k⁴ + 3 ≤ 2ᵏ by induction. At k = ⌊log₂(n+2)⌋, the extra three units give the strict bound 2k⁴ < n.",
+    "zh": "用归纳法证明 k ≥ 19 时有 2k⁴ + 3 ≤ 2ᵏ。取 k = ⌊log₂(n+2)⌋，预留的 3 保证严格不等式 2k⁴ < n。"
+  },
+  "program": "correlation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/de62db1e00c16ab20880e4628bbec6d4d0e25887/research/gaps.json#L1906",
+  "track": "effective-threshold-bridge",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.ArcDisjointExplicitCutoff",
+  "file": "lean/Conjectures/Goldbach/ArcDisjointExplicitCutoff.lean"
+}

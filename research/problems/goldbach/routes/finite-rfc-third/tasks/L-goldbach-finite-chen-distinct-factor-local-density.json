@@ -1,0 +1,18 @@
+{
+  "id": "L-goldbach-finite-chen-distinct-factor-local-density",
+  "statement": "∀ (ℓ r n : ℕ), ℓ.Prime → let B := (Finset.range ℓ).filter (fun v => v=0 ∨ (r*v)%ℓ = n%ℓ); B.card = (if ℓ∣r then (if ℓ∣n then ℓ else 1) else (if ℓ∣n then 1 else 2))",
+  "plain_statement": {
+    "zh": "新路线 · 小偶数覆盖第三批 · FR-9021 · 计算交换变量后 v(n−rv) 在素模中的局部根数",
+    "en": "New route · Finite-range coverage III · FR-9021 · Count the local roots of v(n−rv) after the semiprime switch"
+  },
+  "brief": {
+    "zh": "分别处理 ℓ 整除 r、ℓ 整除 n 及两个根重合的情形。用模逆元给出 r 可逆时的根。对真实素数和需另保留 v=ℓ 或 n−rv=ℓ 的例外。",
+    "en": "Distinguish the cases where ℓ divides r, where ℓ divides n and where the roots coincide. Use the inverse of r when it is a unit. A sieve for the actual prime sum must retain the cases v=ℓ and n−rv=ℓ."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/finite-rfc-third/README.md#weighted-sieve-and-chen-counts",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

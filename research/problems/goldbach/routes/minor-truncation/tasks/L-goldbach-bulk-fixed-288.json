@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-bulk-fixed-288",
+  "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → -(n:ℝ)/288 ≤ (I n (high n) (high n)).re",
+  "plain_statement": {
+    "zh": "固定预算猜想：高高项在原频率至少为 −n/288",
+    "en": "Fixed-budget conjecture at the original frequency: bulk at least −n/288"
+  },
+  "brief": {
+    "zh": "只要求一个固定斜率。已有逐 ε 高高项目标足以推出它；负的固定斜率示例说明反向推理在一般实序列上失效。仍须逐偶数控制符号。",
+    "en": "The all-epsilon bulk target suffices. A fixed negative slope separates the two requirements for abstract sequences. This input still demands signed, pointwise control."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2325",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "minor-truncation",
+  "role": "target",
+  "module": "Conjectures.Goldbach.BulkFixed288",
+  "file": "lean/Conjectures/Goldbach/BulkFixed288.lean"
+}

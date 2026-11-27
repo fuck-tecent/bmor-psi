@@ -1,0 +1,26 @@
+{
+  "id": "L-quadratic-primes-sieve-initial-lower-bound",
+  "statement": "let f := fun k : ℕ => 4*k^2+1; let block := fun x : ℕ => Finset.Ioc (x/2) x; let primes := fun z : ℕ => (Finset.Icc 3 z).filter (fun p => Nat.Prime p); let split := fun z : ℕ => (Finset.Icc 5 z).filter (fun p => Nat.Prime p ∧ p%4=1); let wheel := fun z : ℕ => ∏ p ∈ primes z, p; let rough := fun x z : ℕ => (block x).filter (fun k => Nat.Coprime (f k) (wheel z)); let localProd := fun z : ℕ => ∏ p ∈ split z, (1 - 2/(p : ℝ)); (∃ c : ℝ, 0<c ∧ Filter.Tendsto (fun z : ℕ => Real.log (z : ℝ) * localProd z) Filter.atTop (nhds c)) →\n∃ U : ℕ, 4≤U ∧ ∃ c : ℝ, 0<c ∧ ∃ X : ℕ, 2≤X ∧ ∀ x : ℕ, X≤x →\n  let z := (Finset.range (x+1)).sup (fun t => if t^U≤x then t else 0);\n  c*(x : ℝ)/Real.log x ≤ ((rough x z).card : ℝ)",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然扩张 · QP-0078 · 把一维下界筛应用到 4k²+1 的初始筛口",
+    "en": "New route · Levent GRH and natural extensions · QP-0078 · Apply the dimension-one lower-bound sieve to the initial cutoff for 4k²+1"
+  },
+  "brief": {
+    "zh": "取除数层 x^(3/4)，再取固定 U 使 s=3U/4 大于线性筛下界的临界值。核对初筛只到 ⌊x^(1/U)⌋，并把 QP-0074 的总误差吸收到下界中。",
+    "en": "Take divisor level x^(3/4) and choose a fixed U so that s=3U/4 exceeds the lower linear sieve cutoff. Check the floor ⌊x^(1/U)⌋ and absorb the total error from QP-0074."
+  },
+  "source": "https://doi.org/10.1090/coll/057",
+  "program": "correlation",
+  "role": "conditional",
+  "parallel": false,
+  "depends_on": [
+    "L-quadratic-primes-sieve-divisor-remainders",
+    "L-quadratic-primes-sieve-mertens-density",
+    "L-quadratic-primes-sieve-mobius-count"
+  ],
+  "imports": [
+    "Conjectures.QuadraticPrimes.SieveDivisorRemainders",
+    "Conjectures.QuadraticPrimes.SieveMobiusCount",
+    "Conjectures.QuadraticPrimes.SieveMertensDensity"
+  ]
+}

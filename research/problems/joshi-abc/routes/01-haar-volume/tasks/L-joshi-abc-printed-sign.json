@@ -1,0 +1,21 @@
+{
+  "id": "L-joshi-abc-printed-sign",
+  "statement": "∀ (n : ℕ) (a : Fin (n+1) → ℝ) (m V : ℝ), 0 < m → (∀ i, 0 < a i ∧ a i < 1) → -|V|/m < -∑ i, Real.log (a i)",
+  "plain_statement": {
+    "zh": "新路线 · 原文反例与 Haar 体积 · JA-0001 · 对非空坏处集检验印出的对数不等式",
+    "en": "New route · Printed comparisons and Haar volume · JA-0001 · Test the printed sign on a nonempty set of bad places"
+  },
+  "brief": {
+    "zh": "逐项 log aᵢ<0，左端由绝对值控制。V 表示对数体积。",
+    "en": "Sum log aᵢ<0 over all places. The absolute value bounds the left side for any real log-volume V."
+  },
+  "source": "https://arxiv.org/abs/2401.13508v4",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "01-haar-volume",
+  "module": "Conjectures.JoshiAbc.PrintedSign",
+  "file": "lean/Conjectures/JoshiAbc/PrintedSign.lean"
+}

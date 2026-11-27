@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-quadratic-gauss-norm-prime",
+  "statement": "let E (x : ℝ) := Complex.exp (((2 * Real.pi * x : ℝ) : ℂ) * Complex.I); ∀ p a : ℕ, Nat.Prime p → 2 < p → Nat.Coprime a p → ‖∑ b ∈ Finset.range p, (jacobiSym (b : ℤ) p : ℂ) * E ((b : ℝ) * ((a : ℝ) / p))‖ = Real.sqrt (p : ℝ)",
+  "plain_statement": {
+    "en": "For every odd prime p and every natural a coprime to p, the complex Fourier sum of the Jacobi symbol at frequency a has norm exactly √p.",
+    "zh": "对每个奇素数 p 和每个与 p 互素的自然数 a，雅可比符号在频率 a 的复傅里叶和的范数恰为 √p。"
+  },
+  "brief": {
+    "en": "Identify the phase with the standard additive character on ℤ/pℤ. Twisting by the unit a preserves the Gauss norm, and the quadratic Gauss sum identity gives √p.",
+    "zh": "将相位识别为模 p 剩余类环的标准加法特征。单位元 a 的扭转保持高斯和范数，再由二次高斯和恒等式得到 √p。"
+  },
+  "program": "correlation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://github.com/leanprover-community/mathlib4/blob/fc4f59e577feb1a4956671bc04ac18aaaf8cd842/Mathlib/NumberTheory/GaussSum.lean#L234-L240",
+  "track": "deuring-heilbronn-and-25b-cert",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.QuadraticGaussNormPrime",
+  "file": "lean/Conjectures/Goldbach/QuadraticGaussNormPrime.lean"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "07-levent-gap-two",
+  "title": {
+    "zh": "新路线 · Levent GRH 方法与自然推广：差二短窗",
+    "en": "New route · Methods from the Levent GRH project and their extensions at gap two"
+  },
+  "description": {
+    "zh": "在同一差二短窗减去高次素数幂与端点误差，用真实素数权验证近平方根的短除数和、半素数预算与局部 Fourier 输入。",
+    "en": "Use the same gap-two window to bound proper powers and endpoint losses. Test the near-square-root divisor cutoff, semiprime bounds and local Fourier inputs with the actual prime weights."
+  }
+}

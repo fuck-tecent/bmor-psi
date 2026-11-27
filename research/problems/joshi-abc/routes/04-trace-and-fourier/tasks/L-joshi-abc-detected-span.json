@@ -1,0 +1,24 @@
+{
+  "id": "L-joshi-abc-detected-span",
+  "statement": "∀ (p n : ℕ) [Fact p.Prime] (S : Set (Fin n → ZMod p)) (M : ℕ), Nat.card {f : Module.Dual (ZMod p) (Fin n → ZMod p) // ∀ v ∈ S, f v=0} ≤ M → Nat.card ((Fin n → ZMod p) ⧸ Submodule.span (ZMod p) S) ≤ M",
+  "plain_statement": {
+    "zh": "新路线 · 迹、不同理想与 Fourier 缺额 · JA-0038 · 把指定测试字符的检测率转为指数上界",
+    "en": "New route · Trace, different and Fourier deficit · JA-0038 · Turn detection by prescribed characters into an index bound"
+  },
+  "brief": {
+    "zh": "先把零概率事件确定为零化子，输入须由同标签的允许见证 S 计算。",
+    "en": "Identify undetected tests with the annihilator. Compute the input using admissible witnesses S from the same label."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AutomorphicArithmetic/ThetaCorrespondence/ThetaPairLifts/LocalTypeDictionary/ThetaLiftPeterssonNormEqRallisIntegral.lean#L972",
+  "program": "correlation",
+  "role": "conditional",
+  "parallel": true,
+  "depends_on": [
+    "L-joshi-abc-annihilator-index",
+    "L-joshi-abc-fourier-detection"
+  ],
+  "imports": [],
+  "track": "04-trace-and-fourier",
+  "module": "Conjectures.JoshiAbc.DetectedSpan",
+  "file": "lean/Conjectures/JoshiAbc/DetectedSpan.lean"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "L-goldbach-wide-signed-remainder-bridge",
+  "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (u : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (u k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let Q₁ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊; let H := fun n : ℕ => 256 * Q₁ n * Q n; let wideArcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q₁ n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (H n:ℝ)/((q:ℝ)*(n:ℝ))}; let lowWideArcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (H n:ℝ)/((q:ℝ)*(n:ℝ))}; let lowPart := fun n : ℕ => lowWideArcs n \\ arcs n; let remainder := fun n : ℕ => (wideArcs n \\ arcs n) \\ lowPart n; let inner := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q₁ n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n : ℝ) * (n : ℝ)^(1/6 : ℝ) / ((q:ℝ)*(n:ℝ))}; let J := fun (n : ℕ) (A : Set ℝ) => (intervalIntegral (fun t => A.indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume).re; let floor := fun (A : ℕ → Set ℝ) => ∀ e : ℝ, 0 < e → ∃ N : ℕ, ∀ n : ℕ, N ≤ n → Even n → -(e * (n:ℝ)) ≤ J n (A n); floor lowPart → (floor (fun n => remainder n ∩ inner n)) → (floor (fun n => remainder n \\ inner n)) → (floor (fun n => wideArcs n \\ arcs n))",
+  "plain_statement": {
+    "zh": "把低模数弧带、近有理区和远有理区的三个下界拼起来。",
+    "en": "Combine the low-modulus, near and far signed estimates."
+  },
+  "brief": {
+    "zh": "证集合不交并覆盖，核对低模数扩宽弧最终包含在全部扩宽弧内。每部分分配 ε/3，并取共同阈值。",
+    "en": "Show disjoint coverage and eventual containment of the low-modulus widened arcs. Use ε/3 in each input and take the common threshold."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2992",
+  "track": "wide-arc-signed-remainder",
+  "program": "correlation",
+  "role": "lemma",
+  "depends_on": [
+    "L-goldbach-frontier-skirt-polylog-moduli",
+    "L-goldbach-frontier-three-zone-split"
+  ],
+  "parallel": true,
+  "challenge_only": false,
+  "imports": [
+    "PEqualNP.Outside.L_goldbach_frontier_skirt_polylog_moduli",
+    "PEqualNP.Outside.L_goldbach_frontier_three_zone_split"
+  ]
+}

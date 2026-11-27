@@ -1,0 +1,89 @@
+import Mathlib
+
+namespace PEqualNP.Outside
+
+private theorem choose_succ_self_11_13 (n : ℕ) : Nat.choose (n + 1) n = n + 1 := by
+  induction n with
+  | zero => rfl
+  | succ k ih =>
+    rw [Nat.choose_succ_succ, ih, Nat.choose_self]
+
+private theorem two_mul_choose_add_two_11_13 (n : ℕ) :
+    2 * Nat.choose (n + 2) n = (n + 2) * (n + 1) := by
+  induction n with
+  | zero => rfl
+  | succ k ih =>
+    have hstep : Nat.choose ((k + 2) + 1) (k + 1) =
+        Nat.choose (k + 2) k + Nat.choose (k + 2) (k + 1) :=
+      Nat.choose_succ_succ (k + 2) k
+    have hc1 : Nat.choose (k + 2) (k + 1) = k + 2 := choose_succ_self_11_13 (k + 1)
+    calc 2 * Nat.choose ((k + 1) + 2) (k + 1)
+        = 2 * (Nat.choose (k + 2) k + Nat.choose (k + 2) (k + 1)) := by rw [← hstep]
+      _ = 2 * Nat.choose (k + 2) k + 2 * Nat.choose (k + 2) (k + 1) := by ring
+      _ = (k + 2) * (k + 1) + 2 * (k + 2) := by rw [ih, hc1]
+      _ = ((k + 1) + 2) * ((k + 1) + 1) := by ring
+
+private theorem six_mul_choose_add_three_11_13 (n : ℕ) :
+    6 * Nat.choose (n + 3) n = (n + 3) * (n + 2) * (n + 1) := by
+  induction n with
+  | zero => rfl
+  | succ k ih =>
+    have hstep : Nat.choose ((k + 3) + 1) (k + 1) =
+        Nat.choose (k + 3) k + Nat.choose (k + 3) (k + 1) :=
+      Nat.choose_succ_succ (k + 3) k
+    have hc2 : 2 * Nat.choose ((k + 1) + 2) (k + 1) = ((k + 1) + 2) * ((k + 1) + 1) :=
+      two_mul_choose_add_two_11_13 (k + 1)
+    have hc2' : 2 * Nat.choose (k + 3) (k + 1) = (k + 3) * (k + 2) := hc2
+    calc 6 * Nat.choose ((k + 1) + 3) (k + 1)
+        = 6 * (Nat.choose (k + 3) k + Nat.choose (k + 3) (k + 1)) := by rw [← hstep]
+      _ = 6 * Nat.choose (k + 3) k + 3 * (2 * Nat.choose (k + 3) (k + 1)) := by ring
+      _ = (k + 3) * (k + 2) * (k + 1) + 3 * ((k + 3) * (k + 2)) := by rw [ih, hc2']
+      _ = ((k + 1) + 3) * ((k + 1) + 2) * ((k + 1) + 1) := by ring
+
+theorem L_hash_collision_lab_cert_11_13 :
+    (∀ (q:ℕ) (b:Fin q→ℕ), (q*78)+286*(∑ i,b i)≤(∑ i,Nat.choose (b i) 11)+q*3718) := by
+  have h_ge286 : ∀ t : ℕ, 286 ≤ Nat.choose (13 + t) 10 := by
+    intro t
+    induction t with
+    | zero =>
+      rw [Nat.add_zero]
+      have h6 := six_mul_choose_add_three_11_13 10
+      norm_num at h6
+      omega
+    | succ t ih =>
+      have hstep : Nat.choose ((13 + t) + 1) 10 =
+          Nat.choose (13 + t) 9 + Nat.choose (13 + t) 10 := Nat.choose_succ_succ (13 + t) 9
+      have heq : 13 + (t + 1) = (13 + t) + 1 := by omega
+      rw [heq]
+      omega
+  have h_ind : ∀ d : ℕ, 78 + 286 * (13 + d) ≤ Nat.choose (13 + d) 11 + 3718 := by
+    intro d
+    induction d with
+    | zero =>
+      simp only [Nat.add_zero]
+      have h2 := two_mul_choose_add_two_11_13 11
+      norm_num at h2
+      linarith
+    | succ t ih =>
+      have hstep : Nat.choose ((13 + t) + 1) 11 =
+          Nat.choose (13 + t) 10 + Nat.choose (13 + t) 11 := Nat.choose_succ_succ (13 + t) 10
+      have hlow := h_ge286 t
+      have heq : 13 + (t + 1) = (13 + t) + 1 := by omega
+      rw [heq, hstep]
+      linarith
+  have h_pt : ∀ m : ℕ, 78 + 286 * m ≤ Nat.choose m 11 + 3718 := by
+    intro m
+    by_cases hm : m < 13
+    · have hm12 : m ≤ 12 := by omega
+      linarith
+    · have hdecomp : m = 13 + (m - 13) := by omega
+      rw [hdecomp]
+      exact h_ind (m - 13)
+  intro q b
+  have hsum : (∑ i : Fin q, (78 + 286 * b i)) ≤ ∑ i : Fin q, (Nat.choose (b i) 11 + 3718) :=
+    Finset.sum_le_sum (fun i _ => h_pt (b i))
+  rw [Finset.sum_add_distrib, Finset.sum_add_distrib, ← Finset.mul_sum] at hsum
+  simp only [Finset.sum_const, Finset.card_univ, Fintype.card_fin, smul_eq_mul] at hsum
+  exact hsum
+
+end PEqualNP.Outside

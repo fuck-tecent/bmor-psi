@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-farey-sieve-cutoff-ratio",
+  "statement": "let I := fun n : ℕ => Finset.Icc ((n+2)/3) ((2*n)/3); let P := fun z : ℕ => (Finset.Icc 2 z).filter Nat.Prime; let M := fun z : ℕ => ∏ p ∈ P z, (1-(p:ℝ)⁻¹); let V := fun n z : ℕ => ((I n).card:ℝ)*(n.totient:ℝ)/n * ∏ p ∈ (P z).filter (fun p => ¬ p ∣ n), (1-2/(p:ℝ)); ∀ n z y : ℕ, 12 ≤ n → Even n → 2 ≤ z → z ≤ y → V n z ≤ 2*(M z/M y)^2 * V n y",
+  "plain_statement": {
+    "zh": "新路线 · Farey 分母对与逆元筛 · HD-8010 · 控制两个筛点的局部主项比",
+    "en": "New route · Farey denominator pairs and inverse sieve · HD-8010 · Compare the local main terms at two sieve cutoffs"
+  },
+  "brief": {
+    "zh": "消去窗口和 totient 共有因子。只控制两个筛点之间的有限乘积，被 n 整除的素数可在下界中补回。代入 Mertens 估计可得初筛与终筛主项的 O(U²) 比。",
+    "en": "Cancel the shared interval and totient factors. Compare the product over the intervening primes with the square of the product of 1−1/p. A Mertens estimate then bounds the ratio of the initial and terminal main terms by O(U²)."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/farey-inverse-sieve/README.md",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-euler-subproduct"
+  ],
+  "imports": []
+}

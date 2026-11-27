@@ -1,0 +1,15 @@
+{
+  "id": "odd-character-interference",
+  "title": {
+    "zh": "奇特征零点干涉",
+    "en": "Odd-character zero interference"
+  },
+  "description": {
+    "zh": "固定偶模数，保留相位、重数和原平均分母；目标是截断交叉项的逐点单侧裕量。 二次幂子族还需检验单点信息的局限：尝试在保留固定周期质量的同时消去全部反射配对。",
+    "en": "Keep phases, multiplicities and the original denominator. Seek a one-sided margin at each even modulus. For dyadic targets, test the limits of one-point information by preserving fixed periodic masses while removing all reflected pairs."
+  },
+  "feeds": [
+    "powers",
+    "exceptions"
+  ]
+}

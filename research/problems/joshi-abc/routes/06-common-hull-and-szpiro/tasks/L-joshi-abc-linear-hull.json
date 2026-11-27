@@ -1,0 +1,24 @@
+{
+  "id": "L-joshi-abc-linear-hull",
+  "statement": "∀ l Q R U δ : ℝ, 3 < l → -((l+1)/4)*Q-δ ≤ R → R ≤ -(l*(l+1)/12)*Q+U → 2*l*Q/6 ≤ 4*l/((l-3)*(l+1))*(U+δ)",
+  "plain_statement": {
+    "zh": "新路线 · 同一包络与局部 Szpiro · JA-0048 · 从同一 R 导出线性下界方案的 Szpiro 系数",
+    "en": "New route · Common hull and local Szpiro · JA-0048 · Derive the linear-witness Szpiro coefficient on one hull"
+  },
+  "brief": {
+    "zh": "相减时必须使用同一 R；化简 A−b=(ℓ−3)(ℓ+1)/12。",
+    "en": "Subtract inequalities for the identical R and factor A−b=(ℓ−3)(ℓ+1)/12."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/joshi-abc.md",
+  "program": "foundation",
+  "role": "conditional",
+  "parallel": true,
+  "depends_on": [
+    "L-joshi-abc-mean-linear",
+    "L-joshi-abc-mean-square"
+  ],
+  "imports": [],
+  "track": "06-common-hull-and-szpiro",
+  "module": "Conjectures.JoshiAbc.LinearHull",
+  "file": "lean/Conjectures/JoshiAbc/LinearHull.lean"
+}

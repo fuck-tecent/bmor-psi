@@ -1,0 +1,22 @@
+{
+  "id": "L-twin-primes-wheel-marginal-counterexample",
+  "statement": "let w := fun (X : ℕ) => (Finset.range (2*X+1)).filter (fun n => X < n ∧ 50*n < 51*X); ∀ (q X : ℕ), 0 < q → 200*(q+1) ≤ X → (∃ a : ℕ, a < q ∧ Nat.Coprime a q ∧ Nat.Coprime (a+2) q) → (∃ f g : ℕ → ℝ, (∀ n, (f n=0 ∨ f n=1) ∧ (g n=0 ∨ g n=1) ∧ (¬ (n ∈ w X ∧ Nat.Coprime n q) → f n=0 ∧ g n=0)) ∧ (∀ a : ℕ, a < q → ((w X).filter (fun n => n%q=a)).sum f = ((w X).filter (fun n => n%q=a)).sum g) ∧ (w X).sum (fun n => f n * f (n+2))=1 ∧ (w X).sum (fun n => g n * g (n+2))=0)",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然推广 · TP-0066 · 构造轮筛各余类质量一致但差二相关不同的同窗权重",
+    "en": "New route · Levent GRH methods and extensions · TP-0066 · Construct two weights with the same wheel marginals and different gap-two correlations"
+  },
+  "brief": {
+    "zh": "选同一个 w 中的 k≡a (mod q)，令两份权支撑在 {k,k+2} 与 {k,k+2+2q}。两份权均在单位余类内。该反例检验只使用轮筛各余类质量的推导，给 TP-0052R 的局部到整体比较划出限制。",
+    "en": "Choose k≡a (mod q) in w. Use supports {k,k+2} and {k,k+2+2q}. Both weights are supported on unit classes. This counterexample tests deductions that use only the wheel marginals and gives a limit for the local-to-global comparison in TP-0052R."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/twin-primes.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-crt-mask",
+    "L-twin-primes-local-residues",
+    "L-twin-primes-window-endpoint-overhang"
+  ],
+  "imports": []
+}

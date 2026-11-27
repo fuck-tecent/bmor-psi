@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-reciprocal-chord-sum",
+  "statement": "let E (y : ℝ) := Complex.exp (((2 * Real.pi * y : ℝ) : ℂ) * Complex.I); let cap (H y : ℝ) := if E y = 1 then H else min H (2 / ‖1 - E y‖); ∀ (a q : ℕ) (t x H : ℝ), 1 ≤ q → Nat.Coprime a q → 0 ≤ H → |t - (a : ℝ) / q| ≤ 1 / (q : ℝ)^2 → (∑ r ∈ Finset.range q, cap H (x + (r : ℝ)*t)) ≤ 6 * (H + (q : ℝ) * Real.log (2 * q))",
+  "plain_statement": {
+    "en": "If |t−a/q| ≤ q⁻² with a/q reduced, the capped reciprocal-chord sum over x, x+t, …, x+(q−1)t is at most 6(H + q log(2q)), uniformly in x. A resonant term contributes H.",
+    "zh": "若既约分数 a/q 满足 |t−a/q| ≤ q⁻²，则在 x, x+t, …, x+(q−1)t 上的截断倒弦长之和不超过 6(H + q log(2q))，该界与 x 无关。共振项取 H。"
+  },
+  "brief": {
+    "en": "Associate to each sample the integer round(qx)+ar−q round(x+rt). Coprimality makes these indices distinct. Bound each term with absolute index below 3 by H. For the other indices, the sine chord inequality bounds each term by q divided by the absolute index.",
+    "zh": "给第 r 项配以整数 round(qx)+ar−q round(x+rt)。互素性保证这些整数两两不同。绝对值小于 3 的项用 H 控制，其余项由正弦弦长不等式以 q 除以指标绝对值控制。"
+  },
+  "program": "correlation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://arxiv.org/abs/1205.5252",
+  "track": "bilinear-minor-dispersion",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.ReciprocalChordSum",
+  "file": "lean/Conjectures/Goldbach/ReciprocalChordSum.lean"
+}

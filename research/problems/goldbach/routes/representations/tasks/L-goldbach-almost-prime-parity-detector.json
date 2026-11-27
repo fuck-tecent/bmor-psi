@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-almost-prime-parity-detector",
+  "statement": "∀ (N M : ℕ), let Adm := (Finset.range N).filter (fun p => Nat.Prime p ∧ M < N - p ∧ (Nat.Prime (N - p) ∨ ∃ r ∈ Finset.Icc 2 N, ∃ q ∈ Finset.Icc 2 N, Nat.Prime r ∧ Nat.Prime q ∧ r ^ 10 ≤ q ^ 9 ∧ N - p = r * q)); let D : ℤ := (Adm.card : ℤ); let J : ℤ := ∑ p ∈ Adm, (-1 : ℤ) ^ (N - p).primeFactorsList.length; let R : ℤ := ((Adm.filter (fun p => Nat.Prime (N - p))).card : ℤ); let Semi := (Finset.Icc 2 N).filter (fun r => Nat.Prime r); D - J = 2 * R ∧ J + R = ∑ r ∈ Semi, ((Adm.filter (fun p => ∃ q ∈ Finset.Icc 2 N, Nat.Prime q ∧ r < q ∧ r ^ 10 ≤ q ^ 9 ∧ N - p = r * q)).card : ℤ)",
+  "plain_statement": {
+    "zh": "新路线 · Li-Liu 1+1.9 加权筛 · SW-7002 · 在候选集检出真素数对并按最小因子拆分半素数分支",
+    "en": "New route · Li-Liu 1+1.9 weighted sieve · SW-7002 · Parity detector for true prime pairs and disjoint semiprime branching"
+  },
+  "brief": {
+    "zh": "对 Li–Liu 1+1.9 加权筛的合格素数集合 Adm，设 J = ∑ (-1)^Ω(N−p)，证明 D − J = 2R（真素数表示数），并把 J + R 按唯一较小素因子 r < q 重排为互斥双和。",
+    "en": "For the Li–Liu 1+1.9 admissible prime set Adm and J = ∑ (-1)^Ω(N−p), prove D − J = 2R and partition J + R disjointly over the unique smaller prime factor r < q."
+  },
+  "source": "https://www.goldbach.tech/?lemma=L-goldbach-binary-pointwise-positivity",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "representations",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.AlmostPrimeParityDetector",
+  "file": "lean/Conjectures/Goldbach/AlmostPrimeParityDetector.lean"
+}

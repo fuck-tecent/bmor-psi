@@ -1,0 +1,24 @@
+{
+  "id": "L-joshi-abc-bounded-local-szpiro",
+  "statement": "∀ (a b M : ℕ) (S : Finset ℕ), 0<a → 0<b → Nat.Coprime a b → (∀ p ∈ S, p.Prime ∧ Odd p ∧ multiplicity p (a*b*(a+b)) ≤ M) → S.sum (fun p => (multiplicity p (16*a^2*b^2*(a+b)^2):ℝ)*Real.log p) ≤ 2*(M:ℝ)*S.sum (fun p => Real.log p)",
+  "plain_statement": {
+    "zh": "新路线 · 同一包络与局部 Szpiro · JA-0055 · 给已知重数上界的奇素数集合计算局部判别式界",
+    "en": "New route · Common hull and local Szpiro · JA-0055 · Bound the local discriminant sum for odd primes with a given multiplicity bound"
+  },
+  "brief": {
+    "zh": "对已有 vₚ(abc)≤M 的每个奇素数，用 vₚ(Δ)=2vₚ(abc) 后求和。任务中的 M 是输入。",
+    "en": "Use vₚ(Δ)=2vₚ(abc) at each odd prime and sum the bounds. The hypothesis supplies M."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/joshi-abc.md",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-joshi-abc-frey-discriminant",
+    "L-joshi-abc-frey-minimal"
+  ],
+  "imports": [],
+  "track": "06-common-hull-and-szpiro",
+  "module": "Conjectures.JoshiAbc.BoundedLocalSzpiro",
+  "file": "lean/Conjectures/JoshiAbc/BoundedLocalSzpiro.lean"
+}

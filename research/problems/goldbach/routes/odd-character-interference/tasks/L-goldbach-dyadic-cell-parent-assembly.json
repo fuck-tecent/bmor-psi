@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-dyadic-cell-parent-assembly",
+  "statement": "(let w := fun p : ℕ => if Nat.Prime p then Real.log (p : ℝ) else 0; ∃ K : ℕ, ∀ k ≥ K, let n : ℕ := 2^k; let H : ℕ := 2^(k-k/4); ∀ x : ℕ, n ≤ 3*x → 3*x ≤ 2*n → (H:ℝ)/2 ≤ ∑ t ∈ Finset.range H, w (x+t)) → (let w := fun p : ℕ => if Nat.Prime p then Real.log (p : ℝ) else 0; ∀ k : ℕ, 12 ≤ k → let n : ℕ := 2^k; let H : ℕ := 2^(k-k/4); let B : ℕ := 2^(k/4-3); let p := fun j t : ℕ => n/2+j*H+t; let a := fun j t : ℕ => w (p j t); let b := fun j t : ℕ => w (n-p j t); (∀ x : ℕ, n ≤ 3*x → 3*x ≤ 2*n → (H:ℝ)/2 ≤ ∑ t ∈ Finset.range H, w (x+t)) → (n:ℝ)/32 + (∑ j ∈ Finset.range B, (∑ s ∈ Finset.range H, ∑ t ∈ Finset.range H, (a j s-a j t)*(b j s-b j t)) / (2*(H:ℝ))) ≤ (∑ p ∈ (Finset.range (n+1)).filter (fun p => n ≤ 3*p ∧ 3*p ≤ 2*n), w p * w (n-p))) → (let w := fun p : ℕ => if Nat.Prime p then Real.log (p : ℝ) else 0; ∃ K : ℕ, ∀ k ≥ K, let n : ℕ := 2^k; let H : ℕ := 2^(k-k/4); let B : ℕ := 2^(k/4-3); let p := fun j t : ℕ => n/2+j*H+t; let a := fun j t : ℕ => w (p j t); let b := fun j t : ℕ => w (n-p j t); -(n:ℝ)/64 ≤ (∑ j ∈ Finset.range B, (∑ s ∈ Finset.range H, ∑ t ∈ Finset.range H, (a j s-a j t)*(b j s-b j t)) / (2*(H:ℝ)))) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k : ℝ) else 0; ∃ c : ℝ, 0 < c ∧ ∃ k₀ : ℕ, ∀ k ≥ k₀, let n : ℕ := 2^k; c*(n : ℝ) ≤ ∑ p ∈ (Finset.range (n+1)).filter (fun p => n ≤ 3*p ∧ 3*p ≤ 2*n), w p * w (n-p))",
+  "plain_statement": {
+    "zh": "新路线 · 奇特征干涉 · OC-0106 · 以常数 1/64 回到冻结的二次幂父题",
+    "en": "New route · Odd-character interference · OC-0106 · Recover the frozen dyadic target with constant 1/64"
+  },
+  "brief": {
+    "zh": "引入三个前提，取两个阈值与 12 的最大值。在同一 k 代入有限比较，得到 n/32−n/64=n/64。",
+    "en": "Introduce the three hypotheses, take the maximum of 12 and the two eventual thresholds, then combine the inequalities at the same k to obtain n/64."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/afb1c3cdad86ce7a6814e4a9c3429b38ac66f6c7/research/gaps.json",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "odd-character-interference",
+  "role": "conditional",
+  "module": "Conjectures.Goldbach.DyadicCellParentAssembly",
+  "file": "lean/Conjectures/Goldbach/DyadicCellParentAssembly.lean"
+}

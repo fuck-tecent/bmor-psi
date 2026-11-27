@@ -1,0 +1,16 @@
+{
+  "id": "deuring-heilbronn-and-25b-cert",
+  "title": {
+    "en": "Quadratic Gauss sums and a 25-billion certificate",
+    "zh": "二次高斯和与二百五十亿验证"
+  },
+  "description": {
+    "en": "Evaluate the prime-modulus quadratic Gauss norm, exhibit the obstruction to a uniform conductor cutoff in the exceptional budget, and certify finite prime-log positivity.",
+    "zh": "计算素数模二次高斯和的范数，展示例外误差预算中统一导子阈值的障碍，并以有限证书验证素数对数卷积的正性。"
+  },
+  "feeds": [
+    "rational-model",
+    "arc-budget",
+    "representations"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-finite-chen-distinct-factor-cube-split",
+  "statement": "∀ n : ℕ, let R := (Finset.Icc 2 n).filter Nat.Prime; let D := (Finset.range (n+1)).filter (fun p => p.Prime ∧ (R.filter (fun r => ((Finset.Ioc r (n/r)).filter (fun v => v.Prime ∧ p+r*v=n)).Nonempty)).Nonempty); let B := D.filter (fun p => (R.filter (fun r => r ∣ n ∧ ((Finset.Ioc r (n/r)).filter (fun v => v.Prime ∧ p+r*v=n)).Nonempty)).Nonempty); let L := R.filter (fun r => ¬ r∣n ∧ r^3≤n); let H := R.filter (fun r => ¬ r∣n ∧ n<r^3); let F := fun r : ℕ => ((Finset.Ioc r (n/r)).filter (fun v => v.Prime ∧ (n-r*v).Prime)).card; D.card = B.card + (∑ r ∈ L, F r) + (∑ r ∈ H, F r) ∧ B.card≤n.primeFactors.card",
+  "plain_statement": {
+    "zh": "新路线 · 小偶数覆盖第三批 · FR-9020 · 按较小因子的立方切分陈氏不同因子余项并界定坏模数",
+    "en": "New route · Finite-range coverage III · FR-9020 · Split distinct-factor Chen remainders at the cube-root threshold and bound the bad moduli"
+  },
+  "brief": {
+    "zh": "不同素因子按 r<v 唯一排序。r∣n 时 p 必须等于 r，所以坏模数合计至多为 n 的不同素因子个数。两个好模数和都保留 n−rv 的素性。",
+    "en": "Order the distinct primes uniquely by r<v. If r divides n, primality forces p=r, so the total bad contribution is at most the number of distinct prime factors of n. Both good-modulus sums retain primality of n−rv."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/finite-rfc-third/README.md#weighted-sieve-and-chen-counts",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-finite-factor-window-switch",
+    "L-goldbach-finite-chen-distinct-factor-band-cap"
+  ],
+  "imports": []
+}

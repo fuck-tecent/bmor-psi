@@ -1,0 +1,14 @@
+{
+  "id": "fourier",
+  "title": {
+    "zh": "建立有限傅里叶变换",
+    "en": "Build the finite Fourier transform"
+  },
+  "description": {
+    "zh": "在有限循环群上验证正交性、反演与能量公式，为检查圆法系数提供独立模型。",
+    "en": "Use character orthogonality, inversion and energy on a finite cyclic group as an independent coefficient model."
+  },
+  "feeds": [
+    "integrals"
+  ]
+}

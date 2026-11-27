@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-type2-fixed-target-reciprocal-error",
+  "statement": "let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (u : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (u k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let Q₁ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊; let H := fun n : ℕ => 256 * Q₁ n * Q n; let wideArcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q₁ n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (H n:ℝ)/((q:ℝ)*(n:ℝ))}; let Λ := ArithmeticFunction.vonMangoldt; let μ := fun d : ℕ => ((ArithmeticFunction.moebius d : ℤ) : ℝ); let U := fun n : ℕ => ⌊(n:ℝ)^(1/16:ℝ)⌋₊; let B₁ := fun n : ℕ => ⌊(n:ℝ)^(1/4:ℝ)⌋₊; let B₂ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊; let τ₂ := fun (n m : ℕ) => ∑ a ∈ (Nat.divisors m).filter (fun a => B₁ n < a ∧ a ≤ B₂ n ∧ U n < m / a), (∑ d ∈ (Nat.divisors a).filter (fun d => U n < d), μ d) * Λ (m / a); let Jdeep := fun (n : ℕ) (u v : ℕ → ℝ) => intervalIntegral (fun t => (wideArcs n)ᶜ.indicator (fun x => S n u x * S n v x * E (-(n:ℝ)*x)) t) (0:ℝ) 1 MeasureTheory.volume; let P := fun n : ℕ => (Finset.range (n+1)).filter (fun p : ℕ => n.sqrt < p ∧ p.Prime);\nlet M := fun (j : ℤ) (t : ℝ) => Complex.exp (((j : ℂ) * (2*(Real.pi:ℂ)*Complex.I))*(t:ℂ));\nlet C := fun (n p a : ℕ) => if (p,a) ∈ ((P n).product (Finset.range (B₂ n+1))).filter (fun (i : ℕ×ℕ) => B₁ n < i.2 ∧ U n < i.1 ∧ i.2*i.1 ≤ n) then (((∑ d ∈ a.divisors.filter (fun d => U n < d), μ d) * Real.log p : ℝ):ℂ) else 0;\nlet R := fun (n p : ℕ) (t : ℝ) => ∑ a ∈ Finset.range (B₂ n+1), C n p a * M a ((p:ℝ)*t);\nlet D := fun n : ℕ => (P n).product (P n) \\ (((P n).product (P n)).filter (fun i => |(i.1:ℤ)-i.2| ≤ B₁ n));\nlet I := fun (n p q : ℕ) => ((n:ZMod q)*(p:ZMod q)⁻¹).val;\nlet V := fun n : ℕ => ∑ i ∈ D n, C n i.1 (I n i.1 i.2) * C n i.2 (I n i.2 i.1);\nlet W := fun n : ℕ => ∫ t in (Set.Icc (0:ℝ) 1 ∩ wideArcs n), (∑ i ∈ D n, R n i.1 t * R n i.2 t) * M (-(n:ℤ)) t;\n∃ K : ℝ, 0 < K ∧ ∀ n : ℕ, 64 ≤ n → ‖Jdeep n (τ₂ n) (τ₂ n) - (V n - W n)‖ ≤ K*(n:ℝ)^(125/128:ℝ)",
+  "plain_statement": {
+    "zh": "对每个 n ≥ 64，将 (2,2) 深次弧积分化为相距超过 ⌊n^(1/4)⌋ 的大素数对的加权逆元和减去同批素数对的宽弧积分，误差至多为 C n^(125/128)。",
+    "en": "For every n ≥ 64, approximate the (2,2) deep minor arc integral by a weighted reciprocal sum over large prime pairs separated by more than ⌊n^(1/4)⌋, minus their wide arc integral, with error at most C n^(125/128)."
+  },
+  "brief": {
+    "zh": "先估计高次素数幂、小素因子和近素数对。保留 p,q>√n 时 pq>n，若 ap+bq=n，则两个短因子分别由 n 乘以 p 模 q、q 模 p 的逆元确定。宽弧项须保留原权重。仍需对每个充分大的偶数证明余下差值为 o(n)。",
+    "en": "Bound higher prime powers, small prime cofactors and close pairs. For retained primes p,q>√n one has pq>n. Orthogonality and the support restrictions select the short factors by reciprocal residues in ap+bq=n. Keep the same weights on the wide arcs. Cancellation of the remaining discrepancy for every sufficiently large even n stays open."
+  },
+  "source": "https://www.movan.tech/goldbach/?lemma=L-goldbach-frontier-type2-b2-b2",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "role": "lemma",
+  "track": "frontier-type2-dyadic-matrix",
+  "module": "Conjectures.Goldbach.Type2FixedTargetReciprocalError",
+  "file": "lean/Conjectures/Goldbach/Type2FixedTargetReciprocalError.lean"
+}

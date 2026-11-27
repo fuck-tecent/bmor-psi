@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-antispike-shared-coefficient-error",
+  "statement": "∀ (n : ℕ) (a w : ℕ → ℝ) (δ T : ℝ), 0 ≤ δ → let s := Finset.Icc n (2 * n); ((∀ c : ℕ → ℝ, (∑ m ∈ s, (c m - a m) ^ 2) ≤ δ ^ 2 → (∑ m ∈ s, w m * c m) - c n ≤ T) ↔ (∑ m ∈ s, w m * a m) - a n + δ * Real.sqrt (1 - 2 * w n + ∑ m ∈ s, (w m) ^ 2) ≤ T)",
+  "plain_statement": {
+    "zh": "反尖峰窗口的中心项与加权和使用同一组近似系数。给定任意固定实权重，求平方误差预算内比较式的精确最坏上界。",
+    "en": "Find the exact worst case of the anti-spike window comparison for fixed real weights when the window sum and its center use the same approximated coefficients."
+  },
+  "brief": {
+    "zh": "在 [n,2n] 上把比较式写成权重 w 减去中心点质量与系数的内积。联合误差半径 δ 的精确代价为 δ√(1−2w(n)+Σw²)，极端扰动沿这个差向量取得。应用于深次弧时仍需要模型比较、真实系数的误差预算及符合父题的非负权重。",
+    "en": "Write the comparison on [n,2n] using the weights minus the point mass at n. A joint error radius δ costs exactly δ√(1−2w(n)+Σw²), attained by a perturbation along that difference. Application to deep arcs still requires a model bound, a true coefficient error budget, and weights meeting the parent constraints."
+  },
+  "source": "https://www.movan.tech/goldbach/?lang=en&lemma=L-goldbach-frontier-antispike-shift-transfer",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "frontier-moment-antispike",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.AntispikeSharedCoefficientError",
+  "file": "lean/Conjectures/Goldbach/AntispikeSharedCoefficientError.lean"
+}

@@ -30,22 +30,23 @@ class RankingTests(unittest.TestCase):
                         expires_at, absolute_expires_at, run_id, finished_at, verdict
                     ) VALUES (?, ?, 'hash', ?, 'network', 0, 0, 0, ?, ?, ?)
                 """, [(str(run), gap, handle, run, at, verdict) for handle, gap, run, at, verdict in rows])
+                conn.execute("UPDATE goldbach_leases SET points = 9 WHERE run_id = 14")
             with patch("deploy.desk.time.time", return_value=now):
                 payload = desk.public_status()
             self.assertEqual(payload["rankings"], {
                 "all_time": [
-                    {"handle": "alpha", "accepted": 2, "latest_accepted_at": now - 3600},
-                    {"handle": "gamma", "accepted": 1, "latest_accepted_at": now - 120},
+                    {"handle": "gamma", "accepted": 1, "points": 9, "latest_accepted_at": now - 120},
+                    {"handle": "alpha", "accepted": 2, "points": 2, "latest_accepted_at": now - 3600},
                 ],
                 "hour": [
-                    {"handle": "gamma", "accepted": 1, "latest_accepted_at": now - 120},
-                    {"handle": "alpha", "accepted": 1, "latest_accepted_at": now - 3600},
+                    {"handle": "gamma", "accepted": 1, "points": 9, "latest_accepted_at": now - 120},
+                    {"handle": "alpha", "accepted": 1, "points": 1, "latest_accepted_at": now - 3600},
                 ],
                 "contributors": 2,
                 "proofs": 3,
                 "latest_accepted_at": now - 120,
             })
-            self.assertEqual(payload["leaderboard"][0], {"handle": "alpha", "accepted": 2})
+            self.assertEqual(payload["leaderboard"][1], {"handle": "alpha", "accepted": 2})
 
 
 if __name__ == "__main__":

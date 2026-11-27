@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-binary-shift-exception-union",
+  "statement": "let G := fun m : ℕ => ((Finset.range (m+1)).filter (fun p => Nat.Prime p ∧ Nat.Prime (m-p))).card; ∃ X₀ : ℕ, ∀ X ≥ X₀, let L := Nat.log 2 X / 2; let E := (Finset.Ico X (2*X)).filter (fun n => Even n ∧ 0 < ((Finset.Icc 1 L).filter (fun e => G (n-2^e)=0)).card); E.card^5 ≤ X^4",
+  "plain_statement": {
+    "zh": "推论候选：几乎所有偶目标的全部小二次幂移位均有表示",
+    "en": "Candidate corollary: all small binary shifts work at almost every even target"
+  },
+  "brief": {
+    "zh": "将每个失败的 (n,e) 映到 Goldbach 例外 n−2^e。每个例外至多被计 L 次，用 Pintz 的例外集界吸收对数损失。仍允许个别 n 失败。",
+    "en": "Map each failing (n,e) to an exceptional even integer. Each has at most L preimages; absorb the logarithm with the published exceptional-set bound. Individual n may fail."
+  },
+  "source": "https://arxiv.org/abs/1804.09084",
+  "program": "exceptions",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "exceptions",
+  "role": "target",
+  "module": "Conjectures.Goldbach.BinaryShiftExceptionUnion",
+  "file": "lean/Conjectures/Goldbach/BinaryShiftExceptionUnion.lean"
+}

@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-frontier-type2-b1-b1-widearcs-measurable",
+  "statement": "let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let Q₁ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊; let H := fun n : ℕ => 256 * Q₁ n * Q n; let wideArcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q₁ n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (H n:ℝ)/((q:ℝ)*(n:ℝ))}; ∀ n, MeasurableSet (wideArcs n)",
+  "plain_statement": {
+    "zh": "wideArcs(n) 是 Borel 可测集。",
+    "en": "wideArcs(n) is Borel measurable."
+  },
+  "brief": {
+    "zh": "把存在量词展开为可数个有理邻域的并；每个邻域是闭区间。",
+    "en": "Expand the existential as a countable union of rational neighborhoods; each is a closed interval."
+  },
+  "source": "https://www.goldbach.tech/?lemma=L-goldbach-frontier-type2-b1-b1#roadmap",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "frontier-type2-dyadic-matrix",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.FrontierType2B1B1WidearcsMeasurable",
+  "file": "lean/Conjectures/Goldbach/FrontierType2B1B1WidearcsMeasurable.lean"
+}

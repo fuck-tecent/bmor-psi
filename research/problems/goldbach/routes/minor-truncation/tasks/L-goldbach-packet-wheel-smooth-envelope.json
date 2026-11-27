@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-packet-wheel-smooth-envelope",
+  "statement": "let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let model := fun k : ℕ => if Nat.Coprime k 30 then (30:ℝ)/8 else 0; let D := fun (n : ℕ) (t : ℝ) => ((n:ℝ)+1)^2/(1+((n:ℝ)+1)^2*‖E (30*t)-1‖^2); ∀ (n : ℕ) (t : ℝ), ‖S n model t‖^2 ≤ 3616*D n t",
+  "plain_statement": {
+    "zh": "用光滑的模 30 周期函数控制模型频谱平方",
+    "en": "Dominate the model spectrum by a smooth period-1/30 envelope"
+  },
+  "brief": {
+    "zh": "八个几何和分别乘上相位差后至多为 2。用全局平凡上界覆盖精确共振点，得到处处有限的显式函数。",
+    "en": "Multiply each geometric sum by its phase difference, then combine the resulting cap with the global size bound. The envelope is finite at the exact resonances."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "minor-truncation",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.PacketWheelSmoothEnvelope",
+  "file": "lean/Conjectures/Goldbach/PacketWheelSmoothEnvelope.lean"
+}

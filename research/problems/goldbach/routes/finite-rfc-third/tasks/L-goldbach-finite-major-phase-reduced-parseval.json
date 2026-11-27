@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-finite-major-phase-reduced-parseval",
+  "statement": "let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); ∀ (q : ℕ) (f : ℕ → ℂ), 0<q → (∑ a ∈ (Finset.range q).filter (fun a => Nat.Coprime a q), ‖∑ r ∈ (Finset.range q).filter (fun r => Nat.Coprime r q), f r*E ((a:ℝ)*(r:ℝ)/q)‖^2) ≤ (q:ℝ)*(∑ r ∈ (Finset.range q).filter (fun r => Nat.Coprime r q), ‖f r‖^2)",
+  "plain_statement": {
+    "zh": "新路线 · 小偶数覆盖第三批 · FR-9012 · 用加法 Parseval 控制既约分子上的误差平方和",
+    "en": "New route · Finite-range coverage III · FR-9012 · Bound phase errors over reduced numerators by additive Parseval"
+  },
+  "brief": {
+    "zh": "把单位类上的误差零延拓，再把输出频率扩大到全部剩余类。Parseval 给出 q 因子。这个因子与实际弧宽的 1/q 抵消。",
+    "en": "Extend the errors by zero on nonunits and sum over all output residues. Parseval supplies the factor q, which cancels the 1/q in the arc width."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/finite-rfc-third/README.md#fixed-major-arcs",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-discrete-parseval"
+  ],
+  "imports": []
+}

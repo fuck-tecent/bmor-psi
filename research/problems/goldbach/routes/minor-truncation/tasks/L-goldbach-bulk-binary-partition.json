@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-bulk-binary-partition",
+  "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let J := fun (n : ℕ) (v : ℝ → ℝ) => (intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => (v u:ℂ)*S n (high n) u*S n (high n) u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume).re; ∀ n : ℕ, (I n (high n) (high n)).re = J n (K n) + J n (fun t => 1-K n t)",
+  "plain_statement": {
+    "zh": "证明冻结次弧上的二项积分分割",
+    "en": "Split the frozen minor-arc integral into its two packet terms"
+  },
+  "brief": {
+    "zh": "检验指示函数在区间上的可积性，再用线性和 K+(1−K)=1。这个精确恒等式是两个分析输入与原高高项之间的接口。",
+    "en": "Establish interval integrability of the masked continuous factors, then apply linearity and the partition of unity. This exact identity connects the two inputs to the original bulk term."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2325",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "minor-truncation",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.BulkBinaryPartition",
+  "file": "lean/Conjectures/Goldbach/BulkBinaryPartition.lean"
+}

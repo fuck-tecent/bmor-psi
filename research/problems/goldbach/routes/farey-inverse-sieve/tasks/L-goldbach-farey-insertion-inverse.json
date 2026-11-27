@@ -1,0 +1,18 @@
+{
+  "id": "L-goldbach-farey-insertion-inverse",
+  "statement": "∀ n u : ℕ, 1 < n → 0 < u → u < n → u.Coprime n → ∃! a : ℕ, 0 < a ∧ a < n ∧ (a*u)%n = 1 ∧ ∃ b c : ℕ, b < u ∧ c ≤ n-u ∧ a*u = b*n+1 ∧ c*n = a*(n-u)+1 ∧ c*u = b*(n-u)+1",
+  "plain_statement": {
+    "zh": "新路线 · Farey 分母对与逆元筛 · HD-8001 · 给每个有序互素分母对唯一的插入分子",
+    "en": "New route · Farey denominator pairs and inverse sieve · HD-8001 · Find the unique insertion numerator for each ordered coprime denominator pair"
+  },
+  "brief": {
+    "zh": "给定左分母 u 和右分母 n−u，取 a 为 u 在模 n 的标准逆元。显式恢复左、右分子 b、c，验证两个行列式均为 1；分母和 n 保证旧 Farey 层 n−1 无内点。",
+    "en": "Take the least positive inverse a of the left denominator u modulo n. Recover the two numerators b and c and check the determinant identities. The sum of the denominators is n, which excludes an intermediate fraction at order n−1."
+  },
+  "source": "https://arxiv.org/abs/1206.6597",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

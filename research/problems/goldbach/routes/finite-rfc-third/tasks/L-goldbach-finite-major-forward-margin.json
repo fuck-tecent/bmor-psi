@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-finite-major-forward-margin",
+  "statement": "let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let _J := fun (h : ℝ) (f : ℝ → ℂ) => intervalIntegral f (-h) h MeasureTheory.volume; let Jr := fun (h : ℝ) (f : ℝ → ℝ) => intervalIntegral f (-h) h MeasureTheory.volume; let V := fun (n : ℕ) (β : ℝ) => ∑ k ∈ Finset.Icc 1 n, E ((k:ℝ)*β); let S := fun (n : ℕ) (α : ℝ) => ∑ k ∈ Finset.Icc 1 n, (ArithmeticFunction.vonMangoldt k:ℂ)*E ((k:ℝ)*α); let M := fun (n q : ℕ) (β : ℝ) => ((ArithmeticFunction.moebius q:ℤ):ℂ)/(Nat.totient q:ℂ)*V n β; let H := fun (n q : ℕ) => (105:ℝ)/((q:ℝ)*(n:ℝ)); let Q := Finset.Icc (1:ℕ) 105; let A := fun (q : ℕ) => (Finset.range q).filter (fun a => Nat.Coprime a q); let B := fun (n : ℕ) => ∑ q ∈ Q, ((A q).card:ℝ) * Jr (H n q) (fun β => ‖M n q β‖^2); let C := fun (n : ℕ) => ∑ q ∈ Q, ∑ a ∈ A q, (_J (H n q) (fun β => (M n q β)^2*E (-(n:ℝ)*((a:ℝ)/q+β)))).re; let U := fun (n : ℕ) => ∑ q ∈ Q, ∑ a ∈ A q, Jr (H n q) (fun β => ‖S n ((a:ℝ)/q+β)-M n q β‖^2); ∀ n : ℕ, 0<n → (7/2:ℝ)*(n:ℝ)<C n → B n<6*(n:ℝ) → U n≤(n:ℝ)/10 → let actual := ∑ q ∈ Q, ∑ a ∈ A q, (_J (H n q) (fun β => (S n ((a:ℝ)/q+β))^2*E (-(n:ℝ)*((a:ℝ)/q+β)))).re; C n-2*Real.sqrt (U n*B n)-U n≤actual ∧ (37/20:ℝ)*(n:ℝ)<actual",
+  "plain_statement": {
+    "zh": "新路线 · 小偶数覆盖第三批 · FR-9014 · 将模型与积分平方误差合成实际主弧的显式正余量",
+    "en": "New route · Finite-range coverage III · FR-9014 · Transfer the model and integrated squared error to an explicit major-arc margin"
+  },
+  "brief": {
+    "zh": "展开 S²−M²，对混合项在全部已标记弧上用一次 Cauchy–Schwarz。输入 U≤n/10 可由 FR-9013 的较强估计给出。",
+    "en": "Expand S²−M² and apply Cauchy–Schwarz to the mixed term across the indexed arcs. The stronger estimate in FR-9013 implies the input U≤n/10."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/finite-rfc-third/README.md#fixed-major-arcs",
+  "program": "correlation",
+  "role": "conditional",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-finite-major-fixed-model-bounds",
+    "L-goldbach-finite-major-bmor-conditional-energy"
+  ],
+  "imports": []
+}

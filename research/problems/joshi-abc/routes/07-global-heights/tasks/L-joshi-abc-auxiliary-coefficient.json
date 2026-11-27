@@ -1,0 +1,21 @@
+{
+  "id": "L-joshi-abc-auxiliary-coefficient",
+  "statement": "∀ ε : ℝ, 0 < ε → ∃ l : ℕ, l.Prime ∧ 7 ≤ l ∧ 4*(l:ℝ)/(((l:ℝ)-3)*(l+1)) ≤ ε",
+  "plain_statement": {
+    "zh": "新路线 · 全局高度与 abc · JA-0062 · 为每个 ε 选择统一合适大小的辅助素数",
+    "en": "New route · Global heights and abc · JA-0062 · Select the size of an auxiliary prime uniformly for each ε"
+  },
+  "brief": {
+    "zh": "用素数无界和有理函数趋零。具体曲线上的可用性须由算术高度上界承担。",
+    "en": "Use unbounded primes and decay of the rational function. The height estimate must account for admissibility on actual curves."
+  },
+  "source": "https://arxiv.org/abs/2403.10430",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "07-global-heights",
+  "module": "Conjectures.JoshiAbc.AuxiliaryCoefficient",
+  "file": "lean/Conjectures/JoshiAbc/AuxiliaryCoefficient.lean"
+}

@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-packet-remaining-center-count",
+  "statement": "let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let o := fun n q : ℕ => q % 2 = 1 ∧ ((Finset.Icc 1 ((Nat.log 2 (Q n)+1)^2)).filter (fun j => q ∣ 2^j-1)).Nonempty; ∀ ε : ℝ, 0<ε → ∃ N : ℕ, ∀ n ≥ N, (∑ q ∈ (Finset.Icc 1 ((Q n)^2)).filter (fun q => ¬ o n q), min (1:ℝ) ((q:ℝ)/(Q n:ℝ)) * (((Finset.range (q+1)).filter (fun a => Nat.Coprime a q ∧ (1:ℝ)/3 < K n ((a:ℝ)/(q:ℝ)))).card:ℝ) / (Nat.totient q:ℝ)^2) ≤ ε",
+  "plain_statement": {
+    "zh": "一般分母及偶分母的加权共振分子密度趋零",
+    "en": "Vanishing weighted density for remaining and even denominators"
+  },
+  "brief": {
+    "zh": "奇分母长周期可从二阶矩入手。偶分母写成 2ᵛr，分别处理初始 v 步和奇数部分；权重中的 q/Q 记录旧主弧剔除的峰心。",
+    "en": "Use the second moment for long odd periods. For q=2ᵛr separate the transient from the odd orbit. The q/Q factor accounts for the removed original core."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "minor-truncation",
+  "role": "target",
+  "module": "Conjectures.Goldbach.PacketRemainingCenterCount",
+  "file": "lean/Conjectures/Goldbach/PacketRemainingCenterCount.lean"
+}

@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-packet-divisor-mixture-leakage",
+  "statement": "let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let P := fun (d M : ℕ) (t : ℝ) => ∑ j ∈ Finset.range M, (E ((d:ℝ)*t))^(j+1); let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∀ (n R : ℕ) (c : ℕ → ℝ) (M : ℕ → ℕ), 0<n → R ≤ Q n → m (arcs n)ᶜ (fun t => ‖∑ d ∈ Finset.Icc 1 R, (c d:ℂ)*P d (M d) t‖^2) ≤ (2*Real.pi*(n:ℝ)/(Q n:ℝ))*(∑ d ∈ Finset.Icc 1 R, |c d|)^2",
+  "plain_statement": {
+    "zh": "控制带符号系数的小除数混合谱",
+    "en": "Control mixtures of small-divisor spectra with signed coefficients"
+  },
+  "brief": {
+    "zh": "可取 M(d)=⌊n/d⌋。加权柯西不等式把代价限制在系数绝对值总和的平方；该总和为 o(√Q) 时贡献为 o(n)。",
+    "en": "Take M(d)=floor(n/d) for multiples. Weighted Cauchy–Schwarz charges the squared ℓ¹ norm. Coefficient mass o(√Q) gives leakage o(n)."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "minor-truncation",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.PacketDivisorMixtureLeakage",
+  "file": "lean/Conjectures/Goldbach/PacketDivisorMixtureLeakage.lean"
+}

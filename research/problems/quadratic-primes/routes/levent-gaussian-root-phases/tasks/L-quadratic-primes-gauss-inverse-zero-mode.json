@@ -1,0 +1,20 @@
+{
+  "id": "L-quadratic-primes-gauss-inverse-zero-mode",
+  "statement": "∀ (b : ℕ) [NeZero b] (k : ℤ),\n  (∑ u : (ZMod b)ˣ, ZMod.stdAddChar ((k : ZMod b) * (↑(u⁻¹) : ZMod b))) =\n    ∑ d ∈ (Nat.gcd b k.natAbs).divisors, (d : ℂ) * (ArithmeticFunction.moebius (b/d) : ℂ)",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然扩张 · QP-0092 · 计算较小模数完全化的零频 Ramanujan 和",
+    "en": "New route · Levent GRH and natural extensions · QP-0092 · Compute the zero frequency of the completed inverse sum as a Ramanujan sum"
+  },
+  "brief": {
+    "zh": "单位求逆给置换，故零频可由互素条件的 Möbius 反演计算。保留 k=0 和合数 b。该式为按 a 重排后的零频提供精确基准。",
+    "en": "Inversion permutes the units, so expand the coprimality condition by Möbius inversion. Include k=0 and composite b. This gives the exact zero frequency after reindexing by a."
+  },
+  "source": "https://github.com/leanprover-community/mathlib4/blob/fc4f59e577feb1a4956671bc04ac18aaaf8cd842/Mathlib/NumberTheory/ArithmeticFunction/Moebius.lean",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": false,
+  "depends_on": [
+    "L-quadratic-primes-gauss-inverse-reciprocity"
+  ],
+  "imports": []
+}

@@ -1,0 +1,23 @@
+{
+  "id": "L-joshi-abc-frey-height",
+  "statement": "let h := fun (a b : ℕ) => Real.log ((a:ℝ)+b); ∀ a b : ℕ, 0 < a → 0 < b → 2*h a b + Real.log 12 ≤ Real.log (16*((a:ℝ)^2+a*b+(b:ℝ)^2))",
+  "plain_statement": {
+    "zh": "新路线 · 全局高度与 abc · JA-0058 · 用 Frey 的 c₄ 一致控制 log c 的无穷处高度",
+    "en": "New route · Global heights and abc · JA-0058 · Control the archimedean height log c with the Frey invariant c₄"
+  },
+  "brief": {
+    "zh": "用 4(a²+ab+b²)−3(a+b)²=(a−b)²，再取对数。",
+    "en": "Use 4(a²+ab+b²)−3(a+b)²=(a−b)² before taking logarithms."
+  },
+  "source": "https://arxiv.org/abs/2403.10430",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-joshi-abc-frey-minimal"
+  ],
+  "imports": [],
+  "track": "07-global-heights",
+  "module": "Conjectures.JoshiAbc.FreyHeight",
+  "file": "lean/Conjectures/JoshiAbc/FreyHeight.lean"
+}

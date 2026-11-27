@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-three-quarters-model-sqrt-exceptions",
+  "statement": "let e := fun u : ℝ => Complex.exp (((2 * Real.pi * u : ℝ) : ℂ) * Complex.I); let w := fun k : ℕ => if Nat.Prime k then Real.log (k : ℝ) else 0; let S := fun (n : ℕ) (t : ℝ) => ∑ k ∈ Finset.range (n + 1), (w k : ℂ) * e ((k : ℝ) * t); let L := fun n : ℕ => (Nat.log 2 (n + 2) : ℝ); let Q := fun n : ℕ => ⌊((n : ℝ) ^ (1 / 6 : ℝ)) ^ 2⌋₊; let H : ℕ → ℕ := fun n => 256 * Q n * (Nat.log 2 (n + 2)) ^ 2; let center := fun q a : ℕ => (a : ℝ) / q; let width := fun n q : ℕ => (H n : ℝ) / ((q : ℝ) * n); let mean := fun q a : ℕ => (∑ r ∈ (Finset.range q).filter (fun r => Nat.Coprime r q), e ((r : ℝ) * center q a)) / (q.totient : ℂ); let K := fun (n : ℕ) (t : ℝ) => ∑ k ∈ Finset.range (n + 1), e ((k : ℝ) * t); let model := fun (n : ℕ) (t : ℝ) => ∑ q ∈ Finset.Icc 1 (Q n), ∑ a ∈ (Finset.range (q + 1)).filter (fun a => Nat.Coprime a q), (Set.Icc (center q a - width n q) (center q a + width n q)).indicator (fun u => mean q a * K n (u - center q a)) t; (∃ (C : ℝ) (k : ℕ), 0 < C ∧ Filter.Eventually (fun n : ℕ => ∀ t ∈ Set.Icc (0 : ℝ) 1, ‖S n t - model n t‖ ≤ C * (n : ℝ) ^ (3 / 4 : ℝ) * L n ^ k) Filter.atTop) → ∀ ε : ℝ, 0 < ε → let reps := fun n : ℕ => (Finset.range (n + 1)).filter (fun p => Nat.Prime p ∧ Nat.Prime (n - p)); ∃ N : ℕ, ∀ X : ℕ, N ≤ X → (((Finset.range (X + 1)).filter (fun n => 4 ≤ n ∧ Even n ∧ (reps n).card = 0)).card : ℝ) ≤ (X : ℝ) ^ (1 / 2 + ε)",
+  "plain_statement": {
+    "en": "Assume that on the whole unit interval the specified circle model approximates the prime-log sum with error at most C n^(3/4) L(n)^k eventually. For each ε > 0, at most X^(1/2 + ε) even integers from 4 through X then lack a two-prime representation, for all sufficiently large X.",
+    "zh": "设所给圆法模型在整个单位区间对素数对数和的误差最终至多为 C n^(3/4) L(n)^k。则对任意 ε > 0，当 X 充分大时，4 至 X 中至多有 X^(1/2 + ε) 个偶数不能表示为两素数之和。"
+  },
+  "brief": {
+    "en": "Apply the variance bound to the uniform model hypothesis, pass from dyadic blocks to the cumulative count, and recognize an exception by the empty computable set of prime summands.",
+    "zh": "对全区间的模型假设应用方差界，从二进区间推广到累积计数，并用可计算的素数加数集合是否为空判定例外。"
+  },
+  "program": "exceptions",
+  "imports": [],
+  "parallel": true,
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/5c12780c17ea2303bdcca2226443828da679b137/research/gaps.json#L2165-L2184",
+  "track": "selberg-large-sieve-and-power-saving",
+  "role": "conditional",
+  "module": "Conjectures.Goldbach.ThreeQuartersModelSqrtExceptions",
+  "file": "lean/Conjectures/Goldbach/ThreeQuartersModelSqrtExceptions.lean"
+}

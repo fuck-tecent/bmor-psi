@@ -1,0 +1,22 @@
+{
+  "id": "L-quadratic-primes-shifted-residue-invariance",
+  "statement": "∀ (m a b c : ℕ), a % m = b % m → (a ^ 2 + (1 + c)) % m = (b ^ 2 + (1 + c)) % m",
+  "plain_statement": {
+    "zh": "若两个标准候选代表模 m 同余，则它们的平方加任意正偏移后仍模 m 同余。",
+    "en": "If two candidate representatives agree modulo m, their squares plus any positive offset agree modulo m."
+  },
+  "brief": {
+    "zh": "在 n²+1 的余数不变引理上加同一个 c，得到 n²+(1+c) 的根标签替换规则，用于固定偏移的移动窗口。",
+    "en": "Add c on both sides of the residue-invariance lemma for n²+1 to obtain the change-of-representative rule for shifted moving windows."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/12",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-quadratic-primes-residue-invariance"
+  ],
+  "imports": [
+    "PEqualNP.Outside.L_quadratic_primes_residue_invariance"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "id": "L-joshi-abc-character-cancellation",
+  "statement": "∀ (p n : ℕ) [Fact p.Prime] (H : Submodule (ZMod p) (Fin n → ZMod p)) [Fintype H] (χ : (Fin n → ZMod p) → ℂ) (b : Fin n → ZMod p), (∀ x y, χ (x+y)=χ x*χ y) → (∃ h : H, χ h.val ≠ 1) → (∑ h : H, χ (b+h.val)) = 0",
+  "plain_statement": {
+    "zh": "新路线 · 迹、不同理想与 Fourier 缺额 · JA-0034 · 用平移证明非平凡字符的陪集和为零",
+    "en": "New route · Trace, different and Fourier deficit · JA-0034 · Cancel the sum of a nontrivial character over a coset"
+  },
+  "brief": {
+    "zh": "沿已检出的方向平移陪集；求和不变，非平凡相位迫使总和为零。",
+    "en": "Translate the coset by a detected direction. The sum is unchanged and is multiplied by a nontrivial phase."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/joshi-abc.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "04-trace-and-fourier",
+  "module": "Conjectures.JoshiAbc.CharacterCancellation",
+  "file": "lean/Conjectures/JoshiAbc/CharacterCancellation.lean"
+}

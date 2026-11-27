@@ -1,0 +1,21 @@
+{
+  "id": "L-quadratic-primes-gauss-inverse-completion",
+  "statement": "∀ (b : ℕ) [NeZero b] (k : ZMod b) (w : ZMod b → ℂ),\n  let S := fun j : ZMod b =>\n    ∑ a : (ZMod b)ˣ, ZMod.stdAddChar (j*(a : ZMod b)+k*(↑(a⁻¹) : ZMod b));\n  (∑ a : (ZMod b)ˣ, w (a : ZMod b) * ZMod.stdAddChar (k*(↑(a⁻¹) : ZMod b))) =\n    (∑ j : ZMod b, ZMod.dft w j * S j)/(b : ℂ) ∧\n  (∑ j : ZMod b, ‖S j‖^2) = (b : ℝ)*(Nat.totient b : ℝ)",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然扩张 · QP-0093 · 完全化任意实际权的逆元和并确定完整二阶矩",
+    "en": "New route · Levent GRH and natural extensions · QP-0093 · Complete the inverse sum for an arbitrary actual weight and compute the full second moment"
+  },
+  "brief": {
+    "zh": "用负号约定的 DFT 逆变换得到正 j 相位，再按单位的标准代表做完全正交。w 可同时携带 p=a²+b² 的素性、动态窗和对数权。",
+    "en": "Use the inverse transform for the negative-sign DFT to obtain the positive j phase. Apply complete orthogonality to the unit representatives. The weight w can carry primality of p=a²+b², the moving window, and the log weight together."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/FoundationProofs/DirichletCharFiniteFourierTransformProperties.lean#L85",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": false,
+  "depends_on": [
+    "L-quadratic-primes-gauss-inverse-zero-mode",
+    "L-quadratic-primes-levent-finite-dft-parseval"
+  ],
+  "imports": []
+}

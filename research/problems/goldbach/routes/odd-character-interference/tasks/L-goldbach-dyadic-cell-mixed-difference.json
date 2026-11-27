@@ -1,0 +1,25 @@
+{
+  "id": "L-goldbach-dyadic-cell-mixed-difference",
+  "statement": "∀ (H : ℕ) (a b : Fin H → ℝ), (∑ s, ∑ t, (a s-a t)*(b s-b t)) = 2*((H:ℝ)*(∑ s, a s*b s)-(∑ s, a s)*(∑ t, b t))",
+  "plain_statement": {
+    "zh": "新路线 · 奇特征干涉 · OC-0102 · 单块上的带符号差分恒等式",
+    "en": "New route · Odd-character interference · OC-0102 · Signed mixed differences on one cell"
+  },
+  "brief": {
+    "zh": "将已有平方差恒等式极化，或展开双和。计入两份交叉项。",
+    "en": "Polarize the squared-distance identity or expand the double sum. Count both cross terms."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/afb1c3cdad86ce7a6814e4a9c3429b38ac66f6c7/research/gaps.json",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-cluster-balanced-energy"
+  ],
+  "imports": [
+    "PEqualNP.Outside.L_goldbach_cluster_balanced_energy"
+  ],
+  "track": "odd-character-interference",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.DyadicCellMixedDifference",
+  "file": "lean/Conjectures/Goldbach/DyadicCellMixedDifference.lean"
+}

@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-rough-fifth-triples",
+  "statement": "let C := fun N : ℕ => (Finset.range N).filter (fun p => Nat.Prime p ∧ N < 3*p ∧ 3*p < 2*N ∧ 1 < N-p ∧ N < (N-p).minFac^5); ∃ N₀ : ℕ, ∀ N : ℕ, N₀ ≤ N → Even N → 10*((C N).filter (fun p => ArithmeticFunction.cardFactors (N-p) = 3)).card ≤ 3*(C N).card",
+  "plain_statement": {
+    "zh": "对每个充分大偶数 N，同一中央粗糙候选集 C 中，补数恰有三个素因子（按重数计）的候选数至多为 3|C|/10。",
+    "en": "Uniformly for sufficiently large even N, at most three tenths of these same central rough candidates have complement with exactly three prime factors counted with multiplicity."
+  },
+  "imports": [],
+  "program": "correlation",
+  "brief": {
+    "zh": "在同一个筛后集合上计数 N−p=uvw，u≤v≤w 为大于五次方根的素数，包含重复因子。目标是相对于实际候选数的上界；给定分母的比例尚待证明。",
+    "en": "Bound the ordered-by-size factor triples N−p=uvw with prime u≤v≤w above the cutoff, allowing repetitions. The denominator is the actual sifted count at the same N. The three-tenths budget is a proposed estimate."
+  },
+  "source": "https://www.numdam.org/article/AST_1975__24-25__281_0.pdf",
+  "parallel": true,
+  "track": "rough-fifth-parity",
+  "role": "target",
+  "module": "Conjectures.Goldbach.RoughFifthTriples",
+  "file": "lean/Conjectures/Goldbach/RoughFifthTriples.lean"
+}

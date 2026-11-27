@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-dyadic-carry-increment",
+  "statement": "∀ (N q M : ℕ) (w : ℕ → ℝ), 0 < q → 0 < M →\n  let A := fun (d r : ℕ) => ∑ n ∈ (Finset.range (N+1)).filter (fun n => n % d = r), w n\n  let R := fun d : ℕ => (d : ℝ) / M * ∑ r ∈ Finset.range d, A d r * A d ((N+d-r)%d)\n  let D := fun r : ℕ => A (2*q) r - A (2*q) (r+q)\n  R (2*q) - R q = (q : ℝ) / M * ∑ r ∈ Finset.range q,\n    (if (N+2*q-r)%(2*q) < q then (1 : ℝ) else -1) * D r * D ((N+q-r)%q)",
+  "plain_statement": {
+    "zh": "新路线 · 二进反射与 Levent GRH · DR-0001 · 计算反射相关在一次二进细分中的带符号增量",
+    "en": "New route · Dyadic reflection and Levent GRH · DR-0001 · Compute the signed increment of a reflected correlation across one dyadic refinement"
+  },
+  "brief": {
+    "zh": "展开同一粗类的两个子类。目标减去代表后是否落在上半模，决定反射是否交换两个子类。该公式供 DR-0002 和 DR-0012 使用。",
+    "en": "Expand the two children of each coarse class. The upper-half residue of the target minus its representative determines whether reflection swaps the children. DR-0002 and DR-0012 use this formula."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/dyadic-reflection/README.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-coset-sum-reflection",
+    "L-goldbach-theta-fiber-projection"
+  ],
+  "imports": []
+}

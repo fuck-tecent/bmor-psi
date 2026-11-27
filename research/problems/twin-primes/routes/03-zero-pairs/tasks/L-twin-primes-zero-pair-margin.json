@@ -20,6 +20,10 @@
     "L-twin-primes-hermitian-pairs",
     "L-twin-primes-diagonal-integral"
   ],
-  "imports": [],
+  "imports": [
+    "PEqualNP.Outside.L_twin_primes_ordered_indices",
+    "PEqualNP.Outside.L_twin_primes_hermitian_pairs",
+    "PEqualNP.Outside.L_twin_primes_diagonal_integral"
+  ],
   "challenge_only": true
 }

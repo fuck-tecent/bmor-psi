@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-packet-progression-leakage",
+  "statement": "let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let P := fun (d M : ℕ) (t : ℝ) => ∑ j ∈ Finset.range M, (E ((d:ℝ)*t))^(j+1); let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∀ n d M : ℕ, 0<n → 0<d → d ≤ Q n → m (arcs n)ᶜ (fun t => ‖P d M t‖^2) ≤ 2*Real.pi*(n:ℝ)/(Q n:ℝ)",
+  "plain_statement": {
+    "zh": "所有小模数的等差指数和共享一个次弧能量上界",
+    "en": "Uniform minor-arc leakage for every short denominator"
+  },
+  "brief": {
+    "zh": "长度 M 任意，1≤d≤Q。取最邻近的 k/d 并约分；将几何和尾部积分，常数与 d、M 无关。",
+    "en": "For any length and 1≤d≤Q, reduce the nearest fraction k/d and integrate a geometric-sum tail. The constant is independent of d and M."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "minor-truncation",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.PacketProgressionLeakage",
+  "file": "lean/Conjectures/Goldbach/PacketProgressionLeakage.lean"
+}

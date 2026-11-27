@@ -1,0 +1,25 @@
+{
+  "id": "L-quadratic-primes-sieve-mertens-density",
+  "statement": "let split := fun z : ℕ => (Finset.Icc 5 z).filter (fun p => Nat.Prime p ∧ p%4=1); let localProd := fun z : ℕ => ∏ p ∈ split z, (1 - 2/(p : ℝ)); (∀ (Q : ℕ) [NeZero Q] (χ : DirichletCharacter ℂ Q) (s : ℂ), 0<s.re → s.re<1 → DirichletCharacter.LFunction χ s=0 → s.re=1/2)→\n∃ c : ℝ, 0<c ∧ Filter.Tendsto (fun z : ℕ => Real.log (z : ℝ) * localProd z) Filter.atTop (nhds c)",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然扩张 · QP-0077 · 从分裂素数倒数和得到一维筛密度的正极限",
+    "en": "New route · Levent GRH and natural extensions · QP-0077 · Derive a positive dimension-one sieve density limit from the split-prime harmonic sum"
+  },
+  "brief": {
+    "zh": "用 log(1−2/p)+2/p 的绝对可和性。修正积可复用 QP-0075。奇数 p≡3 mod 4 的局部因子等于一，4k²+1 在 2 处无根。",
+    "en": "Use the absolute summability of log(1−2/p)+2/p. QP-0075 gives the correction product. The inert primes have factor one, and 4k²+1 has no root at 2."
+  },
+  "source": "https://doi.org/10.1090/coll/057",
+  "program": "correlation",
+  "role": "conditional",
+  "parallel": false,
+  "depends_on": [
+    "L-quadratic-primes-sieve-euler-correction",
+    "L-quadratic-primes-sieve-split-harmonic",
+    "L-quadratic-primes-levent-root-card-splitting"
+  ],
+  "imports": [
+    "Conjectures.QuadraticPrimes.SieveEulerCorrection",
+    "PEqualNP.Outside.L_quadratic_primes_levent_root_card_splitting"
+  ]
+}

@@ -1,0 +1,290 @@
+{
+  "version": 1,
+  "problem": "goldbach",
+  "base_revision": "f4f754c4709c0c1b2dbc67e4c8f74ce2475b8935",
+  "request_id": "sparse-binary-shifts-first-cohort",
+  "parent": {
+    "id": "L-goldbach-binary-pointwise-positivity",
+    "statement_sha256": "e14f2af0ceebde21345816fb72044035c2eff2be922b02234078a77003be19b1"
+  },
+  "motivation": {
+    "zh": "将原偶数与减去正二次幂后的邻居区分开，在固定目标、几乎所有目标和频率平均三个层次测试可用的算术输入。",
+    "en": "Test sparse additive shifts at individual targets, at almost all targets and in Fourier mean, keeping the missing zero-shift input explicit."
+  },
+  "tasks": [
+    {
+      "id": "L-goldbach-binary-shift-thirteen",
+      "statement": "∃ N : ℕ, ∀ n ≥ N, Even n → ∃ (p q : ℕ) (e : Fin 13 → ℕ), Nat.Prime p ∧ Nat.Prime q ∧ n = p+q+∑ j, 2^(e j+1)",
+      "plain_statement": {
+        "zh": "文献基线：两个素数加恰好十三个二次幂",
+        "en": "Literature baseline: two primes plus exactly thirteen powers of two"
+      },
+      "brief": {
+        "zh": "形式化 Heath-Brown–Puchta 定理 1。保留正指数，允许重复，核对圆法计数为正如何给出有序指数见证。仍需消去全部附加项。",
+        "en": "Formalize Theorem 1 with positive exponents and repetitions allowed. Extract an exponent tuple from the positive circle-method count; the zero-shift target remains."
+      },
+      "source": "https://arxiv.org/pdf/math/0201299",
+      "route": "exceptions",
+      "program": "exceptions",
+      "parallel": true,
+      "depends_on": [],
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-binary-shift-exception-union",
+      "statement": "let G := fun m : ℕ => ((Finset.range (m+1)).filter (fun p => Nat.Prime p ∧ Nat.Prime (m-p))).card; ∃ X₀ : ℕ, ∀ X ≥ X₀, let L := Nat.log 2 X / 2; let E := (Finset.Ico X (2*X)).filter (fun n => Even n ∧ 0 < ((Finset.Icc 1 L).filter (fun e => G (n-2^e)=0)).card); E.card^5 ≤ X^4",
+      "plain_statement": {
+        "zh": "推论候选：几乎所有偶目标的全部小二次幂移位均有表示",
+        "en": "Candidate corollary: all small binary shifts work at almost every even target"
+      },
+      "brief": {
+        "zh": "将每个失败的 (n,e) 映到 Goldbach 例外 n−2^e。每个例外至多被计 L 次，用 Pintz 的例外集界吸收对数损失。仍允许个别 n 失败。",
+        "en": "Map each failing (n,e) to an exceptional even integer. Each has at most L preimages; absorb the logarithm with the published exceptional-set bound. Individual n may fail."
+      },
+      "source": "https://arxiv.org/abs/1804.09084",
+      "route": "exceptions",
+      "program": "exceptions",
+      "parallel": true,
+      "depends_on": [],
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-binary-shift-central-hit",
+      "statement": "∃ N : ℕ, ∀ n ≥ N, Even n → ∃ e p q : ℕ, 1 ≤ e ∧ (2^e)^2 ≤ n ∧ Nat.Prime p ∧ Nat.Prime q ∧ n = p+q+2^e ∧ p+q ≤ 3*p ∧ 3*p ≤ 2*(p+q)",
+      "plain_statement": {
+        "zh": "猜想：一次小移位可命中中心素数对",
+        "en": "Conjecture: one small binary shift hits a central prime pair"
+      },
+      "brief": {
+        "zh": "可选约 log n 个非零移位，要求其中一次在中心窗命中。先给这些移位的空窗数量做上界。全局例外个数本身无法保证指定 n 命中。",
+        "en": "Bound the number of missed central windows among the nonzero shifts at one n. A global exceptional count alone does not control this sparse sample."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/f4f754c4709c0c1b2dbc67e4c8f74ce2475b8935/research/ROADMAP.md",
+      "route": "exceptions",
+      "program": "exceptions",
+      "parallel": true,
+      "depends_on": [],
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-binary-shift-shared-exponent",
+      "statement": "let G := fun m : ℕ => ((Finset.range (m+1)).filter (fun p => Nat.Prime p ∧ Nat.Prime (m-p))).card; ∃ N : ℕ, ∀ n ≥ N, Even n → ∃ e : ℕ, 2 ≤ e ∧ (2^e)^2 ≤ n ∧ 0 < G (n-2^e) ∧ 0 < G (n+2-2^e)",
+      "plain_statement": {
+        "zh": "猜想：相邻偶目标能共用一个非零移位",
+        "en": "Conjecture: adjacent even targets admit a common nonzero shift"
+      },
+      "brief": {
+        "zh": "将两个目标的失败指数集取并，尝试证明不能覆盖全部候选指数。两边允许各自选素数。共同指数比两个各自存在的指数更难。",
+        "en": "Compare the two sets of failing exponents and try to leave one uncovered. The prime pairs may differ; separate witnesses do not give a common exponent."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/f4f754c4709c0c1b2dbc67e4c8f74ce2475b8935/research/ROADMAP.md",
+      "route": "exceptions",
+      "program": "exceptions",
+      "parallel": true,
+      "depends_on": [],
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-binary-shift-dyadic-band-mass",
+      "statement": "let w := fun p : ℕ => if Nat.Prime p then Real.log (p:ℝ) else 0; let R := fun m : ℕ => ∑ p ∈ (Finset.range (m+1)).filter (fun p => m ≤ 3*p ∧ 3*p ≤ 2*m), w p*w (m-p); ∃ c : ℝ, 0 < c ∧ ∃ K : ℕ, ∀ k ≥ K, let I := Finset.Icc (k/4+1) (k/2); c*(I.card:ℝ)*((2:ℝ)^k) ≤ ∑ e ∈ I, R (2^k-2^e)",
+      "plain_statement": {
+        "zh": "猜想：二次幂目标的中段移位有线性平均质量",
+        "en": "Conjecture: a middle band of binary shifts at dyadic targets has linear mean mass"
+      },
+      "brief": {
+        "zh": "只取 n=2^k，考察 n^(1/4) 到 n^(1/2) 附近的移位。先分析 2^k−2^e 的局部因子，再比较正主项与平均误差。此窗完全剔除了零移位。",
+        "en": "At dyadic n inspect the local factors of 2^k−2^e, then compare the main term and the mean error on this band. It omits the unshifted coefficient."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/f4f754c4709c0c1b2dbc67e4c8f74ce2475b8935/research/ROADMAP.md",
+      "route": "exceptions",
+      "program": "exceptions",
+      "parallel": true,
+      "depends_on": [],
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-binary-shift-short-mixed-energy",
+      "statement": "let J := fun (a b m : ℕ) => ((Finset.Icc a b).filter (fun e => Nat.Prime (m-2^e))).card; ∃ C X₀ : ℕ, ∀ X ≥ X₀, ∀ H : ℕ, X^3 ≤ H^4 → H ≤ X → let L := Nat.log 2 X / 2; (∑ m ∈ Finset.Ico X (X+H), (J 1 L m)^2) ≤ C*H",
+      "plain_statement": {
+        "zh": "估计候选：短窗口内素数加二次幂的碰撞二阶矩",
+        "en": "Candidate estimate: short-window second moment for prime-plus-power collisions"
+      },
+      "brief": {
+        "zh": "展开平方。对角线用单素数上界，非对角用间距 |2^e−2^f| 的双素数上界筛；要统一处理每个长度至少 X^(3/4) 的窗口。",
+        "en": "Separate the diagonal prime count from an upper-bound sieve for prime pairs at gaps |2^e−2^f|. The constant must hold in every stated short window."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/f4f754c4709c0c1b2dbc67e4c8f74ce2475b8935/research/ROADMAP.md",
+      "route": "exceptions",
+      "program": "exceptions",
+      "parallel": true,
+      "depends_on": [],
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-binary-shift-cross-band-overlap",
+      "statement": "let J := fun (a b m : ℕ) => ((Finset.Icc a b).filter (fun e => Nat.Prime (m-2^e))).card; ∃ c : ℝ, 0 < c ∧ ∃ X₀ : ℕ, ∀ X ≥ X₀, let L := Nat.log 2 X / 2; c*(X:ℝ) ≤ ∑ m ∈ Finset.Ico X (2*X), (J 1 (L/2) m:ℝ)*(J (L/2+1) L m:ℝ)",
+      "plain_statement": {
+        "zh": "猜想：低、高指数带在素数平移中有正的混合质量",
+        "en": "Conjecture: separated exponent bands have positive mixed prime-translate mass"
+      },
+      "brief": {
+        "zh": "展开成素数差等于 2^f−2^e 的相关和。两个指数带互斥，消除了同一表示的对角项。需要下界，二阶矩上界不足以推出。",
+        "en": "Expand into prime pairs at gaps 2^f−2^e. Disjoint bands remove diagonal representations. An upper second moment alone gives no positive lower bound."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/f4f754c4709c0c1b2dbc67e4c8f74ce2475b8935/research/ROADMAP.md",
+      "route": "exceptions",
+      "program": "exceptions",
+      "parallel": true,
+      "depends_on": [],
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-binary-shift-order-tail",
+      "statement": "∃ C : ℝ, 0<C ∧ ∀ T D : ℕ, 2≤T → (∑ d ∈ (Finset.Icc 3 D).filter (fun d => Odd d ∧ (∀ p ∈ d.primeFactors, d.factorization p ≤ 1) ∧ T < orderOf (2 : ZMod d)), 1/((d:ℝ)*(orderOf (2 : ZMod d):ℝ))) ≤ C*Real.log (2*(T:ℝ))/(T:ℝ)",
+      "plain_statement": {
+        "zh": "文献推论：大乘法阶的平方自由模数贡献有可截断尾界",
+        "en": "Literature corollary: a truncation bound for squarefree moduli of large order"
+      },
+      "brief": {
+        "zh": "将论文式 (26) 按阶的二倍区间求和，核对奇数平方自由筛选、大于 T 的严格端点及与 D 无关的常数。",
+        "en": "Sum equation (26) over dyadic order intervals. Track squarefreeness, the strict cutoff and uniformity in the modulus bound D."
+      },
+      "source": "https://arxiv.org/pdf/math/0201299",
+      "route": "series",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-binary-shift-sieve-cost",
+      "statement": "let A := fun h : ℕ => ∏ p ∈ (2^h-1 : ℕ).primeFactors.filter (fun p => 2<p), (1 + 1/((p:ℝ)-2)); ∃ C : ℝ, 0<C ∧ ∀ L : ℕ, (∑ h ∈ Finset.Icc 1 L, A h) ≤ C*(L:ℝ)",
+      "plain_statement": {
+        "zh": "估计候选：幂差的双素数筛局部代价具有有界平均",
+        "en": "Candidate estimate: bounded average local sieve cost of power differences"
+      },
+      "brief": {
+        "zh": "将乘积展开到平方自由因子，按 2 的乘法阶重新计数；目标是去掉逐项取最大值带来的损失。论文的加权幂差估计可作入口。",
+        "en": "Expand over squarefree divisors and count exponent multiples of their orders. Compare with the paper's weighted difference estimate instead of using a worst-case divisor product."
+      },
+      "source": "https://arxiv.org/pdf/math/0201299",
+      "route": "series",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-binary-shift-fourier-fourth",
+      "statement": "let T := fun (L : ℕ) (t : ℝ) => ∑ j ∈ Finset.range L, Complex.exp (((2*Real.pi*(2:ℝ)^(j+1)*t:ℝ):ℂ)*Complex.I); ∀ L : ℕ, intervalIntegral (fun t => ‖T L t‖^4) (0:ℝ) 1 MeasureTheory.volume = 2*(L:ℝ)^2-(L:ℝ)",
+      "plain_statement": {
+        "zh": "精确基准：二次幂频谱的四阶积分",
+        "en": "Exact benchmark: fourth moment of the binary spectrum"
+      },
+      "brief": {
+        "zh": "用正交性变为两项和的碰撞数。按二进制进位处理重复指数，扣掉两种排列重合的对角项。为大值测度提供可核对的基准。",
+        "en": "Use orthogonality to count equal two-term sums. Account for repeated exponents and subtract the double-counted diagonal. This gives a benchmark for the large-value analysis."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/f4f754c4709c0c1b2dbc67e4c8f74ce2475b8935/research/ROADMAP.md",
+      "route": "fourier",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-binary-shift-large-spectrum",
+      "statement": "let T := fun (L : ℕ) (t : ℝ) => ∑ j ∈ Finset.range L, Complex.exp (((2*Real.pi*(2:ℝ)^(j+1)*t:ℝ):ℂ)*Complex.I); ∃ c C : ℝ, 0<c ∧ 0<C ∧ ∀ L : ℕ, intervalIntegral (fun t => if (9:ℝ)*(L:ℝ) ≤ 10*‖T L t‖ then (1:ℝ) else 0) (0:ℝ) 1 MeasureTheory.volume ≤ C*Real.exp (-c*(L:ℝ))",
+      "plain_statement": {
+        "zh": "估计候选：接近最大值的二次幂频谱占指数小的测度",
+        "en": "Candidate estimate: near-maximal binary spectrum has exponentially small measure"
+      },
+      "brief": {
+        "zh": "四阶矩只给多项式尾界。尝试把倍增映射分块，估计指数矩；须从实部推广到复模。文献中大值集的方法可供移植。",
+        "en": "Block the doubling map and control exponential moments, including the passage from real parts to modulus. A fourth moment alone yields only a polynomial tail."
+      },
+      "source": "https://arxiv.org/pdf/math/0201299",
+      "route": "fourier",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-binary-shift-missed-center",
+      "statement": "∀ n L : ℕ, ((Finset.Icc 1 L).filter (fun e => n = 2^e + 2^(Nat.log 2 (n-2^e)))).card ≤ 2",
+      "plain_statement": {
+        "zh": "方法反例：每个目标至多两个移位落入二次幂例外集",
+        "en": "Obstruction: at most two binary shifts hit a dyadic exceptional set at any target"
+      },
+      "brief": {
+        "zh": "取二次幂为人工例外集。一个 n 至多有一种无序双幂分拆，因此最多两个坏指数；中心仍可属于无限例外集。说明即使几乎所有移位成功也不能自动移回中心。",
+        "en": "Use powers of two as synthetic exceptions. Binary expansion gives at most one unordered two-power decomposition, hence at most two bad exponents. Infinitely many centers remain exceptional."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/f4f754c4709c0c1b2dbc67e4c8f74ce2475b8935/research/ROADMAP.md",
+      "route": "exceptions",
+      "program": "exceptions",
+      "parallel": true,
+      "depends_on": [],
+      "assumptions": []
+    }
+  ],
+  "links": [
+    {
+      "kind": "exploration",
+      "inputs": [
+        "L-goldbach-binary-shift-thirteen",
+        "L-goldbach-binary-shift-exception-union",
+        "L-goldbach-binary-shift-central-hit",
+        "L-goldbach-binary-shift-shared-exponent",
+        "L-goldbach-binary-shift-dyadic-band-mass",
+        "L-goldbach-binary-shift-short-mixed-energy",
+        "L-goldbach-binary-shift-cross-band-overlap",
+        "L-goldbach-binary-shift-large-spectrum",
+        "L-goldbach-binary-shift-missed-center"
+      ],
+      "output": "L-goldbach-binary-pointwise-positivity",
+      "explanation": {
+        "zh": "比较松弛目标、平均结果、频谱代价和人工障碍。恢复原系数还需要一个控制零移位的独立定理。",
+        "en": "Compare relaxed targets, averages, spectral costs and a synthetic obstruction. An independent theorem controlling the zero shift is still required."
+      }
+    },
+    {
+      "kind": "input",
+      "inputs": [
+        "L-goldbach-binary-shift-order-tail"
+      ],
+      "output": "L-goldbach-binary-shift-sieve-cost",
+      "explanation": {
+        "zh": "乘法阶尾界是按除数展开筛权的输入；展开系数与 1/d 的差异仍需处理。",
+        "en": "The order tail informs the divisor expansion; the difference between its coefficients and 1/d still needs control."
+      }
+    },
+    {
+      "kind": "input",
+      "inputs": [
+        "L-goldbach-binary-shift-sieve-cost"
+      ],
+      "output": "L-goldbach-binary-shift-short-mixed-energy",
+      "explanation": {
+        "zh": "控制不同指数所对应幂差的平均筛因子，短窗口中的筛余项仍需估计。",
+        "en": "Bound the mean singular factor of off-diagonal gaps; the short-window sieve remainder remains."
+      }
+    },
+    {
+      "kind": "exploration",
+      "inputs": [
+        "L-goldbach-binary-shift-fourier-fourth"
+      ],
+      "output": "L-goldbach-binary-shift-large-spectrum",
+      "explanation": {
+        "zh": "四阶积分提供多项式尾界基准，指数尾界另需高矩或倍增动力学。",
+        "en": "The fourth moment benchmarks a polynomial tail. Exponential decay needs higher moments or doubling dynamics."
+      }
+    }
+  ],
+  "route_note": {
+    "zh": "可先研究减去正二次幂后哪些邻居有素数表示，分别考察逐点、例外集和频谱估计。已知移位结论回到原偶数仍需额外的逐点输入。",
+    "en": "Study prime representations at positive binary shifts through individual targets, exceptions and spectral estimates. Returning to the original even integer requires additional pointwise input."
+  }
+}

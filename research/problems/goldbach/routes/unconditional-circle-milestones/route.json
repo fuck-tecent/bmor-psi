@@ -1,0 +1,15 @@
+{
+  "id": "unconditional-circle-milestones",
+  "title": {
+    "en": "Unconditional circle-method milestones",
+    "zh": "圆法的无条件里程碑"
+  },
+  "description": {
+    "en": "Logarithmic savings for prime exponential sums give ternary representations and bound the number of binary exceptions.",
+    "zh": "素数指数和的对数节省给出三素数表示，并控制二元哥德巴赫例外的个数。"
+  },
+  "feeds": [
+    "arc-budget",
+    "exceptions"
+  ]
+}

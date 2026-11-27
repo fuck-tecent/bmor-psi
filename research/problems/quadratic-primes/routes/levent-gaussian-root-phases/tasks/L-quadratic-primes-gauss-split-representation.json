@@ -1,0 +1,20 @@
+{
+  "id": "L-quadratic-primes-gauss-split-representation",
+  "statement": "∀ p : ℕ, p.Prime → p%4=1 →\n  ∃ a b : ℕ, (0<a ∧ a≤b ∧ a^2+b^2=p) ∧\n    ∀ a' b' : ℕ, 0<a' → a'≤b' → a'^2+b'^2=p → a'=a ∧ b'=b",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然扩张 · QP-0087 · 唯一选取分裂素数的两个正有序平方分量",
+    "en": "New route · Levent GRH and natural extensions · QP-0087 · Choose the unique ordered positive square coordinates of each split prime"
+  },
+  "brief": {
+    "zh": "由 Mathlib 的平方和定理得存在性。把两对坐标的比视作模 p 中 −1 的两个根。比较 ab′−a′b 与 ab′+a′b 的整除和大小，核对有序代表的唯一性。",
+    "en": "Use Mathlib’s sum-of-two-squares theorem for existence. View the two coordinate ratios as roots of −1 modulo p. Divisibility and size of ab′−a′b or ab′+a′b give uniqueness for the ordered representatives."
+  },
+  "source": "https://github.com/leanprover-community/mathlib4/blob/fc4f59e577feb1a4956671bc04ac18aaaf8cd842/Mathlib/NumberTheory/SumTwoSquares.lean",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-quadratic-primes-levent-root-card-splitting"
+  ],
+  "imports": []
+}

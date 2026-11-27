@@ -1,0 +1,23 @@
+{
+  "id": "L-joshi-abc-codifferent-rounding",
+  "statement": "∀ (n d : ℤ) (e : ℕ), 0 < e → ((n-d)+d)/(e:ℤ) = n/(e:ℤ) ∧ 0 ≤ (⌈(n:ℝ)/e⌉:ℝ)-(n:ℝ)/e ∧ (⌈(n:ℝ)/e⌉:ℝ)-(n:ℝ)/e < 1",
+  "plain_statement": {
+    "zh": "新路线 · 迹、不同理想与 Fourier 缺额 · JA-0030 · 界定逆不同校正后的逐处取整代价",
+    "en": "New route · Trace, different and Fourier deficit · JA-0030 · Bound the local rounding cost after inverse-different correction"
+  },
+  "brief": {
+    "zh": "先移除 d，再将指数提高到上取整；额外代价严格小于一层。",
+    "en": "Remove d before rounding upward. The additional cost is strictly less than one layer."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/joshi-abc.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-joshi-abc-trace-dual-floor"
+  ],
+  "imports": [],
+  "track": "04-trace-and-fourier",
+  "module": "Conjectures.JoshiAbc.CodifferentRounding",
+  "file": "lean/Conjectures/JoshiAbc/CodifferentRounding.lean"
+}

@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-packet-short-order-center-count",
+  "statement": "let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let o := fun n q : ℕ => q % 2 = 1 ∧ ((Finset.Icc 1 ((Nat.log 2 (Q n)+1)^2)).filter (fun j => q ∣ 2^j-1)).Nonempty; ∀ ε : ℝ, 0<ε → ∃ N : ℕ, ∀ n ≥ N, (∑ q ∈ (Finset.Icc 1 ((Q n)^2)).filter (fun q => o n q), min (1:ℝ) ((q:ℝ)/(Q n:ℝ)) * (((Finset.range (q+1)).filter (fun a => Nat.Coprime a q ∧ (1:ℝ)/3 < K n ((a:ℝ)/(q:ℝ)))).card:ℝ) / (Nat.totient q:ℝ)^2) ≤ ε",
+  "plain_statement": {
+    "zh": "短周期分母的加权共振分子密度趋零",
+    "en": "Vanishing weighted density of short-period resonant centers"
+  },
+  "brief": {
+    "zh": "将 q 按最短倍增周期分组。周期很短时不能假设分子均匀；可将 q 限制到 2ʲ−1 的除数，结合每个分母的实际共振分子数。",
+    "en": "Group q by least period. For short periods, restrict denominators to divisors of 2ʲ−1 and retain the actual count of resonant numerators."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "minor-truncation",
+  "role": "target",
+  "module": "Conjectures.Goldbach.PacketShortOrderCenterCount",
+  "file": "lean/Conjectures/Goldbach/PacketShortOrderCenterCount.lean"
+}

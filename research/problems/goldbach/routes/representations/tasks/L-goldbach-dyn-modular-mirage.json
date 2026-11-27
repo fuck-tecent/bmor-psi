@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-dyn-modular-mirage",
+  "statement": "∀ N : ℕ, Even N → 4 ≤ N → ∃ A : Set ℕ, (∀ a ∈ A, Odd a) ∧ (∀ m : ℕ, 0 < m → ∃ a ∈ A, ∃ b ∈ A, (a+b)%m=N%m) ∧ ¬ (∃ a ∈ A, ∃ b ∈ A, a+b=N)",
+  "plain_statement": {
+    "zh": "所有模数两步可达仍可漏掉指定整数",
+    "en": "Construct a target missed despite reachability at every modulus"
+  },
+  "brief": {
+    "zh": "取大于目标的所有奇数，同时平移两个加数的偶数模数倍。用它检查任何局部到整体的推理。",
+    "en": "Take all odd steps above the target and translate both summands by even multiples of the modulus."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "module": "Conjectures.Goldbach.DynModularMirage",
+  "file": "lean/Conjectures/Goldbach/DynModularMirage.lean",
+  "imports": [],
+  "track": "representations",
+  "role": "lemma"
+}

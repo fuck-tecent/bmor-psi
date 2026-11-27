@@ -1,0 +1,21 @@
+{
+  "id": "L-twin-primes-balanced-semiprime-window-loss",
+  "statement": "let w := fun (X : ℕ) => (Finset.range (2*X+1)).filter (fun n => X < n ∧ 50*n < 51*X); let S := fun (X : ℕ) => @Finset.filter ℕ (fun p => p.Prime ∧ ∃ r s : ℕ, r.Prime ∧ s.Prime ∧ r < s ∧ Nat.sqrt X/2 ≤ r ∧ r ≤ Nat.sqrt (2*X+2) ∧ p+2=r*s) (fun _ => Classical.propDecidable _) (w X); (∃ C : ℝ, 0 < C ∧ ∀ (Y r : ℕ), 3 ≤ Y → r.Prime → 2 < r → ((((Finset.Ioc Y (2*Y)).filter (fun s => s.Prime ∧ (r*s-2).Prime)).card:ℕ):ℝ) ≤ C*(Y:ℝ)/(Real.log Y)^2) → (∃ K : ℝ, 0 < K ∧ ∀ X : ℕ, 100 ≤ X → (S X).sum (fun p => Real.log p * Real.log (p+2)) ≤ K*(X:ℝ)/Real.log X)",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然推广 · TP-0063 · 控制短窗中两个近平衡素因子造成的加权污染",
+    "en": "New route · Levent GRH methods and extensions · TP-0063 · Bound the weighted contribution of semiprimes with balanced factors in the window"
+  },
+  "brief": {
+    "zh": "按较小因子 r 分组。由实际窗与 r 的范围把 s 放入常数个二进窗。TP-0062 给每个 r 的上界，再用 Chebyshev 的素数计数界求和。此项仅兑现差二粗筛中近平衡的不同素数乘积预算。",
+    "en": "Group by the smaller factor r. The window and the bounds on r put s in a bounded number of dyadic intervals. Apply TP-0062 and then the Chebyshev bound for the number of prime r. This controls the part of the rough gap-two sieve with two balanced distinct factors."
+  },
+  "source": "https://doi.org/10.1090/coll/057",
+  "program": "correlation",
+  "role": "conditional",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-cofactor-two-linear-sieve",
+    "L-twin-primes-sifted-correlation"
+  ],
+  "imports": []
+}

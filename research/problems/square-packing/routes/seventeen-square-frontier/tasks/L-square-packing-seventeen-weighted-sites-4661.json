@@ -1,0 +1,28 @@
+{
+  "id": "L-square-packing-seventeen-weighted-sites-4661",
+  "statement": "let inside := fun (x y a b X Y : ℝ) => |a*(X-x)+b*(Y-y)| < 1/2 ∧ |(-b)*(X-x)+a*(Y-y)| < 1/2; ∃ (k : ℕ) (X Y : Fin k → ℚ) (w : Fin k → ℕ) (q : ℕ), 0 < q ∧ (∑ j, w j) < 17*q ∧ ∀ x y a b : ℝ, (a ^ 2 + b ^ 2 = 1 ∧ |a| + |b| ≤ 2*x ∧ |a| + |b| ≤ 2*((4661/1000:ℝ)-x) ∧ |a| + |b| ≤ 2*y ∧ |a| + |b| ≤ 2*((4661/1000:ℝ)-y)) → q ≤ (∑ j : Fin k, (if inside x y a b (X j) (Y j) then w j else 0))",
+  "plain_statement": {
+    "zh": "为边长 4.661 构造加权击中点证书。",
+    "en": "Construct a weighted piercing certificate at side 4.661."
+  },
+  "brief": {
+    "zh": "先复现 R071 的覆盖思路，再搜索新权重和点位。容量不够时记录失败模型。单层加权点只是充分条件，可能需要更强的混合证书。",
+    "en": "Start with the R071 covering approach and search for new sites and weights. Record obstructions if point weights alone are insufficient."
+  },
+  "source": "https://squaremath.org/cases/17.html",
+  "program": "correlation",
+  "track": "seventeen-square-frontier",
+  "role": "input",
+  "depends_on": [
+    "L-square-packing-seventeen-charge-angle-symmetry",
+    "L-square-packing-seventeen-charge-cell-transfer",
+    "L-square-packing-rational-rotation",
+    "L-square-packing-projection-radius"
+  ],
+  "parallel": true,
+  "challenge_only": false,
+  "imports": [
+    "PEqualNP.Outside.L_square_packing_rational_rotation",
+    "Conjectures.SquarePacking.SeventeenChargeCellTransfer"
+  ]
+}
