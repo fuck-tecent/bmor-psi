@@ -96,3 +96,15 @@ So each wide-arc integral factors into the central phase `E(h a/q)` times the
 translated kernel.  Combined with `norm_integral_E_le_osc`, every arc
 contributes `≤ min(2ρ, 1/(π|h|))` in absolute value; the `E(h a/q)` phases are
 what the Ramanujan cancellation acts on when summing over `a`.
+
+## Milestone 6: packaged definitions
+
+`defs.lean` names every object of the catalogue target:
+
+`E`, `S`, `Qs`, `Qcut`, `Hwide`, `wideArcs`, `Ucut`, `Bcut`, `ccoef`,
+`tau1`, `Jdeep`, and the packaged goal `Target`.
+
+The direct `Iff.rfl` check that `Target` is definitionally the catalogue
+`let`-chain did not unify (a syntactic mismatch somewhere in the local
+`let` binders), so the packaged statement is kept as the working interface and
+will be matched to the catalogue statement when the proof file is assembled.
