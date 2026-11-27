@@ -122,3 +122,17 @@ t ∈ wideArcs n ↔ ∃ q ∈ Icc 1 (Qcut n), ∃ a ∈ (range (q+1)).filter (C
 This is the interface for the arc-sum expansion of `∫_{wideArcs} E(h t) dt`.
 The arcs are not disjoint at this width, so the expansion will need a bounded
 overlap (Farey-spacing) argument or a disjoint sub-family.
+
+## Milestone 8: Farey spacing
+
+`farey.lean`:
+
+```lean
+farey_spacing (hq : 0 < q) (hq' : 0 < q')
+  (hne : a/q ≠ a'/q') :
+  1/(q q') ≤ |a/q - a'/q'|
+```
+
+This is the input for the bounded-overlap argument: although the wide arcs at
+width `H/(q n)` are not disjoint, the reduced centres are `1/(q q')`-separated,
+so a point can lie in only `C` of them once `H Q₁ / n < 1/C`.
