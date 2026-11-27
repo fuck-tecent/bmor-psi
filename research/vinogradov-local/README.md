@@ -894,3 +894,69 @@ norm_expSum_vaughan_typeI_le_threshold_recip :
 
 This is the first combined Type-I minor-arc threshold bound with explicit
 `q` and `β` dependence.
+
+### Threshold tuning: `M`-truncated second term and tail-gain third term
+
+Two truncation refinements replace the crude `O(n log^2 n)` tails by their
+threshold-dependent counterparts.
+
+**Second term.**  `norm_expSum_low_mu_mul_log_le_truncated` splits the
+`d`-sum at `M`:
+
+```lean
+‖S₂(a/q+β)‖ ≤ 2qM log n + n log n (1+log n)/q + n log n (log U - log M),
+```
+
+for `1 ≤ M ≤ U` and `|β| ≤ 1/(16 q M)`.  For `d ≤ M` the pointwise sine
+bound `abs_sin_pi_mul_majorArc_ge_pointwise` gives `2q`; for `d > M` the
+trivial `(n/d) log n` is summed with the tail harmonic bound
+`sum_inv_Icc_succ_le_log` (`∑_{d=M+1}^U 1/d ≤ log U - log M`).
+
+The coefficient bookkeeping is `typeI_trunc_coeff_sum_le`, which splits
+the sum into multiples of `q`, small `d ≤ M`, and the tail `d > M`.
+
+**Third term with tail gain.**
+`norm_expSum_low_mu_lowLambda_zeta_le_truncated_tail` uses the threshold
+sine bound only for `de ≤ M`, and estimates the tail `de > M` by the
+reciprocal von Mangoldt tail sum `sum_div_vonMangoldt_tail_le`:
+
+```lean
+∑_{d,e ≤ U, de > M} Λ(e)/(de) ≤ log n (1+log U)(1 + log(U²/M)).
+```
+
+This replaces the previous full reciprocal sum
+`log n (1+log n)^2` by a bound that *decreases* in `M`.  The result is
+
+```lean
+‖S₃‖ ≤ 2q log n · M(1+log U)
+       + n log n (1+log U)(1 + log(U²/M))
+       + n log(U²) · (1/q)(1+log(U²/q)).
+```
+
+Supporting pieces:
+
+- `sum_inv_Icc_div_succ_le`: `∑_{d>M/U} 1/d ≤ 1 + log(U²/M)`;
+- `sum_vonMangoldt_filter_mul_le`: `∑_{de≤M} Λ(e) ≤ log n · M(1+log U)`;
+- `norm_expSum_low_mu_lowLambda_zeta_le_of_bound`: the reindexed third
+  term with an abstract per-pair bound (now reusable for other splits);
+- `typeIThirdInnerBoundTail`, `norm_third_inner_le_truncatedTail`.
+
+**Combined Type-I minor-arc bound.**
+`norm_expSum_vaughan_typeI_le_truncated_tail` (in `assembly.lean`) adds
+the trivial first term to the two truncated estimates:
+
+```lean
+‖S_I(a/q+β)‖ ≤ (U+1) log n
+  + [2qM log n + n log n (1+log n)/q + n log n (log U - log M)]
+  + [2qM log n (1+log U) + n log n (1+log U)(1+log(U²/M))
+     + n log(U²)(1/q)(1+log(U²/q))],
+```
+
+valid for `1 ≤ M ≤ U` and `|β| ≤ 1/(16 q M)`.
+
+Honest limitation: the terms
+`n log n (1+log n)/q` and `n log(U²)(1/q)(1+log(U²/q))` (the multiples of
+`q`) are still estimated trivially.  For small `q` these are
+`n log² n`-sized, so this bound is not yet `o(n)`; improving them
+requires using the `β`-oscillation on the multiples of `q` rather than
+the trivial estimate.

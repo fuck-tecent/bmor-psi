@@ -946,6 +946,46 @@ lemma sum_inv_Icc_le_one_add_log (K : ℕ) :
   rw [hcast] at h
   simpa [one_div] using h
 
+/-- Tail harmonic bound: `∑_{d=M+1}^U 1/d ≤ log U - log M`. -/
+lemma sum_inv_Icc_succ_le_log (M U : ℕ) (hM : 1 ≤ M) (hMU : M ≤ U) :
+    ∑ d ∈ Finset.Icc (M + 1) U, (1 : ℝ) / (d : ℝ) ≤
+      Real.log (U : ℝ) - Real.log (M : ℝ) := by
+  have hterm : ∀ d ∈ Finset.Icc (M + 1) U,
+      (1 : ℝ) / (d : ℝ) ≤ Real.log (d : ℝ) - Real.log ((d - 1 : ℕ) : ℝ) := by
+    intro d hd
+    obtain ⟨hd1, _⟩ := Finset.mem_Icc.mp hd
+    have hd2 : 2 ≤ d := by omega
+    have hd2' : (2:ℝ) ≤ (d : ℝ) := by exact_mod_cast hd2
+    have hdpos : (0 : ℝ) < (d : ℝ) := by exact_mod_cast (by omega : 0 < d)
+    have hdm1 : (0 : ℝ) < (d : ℝ) - 1 := by linarith
+    have hx : (0 : ℝ) < ((d : ℝ) - 1) / (d : ℝ) := div_pos hdm1 hdpos
+    have hlog := Real.log_le_sub_one_of_pos hx
+    have hdiv : Real.log (((d : ℝ) - 1) / (d : ℝ)) =
+        Real.log ((d : ℝ) - 1) - Real.log (d : ℝ) :=
+      Real.log_div (by linarith) (ne_of_gt hdpos)
+    have hcast : ((d - 1 : ℕ) : ℝ) = (d : ℝ) - 1 := by
+      rw [Nat.cast_sub (by omega : 1 ≤ d)]
+      norm_num
+    have hvalue : ((d : ℝ) - 1) / (d : ℝ) - 1 = -(1 / (d : ℝ)) := by
+      field_simp
+      ring
+    rw [hdiv, hvalue] at hlog
+    rw [hcast]
+    linarith
+  calc
+    ∑ d ∈ Finset.Icc (M + 1) U, (1 : ℝ) / (d : ℝ)
+        ≤ ∑ d ∈ Finset.Icc (M + 1) U,
+            (Real.log (d : ℝ) - Real.log ((d - 1 : ℕ) : ℝ)) :=
+      Finset.sum_le_sum hterm
+    _ = Real.log (U : ℝ) - Real.log (M : ℝ) := by
+      rcases eq_or_lt_of_le hMU with hEq | hlt
+      · subst hEq
+        rw [Finset.Icc_eq_empty_of_lt (Nat.lt_succ_self M)]
+        simp
+      · have h := Finset.sum_Icc_sub (m := M + 1) (n := U)
+          (f := fun i : ℕ => Real.log ((i - 1 : ℕ) : ℝ)) (by omega)
+        simpa using h
+
 /-- Reindex a sum over the multiples of `q` in `{1, ..., K}` as `1/q` times a
 harmonic sum. -/
 lemma sum_inv_multiples_eq (K q : ℕ) (hq : 0 < q) :

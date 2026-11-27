@@ -351,3 +351,18 @@ second-term minor-arc and third-term truncated bounds are separate.
 bound with `2qM` replaced by `1/(8|β|)` at `M ≈ 1/(16q|β|)`.  The
 remaining second-term tail and the final minor-arc regime combination
 are the next optimization.
+
+## Threshold tuning (second term + third-term tail)
+
+- `norm_expSum_low_mu_mul_log_le_truncated`: second term at threshold
+  `M`, with the tail `n log n (log U - log M)`.
+- `norm_expSum_low_mu_lowLambda_zeta_le_truncated_tail`: third term with
+  the tail gain `n log n (1+log U)(1+log(U²/M))`.
+- `norm_expSum_vaughan_typeI_le_truncated_tail`: combined bound for
+  `1 ≤ M ≤ U`, `|β| ≤ 1/(16 q M)`.
+
+Next bottleneck: the multiples-of-`q` parts
+(`n log n (1+log n)/q` and `n log(U²)(1/q)(1+log(U²/q))`) still use
+trivial estimates and are `n log² n`-sized for small `q`.  Exploiting the
+`β`-oscillation on those parts is necessary before the Type-I minor-arc
+estimate can be `o(n)`.
