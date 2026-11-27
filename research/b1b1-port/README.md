@@ -2380,4 +2380,4 @@ Landmines recorded:
 * `Jdeep`'s integrand is `(S_u * S_v) * phase`, while the general lemma yields
   `S_u * (S_v * phase)`; the bridge is one `integral_congr_ae` with `simp only [mul_assoc]`.
 
-Dossier: 2578 → 2684 lines, 121 → 126 verified declarations, no `sorry`.
+Dossier: 2578 -> 2680 lines, 126 verified declarations (95 theorems, 22 defs, 9 lemmas), no `sorry`.
