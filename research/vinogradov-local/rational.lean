@@ -617,6 +617,107 @@ lemma abs_sin_pi_mul_ge_two_mul_typeIDist (x : ℝ) :
   rw [hcoef] at hj
   simpa [typeIDist, n] using hj
 
+/-- `typeIDist` is bounded by the distance to any integer. -/
+lemma typeIDist_le_abs_sub (x : ℝ) (m : ℤ) :
+    typeIDist x ≤ |x - (m:ℝ)| :=
+  round_le x m
+
+/-- Triangle inequality for `typeIDist`. -/
+lemma typeIDist_add_le (x y : ℝ) :
+    typeIDist (x + y) ≤ typeIDist x + |y| := by
+  have h := typeIDist_le_abs_sub (x + y) (round x)
+  have habs : |(x + y) - (round x : ℝ)| ≤ |x - (round x : ℝ)| + |y| := by
+    calc |(x + y) - (round x : ℝ)| = |(x - (round x : ℝ)) + y| := by ring_nf
+      _ ≤ |x - (round x : ℝ)| + |y| := abs_add_le _ _
+  have hxdef : typeIDist x = |x - (round x : ℝ)| := rfl
+  linarith [h, habs, hxdef]
+
+/-- For `q ∤ n`, the distance of `n/q` to the nearest integer is at least
+`1/q`. -/
+lemma typeIDist_natCast_div_ge_inv_of_not_dvd (q n : ℕ) (hq : 0 < q)
+    (hndvd : ¬ q ∣ n) :
+    (1:ℝ)/(q:ℝ) ≤ typeIDist ((n:ℝ)/(q:ℝ)) := by
+  have hqpos : (0:ℝ) < (q:ℝ) := by positivity
+  have hne : ((n:ℤ) - round (((n:ℝ)/(q:ℝ))) * (q:ℤ)) ≠ 0 := by
+    intro h
+    apply hndvd
+    have hdvd : (q:ℤ) ∣ (n:ℤ) := by
+      use round (((n:ℝ)/(q:ℝ)))
+      linarith
+    exact_mod_cast hdvd
+  have habs : (1:ℤ) ≤ |(n:ℤ) - round (((n:ℝ)/(q:ℝ))) * (q:ℤ)| := Int.one_le_abs hne
+  have habsR : (1:ℝ) ≤ ((|((n:ℤ) - round (((n:ℝ)/(q:ℝ))) * (q:ℤ))| : ℤ) : ℝ) := by
+    exact_mod_cast habs
+  have hrewrite : typeIDist ((n:ℝ)/(q:ℝ)) =
+      ((|((n:ℤ) - round (((n:ℝ)/(q:ℝ))) * (q:ℤ))| : ℤ) : ℝ) / (q:ℝ) := by
+    have hnum : (n:ℝ)/(q:ℝ) - (round (((n:ℝ)/(q:ℝ))) : ℝ) =
+        ((((n:ℤ) - round (((n:ℝ)/(q:ℝ))) * (q:ℤ) : ℤ)) : ℝ) / (q:ℝ) := by
+      push_cast
+      field_simp
+    rw [typeIDist, hnum, abs_div, abs_of_nonneg (le_of_lt hqpos), Int.cast_abs]
+  rw [hrewrite, le_div_iff₀ hqpos]
+  have hqinv : (1:ℝ)/(q:ℝ) * (q:ℝ) = 1 := by field_simp
+  linarith [habsR, hqinv]
+
+/-- Separation for the Farey shift: if `1 ≤ l < q` and `l |β| ≤ 1/(2q)`,
+then `l (a/q + β)` stays at distance at least `1/(2q)` from the integers. -/
+lemma typeIDist_mul_farey_shift_ge (q a l : ℕ) (β : ℝ)
+    (hq : 0 < q) (hcop : Nat.Coprime a q) (hl1 : 1 ≤ l) (hlq : l < q)
+    (hβ : (l:ℝ) * |β| ≤ 1 / (2 * (q:ℝ))) :
+    (1:ℝ)/(2*(q:ℝ)) ≤ typeIDist ((l:ℝ) * ((a:ℝ)/(q:ℝ) + β)) := by
+  have hqpos : (0:ℝ) < (q:ℝ) := by exact_mod_cast hq
+  have hndvd : ¬ q ∣ l * a := by
+    intro h
+    have hql : q ∣ l := hcop.symm.dvd_of_dvd_mul_right h
+    have := Nat.le_of_dvd (by omega) hql
+    omega
+  have hrat : (1:ℝ)/(q:ℝ) ≤ typeIDist (((l * a : ℕ) : ℝ)/(q:ℝ)) :=
+    typeIDist_natCast_div_ge_inv_of_not_dvd q (l * a) hq hndvd
+  have hsplit : (l:ℝ) * ((a:ℝ)/(q:ℝ) + β) =
+      ((l * a : ℕ) : ℝ)/(q:ℝ) + (l:ℝ) * β := by
+    push_cast
+    ring
+  have habs : |(l:ℝ) * β| = (l:ℝ) * |β| := by
+    rw [abs_mul, abs_of_nonneg (by positivity)]
+  have htri : typeIDist (((l * a : ℕ) : ℝ)/(q:ℝ)) ≤
+      typeIDist (((l * a : ℕ) : ℝ)/(q:ℝ) + (l:ℝ) * β) + |(l:ℝ) * β| := by
+    have h := typeIDist_add_le (((l * a : ℕ) : ℝ)/(q:ℝ) + (l:ℝ) * β) (-((l:ℝ) * β))
+    have heq : ((l * a : ℕ) : ℝ)/(q:ℝ) + (l:ℝ) * β + (-((l:ℝ) * β)) =
+        ((l * a : ℕ) : ℝ)/(q:ℝ) := by ring
+    rw [heq] at h
+    simpa [abs_neg] using h
+  rw [habs] at htri
+  have hqrel : (1:ℝ)/(q:ℝ) - 1 / (2 * (q:ℝ)) = 1 / (2 * (q:ℝ)) := by
+    field_simp
+    ring
+  rw [hsplit]
+  linarith [hrat, htri, hβ, hqrel]
+
+/-- Separation in the Green–Tao normalisation: if `l K ≤ q/2` and
+`|β| ≤ K/q²`, then `l (a/q + β)` is at distance at least `1/(2q)` from the
+integers. -/
+lemma typeIDist_mul_farey_shift_ge_of_mul_le (q a K l : ℕ) (β : ℝ)
+    (hq : 0 < q) (hcop : Nat.Coprime a q) (hK : 1 ≤ K)
+    (hl1 : 1 ≤ l) (hlL : l * K ≤ q / 2)
+    (hβ : |β| ≤ (K:ℝ) / ((q:ℝ) * (q:ℝ))) :
+    (1:ℝ)/(2*(q:ℝ)) ≤ typeIDist ((l:ℝ) * ((a:ℝ)/(q:ℝ) + β)) := by
+  have hqpos : (0:ℝ) < (q:ℝ) := by exact_mod_cast hq
+  have hlq : l < q := by
+    have h1 : l ≤ l * K := Nat.le_mul_of_pos_right l (by omega)
+    omega
+  apply typeIDist_mul_farey_shift_ge q a l β hq hcop hl1 hlq
+  have hlK : (l:ℝ) * (K:ℝ) ≤ (q:ℝ)/2 := by
+    calc (l:ℝ) * (K:ℝ) = ((l * K : ℕ) : ℝ) := by push_cast; ring
+      _ ≤ ((q / 2 : ℕ) : ℝ) := by exact_mod_cast hlL
+      _ ≤ (q:ℝ)/2 := Nat.cast_div_le
+  calc (l:ℝ) * |β| ≤ (l:ℝ) * ((K:ℝ) / ((q:ℝ) * (q:ℝ))) :=
+        mul_le_mul_of_nonneg_left hβ (by positivity)
+    _ = ((l:ℝ) * (K:ℝ)) / ((q:ℝ) * (q:ℝ)) := by ring
+    _ ≤ ((q:ℝ)/2) / ((q:ℝ) * (q:ℝ)) :=
+        div_le_div_of_nonneg_right hlK (by positivity)
+    _ = 1 / (2 * (q:ℝ)) := by
+        field_simp
+
 lemma norm_geometric_sum_Icc_le_dist (N : ℕ) (θ : ℝ)
     (hdist : typeIDist θ ≠ 0) :
     ‖∑ m ∈ Finset.Icc 1 N, E ((m : ℝ) * θ)‖ ≤ 1 / typeIDist θ := by

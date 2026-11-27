@@ -399,3 +399,25 @@ input.
     + n log(U²)(1+log(U²)),
 
 uniform in `α` and in the Farey denominator `q ≤ Q`.
+
+## Orbit separation completed; block-sum next
+
+`typeIDist_mul_farey_shift_ge_of_mul_le` proves the Green–Tao separation:
+for `(a,q) = 1`, `|θ - a/q| ≤ K/q²`, `1 ≤ l`, `lK ≤ q/2`,
+the point `lθ` is at distance `≥ 1/(2q)` from the integers.  Hence the
+points `nθ` in a block of `⌊q/(2K)⌋` consecutive integers are
+`1/(2q)`-separated modulo one.
+
+Remaining for the classical Type-I minor-arc estimate:
+
+1. counting step: a `1/(2q)`-separated set `S` satisfies
+   `∑_{x∈S} min(Y, 1/typeIDist x) ≪ Y + q log q`
+   (order the points by distance; the `j`-th closest is at distance
+   `≥ (j-1)/(2q)`);
+2. block decomposition of `d ∈ [1, V]` into `⌊q/(2K)⌋`-blocks plus a
+   remainder, summing the per-block bounds to
+   `∑_{d≤V} min(n/d, 1/‖dθ‖) ≪ K² log V log q (n/q + V + q)`.
+
+This would replace the trivial `n log² n/q` multiples-of-`q` estimate by
+the classical `n/q` Type-I saving, which is `o(n)` once `q` is large
+(the minor-arc regime).

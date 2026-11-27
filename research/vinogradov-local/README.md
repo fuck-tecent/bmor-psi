@@ -1008,3 +1008,41 @@ obtained from `norm_expSum_vaughan_typeI_le_farey_large` by relaxing
 `q` to `Q` and `log(U²/q)` to `log(U²)`.  This is the interface needed
 by a uniform minor-arc integral estimate, though the `n log² n` terms
 still have to be improved (see the honest limitation above).
+
+### Orbit separation for Farey shifts
+
+The next analytical input for the Type-I minor arcs is the classical
+*orbit separation* behind Green–Tao's minor-arc Lemma 2 (and the
+Vinogradov-type bound `N/√q + N^{4/5} + √(Nq)`): for
+`θ = a/q + β` with `(a,q) = 1` and `|β| ≤ K/q²`, the points
+`nθ`, `1 ≤ n ≤ q/(2K)`, are `1/(2q)`-separated modulo one.
+
+New in `rational.lean`:
+
+```lean
+typeIDist_le_abs_sub          : typeIDist x ≤ |x - m|        (any integer m)
+typeIDist_add_le              : typeIDist (x+y) ≤ typeIDist x + |y|
+typeIDist_natCast_div_ge_inv_of_not_dvd :
+  q ∤ n → 1/q ≤ typeIDist (n/q)
+typeIDist_mul_farey_shift_ge :
+  (l|β| ≤ 1/(2q), 1 ≤ l < q) → 1/(2q) ≤ typeIDist (l (a/q + β))
+typeIDist_mul_farey_shift_ge_of_mul_le :
+  (l K ≤ q/2, |β| ≤ K/q²) → 1/(2q) ≤ typeIDist (l (a/q + β))
+```
+
+The last one is the exact separation statement needed for the block
+argument: within a block of `⌊q/(2K)⌋` consecutive integers, all
+pairwise differences `l` satisfy the hypothesis, so the values `nθ` stay
+`1/(2q)`-separated.
+
+What remains of the Green–Tao argument is the counting/summation step:
+for a `1/(2q)`-separated set on the circle,
+`∑ min(Y, 1/typeIDist x) ≪ Y + q log q`, and then summing over
+`~(1 + VK/q)` blocks to get
+
+```text
+∑_{d ≤ V} min(n/d, 1/‖d θ‖) ≪ K² log V log q · (n/q + V + q).
+```
+
+That estimate (for `K = 1`, i.e. `|β| ≤ 1/q²`) is the classical Type-I
+minor-arc saving `n/√q`-type input; it is the next target.
