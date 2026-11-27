@@ -1130,4 +1130,59 @@ theorem primeSum_eq_module (N : ℕ) (θ : ℝ) :
   refine Finset.sum_congr rfl fun k _ => ?_
   by_cases hk : Nat.Prime k <;> simp [hk]
 
+/-! ### Weighted phase-quadruple expansion
+
+The weighted analogue of the verified `phase-quadruple-expansion`: the square of
+`S_{τ₁}` times `e(-n·)` written as an explicit sum over the four atom indices and
+the frequency `a j + a' k - n`.  This is the first step of the `exact_split`
+port: after this, integrating over the arc complement collects the `sinc` kernel.
+-/
+
+/-- Pair expansion for two weighted progressions. -/
+theorem wwave_pair_expand (c c' : ℕ → ℂ) (a a' U U' N N' n : ℕ) (t : ℝ) :
+    wwave c a U N t * wwave c' a' U' N' t * phase (-(n:ℝ)*t)
+      = ∑ j ∈ Finset.Ioc U N, ∑ k ∈ Finset.Ioc U' N',
+          (c j * c' k) *
+            phase (((((a*j:ℕ):ℝ) + ((a'*k:ℕ):ℝ) - (n:ℝ))) * t) := by
+  unfold wwave
+  rw [Finset.sum_mul_sum, Finset.sum_mul]
+  refine Finset.sum_congr rfl fun j _ => ?_
+  rw [Finset.sum_mul]
+  refine Finset.sum_congr rfl fun k _ => ?_
+  rw [show (c j * phase ((a*j:ℕ)*t)) * (c' k * phase ((a'*k:ℕ)*t)) * phase (-(n:ℝ)*t)
+      = (c j * c' k) * (phase ((a*j:ℕ)*t) * phase ((a'*k:ℕ)*t) * phase (-(n:ℝ)*t)) from by ring]
+  rw [← phase_add, ← phase_add]
+  congr 2
+  push_cast
+  ring
+
+/-- **The weighted phase-quadruple expansion** for `S_{τ₁}`. -/
+theorem plainPolynomial_sq_dilated_expand (n : ℕ) (t : ℝ) :
+    plainPolynomial n (tauCoeff n) t ^ 2 * phase (-(n:ℝ)*t)
+      = ∑ a ∈ Finset.Icc (cutoffU n + 1) (lowCut n),
+          ∑ a' ∈ Finset.Icc (cutoffU n + 1) (lowCut n),
+            ((lowMoebiusWeight (cutoffU n) a : ℂ) * (lowMoebiusWeight (cutoffU n) a' : ℂ)) *
+              ∑ j ∈ Finset.Ioc (cutoffU n) (n / a),
+                ∑ k ∈ Finset.Ioc (cutoffU n) (n / a'),
+                  ((ArithmeticFunction.vonMangoldt j : ℂ) *
+                    (ArithmeticFunction.vonMangoldt k : ℂ)) *
+                    phase (((((a*j:ℕ):ℝ) + ((a'*k:ℕ):ℝ) - (n:ℝ))) * t) := by
+  unfold tauCoeff
+  rw [plainPolynomial_tau1]
+  simp_rw [atomWave_eq_wwave]
+  rw [pow_two, Finset.sum_mul_sum, Finset.sum_mul]
+  refine Finset.sum_congr rfl fun a _ => ?_
+  rw [Finset.sum_mul]
+  refine Finset.sum_congr rfl fun a' _ => ?_
+  rw [show ((lowMoebiusWeight (cutoffU n) a : ℂ) *
+        wwave (fun h => (ArithmeticFunction.vonMangoldt h : ℂ)) a (cutoffU n) (n / a) t) *
+      ((lowMoebiusWeight (cutoffU n) a' : ℂ) *
+        wwave (fun h => (ArithmeticFunction.vonMangoldt h : ℂ)) a' (cutoffU n) (n / a') t) *
+      phase (-(n:ℝ)*t)
+      = ((lowMoebiusWeight (cutoffU n) a : ℂ) * (lowMoebiusWeight (cutoffU n) a' : ℂ)) *
+        (wwave (fun h => (ArithmeticFunction.vonMangoldt h : ℂ)) a (cutoffU n) (n / a) t *
+          wwave (fun h => (ArithmeticFunction.vonMangoldt h : ℂ)) a' (cutoffU n) (n / a') t *
+          phase (-(n:ℝ)*t)) from by ring]
+  rw [wwave_pair_expand]
+
 end B1B1Port

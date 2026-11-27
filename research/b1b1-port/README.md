@@ -847,3 +847,43 @@ inputs (singular series, tail) are already solved in the `w` case.
 ### Dossier
 
 15 verified milestones, 1132 lines, no `sorry`, branch `research/b1b1-arcsplit`.
+
+## Milestone 16: the weighted phase-quadruple expansion (in the `exact_split` form)
+
+```lean
+wwave_pair_expand (c c') (a a') (U U' N N') (n) (t) :
+  wwave c a U N t * wwave c' a' U' N' t * phase (-(n t))
+    = ∑_{j ∈ (U,N]} ∑_{k ∈ (U',N']} c j c' k · phase ((a j + a' k - n) t)
+
+plainPolynomial_sq_dilated_expand (n) (t) :
+  S_{τ₁}(t)² e(-n t)
+    = ∑_{a, a' ∈ (U,B₁]} c(a) c(a') ·
+        ∑_{j ∈ (U, n/a]} ∑_{k ∈ (U, n/a']} Λ(j) Λ(k) ·
+          e((a j + a' k - n) t)
+```
+
+(The second is the catalogue's verified `L-goldbach-frontier-type2-b1-b1-phase-quadruple-expansion`
+re-derived in the `wwave`-factorised form that the integral stage consumes.)
+
+This is the input of the `spatial_exact_split` port: integrating over the arc
+complement now collects, for each quadruple `(a, a', j, k)`, the sinc kernel
+
+```text
+∫_{arcsᶜ} e((a j + a' k - n) t) dt
+  = [a j + a' k = n] - ∑_{q} (Ramanujan cosine sum) · sinc(...)
+```
+
+with the frequency `m = a j + a' k - n` replacing `j + k - n` of the `w` case.
+
+### Remaining port (honest scale)
+
+The `w`-version is ~15k verified lines (`exact_split` 697, `lowmod_model_match`
+7432, `macro_sinc_tail` 6094, `medcore_bv_band` 1710).  The `τ₁`-version is the
+same architecture with `m = a j + a' k - n` in place of `m = j + k - n`, so:
+
+1. `exact_split` port — exact identity, mechanical but long;
+2. local densities: `1/φ(q)²` becomes `(∑_a c(a) ρ_a)²`-shaped sums;
+3. archimedean tail: same form, extra `a`-sums.
+
+This is a multi-session engineering project with a verified template, not an
+open problem.
