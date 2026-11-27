@@ -2837,4 +2837,39 @@ theorem integral_bot_norm_sq_le (n V : ℕ) (hV : lowCut n * V ≤ n)
   ring_nf
   exact le_rfl
 
+/-! ### Milestone 42: the crude instantiation `T ≤ B₁`, and what the peeling does *not* do -/
+
+/-- A positive integer has at most itself many divisors. -/
+theorem card_divisors_le_self (a : ℕ) (ha : 0 < a) : a.divisors.card ≤ a := by
+  have hsub : a.divisors ⊆ Finset.Icc 1 a := by
+    intro d hd
+    obtain ⟨hdvd, _⟩ := Nat.mem_divisors.mp hd
+    exact Finset.mem_Icc.mpr ⟨Nat.pos_of_dvd_of_pos hdvd ha, Nat.le_of_dvd ha hdvd⟩
+  have h := Finset.card_le_card hsub
+  simpa using h
+
+/-- The crude coefficient bound `|c(a)| ≤ B₁` for `a ≤ B₁`. -/
+theorem lowMoebiusWeight_le_lowCut (n a : ℕ) (haU : cutoffU n < a) (haB : a ≤ lowCut n) :
+    |lowMoebiusWeight (cutoffU n) a| ≤ (lowCut n : ℝ) := by
+  have ha0 : 0 < a := by omega
+  calc |lowMoebiusWeight (cutoffU n) a|
+      ≤ (a.divisors.card : ℝ) := abs_lowMoebiusWeight_le _ _
+    _ ≤ (a : ℝ) := by exact_mod_cast card_divisors_le_self a ha0
+    _ ≤ (lowCut n : ℝ) := by exact_mod_cast haB
+
+/-- **Crude peeling bound, fully instantiated.**  No divisor bound is needed: the
+low-cofactor part of `τ₁` has `L²` mass at most `B₁² · (B₁ V + 1) · log²n`. -/
+theorem integral_bot_norm_sq_le_crude (n V : ℕ) (hV : lowCut n * V ≤ n) :
+    (∫ t in (0:ℝ)..1,
+        ‖plainPolynomial n (fun m => (lowBandCoefficientBot n V m : ℂ)) t‖ ^ 2)
+      ≤ (lowCut n : ℝ) ^ 2 * ((lowCut n * V : ℕ) + 1 : ℝ) * (Real.log n) ^ 2 :=
+  integral_bot_norm_sq_le n V hV (by positivity)
+    (fun a haU haB => lowMoebiusWeight_le_lowCut n a haU haB)
+
+/-- The same crude bound for the pointwise size of the low part. -/
+theorem lowBandCoefficientBot_abs_le_crude (n V m : ℕ) :
+    ‖(lowBandCoefficientBot n V m : ℂ)‖ ≤ (lowCut n : ℝ) * Real.log m :=
+  lowBandCoefficientBot_abs_le n V m (by positivity)
+    (fun a haU haB => lowMoebiusWeight_le_lowCut n a haU haB)
+
 end B1B1Port

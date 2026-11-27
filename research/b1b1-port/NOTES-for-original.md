@@ -65,9 +65,18 @@ Two regimes (the lemma is parametric in `T`):
 - divisor bound `T = n^o(1)` ⟹ `o(n)` when **`V = n^(3/4−δ)`**.
 
 The second peels off all cofactors `≤ n^(3/4−δ)`, leaving
-`a ∈ (n^(1/16), n^(1/4)]`, `m/a > n^(3/4−δ)`.  Since `Λ` lives on prime powers, `m/a` is
-then essentially a **prime** — so b1-b1 becomes a "small divisor × large prime" Type-I
-object.  That is a genuinely more concrete target than the original quadruple sum.
+`a ∈ (n^(1/16), n^(1/4)]`, `m/a > n^(3/4−δ)`.
+
+**Correction to my earlier wording:** `Λ` lives on prime *powers*, so `m/a` is a **prime
+or a higher prime power**, not necessarily a prime.  `p²` is possible for
+`p ∈ (n^(3/8−δ/2), n^(15/32)]`; `p³` for `p ∈ (n^(1/4−δ/3), n^(5/16)]`; and `2^k` for
+`k ∈ [(3/4−δ)log₂n, (15/16)log₂n]`.  "Essentially a prime" was a heuristic, not a fact.
+The higher powers are however *sparse* (`O(n^(15/32) log n)` of them), so with the divisor
+bound they contribute `L²` mass `n^(23/32+o(1)) = o(n)` and can be peeled off too — a
+further estimate, not yet verified.
+
+Also: the coefficient becomes Type-I *shaped*, but `Jdeep` is bilinear in it, so the task's
+difficulty class is unchanged.
 
 Still to do: instantiate `T ≤ B₁` (needs `a.divisors.card ≤ a`) and the divisor bound.
 
@@ -85,3 +94,28 @@ Still to do: instantiate `T ≤ B₁` (needs `a.divisors.card ≤ a`) and the di
 3. Either merge `research/b1b1-exponent-fix`, or re-do the peeling for τ₁ on your branch
    using the lemmas above.
 4. Do **not** build further on `Jdeep(τ₃,τ₃) = Jdeep(main,main) + o(n)`.
+
+
+## 6. Update: crude regime closed, and peeling does NOT make b1-b1 reachable
+
+Added on `research/b1b1-exponent-fix` (all compile, no `sorry`):
+
+```lean
+card_divisors_le_self (a) (ha : 0 < a) : a.divisors.card ≤ a
+lowMoebiusWeight_le_lowCut (n a) (haU) (haB) : |c(a)| ≤ (B₁ n : ℝ)
+lowBandCoefficientBot_abs_le_crude (n V m) : ‖Bot‖ ≤ (B₁ n) * log m
+integral_bot_norm_sq_le_crude (n V) (hV : B₁ n * V ≤ n) :
+  ∫₀¹ ‖S_Bot‖² ≤ (B₁ n)² * (B₁ n * V + 1) * log²n
+```
+
+So the crude regime `V = n^(1/4−δ)` is fully closed with no divisor bound.
+
+**But b1-b1 is still not reachable**, and it is important not to read the peeling as
+progress on the target:
+
+- the top part still has mass `≈ n`, so `D_Top = Θ(n)` and the matching `W = D + o(n)` is
+  untouched;
+- `‖S_Top‖₂² ≈ n log n` (estimate), so the `L²` route is still a `log n` short;
+- the sup route `|Jdeep| ≲ N²/U` is unchanged.
+
+The peeling buys **shape, not size**.

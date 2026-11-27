@@ -2477,8 +2477,22 @@ The second regime is the interesting one: it peels off everything with cofactor
 a ∈ (n^(1/16), n^(1/4)] ,   m/a > n^(3/4−δ) .
 ```
 
-Since `Λ` is supported on prime powers, `m/a > n^(3/4−δ)` forces `m/a` to be essentially a
-**prime**.  So `b1-b1` reduces to a "small divisor × large prime" Type-I object.
+`Λ` is supported on prime powers, so `m/a > n^(3/4−δ)` forces `m/a` to be a **prime or a
+higher prime power** — *not* necessarily a prime.  Higher powers are genuinely possible:
+`m/a = p²` needs `p ∈ (n^(3/8−δ/2), n^(15/32)]`, which is non-empty; `k = 3` needs
+`p ∈ (n^(1/4−δ/3), n^(5/16)]`, also non-empty; and with `p = 2` any
+`k ∈ [(3/4−δ)log₂n, (15/16)log₂n]` is allowed.  So "essentially a prime" is a heuristic,
+not a fact.
+
+What *is* true is that the higher powers are **sparse**: their number is
+`O(√(n^(15/16)) log n) = O(n^(15/32) log n)`, so the part of `τ₁^Top` they carry is
+supported on at most `B₁ · O(n^(15/32) log n) = O(n^(23/32) log n)` integers.  With the
+divisor bound `max|τ₁| = n^o(1)` that piece has `L²` mass `n^(23/32+o(1)) = o(n)`, i.e. it
+can be peeled off too — but that is a further estimate, not something verified here.
+
+Also note the coefficient being "small divisor × large prime" makes it **Type-I shaped**,
+but `Jdeep` is *bilinear* in the coefficient, so the difficulty class of the task is
+unchanged.  Calling the task itself "Type-I" was loose.
 
 **Not yet formalized:** the instantiation `T ≤ B₁` (needs `a.divisors.card ≤ a`), and the
 divisor bound `T = n^o(1)`.  The verified lemma is parametric in `T`, so both are one
@@ -2493,3 +2507,50 @@ instantiation away.
   Only `m/a ≤ n^(1/3−δ)` is short.  The rest needs a new minor-arc estimate.
 
 Dossier on this branch: 2840 lines, no `sorry`.
+
+
+## Milestone 42: the crude instantiation, and why peeling ≠ reachability
+
+### 42.1 Verified: `T ≤ B₁`, no divisor bound needed
+
+```lean
+theorem card_divisors_le_self (a : ℕ) (ha : 0 < a) : a.divisors.card ≤ a
+theorem lowMoebiusWeight_le_lowCut (n a) (haU : U n < a) (haB : a ≤ B₁ n) :
+  |lowMoebiusWeight (U n) a| ≤ (B₁ n : ℝ)
+theorem lowBandCoefficientBot_abs_le_crude (n V m) :
+  ‖(Bot n V m : ℂ)‖ ≤ (B₁ n : ℝ) * Real.log m
+theorem integral_bot_norm_sq_le_crude (n V) (hV : B₁ n * V ≤ n) :
+  ∫₀¹ ‖S_{Bot n V}‖² ≤ (B₁ n)² * (B₁ n * V + 1) * (Real.log n)²
+```
+
+So the **crude regime is now fully closed**: with `B₁ = n^(1/4)` the right-hand side is
+`n^(3/4) · V · log²n`, which is `o(n)` exactly when `V = n^(1/4−δ)`.  The stronger regime
+`V = n^(3/4−δ)` still needs the divisor bound `T = n^o(1)`.
+
+### 42.2 Does the peeling make b1-b1 reachable?  **No.**
+
+The peeling removes an `L²`-small piece.  It does **not** shrink the target:
+
+* **Mass of the top part is still `≈ n`.**  For `a ≈ B₁ = n^(1/4)` the surviving primes lie
+  in `(n^(3/4−δ), n/a] ⊆ (n^(3/4−δ), n^(3/4)]`, and
+  `∑_{a ≤ B₁} |c(a)| ∑_{p in range} log p ≈ B₁ · T · n^(3/4) = n · T`.  So `D_Top` is still
+  `Θ(n)`-sized; the main-term matching `W = D + o(n)` is untouched.
+* **`L²` route still short.**  `‖S_Top‖₂² = ∑_m |τ_Top(m)|² ≈ n log n` (estimate: the
+  `a = a'` diagonal gives `∑_a c(a)² · n^(3/4) log n`).  The target needs `o(n)`, so a
+  `log n` saving is still missing — exactly the same gap as before the peeling.
+* **sup route unchanged.**  `|Jdeep| ≲ N²/U` needs `U = ω(N)`; no cutoff helps.
+
+What the peeling buys is **shape, not size**: the coefficient goes from a general divisor
+sum to "small divisor × (large prime or sparse higher power)".  That is a more concrete
+object to attack, and the peeled part is a genuine theorem, but the remaining integral is
+the same signed main-term problem.
+
+### 42.3 Corrected one-line summary
+
+```text
+剥离 = 把 τ₁ 的形状变简单 + 证掉一个 L²-小的部分。
+它不改变 D = Θ(n)，也不改变 ‖S‖₂² ≈ n log n。
+所以 b1-b1 仍然不可达。
+```
+
+Dossier on this branch: 2884 lines, no `sorry`.
