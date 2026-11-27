@@ -828,3 +828,21 @@ S₃ ≤ 2q · (M log n (1+log n))
    + n · (log n (1+log n)^2)
    + n · (multiples-of-q contribution).
 ```
+
+### Truncated third Type-I term
+
+`norm_expSum_low_mu_lowLambda_zeta_le_truncated` assembles the
+threshold/summation ingredients:
+
+```lean
+‖S₃(t)‖ ≤ 2q M log n (1+log n)
+         + n log n (1+log n)^2
+         + n log(U²) · (1/q)(1+log(U²/q)).
+```
+
+Here the sine separation is used only on `de ≤ M` (with
+`|β| ≤ 1/(16 q M)`); the remaining pairs are estimated trivially.  This is
+the third-term minor-arc truncation: choosing
+`M ≈ 1/(16 q |β|)` makes the first term the usual `2q M log² n`, while
+the second and third terms are the trivial tail and the `q | de`
+multiples.

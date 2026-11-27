@@ -1280,6 +1280,295 @@ lemma norm_third_inner_le_of_product_le (n q M a d e : ℕ) (β : ℝ)
     _ ≤ 2 * (q:ℝ) := mul_le_mul_of_nonneg_left hunit (by norm_num)
 
 
+/-- Trivial bound for the third-term inner geometric sum. -/
+lemma norm_third_inner_le_trivial (n d e : ℕ) (t : ℝ) :
+    ‖∑ m ∈ Finset.Icc 1 (n / (d * e)),
+        E (((d * e * m : ℕ) : ℝ) * t)‖ ≤ ((n / (d * e) : ℕ) : ℝ) := by
+  have normE : ∀ x : ℝ, ‖E x‖ = 1 := by
+    intro x
+    dsimp only [E]
+    simpa only [mul_comm] using Complex.norm_exp_ofReal_mul_I (2 * Real.pi * x)
+  refine (norm_sum_le _ _).trans ?_
+  calc
+    ∑ m ∈ Finset.Icc 1 (n / (d * e)),
+        ‖E (((d * e * m : ℕ) : ℝ) * t)‖
+        ≤ ∑ _m ∈ Finset.Icc 1 (n / (d * e)), (1 : ℝ) := by
+      apply Finset.sum_le_sum
+      intro m _
+      rw [normE]
+    _ = ((n / (d * e) : ℕ) : ℝ) := by
+      rw [Finset.sum_const, Nat.card_Icc, nsmul_eq_mul]
+      norm_num
+
+/-- The per-`(d,e)` truncated inner bound: threshold sine bound, then the
+trivial bounds. -/
+noncomputable def typeIThirdInnerBound (n q M d e : ℕ) : ℝ :=
+  (if d * e ≤ M then 2 * (q:ℝ) else 0) +
+    ((n / (d * e) : ℕ) : ℝ) +
+    (if (q : ℕ) ∣ d * e then ((n / (d * e) : ℕ) : ℝ) else 0)
+
+lemma norm_third_inner_le_truncated (n q M a d e : ℕ) (β : ℝ)
+    (hq : 0 < q) (hcop : Nat.Coprime a q)
+    (hde1 : 1 ≤ d * e)
+    (hβM : |β| ≤ 1 / (16 * (q:ℝ) * (M:ℝ))) :
+    ‖∑ m ∈ Finset.Icc 1 (n / (d * e)),
+        E (((d * e * m : ℕ) : ℝ) * ((a:ℝ)/(q:ℝ) + β))‖ ≤
+      typeIThirdInnerBound n q M d e := by
+  classical
+  by_cases hM : d * e ≤ M
+  · by_cases hqde : (q : ℕ) ∣ d * e
+    · have htriv := norm_third_inner_le_trivial n d e ((a:ℝ)/(q:ℝ) + β)
+      have hq0 : (0:ℝ) ≤ 2 * (q:ℝ) := by positivity
+      have hn0 : (0:ℝ) ≤ ((n / (d * e) : ℕ) : ℝ) := by positivity
+      simp only [typeIThirdInnerBound, if_pos hM, if_pos hqde]
+      linarith
+    · have hthr := norm_third_inner_le_of_product_le n q M a d e β
+        hq hcop hde1 hM hqde hβM
+      have hn0 : (0:ℝ) ≤ ((n / (d * e) : ℕ) : ℝ) := by positivity
+      simp only [typeIThirdInnerBound, if_pos hM, if_neg hqde]
+      linarith
+  · have htriv := norm_third_inner_le_trivial n d e ((a:ℝ)/(q:ℝ) + β)
+    have hn0 : (0:ℝ) ≤ ((n / (d * e) : ℕ) : ℝ) := by positivity
+    by_cases hqde : (q : ℕ) ∣ d * e
+    · simp only [typeIThirdInnerBound, if_neg hM, if_pos hqde]
+      linarith
+    · simp only [typeIThirdInnerBound, if_neg hM, if_neg hqde]
+      linarith
+
+
+lemma typeIThirdInnerBound_nonneg (n q M d e : ℕ) :
+    0 ≤ typeIThirdInnerBound n q M d e := by
+  rw [typeIThirdInnerBound]
+  apply add_nonneg
+  · apply add_nonneg
+    · by_cases h : d * e ≤ M
+      · rw [if_pos h]; positivity
+      · rw [if_neg h]
+    · positivity
+  · by_cases h : (q : ℕ) ∣ d * e
+    · rw [if_pos h]; positivity
+    · rw [if_neg h]
+
+set_option maxHeartbeats 1600000 in
+/-- Truncated third Type-I term: the sine separation is used only for
+`de ≤ M`; the remaining terms are estimated trivially. -/
+lemma norm_expSum_low_mu_lowLambda_zeta_le_truncated (n q U M a : ℕ) (β : ℝ)
+    (hq : 0 < q) (hcop : Nat.Coprime a q) (hU1 : 1 ≤ U) (hUn : U ≤ n)
+    (hβM : |β| ≤ 1 / (16 * (q:ℝ) * (M:ℝ))) :
+    ‖expSum n (low U (μ : ArithmeticFunction ℝ) * low U (Λ : ArithmeticFunction ℝ) *
+        (ζ : ArithmeticFunction ℝ)) ((a:ℝ)/(q:ℝ) + β)‖ ≤
+      2 * (q:ℝ) * (M:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ))
+      + (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) ^ 2
+      + (n:ℝ) * (Real.log (((U * U : ℕ)) : ℝ) *
+          ((1 / (q:ℝ)) * (1 + Real.log ((((U * U) / q : ℕ)) : ℝ)))) := by
+  classical
+  have hlog : 0 ≤ Real.log (n:ℝ) := Real.log_natCast_nonneg n
+  have hstep : ‖∑ d ∈ Finset.Icc 1 (min U n), ((μ : ArithmeticFunction ℝ) d : ℂ) *
+        ∑ e ∈ Finset.Icc 1 (min U (n / d)),
+          ((Λ : ArithmeticFunction ℝ) e : ℂ) *
+            ∑ m ∈ Finset.Icc 1 (n / (d * e)),
+              E (((d * e * m : ℕ) : ℝ) * ((a:ℝ)/(q:ℝ) + β))‖ ≤
+      ∑ d ∈ Finset.Icc 1 (min U n),
+        ∑ e ∈ Finset.Icc 1 (min U (n / d)),
+          ((Λ : ArithmeticFunction ℝ) e) * typeIThirdInnerBound n q M d e := by
+    refine (norm_sum_le _ _).trans ?_
+    apply Finset.sum_le_sum
+    intro d hd
+    rw [norm_mul, Complex.norm_real, Real.norm_eq_abs]
+    have hμ : |(μ : ArithmeticFunction ℝ) d| ≤ 1 := by
+      have h : |(ArithmeticFunction.moebius d : ℤ)| ≤ 1 :=
+        ArithmeticFunction.abs_moebius_le_one
+      have h' : |((ArithmeticFunction.moebius d : ℤ) : ℝ)| ≤ 1 := by
+        exact_mod_cast h
+      simpa using h'
+    calc
+      |(μ : ArithmeticFunction ℝ) d| *
+          ‖∑ e ∈ Finset.Icc 1 (min U (n / d)),
+            ((Λ : ArithmeticFunction ℝ) e : ℂ) *
+              ∑ m ∈ Finset.Icc 1 (n / (d * e)),
+                E (((d * e * m : ℕ) : ℝ) * ((a:ℝ)/(q:ℝ) + β))‖
+          ≤ 1 * ‖∑ e ∈ Finset.Icc 1 (min U (n / d)),
+              ((Λ : ArithmeticFunction ℝ) e : ℂ) *
+                ∑ m ∈ Finset.Icc 1 (n / (d * e)),
+                  E (((d * e * m : ℕ) : ℝ) * ((a:ℝ)/(q:ℝ) + β))‖ :=
+            mul_le_mul_of_nonneg_right hμ (norm_nonneg _)
+      _ = ‖∑ e ∈ Finset.Icc 1 (min U (n / d)),
+            ((Λ : ArithmeticFunction ℝ) e : ℂ) *
+              ∑ m ∈ Finset.Icc 1 (n / (d * e)),
+                E (((d * e * m : ℕ) : ℝ) * ((a:ℝ)/(q:ℝ) + β))‖ := one_mul _
+      _ ≤ ∑ e ∈ Finset.Icc 1 (min U (n / d)),
+            ((Λ : ArithmeticFunction ℝ) e) * typeIThirdInnerBound n q M d e := by
+        refine (norm_sum_le _ _).trans ?_
+        apply Finset.sum_le_sum
+        intro e he
+        rw [norm_mul, Complex.norm_real, Real.norm_eq_abs,
+          abs_of_nonneg ArithmeticFunction.vonMangoldt_nonneg]
+        apply mul_le_mul_of_nonneg_left _ ArithmeticFunction.vonMangoldt_nonneg
+        obtain ⟨hd1, _hdU⟩ := Finset.mem_Icc.mp hd
+        obtain ⟨he1, _heU⟩ := Finset.mem_Icc.mp he
+        have hde1 : 1 ≤ d * e :=
+          Nat.succ_le_of_lt (Nat.mul_pos (by omega) (by omega))
+        exact norm_third_inner_le_truncated n q M a d e β hq hcop hde1 hβM
+  have hext : ∑ d ∈ Finset.Icc 1 (min U n),
+        ∑ e ∈ Finset.Icc 1 (min U (n / d)),
+          ((Λ : ArithmeticFunction ℝ) e) * typeIThirdInnerBound n q M d e
+      ≤ ∑ d ∈ Finset.Icc 1 U, ∑ e ∈ Finset.Icc 1 U,
+        ((Λ : ArithmeticFunction ℝ) e) * typeIThirdInnerBound n q M d e := by
+    have houter : ∑ d ∈ Finset.Icc 1 (min U n),
+          ∑ e ∈ Finset.Icc 1 (min U (n / d)),
+            ((Λ : ArithmeticFunction ℝ) e) * typeIThirdInnerBound n q M d e
+        ≤ ∑ d ∈ Finset.Icc 1 U,
+          ∑ e ∈ Finset.Icc 1 (min U (n / d)),
+            ((Λ : ArithmeticFunction ℝ) e) * typeIThirdInnerBound n q M d e := by
+      apply Finset.sum_le_sum_of_subset_of_nonneg
+      · intro d hd
+        exact Finset.mem_Icc.mpr ⟨(Finset.mem_Icc.mp hd).1,
+          le_trans (Finset.mem_Icc.mp hd).2 (min_le_left _ _)⟩
+      · intro d _ _
+        apply Finset.sum_nonneg
+        intro e _
+        exact mul_nonneg ArithmeticFunction.vonMangoldt_nonneg
+          (typeIThirdInnerBound_nonneg n q M d e)
+    refine houter.trans ?_
+    apply Finset.sum_le_sum
+    intro d _
+    apply Finset.sum_le_sum_of_subset_of_nonneg
+    · intro e he
+      exact Finset.mem_Icc.mpr ⟨(Finset.mem_Icc.mp he).1,
+        le_trans (Finset.mem_Icc.mp he).2 (min_le_left _ _)⟩
+    · intro e _ _
+      exact mul_nonneg ArithmeticFunction.vonMangoldt_nonneg
+        (typeIThirdInnerBound_nonneg n q M d e)
+  set Acoef : ℝ := ∑ d ∈ Finset.Icc 1 U, ∑ e ∈ Finset.Icc 1 U,
+    (if d * e ≤ M then (Λ : ArithmeticFunction ℝ) e else 0)
+  set Tcoef : ℝ := ∑ d ∈ Finset.Icc 1 U, ∑ e ∈ Finset.Icc 1 U,
+    ((Λ : ArithmeticFunction ℝ) e) / ((d * e : ℕ) : ℝ)
+  set Bcoef : ℝ := ∑ d ∈ Finset.Icc 1 U, ∑ e ∈ Finset.Icc 1 U,
+    (if (q : ℕ) ∣ d * e then ((Λ : ArithmeticFunction ℝ) e) / ((d * e : ℕ) : ℝ) else 0)
+  have hpoint : ∀ d e : ℕ,
+      ((Λ : ArithmeticFunction ℝ) e) * typeIThirdInnerBound n q M d e ≤
+        2 * (q:ℝ) * (if d * e ≤ M then (Λ : ArithmeticFunction ℝ) e else 0)
+        + (n:ℝ) * (((Λ : ArithmeticFunction ℝ) e) / ((d * e : ℕ) : ℝ))
+        + (n:ℝ) * (if (q : ℕ) ∣ d * e then
+            ((Λ : ArithmeticFunction ℝ) e) / ((d * e : ℕ) : ℝ) else 0) := by
+    intro d e
+    have hnle : ((Λ : ArithmeticFunction ℝ) e) * ((n / (d * e) : ℕ) : ℝ) ≤
+        (n:ℝ) * (((Λ : ArithmeticFunction ℝ) e) / ((d * e : ℕ) : ℝ)) := by
+      have hdiv : ((n / (d * e) : ℕ) : ℝ) ≤ (n:ℝ) / ((d * e : ℕ) : ℝ) :=
+        Nat.cast_div_le
+      calc
+        ((Λ : ArithmeticFunction ℝ) e) * ((n / (d * e) : ℕ) : ℝ)
+            ≤ ((Λ : ArithmeticFunction ℝ) e) * ((n:ℝ) / ((d * e : ℕ) : ℝ)) :=
+          mul_le_mul_of_nonneg_left hdiv ArithmeticFunction.vonMangoldt_nonneg
+        _ = (n:ℝ) * (((Λ : ArithmeticFunction ℝ) e) / ((d * e : ℕ) : ℝ)) := by ring
+    have hnle' : ((Λ : ArithmeticFunction ℝ) e) * ((n / (d * e) : ℕ) : ℝ) ≤
+        (n:ℝ) * (((Λ : ArithmeticFunction ℝ) e) / ((d:ℝ) * (e:ℝ))) := by
+      simpa [Nat.cast_mul] using hnle
+    rw [typeIThirdInnerBound]
+    by_cases hM : d * e ≤ M <;> by_cases hqde : (q : ℕ) ∣ d * e <;>
+      simp [hM, hqde] <;> nlinarith [hnle']
+  have hsplit : ∑ d ∈ Finset.Icc 1 U, ∑ e ∈ Finset.Icc 1 U,
+        ((Λ : ArithmeticFunction ℝ) e) * typeIThirdInnerBound n q M d e
+      ≤ 2 * (q:ℝ) * Acoef + (n:ℝ) * Tcoef + (n:ℝ) * Bcoef := by
+    calc
+      ∑ d ∈ Finset.Icc 1 U, ∑ e ∈ Finset.Icc 1 U,
+          ((Λ : ArithmeticFunction ℝ) e) * typeIThirdInnerBound n q M d e
+          ≤ ∑ d ∈ Finset.Icc 1 U, ∑ e ∈ Finset.Icc 1 U,
+              (2 * (q:ℝ) * (if d * e ≤ M then (Λ : ArithmeticFunction ℝ) e else 0)
+                + (n:ℝ) * (((Λ : ArithmeticFunction ℝ) e) / ((d * e : ℕ) : ℝ))
+                + (n:ℝ) * (if (q : ℕ) ∣ d * e then
+                    ((Λ : ArithmeticFunction ℝ) e) / ((d * e : ℕ) : ℝ) else 0)) := by
+        apply Finset.sum_le_sum
+        intro d _
+        apply Finset.sum_le_sum
+        intro e _
+        exact hpoint d e
+      _ = 2 * (q:ℝ) * Acoef + (n:ℝ) * Tcoef + (n:ℝ) * Bcoef := by
+        simp only [Acoef, Tcoef, Bcoef, Finset.sum_add_distrib, Finset.mul_sum]
+  have hA : Acoef ≤ Real.log (n:ℝ) * ((M:ℝ) * (1 + Real.log (U:ℝ))) := by
+    have hterm : (∑ d ∈ Finset.Icc 1 U, ∑ e ∈ Finset.Icc 1 U,
+          (if d * e ≤ M then (Λ : ArithmeticFunction ℝ) e else 0))
+        ≤ Real.log (n:ℝ) *
+            (∑ d ∈ Finset.Icc 1 U, ∑ e ∈ Finset.Icc 1 U,
+              (if d * e ≤ M then (1:ℝ) else 0)) := by
+      calc
+        (∑ d ∈ Finset.Icc 1 U, ∑ e ∈ Finset.Icc 1 U,
+            (if d * e ≤ M then (Λ : ArithmeticFunction ℝ) e else 0))
+            ≤ ∑ d ∈ Finset.Icc 1 U, ∑ e ∈ Finset.Icc 1 U,
+                Real.log (n:ℝ) * (if d * e ≤ M then (1:ℝ) else 0) := by
+          apply Finset.sum_le_sum
+          intro d _
+          apply Finset.sum_le_sum
+          intro e he
+          by_cases h : d * e ≤ M
+          · rw [if_pos h, if_pos h]
+            have he1 : 1 ≤ e := (Finset.mem_Icc.mp he).1
+            have heU : e ≤ U := (Finset.mem_Icc.mp he).2
+            have hΛ : ((Λ : ArithmeticFunction ℝ) e) ≤ Real.log (n:ℝ) :=
+              (ArithmeticFunction.vonMangoldt_le_log).trans
+                (Real.log_le_log (by exact_mod_cast he1)
+                  (by exact_mod_cast le_trans heU hUn))
+            simpa using hΛ
+          · rw [if_neg h, if_neg h]
+            simp
+        _ = Real.log (n:ℝ) *
+            (∑ d ∈ Finset.Icc 1 U, ∑ e ∈ Finset.Icc 1 U,
+              (if d * e ≤ M then (1:ℝ) else 0)) := by
+          rw [Finset.mul_sum]
+          apply Finset.sum_congr rfl
+          intro d _
+          rw [Finset.mul_sum]
+    have hcount : (∑ d ∈ Finset.Icc 1 U, ∑ e ∈ Finset.Icc 1 U,
+          (if d * e ≤ M then (1:ℝ) else 0))
+        = ∑ d ∈ Finset.Icc 1 U,
+            ((((Finset.Icc 1 U).filter (fun e => d * e ≤ M)).card : ℝ)) := by
+      apply Finset.sum_congr rfl
+      intro d _
+      rw [Finset.sum_boole]
+    rw [hcount] at hterm
+    refine hterm.trans ?_
+    apply mul_le_mul_of_nonneg_left _ hlog
+    exact sum_card_mul_le M U
+  have hT : Tcoef ≤ Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) ^ 2 :=
+    sum_div_vonMangoldt_le n U hUn
+  have hB : Bcoef ≤ Real.log (((U * U : ℕ)) : ℝ) *
+      ((1 / (q:ℝ)) * (1 + Real.log ((((U * U) / q : ℕ)) : ℝ))) :=
+    double_sum_vonMangoldt_div_le U q hq
+  have hlogU : Real.log (U:ℝ) ≤ Real.log (n:ℝ) := by
+    rcases Nat.eq_zero_or_pos U with h0 | hpos
+    · rw [h0]; simpa using hlog
+    · exact Real.log_le_log (by exact_mod_cast hpos) (by exact_mod_cast hUn)
+  have hA' : Acoef ≤ Real.log (n:ℝ) * ((M:ℝ) * (1 + Real.log (n:ℝ))) := by
+    refine hA.trans ?_
+    apply mul_le_mul_of_nonneg_left _ hlog
+    apply mul_le_mul_of_nonneg_left _ (by positivity)
+    linarith
+  calc
+    ‖expSum n (low U (μ : ArithmeticFunction ℝ) * low U (Λ : ArithmeticFunction ℝ) *
+        (ζ : ArithmeticFunction ℝ)) ((a:ℝ)/(q:ℝ) + β)‖
+        ≤ ∑ d ∈ Finset.Icc 1 (min U n),
+            ∑ e ∈ Finset.Icc 1 (min U (n / d)),
+              ((Λ : ArithmeticFunction ℝ) e) * typeIThirdInnerBound n q M d e := by
+          rw [expSum_low_mu_lowLambda_zeta_eq n U ((a:ℝ)/(q:ℝ) + β)]
+          exact hstep
+    _ ≤ ∑ d ∈ Finset.Icc 1 U, ∑ e ∈ Finset.Icc 1 U,
+          ((Λ : ArithmeticFunction ℝ) e) * typeIThirdInnerBound n q M d e := hext
+    _ ≤ 2 * (q:ℝ) * Acoef + (n:ℝ) * Tcoef + (n:ℝ) * Bcoef := hsplit
+    _ ≤ 2 * (q:ℝ) * (Real.log (n:ℝ) * ((M:ℝ) * (1 + Real.log (n:ℝ))))
+          + (n:ℝ) * (Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) ^ 2)
+          + (n:ℝ) * (Real.log (((U * U : ℕ)) : ℝ) *
+              ((1 / (q:ℝ)) * (1 + Real.log ((((U * U) / q : ℕ)) : ℝ)))) := by
+      apply add_le_add
+      · apply add_le_add
+        · apply mul_le_mul_of_nonneg_left hA' (by positivity)
+        · apply mul_le_mul_of_nonneg_left hT (by positivity)
+      · apply mul_le_mul_of_nonneg_left hB (by positivity)
+    _ = 2 * (q:ℝ) * (M:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ))
+          + (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) ^ 2
+          + (n:ℝ) * (Real.log (((U * U : ℕ)) : ℝ) *
+              ((1 / (q:ℝ)) * (1 + Real.log ((((U * U) / q : ℕ)) : ℝ)))) := by ring
+
+
 /- Milestone: on a major arc with `q > U^2`, the entire Type-I part of the
 Vaughan decomposition is bounded by `6 U^2 q log n`.  Only the Type-II
 bilinear term is left. -/

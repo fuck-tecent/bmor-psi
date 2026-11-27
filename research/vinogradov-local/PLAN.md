@@ -322,3 +322,14 @@ truncation at `M ≈ 1/(16 q |β|)`.
 `sum_div_vonMangoldt_le` (total reciprocal von Mangoldt sum) are in
 place.  Next: assemble the truncated third-term theorem using the
 threshold inner bound and these two sums.
+
+## Truncated third Type-I term
+
+`norm_expSum_low_mu_lowLambda_zeta_le_truncated` gives
+
+  ‖S₃‖ ≤ 2qM log n(1+log n) + n log n(1+log n)^2
+        + n log(U²)(1/q)(1+log(U²/q)).
+
+This is the third-term minor-arc truncation with threshold `M`; the
+remaining optimization is choosing `M ≈ 1/(16q|β|)` and combining with
+the second-term estimate.
