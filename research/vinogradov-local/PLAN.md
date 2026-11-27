@@ -388,3 +388,14 @@ minor-arc estimate:
 
 Neither gap is a bookkeeping issue; both need genuinely sharper analytic
 input.
+
+## Uniform global Type-I bound
+
+`norm_expSum_vaughan_typeI_le_uniform_threshold` gives, for every
+`α ∈ [0,1]` and `Q ≥ 16U`,
+
+  (U+1) log n + 2QU log n + n log n(1+log n)
+    + 2QU log n(1+log U) + n log n(1+log U)^2
+    + n log(U²)(1+log(U²)),
+
+uniform in `α` and in the Farey denominator `q ≤ Q`.

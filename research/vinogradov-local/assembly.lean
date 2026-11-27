@@ -574,6 +574,85 @@ lemma norm_expSum_vaughan_typeI_le_farey_small (n q U Q a : ℕ) (β : ℝ)
   exact norm_expSum_vaughan_typeI_le_truncated_tail n q U (Q / 16) a β
     hn hUn hq hcop hU1 hM1 hMU hβM
 
+set_option maxHeartbeats 1000000 in
+/-- Uniform global Type-I bound for `Q ≥ 16 U`: for every `α ∈ [0,1]` the
+Farey approximation `q ≤ Q` produces the threshold-`U` estimate, and all
+`q`-dependences are relaxed to `q ≤ Q`. -/
+lemma norm_expSum_vaughan_typeI_le_uniform_threshold (n U Q : ℕ) (α : ℝ)
+    (hn : 1 ≤ n) (hUn : U ≤ n) (hU1 : 1 ≤ U) (hlarge : 16 * U ≤ Q)
+    (hα0 : 0 ≤ α) (hα1 : α ≤ 1) :
+    ‖expSum n Λ α - expSum n (high U (μ : ArithmeticFunction ℝ) *
+      (ζ : ArithmeticFunction ℝ) * high U (Λ : ArithmeticFunction ℝ)) α‖ ≤
+      ((U:ℝ) + 1) * Real.log (n:ℝ)
+        + (2 * (Q:ℝ) * (U:ℝ) * Real.log (n:ℝ)
+            + (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)))
+        + (2 * (Q:ℝ) * (Real.log (n:ℝ) * ((U:ℝ) * (1 + Real.log (U:ℝ))))
+            + (n:ℝ) * (Real.log (n:ℝ) * (1 + Real.log (U:ℝ)) *
+                (1 + Real.log (U:ℝ)))
+            + (n:ℝ) * (Real.log (((U * U : ℕ)) : ℝ) *
+                (1 + Real.log (((U * U : ℕ)) : ℝ)))) := by
+  have hQpos : 0 < Q := by omega
+  obtain ⟨a, q, hq1, hqQ, _ha, hcop, hdist⟩ :=
+    exists_farey_approx α hα0 hα1 Q hQpos
+  have hq : 0 < q := by omega
+  let β : ℝ := α - (a:ℝ)/(q:ℝ)
+  have hβ : |β| ≤ 1 / ((q:ℝ) * (Q:ℝ)) := by
+    simpa [β] using hdist
+  have hαeq : α = (a:ℝ)/(q:ℝ) + β := by simp [β]
+  rw [hαeq]
+  have hbase := norm_expSum_vaughan_typeI_le_farey_large n q U Q a β
+    hn hUn hq hcop hU1 hlarge hβ
+  have hlog : 0 ≤ Real.log (n:ℝ) := Real.log_natCast_nonneg n
+  have hlogU : 0 ≤ Real.log (U:ℝ) := Real.log_natCast_nonneg U
+  have hqR : (0:ℝ) < (q:ℝ) := by exact_mod_cast hq
+  have hqQ' : (q:ℝ) ≤ (Q:ℝ) := by exact_mod_cast hqQ
+  have hQ1 : (1:ℝ) ≤ (Q:ℝ) := by exact_mod_cast hQpos
+  have hq1R : (1:ℝ) ≤ (q:ℝ) := by exact_mod_cast hq1
+  have hU0 : (0:ℝ) ≤ (U:ℝ) := by positivity
+  have hlogU2 : 0 ≤ Real.log (((U * U : ℕ)) : ℝ) := Real.log_natCast_nonneg (U * U)
+  have hm1 : 2 * (q:ℝ) * (U:ℝ) * Real.log (n:ℝ) ≤
+      2 * (Q:ℝ) * (U:ℝ) * Real.log (n:ℝ) := by
+    apply mul_le_mul_of_nonneg_right _ hlog
+    nlinarith [hqQ', hqR, hU0]
+  have hm2 : (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) / (q:ℝ) ≤
+      (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) := by
+    rw [div_le_iff₀ hqR]
+    nlinarith [hq1R, hlog,
+      show (0:ℝ) ≤ (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) by positivity]
+  have hm3 : 2 * (q:ℝ) * (Real.log (n:ℝ) * ((U:ℝ) * (1 + Real.log (U:ℝ)))) ≤
+      2 * (Q:ℝ) * (Real.log (n:ℝ) * ((U:ℝ) * (1 + Real.log (U:ℝ)))) := by
+    apply mul_le_mul_of_nonneg_right _ (by positivity)
+    nlinarith [hqQ', hqR]
+  have hfac : (1 / (q:ℝ)) * (1 + Real.log ((((U * U) / q : ℕ)) : ℝ)) ≤
+      1 * (1 + Real.log (((U * U : ℕ)) : ℝ)) := by
+    apply mul_le_mul
+    · rw [div_le_one hqR]
+      exact hq1R
+    · have hdivle : ((U * U) / q : ℕ) ≤ U * U := Nat.div_le_self _ _
+      have hmono : Real.log ((((U * U) / q : ℕ)) : ℝ) ≤
+          Real.log (((U * U : ℕ)) : ℝ) := by
+        rcases Nat.eq_zero_or_pos ((U * U) / q) with h0 | hpos
+        · rw [h0]
+          simpa using hlogU2
+        · exact Real.log_le_log (by exact_mod_cast hpos) (by exact_mod_cast hdivle)
+      linarith
+    · positivity
+    · positivity
+  have hm5 : (n:ℝ) * (Real.log (((U * U : ℕ)) : ℝ) *
+        ((1 / (q:ℝ)) * (1 + Real.log ((((U * U) / q : ℕ)) : ℝ))))
+      ≤ (n:ℝ) * (Real.log (((U * U : ℕ)) : ℝ) *
+        (1 + Real.log (((U * U : ℕ)) : ℝ))) := by
+    apply mul_le_mul_of_nonneg_left _ (by positivity)
+    calc Real.log (((U * U : ℕ)) : ℝ) *
+          ((1 / (q:ℝ)) * (1 + Real.log ((((U * U) / q : ℕ)) : ℝ)))
+        ≤ Real.log (((U * U : ℕ)) : ℝ) *
+            (1 * (1 + Real.log (((U * U : ℕ)) : ℝ))) :=
+          mul_le_mul_of_nonneg_left hfac hlogU2
+      _ = Real.log (((U * U : ℕ)) : ℝ) *
+            (1 + Real.log (((U * U : ℕ)) : ℝ)) := by ring
+  refine hbase.trans ?_
+  linarith [hm1, hm2, hm3, hm5]
+
 end
 
 end PEqualNP.Outside.Vaughan

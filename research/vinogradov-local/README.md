@@ -991,3 +991,20 @@ Both hold for any reduced `a/q` with `q ≤ Q` and `|t - a/q| ≤ 1/(qQ)`.
 In the first regime `16U ≤ Q` gives `1/(qQ) ≤ 1/(16qU)`, so the
 pointwise sine separation applies with threshold `U`; in the second
 regime `Q/16` is the largest natural threshold compatible with `1/(qQ)`.
+
+### Uniform global Type-I bound from the Farey regime
+
+`norm_expSum_vaughan_typeI_le_uniform_threshold` removes the dependence
+on the individual Farey denominator: for every `α ∈ [0,1]` and `Q ≥ 16U`,
+
+```text
+‖S_I(α)‖ ≤ (U+1) log n
+            + 2QU log n + n log n (1+log n)
+            + 2QU log n (1+log U) + n log n (1+log U)^2
+            + n log(U²)(1+log(U²)),
+```
+
+obtained from `norm_expSum_vaughan_typeI_le_farey_large` by relaxing
+`q` to `Q` and `log(U²/q)` to `log(U²)`.  This is the interface needed
+by a uniform minor-arc integral estimate, though the `n log² n` terms
+still have to be improved (see the honest limitation above).
