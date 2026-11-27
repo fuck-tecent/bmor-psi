@@ -531,6 +531,119 @@ lemma double_sum_vonMangoldt_div_le (U q : ℕ) (hq : 0 < q) :
       exact sum_inv_filter_le (U * U) q hq
 
 
+/-- Count of pairs `d,e ≤ U` with `d * e ≤ M`, weighted by `log n`. -/
+lemma sum_card_mul_le (M U : ℕ) :
+    (∑ d ∈ Finset.Icc 1 U,
+        (((Finset.Icc 1 U).filter (fun e => d * e ≤ M)).card : ℝ))
+      ≤ (M : ℝ) * (1 + Real.log (U : ℝ)) := by
+  classical
+  have hstep : (∑ d ∈ Finset.Icc 1 U,
+        (((Finset.Icc 1 U).filter (fun e => d * e ≤ M)).card : ℝ))
+      ≤ ∑ d ∈ Finset.Icc 1 U, ((M / d : ℕ) : ℝ) := by
+    apply Finset.sum_le_sum
+    intro d hd
+    have hd1 : 1 ≤ d := (Finset.mem_Icc.mp hd).1
+    have hdpos : 0 < d := by omega
+    have hsub : (Finset.Icc 1 U).filter (fun e => d * e ≤ M) ⊆
+        Finset.Icc 1 (M / d) := by
+      intro e he
+      rw [Finset.mem_filter, Finset.mem_Icc] at he
+      obtain ⟨⟨he1, _heU⟩, hde⟩ := he
+      rw [Finset.mem_Icc]
+      exact ⟨he1, (Nat.le_div_iff_mul_le hdpos).mpr (by simpa [Nat.mul_comm] using hde)⟩
+    calc
+      (((Finset.Icc 1 U).filter (fun e => d * e ≤ M)).card : ℝ)
+          ≤ ((Finset.Icc 1 (M / d)).card : ℝ) := by
+        exact_mod_cast Finset.card_le_card hsub
+      _ = ((M / d : ℕ) : ℝ) := by
+        rw [Nat.card_Icc]
+        norm_num
+  calc
+    (∑ d ∈ Finset.Icc 1 U,
+        (((Finset.Icc 1 U).filter (fun e => d * e ≤ M)).card : ℝ))
+        ≤ ∑ d ∈ Finset.Icc 1 U, ((M / d : ℕ) : ℝ) := hstep
+    _ ≤ ∑ d ∈ Finset.Icc 1 U, (M : ℝ) / (d : ℝ) := by
+      apply Finset.sum_le_sum
+      intro d _
+      exact Nat.cast_div_le
+    _ = (M : ℝ) * ∑ d ∈ Finset.Icc 1 U, (1 : ℝ) / (d : ℝ) := by
+      rw [Finset.mul_sum]
+      apply Finset.sum_congr rfl
+      intro d _
+      ring
+    _ ≤ (M : ℝ) * (1 + Real.log (U : ℝ)) := by
+      apply mul_le_mul_of_nonneg_left (sum_inv_Icc_le_one_add_log U) (by positivity)
+
+/-- Total reciprocal von Mangoldt sum over `d,e ≤ U`. -/
+lemma sum_div_vonMangoldt_le (n U : ℕ) (hUn : U ≤ n) :
+    ∑ d ∈ Finset.Icc 1 U, ∑ e ∈ Finset.Icc 1 U,
+        ((Λ : ArithmeticFunction ℝ) e) / ((d * e : ℕ) : ℝ)
+      ≤ Real.log (n : ℝ) * (1 + Real.log (n : ℝ)) ^ 2 := by
+  classical
+  have hlog : 0 ≤ Real.log (n : ℝ) := Real.log_natCast_nonneg n
+  have hlogU : Real.log (U : ℝ) ≤ Real.log (n : ℝ) := by
+    rcases Nat.eq_zero_or_pos U with h0 | hpos
+    · rw [h0]
+      simpa using hlog
+    · exact Real.log_le_log (by exact_mod_cast hpos) (by exact_mod_cast hUn)
+  have hfac : (∑ d ∈ Finset.Icc 1 U, ∑ e ∈ Finset.Icc 1 U,
+        ((Λ : ArithmeticFunction ℝ) e) / ((d * e : ℕ) : ℝ)) =
+      (∑ d ∈ Finset.Icc 1 U, (1 : ℝ) / (d : ℝ)) *
+        (∑ e ∈ Finset.Icc 1 U,
+          ((Λ : ArithmeticFunction ℝ) e) / (e : ℝ)) := by
+    rw [Finset.sum_mul_sum]
+    apply Finset.sum_congr rfl
+    intro d _
+    apply Finset.sum_congr rfl
+    intro e _
+    push_cast
+    field_simp
+  rw [hfac]
+  have hd : (∑ d ∈ Finset.Icc 1 U, (1 : ℝ) / (d : ℝ)) ≤
+      1 + Real.log (U : ℝ) := sum_inv_Icc_le_one_add_log U
+  have hd' : (∑ d ∈ Finset.Icc 1 U, (1 : ℝ) / (d : ℝ)) ≤
+      1 + Real.log (n : ℝ) := by linarith
+  have he : (∑ e ∈ Finset.Icc 1 U,
+        ((Λ : ArithmeticFunction ℝ) e) / (e : ℝ)) ≤
+      Real.log (n : ℝ) * (1 + Real.log (U : ℝ)) := by
+    calc
+      (∑ e ∈ Finset.Icc 1 U,
+          ((Λ : ArithmeticFunction ℝ) e) / (e : ℝ))
+          ≤ ∑ e ∈ Finset.Icc 1 U, Real.log (n : ℝ) * (1 / (e : ℝ)) := by
+        apply Finset.sum_le_sum
+        intro e he'
+        obtain ⟨he1, heU⟩ := Finset.mem_Icc.mp he'
+        have hΛ : ((Λ : ArithmeticFunction ℝ) e) ≤ Real.log (n : ℝ) := by
+          exact (ArithmeticFunction.vonMangoldt_le_log).trans
+            (Real.log_le_log (by exact_mod_cast he1)
+              (by exact_mod_cast le_trans heU hUn))
+        have hepos : 0 < (e : ℝ) := by exact_mod_cast (by omega : 0 < e)
+        rw [show ((Λ : ArithmeticFunction ℝ) e) / (e : ℝ) =
+            ((Λ : ArithmeticFunction ℝ) e) * (1 / (e : ℝ)) by ring]
+        exact mul_le_mul_of_nonneg_right hΛ (by positivity)
+      _ = Real.log (n : ℝ) * ∑ e ∈ Finset.Icc 1 U, (1 : ℝ) / (e : ℝ) := by
+        rw [Finset.mul_sum]
+      _ ≤ Real.log (n : ℝ) * (1 + Real.log (U : ℝ)) :=
+        mul_le_mul_of_nonneg_left (sum_inv_Icc_le_one_add_log U) hlog
+  have he' : (∑ e ∈ Finset.Icc 1 U,
+        ((Λ : ArithmeticFunction ℝ) e) / (e : ℝ)) ≤
+      Real.log (n : ℝ) * (1 + Real.log (n : ℝ)) := by
+    exact he.trans (mul_le_mul_of_nonneg_left (by linarith) hlog)
+  have hdnon : 0 ≤ ∑ d ∈ Finset.Icc 1 U, (1 : ℝ) / (d : ℝ) :=
+    Finset.sum_nonneg (fun _ _ => by positivity)
+  have henon : 0 ≤ ∑ e ∈ Finset.Icc 1 U,
+      ((Λ : ArithmeticFunction ℝ) e) / (e : ℝ) :=
+    Finset.sum_nonneg (fun _ _ => div_nonneg ArithmeticFunction.vonMangoldt_nonneg (by positivity))
+  calc
+    (∑ d ∈ Finset.Icc 1 U, (1 : ℝ) / (d : ℝ)) *
+        (∑ e ∈ Finset.Icc 1 U,
+          ((Λ : ArithmeticFunction ℝ) e) / (e : ℝ))
+        ≤ (1 + Real.log (n : ℝ)) *
+            (Real.log (n : ℝ) * (1 + Real.log (n : ℝ))) :=
+      mul_le_mul hd' he' henon (by positivity)
+    _ = Real.log (n : ℝ) * (1 + Real.log (n : ℝ)) ^ 2 := by ring
+
+
 /- Major-arc estimate for the third Vaughan term: when `q > U^2` and the
 perturbation is below `1/(16 q U^2)`, every product `d * e` stays below `q`,
 so the inner geometric sums contribute a factor `q` each. -/

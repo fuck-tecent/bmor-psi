@@ -315,3 +315,10 @@ major arcs cover `[0,1]`, hence the minor arcs empty, and
 `norm_expSum_vaughan_typeI_le_uniform_of_large_Q` gives the global Type-I
 bound in that regime.  The open piece is the small-`Q` third-term
 truncation at `M ≈ 1/(16 q |β|)`.
+
+## Third-term truncation ingredients
+
+`sum_card_mul_le` (pair count for `de ≤ M`) and
+`sum_div_vonMangoldt_le` (total reciprocal von Mangoldt sum) are in
+place.  Next: assemble the truncated third-term theorem using the
+threshold inner bound and these two sums.

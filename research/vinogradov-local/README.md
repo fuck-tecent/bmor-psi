@@ -811,3 +811,20 @@ the minor arcs empty), so its small-`Q` treatment remains open.
 
 The remaining small-`Q` third-term estimate is the truncation of the
 `(d,e)` sum at `M ≈ 1/(16 q |β|)`; the inner threshold bound is ready.
+
+### Summation ingredients for the third-term truncation
+
+- `sum_card_mul_le`: the number of pairs `d,e ≤ U` with `d e ≤ M` is at
+  most `M (1 + log U)`;
+- `sum_div_vonMangoldt_le`: the full reciprocal von Mangoldt sum is
+  `∑_{d,e≤U} Λ(e)/(de) ≤ log n (1 + log n)^2`.
+
+Together with `norm_third_inner_le_of_product_le` and
+`double_sum_vonMangoldt_div_le`, these are exactly the summation inputs
+needed for the third-term truncation at `M`:
+
+```text
+S₃ ≤ 2q · (M log n (1+log n))
+   + n · (log n (1+log n)^2)
+   + n · (multiples-of-q contribution).
+```
