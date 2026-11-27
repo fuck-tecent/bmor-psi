@@ -2102,6 +2102,12 @@ separately, e.g. by writing τ₃ as a combination of `typeIICoefficient` at dif
 cutoffs plus the two boundary regions `{a > B₃}` and `{U < m/a ≤ B₂}`.  That bookkeeping
 is routine; it does not change the budget.
 
+> **⊘ RETRACTED — see M41.1.**  The support value in this paragraph is arithmetically
+> wrong: `B₃·n^(2/5) = n^(2/3+2/5) = n^(16/15) > n`, so the support bound is **vacuous** and
+> the small-cofactor piece is **full-range**.  The sentence "Piece (ii) is supported on
+> `m ≤ n^(13/15)`" and the mass estimate after it must not be used.  The correct table is in
+> M41.2.
+
 **Consequence.**  b3-b3-parity is *not* tryable in the sense "we can close it".  What it
 does support is a **partial reduction**: the sub-region
 `a > n^(2/5) ∧ m/a > n^(2/5)` can be discharged by `optimized_typeII_bound`, leaving
@@ -2290,8 +2296,10 @@ theorem le_mul_of_cofactor_le (m a H V₀) (ha : a ∣ m) (haH : a ≤ H) (hcof 
   m ≤ H * V₀
 ```
 
-With `H = B₃ = n^(2/3)` and `V₀ = n^(2/5)` this puts the small-cofactor part of `τ₃` on
-`m ≤ n^(13/15)`.
+> **⊘ RETRACTED — see M41.1.**  `H · V₀ = n^(2/3+2/5) = n^(16/15) > n`, so this
+> instantiation puts *no* restriction on `m`; the small-cofactor part of `τ₃` is full-range.
+> The lemma `le_mul_of_cofactor_le` is correct — only this instantiation (`H = B₃`,
+> `V₀ = n^(2/5)`) is not.  Correct table: M41.2.  (The trick *does* work for `τ₁` and `τ₂`.)
 
 Two implementation notes:
 
@@ -2345,9 +2353,17 @@ theorem norm_deepSelf_le {E} (hE) (hEsub) (n) (u) (Cu) (hu) :
   ‖∫ t in E, S_u t * S_u t * phase (-(n:ℝ)*t)‖ ≤ ∫ t in E, ‖S_u t‖²
 ```
 
+> **⊘ RETRACTED — see M41.1.**  Everything in this block up to the end of M40 is invalid:
+> `B₃·n^(2/5) = n^(16/15) > n`, so the `τ₃` residual is **full-range**, its `L²` mass is
+> `≈ ∑|τ₃|² ≈ n log²n`, and none of the four conclusions below (`‖S_res‖₂² = o(n)`,
+> `|Jdeep(res,res)| = o(n)`, `|Jdeep(main,res)| = o(n)`,
+> `Jdeep(τ₃,τ₃) = Jdeep(main,main) + o(n)`) follows.  The two Cauchy–Schwarz lemmas
+> themselves are correct and general; only this application is not.  Do not build on the
+> "outcome B" reduction.
+
 Combined with the support lemma of M39 (`le_mul_of_cofactor_le`), the `τ₃` residual is
 handled as follows: the residual (`a ≤ n^(2/5)` or `m/a ≤ n^(2/5)`) is supported on
-`m ≤ B₃·n^(2/5) = n^(13/15)`, so
+`m ≤ B₃·n^(2/5) = n^(13/15)` **[INVALID: 16/15]**, so
 
 ```text
 ‖S_res‖₂² = ∑_{m ≤ n^(13/15)} |τ_res(m)|² = n^(13/15+o(1)) = o(n)
