@@ -346,4 +346,32 @@ theorem wwave_mangoldt_cap (u l r : ℕ) (t : ℝ) :
   refine Finset.sum_congr rfl fun h _ => ?_
   rw [Complex.norm_real, Real.norm_eq_abs, abs_of_nonneg ArithmeticFunction.vonMangoldt_nonneg]
 
+
+/-! ### Bridge to the verified Vinogradov minor-arc saving
+
+`Conjectures.Goldbach.VinogradovPolylogMinorSaving` (a verified catalogue module)
+states: for every `A > 0` and all large `n`, every `t ∈ [0,1]` outside the
+polylog-denominator arcs
+
+  `arcsPoly B n = ⋃_{q ≤ (log₂(n+2))^B} ⋃_{a ≤ q, (a,q)=1} [a/q ± (log₂(n+2))^B/(q n)]`
+
+satisfies `‖∑_{k ≤ n} Λ k · e(k t)‖ ≤ n · (log n)^(-A)`.
+
+Those arcs are *contained* in the wide arcs, so `t ∉ wideArcs n` implies
+`t ∉ arcsPoly B n` and the Vinogradov saving is available on the deep-minor set.
+-/
+
+/-- The polylog-denominator arcs of the verified Vinogradov saving are contained
+in the wide arcs, provided the polylog cutoff and radius fit under the wide ones. -/
+theorem arcsPoly_subset_wideSet {B n : ℕ}
+    (hQ : (Nat.log 2 (n + 2)) ^ B ≤ cutoffB n)
+    (hH : (((Nat.log 2 (n + 2)) ^ B : ℕ) : ℝ) ≤ (cutoffH n : ℝ)) :
+    {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ (Nat.log 2 (n + 2)) ^ B ∧ a ≤ q ∧
+        Nat.Coprime a q ∧
+        |t - (a:ℝ)/(q:ℝ)| ≤ (((Nat.log 2 (n + 2)) ^ B : ℕ) : ℝ)/((q:ℝ)*(n:ℝ))}
+      ⊆ wideSet n := by
+  rintro t ⟨q, a, hq1, hqP, haq, hcop, hle⟩
+  exact ⟨q, a, hq1, hqP.trans hQ, haq, hcop,
+    hle.trans (div_le_div_of_nonneg_right hH (by positivity))⟩
+
 end B1B1Port

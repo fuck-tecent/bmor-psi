@@ -248,3 +248,62 @@ near) now reduce to the *same* missing analytic input: a weighted
 (equivalently, `Λ = μ * log` + Abel) exponential-sum bound for
 `∑_{h} Λ(h) e(θ h)` off the wide arcs.  Everything else (arc geometry,
 Ramanujan sums, the split, the `L²` identities) is in place.
+
+## Milestone 4: the verified Vinogradov minor-arc saving is usable
+
+The catalogue module `Conjectures.Goldbach.VinogradovPolylogMinorSaving`
+(verified, 9065 lines, imports only Mathlib) provides
+
+```text
+∀ A > 0, ∀ᶠ n, ∀ t ∈ [0,1],
+  t ∉ arcsPoly (2⌈A⌉₊+16) n →
+    ‖∑_{k ≤ n} Λ k · e(k t)‖ ≤ n · (log n)^(-A)
+```
+
+with `arcsPoly B n` the union of `[a/q ± (log₂(n+2))^B/(q n)]` over `q ≤ (log₂(n+2))^B`.
+
+Two consequences for b1-b1:
+
+1. **The arcs are inside the wide arcs.**  `arcsPoly_subset_wideSet` (proved in
+   `b1b1_port.lean`) shows
+
+   ```lean
+   (log₂(n+2))^B ≤ cutoffB n → (log₂(n+2))^B ≤ cutoffH n → arcsPoly B n ⊆ wideSet n
+   ```
+
+   so `t ∉ wideArcs n` gives `t ∉ arcsPoly B n`.
+
+2. **Passing to `θ = u t`.**  If `{u t}` lies in a polylog arc of denominator
+   `q` and radius `P/(q n)`, then `t` lies within `P/(u q n)` of `p/(u q)`, and
+   `u q ≤ B₁ · (log n)^B = n^(1/4+o(1)) ≤ n^(1/3) = cutoffB n`; also
+   `P/(q n) ≤ H/(q n)` because `H = 256 n^(1/3) log² n ≫ P`.  Hence the
+   Vinogradov arcs *pulled back along `u`* are still inside the wide arcs, and
+   for `t ∉ wideArcs n`
+
+   ```text
+   ‖∑_{h ≤ n/u} Λ(h) · e(u h t)‖ ≤ (n/u) · (log n)^(-A) .
+   ```
+
+So the pointwise minor-arc input is *available* for the weighted progressions,
+and it is stronger than the `‖wwave‖·|t - i/u| ≤ 1/u` ingredient of `awayBound`.
+
+### Why this does not by itself close b1-b1
+
+The target is the *signed* integral `∫_{Aᶜ} S_{τ₁}² e(-n t) dt`.  A pointwise
+bound `|S_{τ₁}| ≤ n (log n)^(2-A)` only gives
+
+```text
+|Jdeep| ≤ ∫_{Aᶜ} |S|² ≤ sup|S| · ∫|S| ≤ n(log n)^(2-A) · n^(1/2) log² n ,
+```
+
+which still exceeds `n` by `n^(1/2)`.  The reason is structural: the `L²` mass
+`∑_m |τ₁(m)|² ≈ n log⁴ n` sits mostly *on* `Aᶜ` (the wide arcs have measure
+`O(log²n / n^(1/3))`), so no bound on `∫_{Aᶜ}|S|²` or on `sup_{Aᶜ}|S|` can prove
+`o(n)`.  The saving has to come from the oscillation `e(-n t)`, i.e. from the
+far/near dispersion and the coefficient structure — exactly as in the verified
+b1-b4 proof.  The decomposition is done (`deepIntegral_split`); what is left is
+the *weighted* `awayBound` / `offWave_mass_le_weighted`.
+
+The Vinogradov module is nevertheless valuable: it removes the need for the
+`wave_sin` oscillation ingredient in the weighted `waveBound`, since on `Aᶜ`
+the whole weighted progression is already `≤ (n/u)(log n)^(-A)`.
