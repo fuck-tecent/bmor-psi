@@ -89,6 +89,27 @@ Note that in b1-b4 (and b4-b4) this problem does not arise precisely because
 `τ₄` has `a > n^(2/3)`, hence cofactor `< n^(1/3)`: the `Λ` lands on a *bounded*
 factor and can be absorbed into the atom weight.
 
+## What is and is not weight-polymorphic
+
+`centered_deep_wave_integral` and `split_shifted_wave` are **weight-polymorphic**:
+their only arithmetic input is `wave_at_cell_center`, i.e. `q ∣ g ⟹ e(g h a/q) = 1`.
+A weighted progression `∑_h c_h e(g h t)` satisfies the same identity, so the exact
+decomposition
+
+```text
+Jdeep  =  far part (offWave)  +  near part (annuli, Ramanujan sums)
+```
+
+goes through verbatim for `atomWave`.  The two *bounds* differ:
+
+* far part: needs a weighted analogue of `offWave_mass_le_weighted`, where the
+  unweighted identity `∫ |wave g l r|² = r - l` is replaced by
+  `∫ |∑_h Λ(h) e(g h t)|² = ∑_h Λ(h)²`.  Tractable; the far budget is `n^(8/9)`.
+* near part: the Ramanujan/primitive-character evaluation
+  `∑_h e(g h a/q) = c_q(...)` needs **unit** coefficients.  This is where the
+  weight really bites, and where `Λ = μ * log` (or Vaughan) has to move the weight
+  off the progression index.
+
 ## Plan to get unweighted waves
 
 Use `Λ = μ * log`, i.e. `Λ(r) = ∑_{e | r} μ(e) log (r/e)`, so that
