@@ -867,3 +867,30 @@ norm_expSum_vaughan_typeI_le_trivial :
 The last is a baseline valid for **every** real `t`; it is
 `O(n log^3 n)` for `U ≤ n`.  It complements the optimized major-arc
 bounds (`6U²q log n + ...`) and the minor-arc/truncation estimates.
+
+### Optimal threshold synthesis for Type-I
+
+`norm_expSum_vaughan_typeI_le_truncated` combines the trivial second term
+with the truncated third term:
+
+```text
+‖S_I(a/q+β)‖ ≤ (U+1) log n + n log n (1+log n)
+              + 2qM log n (1+log n)
+              + n log n (1+log n)^2
+              + n log(U²) (1/q)(1+log(U²/q)).
+```
+
+At the optimal choice `M ≈ 1/(16q|β|)` the `2qM` factor becomes
+`1/(8|β|)`:
+
+```lean
+norm_expSum_vaughan_typeI_le_threshold_recip :
+  ‖S_I‖ ≤ (U+1) log n
+          + n log n (1+log n)
+          + log n (1+log n)/(8|β|)
+          + n log n (1+log n)^2
+          + n log(U²) (1/q)(1+log(U²/q)).
+```
+
+This is the first combined Type-I minor-arc threshold bound with explicit
+`q` and `β` dependence.

@@ -274,6 +274,138 @@ lemma norm_expSum_vaughan_typeI_le_trivial (n U : ℕ) (t : ℝ)
           + (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ))
           + (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) ^ 2 := by ring
 
+set_option maxHeartbeats 1000000 in
+/-- Combined Type-I bound with a threshold `M`: the third term is estimated
+by the truncated bound, the second term trivially. -/
+lemma norm_expSum_vaughan_typeI_le_truncated (n q U M a : ℕ) (β : ℝ)
+    (hn : 1 ≤ n) (hUn : U ≤ n) (hq : 0 < q) (hcop : Nat.Coprime a q)
+    (hU1 : 1 ≤ U)
+    (hβM : |β| ≤ 1 / (16 * (q:ℝ) * (M:ℝ))) :
+    ‖expSum n Λ ((a:ℝ)/(q:ℝ) + β) -
+        expSum n (high U (μ : ArithmeticFunction ℝ) * (ζ : ArithmeticFunction ℝ) *
+          high U (Λ : ArithmeticFunction ℝ)) ((a:ℝ)/(q:ℝ) + β)‖ ≤
+      ((U:ℝ) + 1) * Real.log (n:ℝ)
+        + (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ))
+        + (2 * (q:ℝ) * (M:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ))
+            + (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) ^ 2
+            + (n:ℝ) * (Real.log (((U * U : ℕ)) : ℝ) *
+                ((1 / (q:ℝ)) * (1 + Real.log ((((U * U) / q : ℕ)) : ℝ))))) := by
+  have hdecomp : expSum n Λ ((a:ℝ)/(q:ℝ) + β) -
+      expSum n (high U (μ : ArithmeticFunction ℝ) * (ζ : ArithmeticFunction ℝ) *
+        high U (Λ : ArithmeticFunction ℝ)) ((a:ℝ)/(q:ℝ) + β) =
+      expSum n (low U (Λ : ArithmeticFunction ℝ)) ((a:ℝ)/(q:ℝ) + β) +
+        expSum n (low U (μ : ArithmeticFunction ℝ) * ArithmeticFunction.log)
+          ((a:ℝ)/(q:ℝ) + β) -
+        expSum n (low U (μ : ArithmeticFunction ℝ) * low U (Λ : ArithmeticFunction ℝ) *
+          (ζ : ArithmeticFunction ℝ)) ((a:ℝ)/(q:ℝ) + β) := by
+    rw [expSum_vaughan n U]
+    ring
+  rw [hdecomp]
+  have h1 := norm_expSum_low_vonMangoldt_le n U hn hUn ((a:ℝ)/(q:ℝ) + β)
+  have h2 := norm_expSum_low_mu_mul_log_le_trivial n U ((a:ℝ)/(q:ℝ) + β) hUn
+  have h3 := norm_expSum_low_mu_lowLambda_zeta_le_truncated n q U M a β
+    hq hcop hU1 hUn hβM
+  calc
+    ‖expSum n (low U (Λ : ArithmeticFunction ℝ)) ((a:ℝ)/(q:ℝ) + β) +
+        expSum n (low U (μ : ArithmeticFunction ℝ) * ArithmeticFunction.log)
+          ((a:ℝ)/(q:ℝ) + β) -
+        expSum n (low U (μ : ArithmeticFunction ℝ) * low U (Λ : ArithmeticFunction ℝ) *
+          (ζ : ArithmeticFunction ℝ)) ((a:ℝ)/(q:ℝ) + β)‖
+        ≤ ‖expSum n (low U (Λ : ArithmeticFunction ℝ)) ((a:ℝ)/(q:ℝ) + β) +
+            expSum n (low U (μ : ArithmeticFunction ℝ) * ArithmeticFunction.log)
+              ((a:ℝ)/(q:ℝ) + β)‖ +
+          ‖expSum n (low U (μ : ArithmeticFunction ℝ) * low U (Λ : ArithmeticFunction ℝ) *
+            (ζ : ArithmeticFunction ℝ)) ((a:ℝ)/(q:ℝ) + β)‖ :=
+      norm_sub_le _ _
+    _ ≤ (‖expSum n (low U (Λ : ArithmeticFunction ℝ)) ((a:ℝ)/(q:ℝ) + β)‖ +
+          ‖expSum n (low U (μ : ArithmeticFunction ℝ) * ArithmeticFunction.log)
+            ((a:ℝ)/(q:ℝ) + β)‖) +
+        ‖expSum n (low U (μ : ArithmeticFunction ℝ) * low U (Λ : ArithmeticFunction ℝ) *
+          (ζ : ArithmeticFunction ℝ)) ((a:ℝ)/(q:ℝ) + β)‖ := by
+      gcongr
+      exact norm_add_le _ _
+    _ ≤ (((U:ℝ) + 1) * Real.log (n:ℝ) +
+          (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ))) +
+        (2 * (q:ℝ) * (M:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ))
+          + (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) ^ 2
+          + (n:ℝ) * (Real.log (((U * U : ℕ)) : ℝ) *
+              ((1 / (q:ℝ)) * (1 + Real.log ((((U * U) / q : ℕ)) : ℝ))))) := by
+      apply add_le_add
+      · exact add_le_add h1 h2
+      · exact h3
+    _ = ((U:ℝ) + 1) * Real.log (n:ℝ)
+          + (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ))
+          + (2 * (q:ℝ) * (M:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ))
+              + (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) ^ 2
+              + (n:ℝ) * (Real.log (((U * U : ℕ)) : ℝ) *
+                  ((1 / (q:ℝ)) * (1 + Real.log ((((U * U) / q : ℕ)) : ℝ))))) := by
+      ring
+
+set_option maxHeartbeats 1000000 in
+/-- Consequence of the threshold bound at the optimal choice
+`M ≈ 1/(16q|β|)`: the `2qM` factor is replaced by `1/(8|β|)`. -/
+lemma norm_expSum_vaughan_typeI_le_threshold_recip (n q U M a : ℕ) (β : ℝ)
+    (hn : 1 ≤ n) (hUn : U ≤ n) (hq : 0 < q) (hcop : Nat.Coprime a q)
+    (hU1 : 1 ≤ U)
+    (hβpos : 0 < |β|)
+    (hβM : |β| ≤ 1 / (16 * (q:ℝ) * (M:ℝ))) :
+    ‖expSum n Λ ((a:ℝ)/(q:ℝ) + β) -
+        expSum n (high U (μ : ArithmeticFunction ℝ) * (ζ : ArithmeticFunction ℝ) *
+          high U (Λ : ArithmeticFunction ℝ)) ((a:ℝ)/(q:ℝ) + β)‖ ≤
+      ((U:ℝ) + 1) * Real.log (n:ℝ)
+        + (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ))
+        + (Real.log (n:ℝ) * (1 + Real.log (n:ℝ))) / (8 * |β|)
+        + (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) ^ 2
+        + (n:ℝ) * (Real.log (((U * U : ℕ)) : ℝ) *
+            ((1 / (q:ℝ)) * (1 + Real.log ((((U * U) / q : ℕ)) : ℝ)))) := by
+  have hbase := norm_expSum_vaughan_typeI_le_truncated n q U M a β
+    hn hUn hq hcop hU1 hβM
+  have hM0 : M ≠ 0 := by
+    intro hM
+    rw [hM] at hβM
+    have hzero : (1:ℝ) / (16 * (q:ℝ) * ((0:ℕ):ℝ)) = 0 := by norm_num
+    rw [hzero] at hβM
+    linarith
+  have hMpos : (0:ℝ) < (M:ℝ) := by exact_mod_cast Nat.pos_of_ne_zero hM0
+  have hqR : (0:ℝ) < (q:ℝ) := by exact_mod_cast hq
+  have hqM : 2 * (q:ℝ) * (M:ℝ) ≤ 1 / (8 * |β|) := by
+    have hden : (0:ℝ) < 16 * (q:ℝ) * (M:ℝ) := by positivity
+    have h1 : 16 * (q:ℝ) * (M:ℝ) * |β| ≤ 1 := by
+      calc
+        16 * (q:ℝ) * (M:ℝ) * |β| = |β| * (16 * (q:ℝ) * (M:ℝ)) := by ring
+        _ ≤ (1 / (16 * (q:ℝ) * (M:ℝ))) * (16 * (q:ℝ) * (M:ℝ)) :=
+          mul_le_mul_of_nonneg_right hβM hden.le
+        _ = 1 := by field_simp
+    rw [le_div_iff₀ (by positivity : (0:ℝ) < 8 * |β|)]
+    nlinarith [h1]
+  have hterm : 2 * (q:ℝ) * (M:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) ≤
+      (Real.log (n:ℝ) * (1 + Real.log (n:ℝ))) / (8 * |β|) := by
+    have hlog : 0 ≤ Real.log (n:ℝ) := Real.log_natCast_nonneg n
+    have hprod : 0 ≤ Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) := by positivity
+    calc
+      2 * (q:ℝ) * (M:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ))
+          = (2 * (q:ℝ) * (M:ℝ)) * (Real.log (n:ℝ) * (1 + Real.log (n:ℝ))) := by ring
+      _ ≤ (1 / (8 * |β|)) * (Real.log (n:ℝ) * (1 + Real.log (n:ℝ))) :=
+        mul_le_mul_of_nonneg_right hqM hprod
+      _ = (Real.log (n:ℝ) * (1 + Real.log (n:ℝ))) / (8 * |β|) := by ring
+  calc
+    ‖expSum n Λ ((a:ℝ)/(q:ℝ) + β) -
+        expSum n (high U (μ : ArithmeticFunction ℝ) * (ζ : ArithmeticFunction ℝ) *
+          high U (Λ : ArithmeticFunction ℝ)) ((a:ℝ)/(q:ℝ) + β)‖
+        ≤ ((U:ℝ) + 1) * Real.log (n:ℝ)
+            + (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ))
+            + (2 * (q:ℝ) * (M:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ))
+                + (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) ^ 2
+                + (n:ℝ) * (Real.log (((U * U : ℕ)) : ℝ) *
+                    ((1 / (q:ℝ)) * (1 + Real.log ((((U * U) / q : ℕ)) : ℝ))))) := hbase
+    _ ≤ ((U:ℝ) + 1) * Real.log (n:ℝ)
+            + (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ))
+            + (Real.log (n:ℝ) * (1 + Real.log (n:ℝ))) / (8 * |β|)
+            + (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) ^ 2
+            + (n:ℝ) * (Real.log (((U * U : ℕ)) : ℝ) *
+                ((1 / (q:ℝ)) * (1 + Real.log ((((U * U) / q : ℕ)) : ℝ)))) := by
+      nlinarith [hterm]
+
 end
 
 end PEqualNP.Outside.Vaughan

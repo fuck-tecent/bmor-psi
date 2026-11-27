@@ -343,3 +343,11 @@ every real `t` by
 
 This is a fallback baseline (`O(n log^3 n)`); the optimized major-arc,
 second-term minor-arc and third-term truncated bounds are separate.
+
+## Optimal threshold Type-I synthesis
+
+`norm_expSum_vaughan_typeI_le_truncated` and
+`norm_expSum_vaughan_typeI_le_threshold_recip` give the combined Type-I
+bound with `2qM` replaced by `1/(8|β|)` at `M ≈ 1/(16q|β|)`.  The
+remaining second-term tail and the final minor-arc regime combination
+are the next optimization.
