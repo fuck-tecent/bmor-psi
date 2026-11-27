@@ -903,3 +903,48 @@ integral_ball_phase_eq_sinc (m) (hm) (hρ : 0 ≤ ρ) :
 
 The last is exactly the archimedean factor of the verified `sincKernel`
 (`sin(2π m Q/(q n))/(π m)`), so the `exact_split` port can now collect it directly.
+
+## Milestone 18: the arc split and the per-arc sinc factor
+
+Ported from `arcsplit.lean` into the port file (now with `wideSet = wide cutoffB cutoffH`
+and `logSq n = (log₂(n+2))²`):
+
+```lean
+arcSet n q a          -- the arc centred at a/q with radius cutoffH n/(q n)
+arcSet_measurable
+mem_wideSet_iff       -- membership in the arc-family form
+fraction_inj          -- reduced fractions are injective
+radius_sum_lt         -- Farey spacing vs. the radius sum
+arcs_disjoint         -- the wide arcs are pairwise disjoint
+arcSet_unique         -- a point lies in at most one arc
+wideSet_indicator_eq_sum / integral_wideSet_eq_sum
+                      -- ∫_{wideSet} f = ∑_{q,a} ∫_{arcSet q a} f
+```
+
+New:
+
+```lean
+arcSet_eq_Icc (n q a) :
+  arcSet n q a = Icc (a/q - H/(qn)) (a/q + H/(qn))
+
+integral_arcSet_phase (n q a) (m) (hm : m ≠ 0) :
+  ∫_{arcSet n q a} e(m t) dt
+    = e(m · a/q) · sin (2π m · H/(q n)) / (π m)
+```
+
+The last is exactly one term of the verified `sincKernel`
+(`cos(2π m a/q) · sin(2π m Q/(q n))/(π m)` up to the `e` vs `cos` convention).
+
+### Remaining to finish the `sincKernel` collection
+
+The `wideSet` includes the arcs at `0/1` and `1/1`, which stick out of `[0,1]`;
+so the clipped integral `∫₀¹ 1_{arc} e(m t)` equals the full `∫_{arcSet}` except
+for the two boundary arcs, whose excess is an explicit finite term.  After
+accounting for that (and using `arcs_disjoint`),
+
+```text
+∫_{(wideSet)ᶜ} e(m t) dt  =  [m = 0]  -  ∑_{q ≤ cutoffB n} ∑_{a, (a,q)=1}
+                                e(m a/q) · sin(2π m H/(q n)) / (π m)   +  boundary term
+```
+
+which is the `τ₁`-version of `spatial_exact_split`'s sinc collection.
