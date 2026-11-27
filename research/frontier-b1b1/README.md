@@ -217,3 +217,19 @@ integer-divisibility conversion.
 Next: the Möbius sieve over `d | q` turns the coprime `a`-sum into a
 combination of such full-period sums (Ramanujan sum), giving
 `|c_q(h)| ≤ gcd(q,h)`.
+
+## Milestone 14: divisibility criterion for the phase
+
+`divcrit.lean`:
+
+```lean
+E_div_eq_one_iff (h : ℤ) (q : ℕ) (hq : 0 < q) :
+  E (h/q) = 1 ↔ (q : ℤ) ∣ h
+```
+
+Uses `Complex.exp_eq_one_iff` (write `2πi h/q = n·2πi`), cancels `I` and `2π`,
+and converts the real equation `h = q n` back to `(q : ℤ) ∣ h`.
+
+Combined with `geom_sum_E`:
+
+  ∑_{a<q} E(h a/q) = if (q : ℤ) ∣ h then q else 0.
