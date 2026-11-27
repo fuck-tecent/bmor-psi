@@ -700,3 +700,21 @@ the major-arc set and its pointwise estimate are now formalized.
 The remaining Type-I minor-arc step is the actual estimate of the Type-I
 sums in the two regimes `q Q ≥ 16 U` and `q Q < 16 U`; the Farey
 approximation and the minor-arc entry are now formalized.
+
+### Type-II diagonal isolated
+
+The resonant part is now split into its diagonal and off-diagonal pieces:
+
+- `typeIIPair n U t l1 l2 = c(l1) * conj c(l2) * typeIIKernel n U t l1 l2`;
+- `typeIIDiagonal n U t = ∑_l typeIIPair n U t l l`;
+- `typeIIResonantOffDiag n U q t`: resonant pairs with `l1 ≠ l2`;
+- `typeII_resonant_split_diagonal`: resonant part = diagonal + resonant off-diagonal;
+- `norm_typeIIDiagonal_le`: the diagonal is at most `n (log n)^2 (1 + log n)`;
+- `typeII_energy_le_nonresonant_diagonal_add_resoff`:
+  ```lean
+  ‖energy‖ ≤ 2q (∑‖c_U‖)^2 + n (log n)^2 (1 + log n) + ‖resonant off-diagonal‖.
+  ```
+
+Thus the full Type-II dispersion energy is now reduced to the single
+remaining term `typeIIResonantOffDiag` (`q | (l1-l2)`, `l1 ≠ l2`).  This is
+the only remaining Type-II gap; everything else is unconditional.

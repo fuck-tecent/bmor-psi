@@ -2120,6 +2120,29 @@ noncomputable def typeIIKernel (n U : ℕ) (t : ℝ) (l1 l2 : ℕ) : ℂ :=
   ∑ d ∈ Finset.Icc (U + 1) (min (n / (U + 1)) (n / max l1 l2)),
     E (((d : ℝ) * ((l1 : ℝ) - (l2 : ℝ))) * t)
 
+/-- The dispersion pair kernel `c(l1) * conj c(l2) * G(l1,l2)`. -/
+noncomputable def typeIIPair (n U : ℕ) (t : ℝ) (l1 l2 : ℕ) : ℂ :=
+  typeIICoeff U l1 * star (typeIICoeff U l2) * typeIIKernel n U t l1 l2
+
+/-- The diagonal part of the dispersion energy. -/
+noncomputable def typeIIDiagonal (n U : ℕ) (t : ℝ) : ℂ :=
+  ∑ l ∈ Finset.Icc 1 (n / (U + 1)), typeIIPair n U t l l
+
+/-- The resonant off-diagonal part: `q | (l1-l2)` and `l1 ≠ l2`. -/
+noncomputable def typeIIResonantOffDiag (n U q : ℕ) (t : ℝ)
+    [DecidableRel (typeIINonresonant q)] : ℂ :=
+  ∑ l1 ∈ Finset.Icc 1 (n / (U + 1)),
+    ∑ l2 ∈ ((Finset.Icc 1 (n / (U + 1))).filter
+      (fun l2 => ¬ typeIINonresonant q l1 l2)).filter (fun l2 => l2 ≠ l1),
+      typeIIPair n U t l1 l2
+
+/-- The actual diagonal term is bounded by `n (log n)^2 (1 + log n)`. -/
+lemma norm_typeIIDiagonal_le (n U : ℕ) (t : ℝ) :
+    ‖typeIIDiagonal n U t‖ ≤
+      (n : ℝ) * (Real.log (n : ℝ)) ^ 2 * (1 + Real.log (n : ℝ)) := by
+  simpa [typeIIDiagonal, typeIIPair, typeIIKernel, max_self] using
+    diagonal_dispersion_part_le n U t
+
 /-- Pointwise kernel bound on non-resonant pairs. -/
 lemma norm_typeIIKernel_le (n U q a : ℕ) (β : ℝ) (l1 l2 : ℕ)
     (hq : 0 < q) (hcop : Nat.Coprime a q)
@@ -2321,6 +2344,87 @@ lemma typeII_energy_le_nonresonant_add_resonant (n U q a : ℕ) (β : ℝ)
   exact add_le_add_left (by
     simpa only [t] using
       (typeII_nonresonant_dispersion_energy_le n U q a β hq hcop hβ)) _
+
+/-- Split the resonant part of the dispersion energy into its diagonal and
+off-diagonal pieces. -/
+lemma typeII_resonant_split_diagonal (n U q : ℕ) (t : ℝ)
+    [DecidableRel (typeIINonresonant q)] :
+    (∑ l1 ∈ Finset.Icc 1 (n / (U + 1)),
+        ∑ l2 ∈ (Finset.Icc 1 (n / (U + 1))).filter
+          (fun l2 => ¬ typeIINonresonant q l1 l2),
+          typeIIPair n U t l1 l2)
+      = typeIIDiagonal n U t + typeIIResonantOffDiag n U q t := by
+  classical
+  rw [typeIIDiagonal, typeIIResonantOffDiag]
+  rw [← Finset.sum_add_distrib]
+  apply Finset.sum_congr rfl
+  intro l1 hl1
+  have hdiagp : ¬ typeIINonresonant q l1 l1 := by
+    simp [typeIINonresonant]
+  have hdiag : (∑ l2 ∈ ((Finset.Icc 1 (n / (U + 1))).filter
+        (fun l2 => ¬ typeIINonresonant q l1 l2)).filter (fun l2 => l2 = l1),
+        typeIIPair n U t l1 l2) = typeIIPair n U t l1 l1 := by
+    rw [Finset.sum_filter, Finset.sum_ite_eq']
+    simp [hl1, hdiagp]
+  rw [← Finset.sum_filter_add_sum_filter_not
+    (s := (Finset.Icc 1 (n / (U + 1))).filter
+      (fun l2 => ¬ typeIINonresonant q l1 l2))
+    (p := fun l2 => l2 = l1)]
+  rw [hdiag]
+
+/-- Full Type-II dispersion energy: unconditional non-resonant bound, the
+diagonal bound, and the resonant off-diagonal remainder. -/
+lemma typeII_energy_le_nonresonant_diagonal_add_resoff (n U q a : ℕ) (β : ℝ)
+    (hq : 0 < q) (hcop : Nat.Coprime a q)
+    [DecidableRel (typeIINonresonant q)]
+    (hβ : |β| ≤ 1 / (16 * (q:ℝ) * ((n / (U + 1) : ℕ) : ℝ))) :
+    ‖((∑ d ∈ Finset.Icc (U + 1) (n / (U + 1)),
+        ‖typeIIFourier n U ((a:ℝ)/(q:ℝ) + β) d‖ ^ 2 : ℝ) : ℂ)‖ ≤
+      2 * (q:ℝ) * (∑ l ∈ Finset.Icc 1 (n / (U + 1)), ‖typeIICoeff U l‖) ^ 2
+      + (n : ℝ) * (Real.log (n : ℝ)) ^ 2 * (1 + Real.log (n : ℝ))
+      + ‖typeIIResonantOffDiag n U q ((a:ℝ)/(q:ℝ) + β)‖ := by
+  classical
+  let t : ℝ := (a:ℝ)/(q:ℝ) + β
+  have hbase := typeII_energy_le_nonresonant_add_resonant n U q a β hq hcop hβ
+  have hbase' : ‖((∑ d ∈ Finset.Icc (U + 1) (n / (U + 1)),
+        ‖typeIIFourier n U t d‖ ^ 2 : ℝ) : ℂ)‖ ≤
+      2 * (q:ℝ) * (∑ l ∈ Finset.Icc 1 (n / (U + 1)), ‖typeIICoeff U l‖) ^ 2
+      + ‖∑ l1 ∈ Finset.Icc 1 (n / (U + 1)),
+          ∑ l2 ∈ (Finset.Icc 1 (n / (U + 1))).filter
+            (fun l2 => ¬ typeIINonresonant q l1 l2),
+            typeIICoeff U l1 * star (typeIICoeff U l2) *
+              typeIIKernel n U t l1 l2‖ := by
+    simpa only [t] using hbase
+  have hsplit : (∑ l1 ∈ Finset.Icc 1 (n / (U + 1)),
+        ∑ l2 ∈ (Finset.Icc 1 (n / (U + 1))).filter
+          (fun l2 => ¬ typeIINonresonant q l1 l2),
+          typeIICoeff U l1 * star (typeIICoeff U l2) *
+            typeIIKernel n U t l1 l2)
+      = typeIIDiagonal n U t + typeIIResonantOffDiag n U q t := by
+    simpa only [typeIIPair] using typeII_resonant_split_diagonal n U q t
+  calc
+    ‖((∑ d ∈ Finset.Icc (U + 1) (n / (U + 1)),
+        ‖typeIIFourier n U t d‖ ^ 2 : ℝ) : ℂ)‖
+        ≤ 2 * (q:ℝ) * (∑ l ∈ Finset.Icc 1 (n / (U + 1)), ‖typeIICoeff U l‖) ^ 2
+          + ‖∑ l1 ∈ Finset.Icc 1 (n / (U + 1)),
+              ∑ l2 ∈ (Finset.Icc 1 (n / (U + 1))).filter
+                (fun l2 => ¬ typeIINonresonant q l1 l2),
+                typeIICoeff U l1 * star (typeIICoeff U l2) *
+                  typeIIKernel n U t l1 l2‖ := hbase'
+    _ = 2 * (q:ℝ) * (∑ l ∈ Finset.Icc 1 (n / (U + 1)), ‖typeIICoeff U l‖) ^ 2
+          + ‖typeIIDiagonal n U t + typeIIResonantOffDiag n U q t‖ := by
+          rw [hsplit]
+    _ ≤ 2 * (q:ℝ) * (∑ l ∈ Finset.Icc 1 (n / (U + 1)), ‖typeIICoeff U l‖) ^ 2
+          + (‖typeIIDiagonal n U t‖ + ‖typeIIResonantOffDiag n U q t‖) := by
+          apply add_le_add_right (norm_add_le _ _)
+    _ ≤ 2 * (q:ℝ) * (∑ l ∈ Finset.Icc 1 (n / (U + 1)), ‖typeIICoeff U l‖) ^ 2
+          + ((n : ℝ) * (Real.log (n : ℝ)) ^ 2 * (1 + Real.log (n : ℝ))
+            + ‖typeIIResonantOffDiag n U q t‖) := by
+          apply add_le_add_right
+          apply add_le_add_left (norm_typeIIDiagonal_le n U t) _
+    _ = 2 * (q:ℝ) * (∑ l ∈ Finset.Icc 1 (n / (U + 1)), ‖typeIICoeff U l‖) ^ 2
+          + (n : ℝ) * (Real.log (n : ℝ)) ^ 2 * (1 + Real.log (n : ℝ))
+          + ‖typeIIResonantOffDiag n U q t‖ := by ring
 
 lemma typeIIInner_eq_typeIIFourier (n U d : ℕ) (hd : 0 < d) (t : ℝ) :
     typeIIInner n U t d = typeIIFourier n U t d := by

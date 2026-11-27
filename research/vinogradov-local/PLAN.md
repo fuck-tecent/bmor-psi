@@ -264,3 +264,14 @@ denominator `q ≤ Q`; `exists_farey_approx_minor` additionally places the
 approximation outside the major-arc radius when `α` is in the minor arcs.
 Next: the Type-I minor-arc estimate in the regimes `q Q ≥ 16 U` and
 `q Q < 16 U`, then the integral assembly.
+
+## Type-II diagonal isolated
+
+`typeII_resonant_split_diagonal` and
+`typeII_energy_le_nonresonant_diagonal_add_resoff` reduce the Type-II
+energy to
+
+  non-resonant bound + diagonal bound + resonant off-diagonal.
+
+The only remaining Type-II term is `typeIIResonantOffDiag`
+(`q | (l1-l2)` with `l1 ≠ l2`).
