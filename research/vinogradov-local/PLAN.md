@@ -275,3 +275,10 @@ energy to
 
 The only remaining Type-II term is `typeIIResonantOffDiag`
 (`q | (l1-l2)` with `l1 ≠ l2`).
+
+## Type-I distance-to-integer form
+
+`typeIDist` and `abs_sin_pi_mul_ge_two_mul_typeIDist` give the geometric
+distance bound; `norm_expSum_low_mu_mul_log_le_dist` writes the Type-I
+second term as `∑ log n / typeIDist (d α)`.  The next step is the
+minor-arc estimate of this sum with the Farey approximation.

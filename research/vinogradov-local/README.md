@@ -718,3 +718,28 @@ The resonant part is now split into its diagonal and off-diagonal pieces:
 Thus the full Type-II dispersion energy is now reduced to the single
 remaining term `typeIIResonantOffDiag` (`q | (l1-l2)`, `l1 ≠ l2`).  This is
 the only remaining Type-II gap; everything else is unconditional.
+
+### Distance-to-integer form for Type-I minor arcs
+
+`rational.lean` now defines
+
+```lean
+typeIDist x = |x - round x|
+```
+
+and proves:
+
+- `abs_sin_pi_mul_ge_two_mul_typeIDist`: `2 * typeIDist x ≤ |sin (π x)|`;
+- `norm_geometric_sum_Icc_le_dist`: the geometric sum is at most
+  `1 / typeIDist θ`.
+
+`assembly.lean` derives the classical Type-I form
+
+```lean
+norm_expSum_low_mu_mul_log_le_dist :
+  ‖S_2(t)‖ ≤ ∑_{d≤U} log n / typeIDist (d t).
+```
+
+The remaining Type-I minor-arc estimate is now a purely arithmetic bound on
+`∑_{d≤U} 1 / typeIDist (d α)` using the Farey approximation
+`exists_farey_approx_minor`.

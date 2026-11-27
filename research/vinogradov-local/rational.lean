@@ -560,6 +560,69 @@ lemma norm_geometric_sum_Icc_le_two (M : ℕ) (t : ℝ)
         1 / |Real.sin (Real.pi * t)| + 1 / |Real.sin (Real.pi * t)| by ring]
       linarith
 
+noncomputable def typeIDist (x : ℝ) : ℝ := |x - (round x : ℝ)|
+
+lemma typeIDist_nonneg (x : ℝ) : 0 ≤ typeIDist x := abs_nonneg _
+
+lemma typeIDist_le_half (x : ℝ) : typeIDist x ≤ 1 / 2 := abs_sub_round x
+
+lemma abs_sin_pi_mul_ge_two_mul_typeIDist (x : ℝ) :
+    2 * typeIDist x ≤ |Real.sin (Real.pi * x)| := by
+  classical
+  let n : ℤ := round x
+  have hd : typeIDist x = |x - (n : ℝ)| := rfl
+  have hle : |Real.pi * (x - (n : ℝ))| ≤ Real.pi / 2 := by
+    rw [abs_mul, abs_of_pos Real.pi_pos]
+    have h := abs_sub_round x
+    have hn : |x - (n : ℝ)| ≤ 1 / 2 := by simpa [n] using h
+    nlinarith [Real.pi_pos]
+  have hj := Real.mul_abs_le_abs_sin hle
+  have hsin : |Real.sin (Real.pi * x)| =
+      |Real.sin (Real.pi * (x - (n : ℝ)))| := by
+    have h' : Real.sin (Real.pi * x) =
+        (-1 : ℝ) ^ n * Real.sin (Real.pi * x - (n : ℝ) * Real.pi) := by
+      have h := Real.sin_add_int_mul_pi (Real.pi * x - (n : ℝ) * Real.pi) n
+      have harg : Real.pi * x - (n : ℝ) * Real.pi + (n : ℝ) * Real.pi =
+          Real.pi * x := by ring
+      simpa [harg] using h
+    have h'' : |Real.sin (Real.pi * x)| =
+        |Real.sin (Real.pi * x - (n : ℝ) * Real.pi)| := by
+      rw [h']
+      simp
+    have harg2 : Real.pi * x - (n : ℝ) * Real.pi =
+        Real.pi * (x - (n : ℝ)) := by ring
+    rwa [harg2] at h''
+  rw [hsin]
+  have hcoef : (2 : ℝ) / Real.pi * |Real.pi * (x - (n : ℝ))| =
+      2 * |x - (n : ℝ)| := by
+    rw [abs_mul, abs_of_pos Real.pi_pos]
+    field_simp
+  rw [hcoef] at hj
+  simpa [typeIDist, n] using hj
+
+lemma norm_geometric_sum_Icc_le_dist (N : ℕ) (θ : ℝ)
+    (hdist : typeIDist θ ≠ 0) :
+    ‖∑ m ∈ Finset.Icc 1 N, E ((m : ℝ) * θ)‖ ≤ 1 / typeIDist θ := by
+  have hpos : 0 < typeIDist θ :=
+    lt_of_le_of_ne (typeIDist_nonneg θ) (Ne.symm hdist)
+  have hsin_lower : 2 * typeIDist θ ≤ |Real.sin (Real.pi * θ)| :=
+    abs_sin_pi_mul_ge_two_mul_typeIDist θ
+  have hsin_ne : Real.sin (Real.pi * θ) ≠ 0 := by
+    intro h0
+    rw [h0, abs_zero] at hsin_lower
+    have : 0 < typeIDist θ := hpos
+    nlinarith
+  have h := norm_geometric_sum_Icc_le_two N θ hsin_ne
+  refine h.trans ?_
+  have hone : (1 : ℝ) / |Real.sin (Real.pi * θ)| ≤ 1 / (2 * typeIDist θ) :=
+    one_div_le_one_div_of_le (by positivity) hsin_lower
+  calc
+    (2 : ℝ) / |Real.sin (Real.pi * θ)| =
+        2 * (1 / |Real.sin (Real.pi * θ)|) := by ring
+    _ ≤ 2 * (1 / (2 * typeIDist θ)) :=
+      mul_le_mul_of_nonneg_left hone (by norm_num)
+    _ = 1 / typeIDist θ := by field_simp
+
 /-- The log-weighted Abel bound: the total variation of `log` telescopes, so the
 weighted exponential sum is bounded by `2 log L / |sin (pi t)|`. -/
 lemma norm_log_weighted_geometric_sum_le (L : ℕ) (t : ℝ)

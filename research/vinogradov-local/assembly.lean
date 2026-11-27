@@ -54,6 +54,39 @@ theorem norm_expSum_vaughan_typeI_le_on_majorArc_uniform (n U Q : ℕ) (t : ℝ)
     nlinarith [hnum, hqR]
   linarith
 
+/-- Type-I second term in the classical distance-to-integer form. -/
+lemma norm_expSum_low_mu_mul_log_le_dist (n U : ℕ) (t : ℝ)
+    (hdist : ∀ d ∈ Finset.Icc 1 U, typeIDist ((d:ℝ) * t) ≠ 0) :
+    ‖expSum n (low U (μ : ArithmeticFunction ℝ) * ArithmeticFunction.log) t‖ ≤
+      ∑ d ∈ Finset.Icc 1 U, Real.log (n:ℝ) / typeIDist ((d:ℝ) * t) := by
+  have hsin : ∀ d ∈ Finset.Icc 1 U, Real.sin (Real.pi * ((d:ℝ) * t)) ≠ 0 := by
+    intro d hd h0
+    have hpos : 0 < typeIDist ((d:ℝ) * t) :=
+      lt_of_le_of_ne (typeIDist_nonneg _) (Ne.symm (hdist d hd))
+    have hlower := abs_sin_pi_mul_ge_two_mul_typeIDist ((d:ℝ) * t)
+    rw [h0, abs_zero] at hlower
+    nlinarith
+  refine (norm_expSum_low_mu_mul_log_le n U t hsin).trans ?_
+  apply Finset.sum_le_sum
+  intro d hd
+  have hpos : 0 < typeIDist ((d:ℝ) * t) :=
+    lt_of_le_of_ne (typeIDist_nonneg _) (Ne.symm (hdist d hd))
+  have hlower := abs_sin_pi_mul_ge_two_mul_typeIDist ((d:ℝ) * t)
+  have hone : (1:ℝ) / |Real.sin (Real.pi * ((d:ℝ) * t))| ≤
+      1 / (2 * typeIDist ((d:ℝ) * t)) :=
+    one_div_le_one_div_of_le (by positivity) hlower
+  have hlog : 0 ≤ Real.log (n:ℝ) := Real.log_natCast_nonneg n
+  calc
+    2 * Real.log (n:ℝ) / |Real.sin (Real.pi * ((d:ℝ) * t))| =
+        2 * Real.log (n:ℝ) *
+          (1 / |Real.sin (Real.pi * ((d:ℝ) * t))|) := by ring
+    _ ≤ 2 * Real.log (n:ℝ) *
+          (1 / (2 * typeIDist ((d:ℝ) * t))) := by
+        apply mul_le_mul_of_nonneg_left hone
+        nlinarith
+    _ = Real.log (n:ℝ) / typeIDist ((d:ℝ) * t) := by
+        field_simp
+
 end
 
 end PEqualNP.Outside.Vaughan
