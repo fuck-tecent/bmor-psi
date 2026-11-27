@@ -136,3 +136,19 @@ farey_spacing (hq : 0 < q) (hq' : 0 < q')
 This is the input for the bounded-overlap argument: although the wide arcs at
 width `H/(q n)` are not disjoint, the reduced centres are `1/(q q')`-separated,
 so a point can lie in only `C` of them once `H Q₁ / n < 1/C`.
+
+## Milestone 9: overlap denominator bound
+
+`overlap.lean`:
+
+```lean
+overlap_denominator_bound (hn : 0 < n) (hH : 0 ≤ H)
+  (h1 : |t - a/q| ≤ H/(q n)) (h2 : |t - a'/q'| ≤ H/(q' n))
+  (hne : a/q ≠ a'/q') :
+  n ≤ 2 H q q'
+```
+
+So two distinct wide arcs meeting at `t` must satisfy `q q' ≥ n/(2H)`.  Since
+`H = 256 Q₁ Q`, this says overlapping denominators are large; combined with
+`farey_spacing` it gives the bounded-overlap count.  (This file contains its
+own copy of `farey_spacing` to stay self-contained.)
