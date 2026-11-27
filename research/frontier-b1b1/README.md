@@ -343,3 +343,16 @@ norm_ramanujan_le_q (h : ℤ) (q : ℕ) :
 so the whole wide-arc/Ramanujan part is already `o(1)`.  The remaining
 `o(n)` in b1-b1 comes from the dispersion/large-sieve step, not from sharper
 Ramanujan bounds.
+
+## Milestone 22: reduced fractions are injective
+
+`frac.lean`:
+
+```lean
+fraction_inj (hq,hq' > 0) (Coprime a q) (Coprime a' q')
+  (h : a/q = a'/q') : a = a' ∧ q = q'
+```
+
+Cross-multiplication gives `a q' = a' q`; coprimality forces `q | q'` and
+`q' | q`, hence `q = q'`, and then `a = a'`.  This is the index injectivity
+needed to regard the wide arcs as a `Finset`-indexed disjoint family.
