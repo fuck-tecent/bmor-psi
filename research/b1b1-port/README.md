@@ -307,3 +307,56 @@ the *weighted* `awayBound` / `offWave_mass_le_weighted`.
 The Vinogradov module is nevertheless valuable: it removes the need for the
 `wave_sin` oscillation ingredient in the weighted `waveBound`, since on `Aᶜ`
 the whole weighted progression is already `≤ (n/u)(log n)^(-A)`.
+
+## Milestone 5: route (b) "D = o(n)" is numerically FALSE
+
+Route (b) was: show the main term `D = ∑_{m₁+m₂=n} τ₁(m₁)τ₁(m₂)` is `o(n)` by Möbius
+cancellation, i.e. via `∑_{a ∈ (U,B₁]} c(a)/a = o(1)`.
+
+`theta_numerics.py` computes `τ₁` exactly from the task definition (sieve over `a`
+and `r`), for `n = 10^4 … 10^7`:
+
+| n | U | B₁ | θ = ∑ c(a)/a | D/n | ∑\|τ₁\|²/n |
+|---|---|---|---|---|---|
+| 10^4 | 1 | 10 | −1.929 | 3.688 | 12.98 |
+| 10^5 | 2 | 17 | −1.081 | 2.360 | 9.34 |
+| 10^6 | 2 | 31 | −1.368 | 3.550 | 14.63 |
+| 10^7 | 2 | 56 | −1.648 | 5.321 | 20.97 |
+
+So `θ` is of order one and slowly growing, and `D = Θ(n θ²)`: **`D` is not `o(n)`.**
+
+Structural reason (now proved in `b1b1_port.lean`):
+
+```lean
+sum_moebius_divisors_real (n) : ∑_{d | n} μ d = if n = 1 then 1 else 0
+lowMoebiusWeight_eq_neg_small (U a) (1 < a) :
+  lowMoebiusWeight U a = - ∑_{d | a, d ≤ U} μ d
+```
+
+so `c(a) = ∑_{U<d|a} μ d` is the Möbius sum over the **small** divisors.  For `U = 2`
+this makes `c(a) = -1` exactly on odd prime powers and `0` elsewhere, whence
+
+```text
+θ ≈ - ∑_{p ≤ B₁} H_{B₁/p} / p ≈ - log B₁ · (log log B₁ + O(1)) ,
+```
+
+which is what the numbers show.  (Note `θ² ≈ 3.72, 1.17, 1.87, 2.72` against
+`D/n ≈ 3.69, 2.36, 3.55, 5.32` — same order, ratio `≈ 2`.)
+
+### Consequence for the strategy
+
+The target `|D - W| = o(n)` with `D = Θ(n log log² n)` is a **main-term matching**
+statement, not a smallness statement.  This is exactly what the verified `b1-b4`
+proof does, and notably it does so **without ever computing a singular series**: it
+proves `far` and `near` are each `n^(31/32+o(1))`, and the main term is cancelled
+implicitly by the split.
+
+Therefore the remaining gap for b1-b1 is unchanged and precise:
+
+```text
+∫_{gridᶜ} |S_{τ₁}|²  ≪  n^(1-δ)        (weighted L²-off-grid / weighted awayBound)
+```
+
+together with the near-side bound.  The numerics do *not* contradict this: the
+`L²` mass `∑|τ₁|² ≈ n log log n` is small enough that a power saving off the grid
+is plausible, exactly as in b1-b4.

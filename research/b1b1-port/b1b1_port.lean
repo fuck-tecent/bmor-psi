@@ -3,6 +3,8 @@ import PEqualNP.Outside.L_goldbach_frontier_type2_b1_b4
 import Conjectures.Goldbach.FrontierType2B1B1BilinearExpansion
 
 open Finset MeasureTheory
+open ArithmeticFunction
+open scoped ArithmeticFunction.Moebius
 open scoped BigOperators
 open DyadicMixedB4Geometric DyadicMixedB4ArcGeometry DyadicMixedB4ArcCenters DyadicMixedB4ArcDecomposition
 open DyadicMixedB4Scale DyadicMixedB4PairIntegral DyadicMixedB4LowBand
@@ -373,5 +375,77 @@ theorem arcsPoly_subset_wideSet {B n : ℕ}
   rintro t ⟨q, a, hq1, hqP, haq, hcop, hle⟩
   exact ⟨q, a, hq1, hqP.trans hQ, haq, hcop,
     hle.trans (div_le_div_of_nonneg_right hH (by positivity))⟩
+
+
+/-! ### The structural identity behind `τ₁`: the Möbius weight is a *small-divisor* sum
+
+`∑_{d | a} μ(d) = [a = 1]`, so for `a > 1`
+
+```text
+lowMoebiusWeight U a = ∑_{U < d | a} μ(d) = - ∑_{d | a, d ≤ U} μ(d) .
+```
+
+Thus `τ₁` is a Möbius sum over the **small** divisors `d ≤ U = n^(1/16)`, not over the
+large ones.  (Numerically this is what makes `∑_a c(a)/a` of size `log log n` rather
+than `o(1)`; see the README.)
+-/
+
+/-- Pointwise Möbius inversion over the divisors of `n`, real-valued form. -/
+theorem sum_moebius_divisors_real (n : ℕ) :
+    (∑ d ∈ n.divisors, (μ d : ℝ)) = if n = 1 then 1 else 0 := by
+  have h := congrArg (fun f : ArithmeticFunction ℝ => f n)
+    (ArithmeticFunction.coe_moebius_mul_coe_zeta (R := ℝ))
+  rw [ArithmeticFunction.mul_apply] at h
+  have hreindex : (∑ x ∈ n.divisorsAntidiagonal,
+        ((μ x.1 : ℝ) * (ArithmeticFunction.zeta x.2 : ℝ)))
+      = ∑ d ∈ n.divisors, (μ d : ℝ) := by
+    refine Finset.sum_nbij' (fun x : ℕ × ℕ => x.1) (fun d : ℕ => (d, n / d)) ?_ ?_ ?_ ?_ ?_
+    · intro x hx
+      have hx' := Nat.mem_divisorsAntidiagonal.mp hx
+      exact Nat.mem_divisors.mpr ⟨⟨x.2, hx'.1.symm⟩, hx'.2⟩
+    · intro d hd
+      have hd' := Nat.mem_divisors.mp hd
+      exact Nat.mem_divisorsAntidiagonal.mpr ⟨Nat.mul_div_cancel' hd'.1, hd'.2⟩
+    · intro x hx
+      have hx' := Nat.mem_divisorsAntidiagonal.mp hx
+      have hxpos : 0 < x.1 := by
+        rcases Nat.eq_zero_or_pos x.1 with h0 | hpos
+        · rw [h0, zero_mul] at hx'; omega
+        · exact hpos
+      have hdiv : n / x.1 = x.2 := by
+        rw [← hx'.1, Nat.mul_comm x.1 x.2, Nat.mul_div_left x.2 hxpos]
+      exact Prod.ext rfl hdiv
+    · intro d _
+      rfl
+    · intro x hx
+      have hx' := Nat.mem_divisorsAntidiagonal.mp hx
+      have hx2 : x.2 ≠ 0 := by
+        intro h0
+        rw [h0, mul_zero] at hx'
+        exact hx'.2 hx'.1.symm
+      rw [ArithmeticFunction.zeta_apply, if_neg (by omega : ¬ x.2 = 0)]
+      push_cast
+      ring
+  have h' : (∑ x ∈ n.divisorsAntidiagonal,
+      ((μ x.1 : ℝ) * (ArithmeticFunction.zeta x.2 : ℝ)))
+      = (1 : ArithmeticFunction ℝ) n := h
+  rw [hreindex] at h'
+  rw [ArithmeticFunction.one_apply] at h'
+  exact h'
+
+/-- For `a > 1` the low Möbius weight is minus the sum over the *small* divisors. -/
+theorem lowMoebiusWeight_eq_neg_small (U a : ℕ) (ha : 1 < a) :
+    lowMoebiusWeight U a
+      = - ∑ d ∈ a.divisors.filter (fun d => d ≤ U), (μ d : ℝ) := by
+  have hsplit := Finset.sum_filter_add_sum_filter_not a.divisors
+    (fun d : ℕ => d ≤ U) (fun d => (μ d : ℝ))
+  have hnot : a.divisors.filter (fun d => ¬ d ≤ U) = a.divisors.filter (fun d => U < d) := by
+    refine Finset.filter_congr fun d _ => ?_
+    omega
+  rw [hnot] at hsplit
+  have hzero : (∑ d ∈ a.divisors, (μ d : ℝ)) = 0 := by
+    rw [sum_moebius_divisors_real, if_neg (by omega)]
+  unfold lowMoebiusWeight
+  linarith [hsplit, hzero]
 
 end B1B1Port
