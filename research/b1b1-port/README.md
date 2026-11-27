@@ -806,3 +806,44 @@ Steps 1-3 are a large but standard major-arc computation.  The verified pieces a
 `L_goldbach_frontier_spatial_lowmod_model_match` (small moduli),
 `L_goldbach_frontier_spatial_macro_sinc_tail` (archimedean tail),
 `bandRamanujan`, `K n` formulas.
+
+## Milestone 15: interface lemma, and the full architecture located in the catalogue
+
+```lean
+primeSum_eq_module (N) (θ) :
+  primeSum N θ = ∑_{k ≤ N} ↑(if k prime then log k else 0) · phase (k θ)
+```
+
+i.e. `primeSum` is literally the module's `S n w`.
+
+### The catalogue already contains the whole minor-arc architecture (for `w`)
+
+| module | lines | statement |
+|---|---|---|
+| `frontier_spatial_exact_split` | 697 | **exact** identity `minor = diag − offLowNear − offLowFar − offHighMod`, `minor = ∫_{(arcs)ᶜ}(S n w)²e(-n·)`, `arcs` = polylog (radius `Q²/(qn)`, `q ≤ Q²`) |
+| `frontier_spatial_lowmod_model_match` | 7432 | `offLowNear = seriesLow + O(εn)`, `seriesLow = n ∑_{q ≤ log₂(n+2)} (μ(q)²/φ(q)²) ∑_a cos(2πna/q)` — **the singular series** |
+| `frontier_spatial_macro_sinc_tail` | 6094 | `offLowFar = O(εn)` |
+| `frontier_medcore_bv_band` | 1710 | medium-band model for `S n w` (Bombieri–Vinogradov) |
+
+So the entire binary/ternary Goldbach minor-arc computation is formalised for the
+**prime indicator** `w`: exact decomposition, singular series, and both tail
+estimates.
+
+### Consequence for b1-b1
+
+The b1-b1 task is exactly the same architecture with `w` replaced by
+`τ₁ = c * Λ` (equivalently `c * w` modulo prime powers, which the verified
+`primePowerCorrection` controls).  Concretely:
+
+1. port `spatial_exact_split` (an *exact* identity: expand `(S_{τ₁})²e(-n·)` over
+   frequencies `m₁ + m₂ - n`, integrate over `arcsᶜ`, collect `sincKernel`);
+2. port `lowmod_model_match` for the new coefficient — the local densities become
+   `∑_a c(a)`-weighted sums instead of `1`;
+3. port `macro_sinc_tail`.
+
+This is a large but *known* port with a verified template, and the hard analytic
+inputs (singular series, tail) are already solved in the `w` case.
+
+### Dossier
+
+15 verified milestones, 1132 lines, no `sorry`, branch `research/b1b1-arcsplit`.

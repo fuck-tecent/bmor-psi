@@ -1119,4 +1119,15 @@ theorem plainPolynomial_tauCoeff_dilated (n : ℕ) (t : ℝ)
     ring
   rw [Finset.sum_congr rfl h1, Finset.sum_sub_distrib]
 
+/-- `primeSum` is literally the module's `S n w`, i.e. the prime indicator
+times `log`, with the same exponential kernel.  This is the interface on which
+the verified major-arc modules are stated. -/
+theorem primeSum_eq_module (N : ℕ) (θ : ℝ) :
+    primeSum N θ
+      = ∑ k ∈ Finset.range (N+1),
+          (((if Nat.Prime k then Real.log (k:ℝ) else 0) : ℝ) : ℂ) * phase ((k:ℝ)*θ) := by
+  unfold primeSum
+  refine Finset.sum_congr rfl fun k _ => ?_
+  by_cases hk : Nat.Prime k <;> simp [hk]
+
 end B1B1Port
