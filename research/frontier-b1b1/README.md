@@ -108,3 +108,17 @@ The direct `Iff.rfl` check that `Target` is definitionally the catalogue
 `let`-chain did not unify (a syntactic mismatch somewhere in the local
 `let` binders), so the packaged statement is kept as the working interface and
 will be matched to the catalogue statement when the proof file is assembled.
+
+## Milestone 7: wide-arc membership interface
+
+`cover.lean`: `mem_wideArcs_iff` rewrites membership in `wideArcs n` into the
+arc-family form
+
+```lean
+t ∈ wideArcs n ↔ ∃ q ∈ Icc 1 (Qcut n), ∃ a ∈ (range (q+1)).filter (Coprime · q),
+  |t - a/q| ≤ Hwide n / (q n).
+```
+
+This is the interface for the arc-sum expansion of `∫_{wideArcs} E(h t) dt`.
+The arcs are not disjoint at this width, so the expansion will need a bounded
+overlap (Farey-spacing) argument or a disjoint sub-family.
