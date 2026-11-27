@@ -1544,3 +1544,42 @@ transform.  That needs the distribution of `τ₁ = c * Λ` in residue classes, 
 * The cheapest next concrete lemma is the second displayed identity
   (`∑_{quad} coeff · c_q(m) = ∑_{a₀} e(-n a₀/q) S_{τ₁}(a₀/q)²`), which is a finite
   sum interchange using `plainPolynomial_sq_dilated_expand` at `t = a₀/q`.
+
+## Milestone 31: the expansion summed over sample points
+
+```lean
+sum_plainPolynomial_sq_phase_eq_quad (n) (T : Finset ℝ) :
+  ∑_{x ∈ T} S_{τ₁}(x)² e(-n x)
+    = ∑_{x ∈ T} ∑_{a,a'} (c a · c a') ∑_{j,k} (Λ j · Λ k) · e((a j + a' k - n)·x)
+```
+
+Immediate from `plainPolynomial_sq_dilated_expand` (`Finset.sum_congr`).
+
+### The remaining reordering (and the robust recipe)
+
+The form needed for `W` has the `x`-sum **innermost** (it comes from `sincSum`),
+while the formula above has it outermost.  The reordering
+
+```text
+∑_a ∑_a' ∑_j ∑_k ( coeff · ∑_x e(m x) )  =  ∑_x ∑_a ∑_a' ∑_j ∑_k ( coeff · e(m x) )
+```
+
+is a four-fold `Finset.sum_comm`.  `rw [Finset.sum_comm]` always rewrites the
+*outermost* pair, so it cannot be used naively.  Two robust ways:
+
+1. **`conv` descent**:
+   ```lean
+   conv_lhs => enter [2, a, 2, a', 2, j, 2, k]; rw [Finset.sum_comm]
+   ```
+   (repeat, descending to the innermost pair each time), or
+2. **state the target with the `x`-sum outermost from the start** — i.e. prove the
+   `W`-aggregation using `sum_plainPolynomial_sq_phase_eq_quad` and only later pull
+   `∑_x` back inside with `Finset.mul_sum` at the innermost level (which is a
+   local algebraic identity, `c * ∑ = ∑ c *`).
+
+Route 2 is likely the cleanest: the `S_{τ₁}(a₀/q)²` form is exactly what the
+major-arc model wants to approximate, so keeping the `a₀`-sum outermost is natural.
+
+### Dossier
+
+31 verified milestones, 2040 lines, no `sorry`, branch `research/b1b1-arcsplit`.

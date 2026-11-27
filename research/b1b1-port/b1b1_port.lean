@@ -2018,4 +2018,19 @@ theorem deepIntegral_eq_diagonal_sub_sinc (n : ℕ)
   · rw [if_pos hm, hm]
   · rw [if_neg hm, arcKernel_eq_neg_sincSum n _ hm hn hQ hρ0 hρ1 hint]
 
+/-- **The quadruple expansion summed over a finite set of sample points.** -/
+theorem sum_plainPolynomial_sq_phase_eq_quad (n : ℕ) (T : Finset ℝ) :
+    (∑ x ∈ T, plainPolynomial n (tauCoeff n) x ^ 2 * phase (-(n:ℝ)*x))
+      = ∑ x ∈ T,
+          ∑ a ∈ Finset.Icc (cutoffU n + 1) (lowCut n),
+            ∑ a' ∈ Finset.Icc (cutoffU n + 1) (lowCut n),
+              ((lowMoebiusWeight (cutoffU n) a : ℂ) * (lowMoebiusWeight (cutoffU n) a' : ℂ)) *
+                ∑ j ∈ Finset.Ioc (cutoffU n) (n / a),
+                  ∑ k ∈ Finset.Ioc (cutoffU n) (n / a'),
+                    ((ArithmeticFunction.vonMangoldt j : ℂ) *
+                      (ArithmeticFunction.vonMangoldt k : ℂ)) *
+                      phase (((((a*j:ℕ):ℝ) + ((a'*k:ℕ):ℝ) - (n:ℝ))) * x) := by
+  refine Finset.sum_congr rfl fun x _ => ?_
+  exact plainPolynomial_sq_dilated_expand n x
+
 end B1B1Port
