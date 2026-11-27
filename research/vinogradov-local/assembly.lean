@@ -87,6 +87,45 @@ lemma norm_expSum_low_mu_mul_log_le_dist (n U : ℕ) (t : ℝ)
     _ = Real.log (n:ℝ) / typeIDist ((d:ℝ) * t) := by
         field_simp
 
+/-- Type-I second term in the classical reciprocal-distance form. -/
+lemma norm_expSum_low_mu_mul_log_le_recip (n U : ℕ) (t : ℝ) :
+    ‖expSum n (low U (μ : ArithmeticFunction ℝ) * ArithmeticFunction.log) t‖ ≤
+      ∑ d ∈ Finset.Icc 1 U,
+        Real.log (n:ℝ) * typeIDistRecip (n / d) ((d:ℝ) * t) := by
+  rw [expSum_low_mu_mul_log_eq n U t]
+  refine (norm_sum_le _ _).trans ?_
+  apply Finset.sum_le_sum
+  intro d _
+  rw [norm_mul, Complex.norm_real, Real.norm_eq_abs]
+  have hμ : |(μ : ArithmeticFunction ℝ) d| ≤ 1 := by
+    have h : |(ArithmeticFunction.moebius d : ℤ)| ≤ 1 :=
+      ArithmeticFunction.abs_moebius_le_one
+    have h' : |((ArithmeticFunction.moebius d : ℤ) : ℝ)| ≤ 1 := by
+      exact_mod_cast h
+    simpa using h'
+  have hphase : (∑ l ∈ Finset.Icc 1 (n / d),
+        (ArithmeticFunction.log l : ℂ) * E (((d * l : ℕ) : ℝ) * t)) =
+      ∑ l ∈ Finset.Icc 1 (n / d),
+        (ArithmeticFunction.log l : ℂ) * E ((l : ℝ) * ((d : ℝ) * t)) := by
+    apply Finset.sum_congr rfl
+    intro l _
+    rw [show (((d * l : ℕ) : ℝ) * t) = (l : ℝ) * ((d : ℝ) * t) by
+      push_cast
+      ring]
+  calc
+    |(μ : ArithmeticFunction ℝ) d| *
+        ‖∑ l ∈ Finset.Icc 1 (n / d),
+          (ArithmeticFunction.log l : ℂ) * E (((d * l : ℕ) : ℝ) * t)‖
+        ≤ 1 * ‖∑ l ∈ Finset.Icc 1 (n / d),
+            (ArithmeticFunction.log l : ℂ) * E (((d * l : ℕ) : ℝ) * t)‖ :=
+          mul_le_mul_of_nonneg_right hμ (norm_nonneg _)
+    _ = ‖∑ l ∈ Finset.Icc 1 (n / d),
+          (ArithmeticFunction.log l : ℂ) * E ((l : ℝ) * ((d : ℝ) * t))‖ := by
+        rw [hphase, one_mul]
+    _ ≤ Real.log (n:ℝ) * typeIDistRecip (n / d) ((d:ℝ) * t) :=
+        norm_log_weighted_geometric_sum_Icc_le_recip n (n / d) ((d:ℝ) * t)
+          (Nat.div_le_self n d)
+
 end
 
 end PEqualNP.Outside.Vaughan

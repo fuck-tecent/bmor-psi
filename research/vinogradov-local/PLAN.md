@@ -282,3 +282,13 @@ The only remaining Type-II term is `typeIIResonantOffDiag`
 distance bound; `norm_expSum_low_mu_mul_log_le_dist` writes the Type-I
 second term as `∑ log n / typeIDist (d α)`.  The next step is the
 minor-arc estimate of this sum with the Farey approximation.
+
+## Type-I reciprocal-distance form
+
+`typeIDistRecip` and `norm_expSum_low_mu_mul_log_le_recip` give the
+unconditional Type-I second-term bound
+
+  ‖S₂(t)‖ ≤ ∑_{d≤U} log n · typeIDistRecip (n/d) (d t).
+
+The zero-distance case is capped by `n/d`.  Next: estimate this capped
+reciprocal sum on the minor arcs with the Farey approximation.

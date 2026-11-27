@@ -743,3 +743,21 @@ norm_expSum_low_mu_mul_log_le_dist :
 The remaining Type-I minor-arc estimate is now a purely arithmetic bound on
 `∑_{d≤U} 1 / typeIDist (d α)` using the Farey approximation
 `exists_farey_approx_minor`.
+
+### Unconditional reciprocal-distance form
+
+`typeIDistRecip N θ = N` when `typeIDist θ = 0`, and
+`min N (1/typeIDist θ)` otherwise.  Then
+
+```lean
+norm_log_weighted_geometric_sum_Icc_le_recip :
+  ‖∑_{l≤N} log l · E(lθ)‖ ≤ log n · typeIDistRecip N θ
+
+norm_expSum_low_mu_mul_log_le_recip :
+  ‖S_2(t)‖ ≤ ∑_{d≤U} log n · typeIDistRecip (n/d) (d t).
+```
+
+This is the classical Type-I minor-arc form, unconditional even at
+rational points: the zero-distance case is capped by the trivial length
+`n/d`.  The remaining Type-I minor-arc estimate is the arithmetic bound on
+this capped reciprocal sum using the Farey approximation.

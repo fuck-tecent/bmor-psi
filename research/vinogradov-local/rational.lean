@@ -562,6 +562,10 @@ lemma norm_geometric_sum_Icc_le_two (M : ℕ) (t : ℝ)
 
 noncomputable def typeIDist (x : ℝ) : ℝ := |x - (round x : ℝ)|
 
+/-- The classical reciprocal distance, capped at `N` when the distance is zero. -/
+noncomputable def typeIDistRecip (N : ℕ) (θ : ℝ) : ℝ :=
+  if typeIDist θ = 0 then (N : ℝ) else min (N : ℝ) (1 / typeIDist θ)
+
 lemma typeIDist_nonneg (x : ℝ) : 0 ≤ typeIDist x := abs_nonneg _
 
 lemma typeIDist_le_half (x : ℝ) : typeIDist x ≤ 1 / 2 := abs_sub_round x

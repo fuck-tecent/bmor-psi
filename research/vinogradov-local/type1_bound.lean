@@ -124,6 +124,53 @@ lemma norm_log_weighted_geometric_sum_Icc_le_trivial (N : ℕ) (t : ℝ) :
     norm_num
   exact h1.trans (h2.trans_eq h3)
 
+/-- The log-weighted geometric sum in the classical reciprocal-distance
+form, with the zero-distance case capped by `N`. -/
+lemma norm_log_weighted_geometric_sum_Icc_le_recip (n N : ℕ) (t : ℝ) (hNn : N ≤ n) :
+    ‖∑ l ∈ Finset.Icc 1 N, (Real.log l : ℂ) * E ((l : ℝ) * t)‖ ≤
+      Real.log (n : ℝ) * typeIDistRecip N t := by
+  have hlog : 0 ≤ Real.log (n : ℝ) := Real.log_natCast_nonneg n
+  have hlogN : Real.log (N : ℝ) ≤ Real.log (n : ℝ) := by
+    rcases Nat.eq_zero_or_pos N with h0 | hpos
+    · rw [h0]
+      simpa using hlog
+    · exact Real.log_le_log (by exact_mod_cast hpos) (by exact_mod_cast hNn)
+  have htriv := norm_log_weighted_geometric_sum_Icc_le_trivial N t
+  have htriv' : ‖∑ l ∈ Finset.Icc 1 N, (Real.log l : ℂ) * E ((l : ℝ) * t)‖ ≤
+      (N : ℝ) * Real.log (n : ℝ) := by
+    refine htriv.trans ?_
+    exact mul_le_mul_of_nonneg_left hlogN (by positivity)
+  rw [typeIDistRecip]
+  by_cases hdist : typeIDist t = 0
+  · rw [if_pos hdist]
+    simpa [mul_comm] using htriv'
+  · rw [if_neg hdist]
+    have hpos : 0 < typeIDist t :=
+      lt_of_le_of_ne (typeIDist_nonneg t) (Ne.symm hdist)
+    have hsin_lower := abs_sin_pi_mul_ge_two_mul_typeIDist t
+    have hsin_ne : Real.sin (Real.pi * t) ≠ 0 := by
+      intro h0
+      rw [h0, abs_zero] at hsin_lower
+      nlinarith
+    have hdistb := norm_log_weighted_geometric_sum_Icc_le N t hsin_ne
+    have hone : (1 : ℝ) / |Real.sin (Real.pi * t)| ≤ 1 / (2 * typeIDist t) :=
+      one_div_le_one_div_of_le (by positivity) hsin_lower
+    have hdist' : ‖∑ l ∈ Finset.Icc 1 N, (Real.log l : ℂ) * E ((l : ℝ) * t)‖ ≤
+        (1 / typeIDist t) * Real.log (n : ℝ) := by
+      calc
+        ‖∑ l ∈ Finset.Icc 1 N, (Real.log l : ℂ) * E ((l : ℝ) * t)‖
+            ≤ 2 * Real.log (N : ℝ) / |Real.sin (Real.pi * t)| := hdistb
+        _ = 2 * Real.log (N : ℝ) * (1 / |Real.sin (Real.pi * t)|) := by ring
+        _ ≤ 2 * Real.log (n : ℝ) * (1 / (2 * typeIDist t)) := by
+          apply mul_le_mul ?_ hone (by positivity) (by positivity)
+          exact mul_le_mul_of_nonneg_left hlogN (by norm_num)
+        _ = (1 / typeIDist t) * Real.log (n : ℝ) := by ring
+    by_cases hmin : (N : ℝ) ≤ 1 / typeIDist t
+    · rw [min_eq_left hmin]
+      simpa [mul_comm] using htriv'
+    · rw [min_eq_right (le_of_not_ge hmin)]
+      simpa [mul_comm] using hdist'
+
 /-- The harmonic sum is at most `1 + log K`. -/
 
 lemma typeI_small_q_coeff_sum_le (n q U : ℕ) (hq : 0 < q) (hUn : U ≤ n) :
