@@ -1211,3 +1211,25 @@ integrability side conditions need the `convert … using 1; ext x;
 simp only [Finset.sum_apply]` pattern for `IntervalIntegrable.sum` (its conclusion
 is stated for `∑ i ∈ s, f i` as a function, which is only definitionally the goal's
 `fun x => ∑ i ∈ s, f i x`).
+
+## Milestone 26: `Jdeep` as the integral of the expanded quadruple sum
+
+```lean
+deepIntegral_eq_integral_quadruple (n) :
+  Jdeep n
+    = ∫_{0}^{1} ∑_{a, a'} (c a · c a') ∑_{j ∈ (U,n/a]} ∑_{k ∈ (U,n/a']}
+        (Λ j · Λ k) · 1_{wideSet n}ᶜ (e((a j + a' k - n)·)) t dt
+```
+
+This composes `deepIntegral_eq_task` (the `shiftedPolynomial` form) with the
+pointwise quadruple expansion.  The only formal step left before the
+`arcKernel` form is the four-level finite-sum interchange
+
+```text
+∫ ∑_{a} ∑_{a'} ∑_{j} ∑_{k} F a a' j k t dt
+  = ∑_{a} ∑_{a'} ∑_{j} ∑_{k} ∫ F a a' j k t dt ,
+```
+
+with integrability of each `(a,a',j,k)` term supplied by
+`indicator_intervalIntegrable` + `const_mul`, and the `IntervalIntegrable.sum`
+defeq gap closed by `convert … using 1; ext x; simp only [Finset.sum_apply]`.

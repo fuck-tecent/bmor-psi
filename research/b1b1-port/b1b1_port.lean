@@ -1761,4 +1761,34 @@ theorem deepIntegrand_eq_quadruple_sum (n : ℕ) (t : ℝ) :
     rw [Set.indicator_of_notMem ht]
     simp only [hz, mul_zero, Finset.sum_const_zero]
 
+/-- `Jdeep` is the integral of the expanded quadruple sum (the pointwise expansion
+integrated; the finite-sum interchange is the remaining formal step). -/
+theorem deepIntegral_eq_integral_quadruple (n : ℕ) :
+    deepIntegral n =
+      ∫ t in (0:ℝ)..1,
+        ∑ a ∈ Finset.Icc (cutoffU n + 1) (lowCut n),
+          ∑ a' ∈ Finset.Icc (cutoffU n + 1) (lowCut n),
+            ((lowMoebiusWeight (cutoffU n) a : ℂ) * (lowMoebiusWeight (cutoffU n) a' : ℂ)) *
+              ∑ j ∈ Finset.Ioc (cutoffU n) (n / a),
+                ∑ k ∈ Finset.Ioc (cutoffU n) (n / a'),
+                  ((ArithmeticFunction.vonMangoldt j : ℂ) *
+                    (ArithmeticFunction.vonMangoldt k : ℂ)) *
+                    (wideSet n)ᶜ.indicator (fun x =>
+                      phase (((((a*j:ℕ):ℝ) + ((a'*k:ℕ):ℝ) - (n:ℝ))) * x)) t := by
+  have hstep : deepIntegral n =
+      ∫ t in (0:ℝ)..1, (wideSet n)ᶜ.indicator
+        (fun x => plainPolynomial n (tauCoeff n) x * plainPolynomial n (tauCoeff n) x *
+          phase (-(n:ℝ)*x)) t := by
+    unfold deepIntegral
+    apply intervalIntegral.integral_congr
+    intro t _
+    congr 1
+    funext x
+    rw [shiftedPolynomial_eq]
+    ring
+  rw [hstep]
+  apply intervalIntegral.integral_congr
+  intro t _
+  exact deepIntegrand_eq_quadruple_sum n t
+
 end B1B1Port
