@@ -853,7 +853,8 @@ theorem norm_expSum_low_mu_mul_log_le_residues (n U q a : ℕ) (β : ℝ)
         intro d _
         ring
     _ ≤ Real.log (n:ℝ) * (2 * (q:ℝ)) * (2 * (1 + Real.log (q:ℝ))) := by
-        apply mul_le_mul_of_nonneg_left (sum_inv_residue_le q a U hq hcop hUq)
+        apply mul_le_mul_of_nonneg_left
+          (sum_inv_residue_le q a U hq hcop (by omega : U < q))
         positivity
     _ = 4 * (q:ℝ) * Real.log (n:ℝ) * (1 + Real.log (q:ℝ)) := by ring
 

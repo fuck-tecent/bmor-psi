@@ -1128,3 +1128,26 @@ residues `(d a) mod q` for `d < q`.
 
 On the wide minor arcs (`q > Q0 ≥ 2U`) this gives the classical
 Type-I second-term saving `≪ q log n log q`.
+
+### Third-term residue refinement: the per-pair step
+
+`norm_third_inner_le_residue` is the bilinear analogue of
+`norm_expSum_low_mu_mul_log_le_residues`: for `d * e ≤ M < q` and
+`q ∤ d e`,
+
+```lean
+‖∑_{m ≤ n/(de)} E(de m (a/q+β))‖ ≤ 2q / r_{de},
+  r_{de} = min ((de a) mod q) (q - (de a) mod q),
+```
+
+using `norm_geometric_sum_Icc_le_dist` and the quantitative shift
+separation `typeIDist_mul_farey_shift_ge_residue`.
+
+Also `sum_inv_residue_le` now only needs `U < q` (instead of
+`2U ≤ q`), which is what the third-term reindexing needs (the products
+`de` are only bounded by `M < q`).
+
+What remains for the full third-term refinement is the fibre
+reindexing `k = d e`: with `∑_{e | k} Λ e = log k ≤ log(U²)` and
+`∑_{k ≤ M} 1/r_k ≤ 2(1+log q)`, the threshold term
+`2qM log n (1+log U)` becomes `O(q log n log(U²) (1+log q))`.

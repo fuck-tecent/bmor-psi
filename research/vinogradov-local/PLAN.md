@@ -461,3 +461,18 @@ Ingredients: the quantitative rational distance
 Next: the same reindexing (`k = d e`, multiplicity ≤ log k, `k < q`) for
 the third term's threshold part, replacing `2q M log²n` by
 `O(q log² n)`.
+
+## Third term: per-pair residue bound done
+
+`norm_third_inner_le_residue` gives `2q/r_{de}` for each threshold pair
+(`de ≤ M < q`, `q ∤ de`), and `sum_inv_residue_le` was relaxed to
+`U < q`.
+
+Remaining: the fibre reindexing `k = de` (template:
+`double_sum_vonMangoldt_div_le`, using `Finset.sum_fiberwise_of_maps_to`,
+`Nat.sum_divisorsAntidiagonal'`, `ArithmeticFunction.vonMangoldt_sum`).
+Target:
+
+  ∑_{de ≤ M, q∤de} Λ(e) · 2q/r_{de}
+    ≤ log(U²) · 2q · ∑_{k≤M} 1/r_k
+    ≤ 4q log(U²)(1 + log q).

@@ -1253,7 +1253,7 @@ lemma residue_inj {q a : ℕ} (hq : 0 < q) (hcop : Nat.Coprime a q)
 /-- Harmonic bound for reciprocal residues: if `2U ≤ q`, then
 `∑_{d ≤ U} 1/min ((d a) mod q) (q - (d a) mod q) ≤ 2 (1 + log q)`. -/
 lemma sum_inv_residue_le (q a U : ℕ) (hq : 0 < q) (hcop : Nat.Coprime a q)
-    (hUq : 2 * U ≤ q) :
+    (hUq : U < q) :
     (∑ d ∈ Finset.Icc 1 U,
         (1:ℝ)/(((min ((d * a) % q) (q - (d * a) % q) : ℕ)) : ℝ))
       ≤ 2 * (1 + Real.log (q:ℝ)) := by
@@ -1264,7 +1264,6 @@ lemma sum_inv_residue_le (q a U : ℕ) (hq : 0 < q) (hcop : Nat.Coprime a q)
     have hq1 : (1:ℝ) ≤ (q:ℝ) := by exact_mod_cast hq
     have hlogq : 0 ≤ Real.log (q:ℝ) := Real.log_nonneg hq1
     linarith
-  have hUq' : U < q := by omega
   -- Pointwise bound by the two reciprocal distances.
   have hxne : ∀ d ∈ Finset.Icc 1 U, (d * a) % q ≠ 0 := by
     intro d hd h0
@@ -1296,8 +1295,8 @@ lemma sum_inv_residue_le (q a U : ℕ) (hq : 0 < q) (hcop : Nat.Coprime a q)
   have hinj : ∀ d1 ∈ Finset.Icc 1 U, ∀ d2 ∈ Finset.Icc 1 U,
       (d1 * a) % q = (d2 * a) % q → d1 = d2 := by
     intro d1 hd1 d2 hd2 h
-    have h1 : d1 < q := lt_of_le_of_lt (Finset.mem_Icc.mp hd1).2 hUq'
-    have h2 : d2 < q := lt_of_le_of_lt (Finset.mem_Icc.mp hd2).2 hUq'
+    have h1 : d1 < q := lt_of_le_of_lt (Finset.mem_Icc.mp hd1).2 hUq
+    have h2 : d2 < q := lt_of_le_of_lt (Finset.mem_Icc.mp hd2).2 hUq
     exact residue_inj hq hcop h1 h2 h
   have hsum1 : (∑ d ∈ Finset.Icc 1 U, (1:ℝ)/((((d * a) % q : ℕ)) : ℝ))
       ≤ 1 + Real.log (q:ℝ) := by
@@ -2056,6 +2055,68 @@ lemma norm_third_inner_le_of_product_le (n q M a d e : ℕ) (β : ℝ)
       rw [div_eq_mul_one_div]
     _ ≤ 2 * (q:ℝ) := mul_le_mul_of_nonneg_left hunit (by norm_num)
 
+
+/-- Refined per-pair threshold bound for the third Type-I term: instead of the
+uniform `2q`, the geometric sum is bounded by `2q / r_{de}`, where
+`r_{de} = min ((de a) mod q) (q - (de a) mod q)`. -/
+lemma norm_third_inner_le_residue (n q M a d e : ℕ) (β : ℝ)
+    (hq : 0 < q) (hcop : Nat.Coprime a q)
+    (hde1 : 1 ≤ d * e) (hdeM : d * e ≤ M) (hMq : M < q)
+    (hndvd : ¬ (q : ℕ) ∣ d * e)
+    (hβ : |β| ≤ 1 / (16 * (q:ℝ) * (M:ℝ))) :
+    ‖∑ m ∈ Finset.Icc 1 (n / (d * e)),
+        E (((d * e * m : ℕ) : ℝ) * ((a:ℝ)/(q:ℝ) + β))‖ ≤
+      2 * (q:ℝ) /
+        (((min (((d * e) * a) % q) (q - ((d * e) * a) % q) : ℕ)) : ℝ) := by
+  classical
+  have hqpos : (0:ℝ) < (q:ℝ) := by exact_mod_cast hq
+  have hM1 : 1 ≤ M := le_trans hde1 hdeM
+  have hkq : d * e < q := lt_of_le_of_lt hdeM hMq
+  have hβk : ((d * e : ℕ) : ℝ) * |β| ≤ 1 / (2 * (q:ℝ)) := by
+    have hde : ((d * e : ℕ) : ℝ) ≤ (M:ℝ) := by exact_mod_cast hdeM
+    have hMpos : (0:ℝ) < (M:ℝ) := by exact_mod_cast (by omega : 0 < M)
+    have h1 : ((d * e : ℕ) : ℝ) * |β| ≤
+        (M:ℝ) * (1 / (16 * (q:ℝ) * (M:ℝ))) :=
+      mul_le_mul hde hβ (abs_nonneg β) hMpos.le
+    have h2 : (M:ℝ) * (1 / (16 * (q:ℝ) * (M:ℝ))) = 1 / (16 * (q:ℝ)) := by
+      field_simp
+    calc ((d * e : ℕ) : ℝ) * |β| ≤ (M:ℝ) * (1 / (16 * (q:ℝ) * (M:ℝ))) := h1
+      _ = 1 / (16 * (q:ℝ)) := h2
+      _ ≤ 1 / (2 * (q:ℝ)) := by
+          apply one_div_le_one_div_of_le (by positivity)
+          linarith [hqpos]
+  have hsep := typeIDist_mul_farey_shift_ge_residue q a (d * e) β hq hcop hde1 hkq hβk
+  have hxne : ((d * e) * a) % q ≠ 0 := by
+    intro h0
+    have hdvd : q ∣ (d * e) * a := Nat.dvd_of_mod_eq_zero h0
+    exact hndvd (hcop.symm.dvd_of_dvd_mul_right hdvd)
+  have hx1 : 1 ≤ ((d * e) * a) % q := Nat.one_le_iff_ne_zero.mpr hxne
+  have hxq : ((d * e) * a) % q < q := Nat.mod_lt _ hq
+  have hrpos : (0:ℝ) <
+      (((min (((d * e) * a) % q) (q - ((d * e) * a) % q) : ℕ)) : ℝ) := by
+    have hpos : 0 < min (((d * e) * a) % q) (q - ((d * e) * a) % q) :=
+      lt_min hx1 (by omega)
+    exact_mod_cast hpos
+  have hdistpos : 0 < typeIDist (((d * e : ℕ) : ℝ) * ((a:ℝ)/(q:ℝ) + β)) :=
+    lt_of_lt_of_le (div_pos (by positivity) (by positivity)) hsep
+  have harg : ∀ m : ℕ, ((d * e * m : ℕ) : ℝ) * ((a:ℝ)/(q:ℝ) + β) =
+      (m : ℝ) * (((d * e : ℕ) : ℝ) * ((a:ℝ)/(q:ℝ) + β)) := by
+    intro m
+    push_cast
+    ring
+  simp_rw [harg]
+  refine (norm_geometric_sum_Icc_le_dist (n / (d * e))
+    (((d * e : ℕ) : ℝ) * ((a:ℝ)/(q:ℝ) + β)) (ne_of_gt hdistpos)).trans ?_
+  have hone : 1 / typeIDist (((d * e : ℕ) : ℝ) * ((a:ℝ)/(q:ℝ) + β)) ≤
+      1 / ((((min (((d * e) * a) % q) (q - ((d * e) * a) % q) : ℕ)) : ℝ) /
+        (2 * (q:ℝ))) :=
+    one_div_le_one_div_of_le (div_pos hrpos (by positivity)) hsep
+  have hval : 1 / ((((min (((d * e) * a) % q) (q - ((d * e) * a) % q) : ℕ)) : ℝ) /
+        (2 * (q:ℝ))) =
+      2 * (q:ℝ) /
+        (((min (((d * e) * a) % q) (q - ((d * e) * a) % q) : ℕ)) : ℝ) := by
+    field_simp
+  exact hone.trans (le_of_eq hval)
 
 /-- Trivial bound for the third-term inner geometric sum. -/
 lemma norm_third_inner_le_trivial (n d e : ℕ) (t : ℝ) :
