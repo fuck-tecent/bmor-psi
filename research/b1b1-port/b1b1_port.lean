@@ -1855,4 +1855,96 @@ theorem deepIntegral_eq_quadruple_sum (n : ℕ) :
   push_cast
   ring
 
+/-- The `q = 1` term of the sinc sum with the `range 1` index set. -/
+theorem sum_range_one_rhs (n : ℕ) (m : ℤ) :
+    (∑ a ∈ (Finset.range 1).filter (fun a => Nat.Coprime a 1),
+        phase ((m:ℝ)*((a:ℝ)/(((1:ℕ):ℝ)))) *
+          (((Real.sin (2*Real.pi*(m:ℝ)*((cutoffH n:ℝ)/((((1:ℕ):ℝ))*((n:ℕ):ℝ)))) : ℝ) : ℂ) /
+            ((Real.pi*(m:ℝ) : ℝ) : ℂ)))
+      = (((Real.sin (2*Real.pi*(m:ℝ)*((cutoffH n : ℝ)/(n:ℝ))) : ℝ) : ℂ) /
+          ((Real.pi*(m:ℝ) : ℝ) : ℂ)) := by
+  have hfil : (Finset.range 1).filter (fun a => Nat.Coprime a 1) = {0} := by decide
+  rw [hfil, Finset.sum_singleton]
+  norm_num
+  simp [phase]
+
+/-- **The sinc collection with the `range q` index set.** -/
+theorem integral_wideSet_phase_eq_sinc_range (n : ℕ) (m : ℤ) (hm : m ≠ 0)
+    (hn : 512 * (cutoffB n)^2 * logSq n < n) (hQ : 1 ≤ cutoffB n)
+    (hρ0 : (0:ℝ) ≤ (cutoffH n : ℝ)/(n:ℝ))
+    (hρ1 : (cutoffH n : ℝ)/(n:ℝ) < 1)
+    (hint : ∀ q ∈ Finset.Icc 2 (cutoffB n),
+      ∀ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q),
+        0 < (a:ℝ)/(q:ℝ) - (cutoffH n:ℝ)/((q:ℝ)*(n:ℝ)) ∧
+          (a:ℝ)/(q:ℝ) + (cutoffH n:ℝ)/((q:ℝ)*(n:ℝ)) < 1) :
+    (∫ t in (0:ℝ)..1, (wideSet n).indicator (fun y => phase ((m:ℝ)*y)) t)
+      = ∑ q ∈ Finset.Icc 1 (cutoffB n),
+          ∑ a ∈ (Finset.range q).filter (fun a => Nat.Coprime a q),
+            phase ((m:ℝ)*((a:ℝ)/(q:ℝ))) *
+              (((Real.sin (2*Real.pi*(m:ℝ)*((cutoffH n:ℝ)/((q:ℝ)*(n:ℝ)))) : ℝ) : ℂ) /
+                ((Real.pi*(m:ℝ) : ℝ) : ℂ)) := by
+  classical
+  have hcont : Continuous fun t : ℝ => phase ((m:ℝ)*t) := by unfold phase; fun_prop
+  have hsplit : Finset.Icc 1 (cutoffB n) = insert 1 (Finset.Icc 2 (cutoffB n)) := by
+    clear hn hρ0 hρ1
+    ext q
+    simp only [Finset.mem_Icc, Finset.mem_insert]
+    constructor
+    · rintro ⟨h1, h2⟩
+      rcases Nat.lt_or_eq_of_le h1 with h | h
+      · exact Or.inr ⟨h, h2⟩
+      · exact Or.inl h.symm
+    · rintro (rfl | ⟨h2, h3⟩)
+      · exact ⟨le_rfl, hQ⟩
+      · exact ⟨Nat.le_trans (by norm_num) h2, h3⟩
+  have hnot1 : (1:ℕ) ∉ Finset.Icc 2 (cutoffB n) := by
+    intro h
+    exact absurd (Finset.mem_Icc.mp h).1 (Nat.not_succ_le_self 1)
+  have hfilter : ∀ q : ℕ, 2 ≤ q →
+      (Finset.range (q+1)).filter (fun a => Nat.Coprime a q)
+        = (Finset.range q).filter (fun a => Nat.Coprime a q) := by
+    intro q hq
+    clear hn hρ0 hρ1
+    have hins : Finset.range (q+1) = insert q (Finset.range q) := by
+      ext a
+      simp only [Finset.mem_range, Finset.mem_insert]
+      omega
+    rw [hins, Finset.filter_insert, if_neg]
+    intro hcop
+    have := (Nat.coprime_self q).mp hcop
+    omega
+  rw [integral_wideSet_eq_sum n hn _ hcont, hsplit, Finset.sum_insert hnot1]
+  rw [Finset.sum_insert hnot1]
+  rw [sum_arcSet_one n m hm hρ0 hρ1, sum_range_one_rhs n m]
+  congr 1
+  refine Finset.sum_congr rfl fun q hq => ?_
+  have hq2 : 2 ≤ q := (Finset.mem_Icc.mp hq).1
+  rw [hfilter q hq2]
+  refine Finset.sum_congr rfl fun a ha => ?_
+  have hsub : a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q) :=
+    Finset.mem_filter.mpr ⟨Finset.mem_range.mpr (by
+      have := Finset.mem_range.mp (Finset.mem_filter.mp ha).1
+      omega), (Finset.mem_filter.mp ha).2⟩
+  exact integral_arcSet_clipped_eq_sinc n q a m hm
+    (hint q hq a hsub).1 (hint q hq a hsub).2
+
+/-- **The arc kernel in closed form.** -/
+theorem arcKernel_eq_sinc (n : ℕ) (m : ℤ) (hm : m ≠ 0)
+    (hn : 512 * (cutoffB n)^2 * logSq n < n) (hQ : 1 ≤ cutoffB n)
+    (hρ0 : (0:ℝ) ≤ (cutoffH n : ℝ)/(n:ℝ))
+    (hρ1 : (cutoffH n : ℝ)/(n:ℝ) < 1)
+    (hint : ∀ q ∈ Finset.Icc 2 (cutoffB n),
+      ∀ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q),
+        0 < (a:ℝ)/(q:ℝ) - (cutoffH n:ℝ)/((q:ℝ)*(n:ℝ)) ∧
+          (a:ℝ)/(q:ℝ) + (cutoffH n:ℝ)/((q:ℝ)*(n:ℝ)) < 1) :
+    arcKernel n m
+      = - ∑ q ∈ Finset.Icc 1 (cutoffB n),
+            ∑ a ∈ (Finset.range q).filter (fun a => Nat.Coprime a q),
+              phase ((m:ℝ)*((a:ℝ)/(q:ℝ))) *
+                (((Real.sin (2*Real.pi*(m:ℝ)*((cutoffH n:ℝ)/((q:ℝ)*(n:ℝ)))) : ℝ) : ℂ) /
+                  ((Real.pi*(m:ℝ) : ℝ) : ℂ)) := by
+  unfold arcKernel
+  rw [integral_compl_indicator_phase_eq n m hm,
+    integral_wideSet_phase_eq_sinc_range n m hm hn hQ hρ0 hρ1 hint]
+
 end B1B1Port

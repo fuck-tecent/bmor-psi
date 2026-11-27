@@ -1365,3 +1365,47 @@ After that:
 * `Indicators` vs `setIntegral`: `integral_arcSet_indicator_phase_of_inside` and
   `integral_arcSet_one_zero/one` show the working pattern
   (`intervalIntegral.integral_of_le` → `setIntegral_indicator` → set identity).
+
+## Milestone 28: the arc kernel in closed form (`exact_split` second half done)
+
+```lean
+sum_range_one_rhs (n) (m) :
+  ∑_{a ∈ (range 1).filter (Coprime · 1)} e(m a/1) · sin(2π m H/(1·n))/(π m)
+    = sin(2π m H/n)/(π m)
+
+integral_wideSet_phase_eq_sinc_range (n) (m) (hm : m ≠ 0) (hn) (hQ : 1 ≤ cutoffB n)
+    (hρ0) (hρ1) (hint) :
+  ∫_{0}^{1} 1_{wideSet n} e(m t) dt
+    = ∑_{q ≤ cutoffB n} ∑_{a ∈ (range q).filter (Coprime · q)}
+        e(m a/q) · sin(2π m H/(q n))/(π m)
+
+arcKernel_eq_sinc (n) (m) (hm : m ≠ 0) (hn) (hQ) (hρ0) (hρ1) (hint) :
+  arcKernel n m
+    = - ∑_{q ≤ cutoffB n} ∑_{a ∈ (range q).filter (Coprime · q)}
+        e(m a/q) · sin(2π m H/(q n))/(π m)
+```
+
+The four fixes from the handover worked: `hQ : 1 ≤ cutoffB n`, `clear hn hρ0 hρ1`
+before the `omega`s, a single `hsplit` rewrite (plus one extra `sum_insert` for the
+copied right-hand sum), and the `(1 : ℝ)` casts in `sum_range_one_rhs` written as
+`((1 : ℕ) : ℝ)` to match the goal.
+
+### Combining with Milestone 27
+
+```text
+Jdeep n = ∑_{a,a',j,k} c(a)c(a')Λ(j)Λ(k) · arcKernel n (a j + a' k - n)
+```
+
+with the kernel now explicit.  The `m = 0` term is the last piece needed for the
+full substitution (`arcKernel n 0 = 1 - |wideArcs ∩ (0,1]|`), after which
+
+```text
+Jdeep n = D - W ,   D = ∑_{a j + a' k = n} c(a)c(a')Λ(j)Λ(k) ,
+                    W = ∑_{q ≤ Q₁} ∑_{a,a',j,k} c(a)c(a')Λ(j)Λ(k) c_q(m) sinc(mρ_q)
+```
+
+(both halves of the `τ₁` `spatial_exact_split`).
+
+### Dossier
+
+28 verified milestones, 1929 lines, no `sorry`, branch `research/b1b1-arcsplit`.
