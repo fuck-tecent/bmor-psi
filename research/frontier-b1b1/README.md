@@ -290,3 +290,23 @@ sum_coprime_eq_sum_mu (hq : 0 < q) (f : ℕ → ℂ) :
 
 Proof: the product-finset `q.divisors ×ˢ range q`, `Finset.sum_product` +
 `Finset.sum_comm`, and the pointwise identity `sum_mu_filter_eq`.
+
+## Milestone 19: divisor-restricted phase sum
+
+`dvdsum.lean` (consolidates the `geom` + `musum` content for the eventual
+single-file PR) adds
+
+```lean
+sum_filter_dvd_phase (h : ℤ) (hq : 0 < q) (hd : 0 < d) (hdq : d ∣ q) :
+  ∑_{a<q, d|a} E(h a/q)
+    = if E (h/(q/d)) = 1 then q/d else 0
+```
+
+Proof: reindex `a = d a'` (`Finset.sum_nbij'`), then apply `geom_sum_E` with
+denominator `q/d`.
+
+So the Ramanujan sum is now
+
+  c_q(h) = ∑_{d|q} μ(d) · [E(h/(q/d)) = 1] · (q/d),
+
+and by `divcrit` the condition `E(h/(q/d)) = 1` is `(q/d) | h`.
