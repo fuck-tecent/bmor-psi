@@ -2316,5 +2316,5 @@ So the τ₃ reduction now needs only: (a) a *sum* version of §39.2–39.3 (int
 the window difference with `weightedSum`), and (b) an estimate for the residual
 cofactor range — item 3, which is the analytic input.
 
-Dossier: 2552 lines (imports `L_goldbach_bulk_density_one`), 42 verified milestones,
+Dossier: 2578 lines (imports `L_goldbach_bulk_density_one`), 79 verified declarations (theorems/defs/lemmas),
 no `sorry`.
