@@ -1,0 +1,19 @@
+{
+  "id": "L-goldbach-beaumont-near-hit-window",
+  "statement": "∀ (n p q r : ℕ) (k : ℤ), 0 < n → 2*r < n → r < p+q → p+q+r < 2*n → |(p:ℤ)+(q:ℤ)-k*(n:ℤ)| ≤ (r:ℤ) → |(p:ℤ)+(q:ℤ)-(n:ℤ)| ≤ (r:ℤ)",
+  "plain_statement": {
+    "zh": "有安全边距时把近共振转为邻近整数和",
+    "en": "Transfer near resonance to a nearby integer sum with a safety margin"
+  },
+  "brief": {
+    "zh": "对共振整数 k 排除 k≤0 和 k≥2。误差预算保留在原整数尺度。",
+    "en": "Exclude k≤0 and k≥2 using the margins. Preserve the absolute error in integer units."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-geometric-tools.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "track": "representations",
+  "role": "lemma",
+  "imports": []
+}

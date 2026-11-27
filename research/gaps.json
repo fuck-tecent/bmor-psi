@@ -18978,6 +18978,385 @@
       "route_source": "representations"
     },
     {
+      "id": "L-goldbach-beaumont-alternate-normal-shift",
+      "statement": "let H := fun n : ℕ => ((Finset.range (n+1)).filter (fun p => p.Prime ∧ p ≤ n ∧ (n-p).Prime ∧ n ≤ 3*p ∧ 3*p ≤ 2*n)).card; let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); ∃ δ : ℝ, 0 < δ ∧ ∃ X₀ : ℕ, ∀ X ≥ X₀, δ*(X:ℝ) ≤ (((E X).filter (fun n => 0 < H n ∧ 0 < H (n+2) ∧ 0 < H (n+4))).card:ℝ)",
+      "plain_statement": {
+        "zh": "猜想：正比例的连续三靶都具有中央表示",
+        "en": "Conjecture: a positive proportion of adjacent triples all have central hits"
+      },
+      "brief": {
+        "zh": "可用漏点密度和三个平移集合的并集界。也可直接尝试估计三个终点的联合分布。",
+        "en": "Use an exceptional-set estimate and a union bound over three shifts, or attack the joint distribution directly."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-geometric-tools.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "track": "representations",
+      "role": "lemma",
+      "imports": [],
+      "module": "Conjectures.Goldbach.BeaumontAlternateNormalShift",
+      "file": "lean/Conjectures/Goldbach/BeaumontAlternateNormalShift.lean",
+      "route_source": "representations"
+    },
+    {
+      "id": "L-goldbach-beaumont-central-gap-density",
+      "statement": "let H := fun n : ℕ => ((Finset.range (n+1)).filter (fun p => p.Prime ∧ p ≤ n ∧ (n-p).Prime ∧ n ≤ 3*p ∧ 3*p ≤ 2*n)).card; ∀ ε : ℝ, 0 < ε → ∃ X₀ : ℕ, ∀ X ≥ X₀, (((Finset.Icc X (2*X)).filter (fun n => Even n ∧ H n=0 ∧ H (n+2)=0)).card:ℝ) ≤ ε*(X:ℝ)",
+      "plain_statement": {
+        "zh": "相邻两个偶数都缺中央表示的起点密度趋零",
+        "en": "Vanishing density of adjacent central misses"
+      },
+      "brief": {
+        "zh": "允许任意单点漏失。尝试对相邻两个卷积的共同下尾建立估计，并标明对照的已知中央区间例外集结果。",
+        "en": "Bound the common lower tail of the two adjacent convolution values. Compare explicitly with existing exceptional-set results before claiming an improvement."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-geometric-tools.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "track": "representations",
+      "role": "lemma",
+      "imports": [],
+      "file": "lean/Conjectures/Goldbach/BeaumontCentralGapDensity.lean",
+      "module": "Conjectures.Goldbach.BeaumontCentralGapDensity",
+      "route_source": "representations"
+    },
+    {
+      "id": "L-goldbach-beaumont-central-imbalance-budget",
+      "statement": "let H := fun n : ℕ => ((Finset.range (n+1)).filter (fun p => p.Prime ∧ p ≤ n ∧ (n-p).Prime ∧ n ≤ 3*p ∧ 3*p ≤ 2*n)).card; ∃ c : ℝ, 0 < c ∧ ∃ X₀ : ℕ, ∀ X ≥ X₀, c*(X:ℝ)^2/((Real.log (X:ℝ))^2) ≤ ∑ n ∈ (Finset.Icc X (2*X)).filter (fun n => Even n), (min (H n) (H (n+2)):ℝ)",
+      "plain_statement": {
+        "zh": "相邻靶区共享的表示重数下界",
+        "en": "Lower-bound multiplicity shared by adjacent targets"
+      },
+      "brief": {
+        "zh": "对每对相邻偶数取较小的中央层数再求和。可尝试用两个卷积的共同下尾，或者用总量扣掉相邻振荡。",
+        "en": "Sum the smaller central multiplicity on each adjacent pair. Estimate the common lower tail or subtract the adjacent variation from total mass."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-geometric-tools.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "track": "representations",
+      "role": "lemma",
+      "imports": [],
+      "file": "lean/Conjectures/Goldbach/BeaumontCentralImbalanceBudget.lean",
+      "module": "Conjectures.Goldbach.BeaumontCentralImbalanceBudget",
+      "route_source": "representations"
+    },
+    {
+      "id": "L-goldbach-beaumont-central-local-prediction",
+      "statement": "let H := fun n : ℕ => ((Finset.range (n+1)).filter (fun p => p.Prime ∧ p ≤ n ∧ (n-p).Prime ∧ n ≤ 3*p ∧ 3*p ≤ 2*n)).card; let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); let M := fun X : ℕ => (X:ℝ)/(Real.log (X:ℝ))^2; let R := fun n : ℕ => ((H n + H (n+2)):ℝ); ∀ ε : ℝ, 0 < ε → ∃ X₀ : ℕ, ∀ X ≥ X₀, ∃ b : ℕ → ℝ, (∀ n ∈ E X, M X ≤ b n) ∧ (∑ n ∈ E X, (R n-b n)^2) ≤ ε*(X:ℝ)*(M X)^2",
+      "plain_statement": {
+        "zh": "猜想：相邻中央命中的局部主项具有低均方误差",
+        "en": "Conjecture: low mean-square error for adjacent central arrivals"
+      },
+      "brief": {
+        "zh": "用局部因子构造预测。允许例外，控制误差平方总量；下游用已证的漏点能量引理。",
+        "en": "Build a local-factor predictor. Exceptions are allowed; bound the squared errors in aggregate."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-geometric-tools.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "track": "representations",
+      "role": "lemma",
+      "imports": [],
+      "module": "Conjectures.Goldbach.BeaumontCentralLocalPrediction",
+      "file": "lean/Conjectures/Goldbach/BeaumontCentralLocalPrediction.lean",
+      "route_source": "representations"
+    },
+    {
+      "id": "L-goldbach-beaumont-central-prediction-transfer",
+      "statement": "let H := fun n : ℕ => ((Finset.range (n+1)).filter (fun p => p.Prime ∧ p ≤ n ∧ (n-p).Prime ∧ n ≤ 3*p ∧ 3*p ≤ 2*n)).card; let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); let M := fun X : ℕ => (X:ℝ)/(Real.log (X:ℝ))^2; let R := fun n : ℕ => ((H n + H (n+2)):ℝ); (∀ ε : ℝ, 0 < ε → ∃ X₀ : ℕ, ∀ X ≥ X₀, ∃ b : ℕ → ℝ, (∀ n ∈ E X, M X ≤ b n) ∧ (∑ n ∈ E X, (R n-b n)^2) ≤ ε*(X:ℝ)*(M X)^2) → (∀ ε : ℝ, 0 < ε → ∃ X₀ : ℕ, ∀ X ≥ X₀, (((Finset.Icc X (2*X)).filter (fun n => Even n ∧ H n=0 ∧ H (n+2)=0)).card:ℝ) ≤ ε*(X:ℝ))",
+      "plain_statement": {
+        "zh": "用已证能量引理把局部预测转成双漏密度上界",
+        "en": "Transfer a local prediction to a double-miss bound"
+      },
+      "brief": {
+        "zh": "导入已证 DynExceptionEnergy，令 r(n)=H(n)+H(n+2)。从 X≥2 保证预算为正。预测假设由独立猜想提供。",
+        "en": "Import the verified DynExceptionEnergy, set r(n)=H(n)+H(n+2), and ensure positivity by taking X≥2. The prediction is a separate open input."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-geometric-tools.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-dyn-exception-energy",
+        "L-goldbach-beaumont-central-local-prediction"
+      ],
+      "track": "representations",
+      "role": "conditional",
+      "imports": [
+        "Conjectures.Goldbach.DynExceptionEnergy"
+      ],
+      "module": "Conjectures.Goldbach.BeaumontCentralPredictionTransfer",
+      "file": "lean/Conjectures/Goldbach/BeaumontCentralPredictionTransfer.lean",
+      "route_source": "representations"
+    },
+    {
+      "id": "L-goldbach-beaumont-cycle-fiber",
+      "statement": "∀ (m a : ℕ), 0 < m → ((Finset.range m).filter (fun k => (a*k)%m=0)).card = Nat.gcd m a",
+      "plain_statement": {
+        "zh": "定量计算圆周步长的返回重数",
+        "en": "Count returns for a step on a finite circle"
+      },
+      "brief": {
+        "zh": "先约掉最大公因数，返回时刻恰为约化周期的倍数。可用于给非原始循环赋权。",
+        "en": "Divide by the gcd and count multiples of the reduced period."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-geometric-tools.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "track": "representations",
+      "role": "lemma",
+      "imports": [],
+      "file": "lean/Conjectures/Goldbach/BeaumontCycleFiber.lean",
+      "module": "Conjectures.Goldbach.BeaumontCycleFiber",
+      "route_source": "representations"
+    },
+    {
+      "id": "L-goldbach-beaumont-dense-exact-obstruction",
+      "statement": "∃ A : Set ℝ, Dense A ∧ (0:ℝ) ∈ closure A ∧ (0:ℝ) ∉ A",
+      "plain_statement": {
+        "zh": "证伪：稠密和闭包命中不能推出精确命中",
+        "en": "Refute exact hitting from density and closure alone"
+      },
+      "brief": {
+        "zh": "用穿孔实线作为反例。若模型只给闭包，需要独立的有限候选或离散分离条件。",
+        "en": "Use the punctured real line. A closure theorem needs a separate finite-candidate or discreteness argument."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-geometric-tools.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "track": "representations",
+      "role": "lemma",
+      "imports": [],
+      "file": "lean/Conjectures/Goldbach/BeaumontDenseExactObstruction.lean",
+      "module": "Conjectures.Goldbach.BeaumontDenseExactObstruction",
+      "route_source": "representations"
+    },
+    {
+      "id": "L-goldbach-beaumont-dense-open-hit",
+      "statement": "∀ {X : Type} [TopologicalSpace X] (O U : Set X), Dense O → IsOpen U → U.Nonempty → (O ∩ U).Nonempty",
+      "plain_statement": {
+        "zh": "把稠密轨道用于可命中的开靶区",
+        "en": "Transfer dense-orbit information to an open target"
+      },
+      "brief": {
+        "zh": "此工具要求靶区开且非空。应用时核对靶区是否真的具有正宽度及其误差如何回到整数。",
+        "en": "Check that the target is open and nonempty and account for the error when lifting to integers."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-geometric-tools.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "track": "representations",
+      "role": "lemma",
+      "imports": [],
+      "file": "lean/Conjectures/Goldbach/BeaumontDenseOpenHit.lean",
+      "module": "Conjectures.Goldbach.BeaumontDenseOpenHit",
+      "route_source": "representations"
+    },
+    {
+      "id": "L-goldbach-beaumont-marginal-obstruction",
+      "statement": "∀ m : ℕ, 2 ≤ m → ∃ a b : Fin m → ZMod m, Function.Bijective a ∧ Function.Bijective b ∧ ∀ t, a t ≠ b t",
+      "plain_statement": {
+        "zh": "证伪：两个粒子各自遍历全圆仍可能永不相遇",
+        "en": "Refute collision from two individually uniform marginals"
+      },
+      "brief": {
+        "zh": "取同速转动并错开一个单位。每个位置的边际频率都相同，但同步轨道避开对角线。",
+        "en": "Use the same speed with a unit offset. Both marginals are uniform and the joint orbit misses the diagonal."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-geometric-tools.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "track": "representations",
+      "role": "lemma",
+      "imports": [],
+      "file": "lean/Conjectures/Goldbach/BeaumontMarginalObstruction.lean",
+      "module": "Conjectures.Goldbach.BeaumontMarginalObstruction",
+      "route_source": "representations"
+    },
+    {
+      "id": "L-goldbach-beaumont-near-hit-window",
+      "statement": "∀ (n p q r : ℕ) (k : ℤ), 0 < n → 2*r < n → r < p+q → p+q+r < 2*n → |(p:ℤ)+(q:ℤ)-k*(n:ℤ)| ≤ (r:ℤ) → |(p:ℤ)+(q:ℤ)-(n:ℤ)| ≤ (r:ℤ)",
+      "plain_statement": {
+        "zh": "有安全边距时把近共振转为邻近整数和",
+        "en": "Transfer near resonance to a nearby integer sum with a safety margin"
+      },
+      "brief": {
+        "zh": "对共振整数 k 排除 k≤0 和 k≥2。误差预算保留在原整数尺度。",
+        "en": "Exclude k≤0 and k≥2 using the margins. Preserve the absolute error in integer units."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-geometric-tools.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "track": "representations",
+      "role": "lemma",
+      "imports": [],
+      "file": "lean/Conjectures/Goldbach/BeaumontNearHitWindow.lean",
+      "module": "Conjectures.Goldbach.BeaumontNearHitWindow",
+      "route_source": "representations"
+    },
+    {
+      "id": "L-goldbach-beaumont-one-sided-hole-cluster",
+      "statement": "let H := fun n : ℕ => ((Finset.range (n+1)).filter (fun p => p.Prime ∧ p ≤ n ∧ (n-p).Prime ∧ n ≤ 3*p ∧ 3*p ≤ 2*n)).card; ∀ ε : ℝ, 0 < ε → ∃ X₀ : ℕ, ∀ X ≥ X₀, ∀ y : ℕ, X ≤ y → y ≤ 2*X → ((((Finset.Icc y (y+Nat.sqrt X)).filter (fun n => Even n ∧ H n=0)).card):ℝ) ≤ ε*(Nat.sqrt X:ℝ)",
+      "plain_statement": {
+        "zh": "猜想：平方根长度短窗中的中央漏点不会聚集",
+        "en": "Conjecture: central misses do not cluster in square-root intervals"
+      },
+      "brief": {
+        "zh": "对区间位置要求一致，但仍允许每个小窗有漏点。用局部均方估计结合已证 DynExceptionEnergy。",
+        "en": "Require uniformity over window positions while permitting misses. Combine local mean-square estimates with verified DynExceptionEnergy."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-geometric-tools.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "track": "representations",
+      "role": "lemma",
+      "imports": [],
+      "module": "Conjectures.Goldbach.BeaumontOneSidedHoleCluster",
+      "file": "lean/Conjectures/Goldbach/BeaumontOneSidedHoleCluster.lean",
+      "route_source": "representations"
+    },
+    {
+      "id": "L-goldbach-beaumont-perturbed-clock-gap",
+      "statement": "∀ (n : ℕ) (s : ℤ) (x : ℝ), |x-(s:ℝ)| < 1/2 → |x-(n:ℝ)| ≤ 1/2 → s=(n:ℤ)",
+      "plain_statement": {
+        "zh": "半单位误差预算下整数标签唯一",
+        "en": "Recover the unique integer label with half-unit error margins"
+      },
+      "brief": {
+        "zh": "用三角不等式把两个预算相加，整数间距至少一。可用于把连续相位估计变回精确结果。",
+        "en": "Add the two error budgets with the triangle inequality and use unit spacing of integers."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-geometric-tools.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "track": "representations",
+      "role": "lemma",
+      "imports": [],
+      "file": "lean/Conjectures/Goldbach/BeaumontPerturbedClockGap.lean",
+      "module": "Conjectures.Goldbach.BeaumontPerturbedClockGap",
+      "route_source": "representations"
+    },
+    {
+      "id": "L-goldbach-beaumont-primitive-cycle",
+      "statement": "∀ m : ℕ, 2 ≤ m → (Nat.Prime m ↔ ∀ a : ZMod m, a ≠ 0 → Function.Surjective (fun k : ZMod m => a*k))",
+      "plain_statement": {
+        "zh": "用圆周有限步长的传递性检测素性",
+        "en": "Detect primes by transitivity of every nonzero circular step"
+      },
+      "brief": {
+        "zh": "在 ZMod m 上，步长 a 的可达位置是 a 的倍数。合数时用真因子构造不能命中 1 的步长。",
+        "en": "The displacement set consists of multiples of a. In composite modulus a proper divisor cannot reach one."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-geometric-tools.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "track": "representations",
+      "role": "lemma",
+      "imports": [],
+      "file": "lean/Conjectures/Goldbach/BeaumontPrimitiveCycle.lean",
+      "module": "Conjectures.Goldbach.BeaumontPrimitiveCycle",
+      "route_source": "representations"
+    },
+    {
+      "id": "L-goldbach-beaumont-quotient-obstruction",
+      "statement": "∀ m : ℕ, 1 < m → ∃ a b : ℕ, a ≠ b ∧ a%m=b%m ∧ Nat.Prime a ∧ ¬ Nat.Prime b",
+      "plain_statement": {
+        "zh": "证伪：固定模数的相位标签不足以辨认素数",
+        "en": "Refute primality detection from a single fixed modular phase"
+      },
+      "brief": {
+        "zh": "取 a=2，取 b=2(m+1)。这排除只看一个固定模数的编码。",
+        "en": "Take a=2 and b=2(m+1), excluding encodings based on a single fixed modulus."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-geometric-tools.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "track": "representations",
+      "role": "lemma",
+      "imports": [],
+      "file": "lean/Conjectures/Goldbach/BeaumontQuotientObstruction.lean",
+      "module": "Conjectures.Goldbach.BeaumontQuotientObstruction",
+      "route_source": "representations"
+    },
+    {
+      "id": "L-goldbach-beaumont-resonance-window",
+      "statement": "∀ n p q : ℕ, 0 < n → n ≤ p+q → p+q < 2*n → (n ∣ p+q ↔ p+q=n)",
+      "plain_statement": {
+        "zh": "在无混叠窗口中从碰撞恢复精确和",
+        "en": "Recover an exact sum from a collision in an alias-free window"
+      },
+      "brief": {
+        "zh": "把反向运动写成 p 与 −q 的相位差。窗口排除零倍和二倍目标。",
+        "en": "Opposite motion gives the phase difference p+q. The window excludes the zero and double multiples."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-geometric-tools.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "track": "representations",
+      "role": "lemma",
+      "imports": [],
+      "file": "lean/Conjectures/Goldbach/BeaumontResonanceWindow.lean",
+      "module": "Conjectures.Goldbach.BeaumontResonanceWindow",
+      "route_source": "representations"
+    },
+    {
+      "id": "L-goldbach-beaumont-scaled-deletion-survival",
+      "statement": "let H := fun n : ℕ => ((Finset.range (n+1)).filter (fun p => p.Prime ∧ p ≤ n ∧ (n-p).Prime ∧ n ≤ 3*p ∧ 3*p ≤ 2*n)).card; let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); let M := fun X : ℕ => (X:ℝ)/(Real.log (X:ℝ))^2; ∃ c δ : ℝ, 0 < c ∧ 0 < δ ∧ ∃ X₀ : ℕ, ∀ X ≥ X₀, ∀ D : Finset ℕ, (D.card:ℝ) ≤ c*(X:ℝ)/Real.log (X:ℝ) → δ*(X:ℝ) ≤ (((E X).filter (fun n => ∃ p ≤ n, p.Prime ∧ (n-p).Prime ∧ n ≤ 3*p ∧ 3*p ≤ 2*n ∧ n-p ∉ D)).card:ℝ)",
+      "plain_statement": {
+        "zh": "猜想：中央命中对删除长步长稳定",
+        "en": "Conjecture: central coverage survives long-step deletion"
+      },
+      "brief": {
+        "zh": "用已证 DynDeletionLoss 的配对计数思路，先选有足够多中央见证的靶点。对手可在看过模型后再选删除集。",
+        "en": "Adapt the verified pair-charging argument of DynDeletionLoss after finding many endpoints with rich central fibers. The deletion may be adversarial."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-geometric-tools.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "track": "representations",
+      "role": "lemma",
+      "imports": [],
+      "module": "Conjectures.Goldbach.BeaumontScaledDeletionSurvival",
+      "file": "lean/Conjectures/Goldbach/BeaumontScaledDeletionSurvival.lean",
+      "route_source": "representations"
+    },
+    {
+      "id": "L-goldbach-beaumont-three-target-window",
+      "statement": "∃ N₀ : ℕ, ∀ n : ℕ, N₀ ≤ n → Even n → ∃ p q : ℕ, p.Prime ∧ q.Prime ∧ 3*p ≤ 2*n ∧ 2*n ≤ 6*p ∧ |(p:ℤ)+(q:ℤ)-(n:ℤ)| ≤ 2",
+      "plain_statement": {
+        "zh": "探索猜想：中心步长在三个相邻偶数中至少命中一个",
+        "en": "Conjecture: a central step hits one of three consecutive even targets"
+      },
+      "brief": {
+        "zh": "允许 n−2、n、n+2 三个目标。可尝试估计三点平滑卷积下界，或构造连续三处全漏的反例。第一步长限制在 [n/3,2n/3]。",
+        "en": "Allow n−2, n or n+2. Seek a uniform lower bound for a three-point smoothed convolution or a block of three misses. Restrict the first step to [n/3,2n/3]."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-geometric-tools.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "track": "representations",
+      "role": "lemma",
+      "imports": [],
+      "file": "lean/Conjectures/Goldbach/BeaumontThreeTargetWindow.lean",
+      "module": "Conjectures.Goldbach.BeaumontThreeTargetWindow",
+      "route_source": "representations"
+    },
+    {
       "id": "L-goldbach-cell-lp-dual-certificate",
       "statement": "∀ (C K : ℕ) (M s t : ℕ → ℝ) (y B : ℕ → ℝ) (A : ℕ → ℕ → ℝ) (U : ℝ), (∀ c ∈ Finset.range C, 0 ≤ M c) → (∀ c ∈ Finset.range C, (∑ k ∈ Finset.range K, y k * A k c) - s c ≤ t c) → (∀ k ∈ Finset.range K, B k ≤ y k * ∑ c ∈ Finset.range C, M c * A k c) → (∑ c ∈ Finset.range C, M c * s c ≤ U) → ∑ k ∈ Finset.range K, B k - U ≤ ∑ c ∈ Finset.range C, M c * t c",
       "plain_statement": {

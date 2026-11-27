@@ -1,0 +1,19 @@
+{
+  "id": "L-goldbach-beaumont-perturbed-clock-gap",
+  "statement": "∀ (n : ℕ) (s : ℤ) (x : ℝ), |x-(s:ℝ)| < 1/2 → |x-(n:ℝ)| ≤ 1/2 → s=(n:ℤ)",
+  "plain_statement": {
+    "zh": "半单位误差预算下整数标签唯一",
+    "en": "Recover the unique integer label with half-unit error margins"
+  },
+  "brief": {
+    "zh": "用三角不等式把两个预算相加，整数间距至少一。可用于把连续相位估计变回精确结果。",
+    "en": "Add the two error budgets with the triangle inequality and use unit spacing of integers."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-geometric-tools.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "track": "representations",
+  "role": "lemma",
+  "imports": []
+}

@@ -1,0 +1,19 @@
+{
+  "id": "L-goldbach-beaumont-quotient-obstruction",
+  "statement": "∀ m : ℕ, 1 < m → ∃ a b : ℕ, a ≠ b ∧ a%m=b%m ∧ Nat.Prime a ∧ ¬ Nat.Prime b",
+  "plain_statement": {
+    "zh": "证伪：固定模数的相位标签不足以辨认素数",
+    "en": "Refute primality detection from a single fixed modular phase"
+  },
+  "brief": {
+    "zh": "取 a=2，取 b=2(m+1)。这排除只看一个固定模数的编码。",
+    "en": "Take a=2 and b=2(m+1), excluding encodings based on a single fixed modulus."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-geometric-tools.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "track": "representations",
+  "role": "lemma",
+  "imports": []
+}

@@ -1,0 +1,19 @@
+{
+  "id": "L-goldbach-beaumont-central-imbalance-budget",
+  "statement": "let H := fun n : ℕ => ((Finset.range (n+1)).filter (fun p => p.Prime ∧ p ≤ n ∧ (n-p).Prime ∧ n ≤ 3*p ∧ 3*p ≤ 2*n)).card; ∃ c : ℝ, 0 < c ∧ ∃ X₀ : ℕ, ∀ X ≥ X₀, c*(X:ℝ)^2/((Real.log (X:ℝ))^2) ≤ ∑ n ∈ (Finset.Icc X (2*X)).filter (fun n => Even n), (min (H n) (H (n+2)):ℝ)",
+  "plain_statement": {
+    "zh": "相邻靶区共享的表示重数下界",
+    "en": "Lower-bound multiplicity shared by adjacent targets"
+  },
+  "brief": {
+    "zh": "对每对相邻偶数取较小的中央层数再求和。可尝试用两个卷积的共同下尾，或者用总量扣掉相邻振荡。",
+    "en": "Sum the smaller central multiplicity on each adjacent pair. Estimate the common lower tail or subtract the adjacent variation from total mass."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-geometric-tools.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "track": "representations",
+  "role": "lemma",
+  "imports": []
+}

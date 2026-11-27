@@ -1,0 +1,19 @@
+{
+  "id": "L-goldbach-beaumont-three-target-window",
+  "statement": "∃ N₀ : ℕ, ∀ n : ℕ, N₀ ≤ n → Even n → ∃ p q : ℕ, p.Prime ∧ q.Prime ∧ 3*p ≤ 2*n ∧ 2*n ≤ 6*p ∧ |(p:ℤ)+(q:ℤ)-(n:ℤ)| ≤ 2",
+  "plain_statement": {
+    "zh": "探索猜想：中心步长在三个相邻偶数中至少命中一个",
+    "en": "Conjecture: a central step hits one of three consecutive even targets"
+  },
+  "brief": {
+    "zh": "允许 n−2、n、n+2 三个目标。可尝试估计三点平滑卷积下界，或构造连续三处全漏的反例。第一步长限制在 [n/3,2n/3]。",
+    "en": "Allow n−2, n or n+2. Seek a uniform lower bound for a three-point smoothed convolution or a block of three misses. Restrict the first step to [n/3,2n/3]."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-geometric-tools.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "track": "representations",
+  "role": "lemma",
+  "imports": []
+}

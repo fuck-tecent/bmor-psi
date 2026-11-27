@@ -1,0 +1,19 @@
+{
+  "id": "L-goldbach-beaumont-alternate-normal-shift",
+  "statement": "let H := fun n : ℕ => ((Finset.range (n+1)).filter (fun p => p.Prime ∧ p ≤ n ∧ (n-p).Prime ∧ n ≤ 3*p ∧ 3*p ≤ 2*n)).card; let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); ∃ δ : ℝ, 0 < δ ∧ ∃ X₀ : ℕ, ∀ X ≥ X₀, δ*(X:ℝ) ≤ (((E X).filter (fun n => 0 < H n ∧ 0 < H (n+2) ∧ 0 < H (n+4))).card:ℝ)",
+  "plain_statement": {
+    "zh": "猜想：正比例的连续三靶都具有中央表示",
+    "en": "Conjecture: a positive proportion of adjacent triples all have central hits"
+  },
+  "brief": {
+    "zh": "可用漏点密度和三个平移集合的并集界。也可直接尝试估计三个终点的联合分布。",
+    "en": "Use an exceptional-set estimate and a union bound over three shifts, or attack the joint distribution directly."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-geometric-tools.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "track": "representations",
+  "role": "lemma",
+  "imports": []
+}

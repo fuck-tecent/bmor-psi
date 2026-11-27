@@ -1,0 +1,19 @@
+{
+  "id": "L-goldbach-beaumont-dense-open-hit",
+  "statement": "∀ {X : Type} [TopologicalSpace X] (O U : Set X), Dense O → IsOpen U → U.Nonempty → (O ∩ U).Nonempty",
+  "plain_statement": {
+    "zh": "把稠密轨道用于可命中的开靶区",
+    "en": "Transfer dense-orbit information to an open target"
+  },
+  "brief": {
+    "zh": "此工具要求靶区开且非空。应用时核对靶区是否真的具有正宽度及其误差如何回到整数。",
+    "en": "Check that the target is open and nonempty and account for the error when lifting to integers."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-geometric-tools.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "track": "representations",
+  "role": "lemma",
+  "imports": []
+}

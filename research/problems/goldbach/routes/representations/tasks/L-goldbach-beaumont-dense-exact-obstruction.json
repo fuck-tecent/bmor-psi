@@ -1,0 +1,19 @@
+{
+  "id": "L-goldbach-beaumont-dense-exact-obstruction",
+  "statement": "∃ A : Set ℝ, Dense A ∧ (0:ℝ) ∈ closure A ∧ (0:ℝ) ∉ A",
+  "plain_statement": {
+    "zh": "证伪：稠密和闭包命中不能推出精确命中",
+    "en": "Refute exact hitting from density and closure alone"
+  },
+  "brief": {
+    "zh": "用穿孔实线作为反例。若模型只给闭包，需要独立的有限候选或离散分离条件。",
+    "en": "Use the punctured real line. A closure theorem needs a separate finite-candidate or discreteness argument."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-geometric-tools.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "track": "representations",
+  "role": "lemma",
+  "imports": []
+}

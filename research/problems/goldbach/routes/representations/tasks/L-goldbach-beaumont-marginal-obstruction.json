@@ -1,0 +1,19 @@
+{
+  "id": "L-goldbach-beaumont-marginal-obstruction",
+  "statement": "∀ m : ℕ, 2 ≤ m → ∃ a b : Fin m → ZMod m, Function.Bijective a ∧ Function.Bijective b ∧ ∀ t, a t ≠ b t",
+  "plain_statement": {
+    "zh": "证伪：两个粒子各自遍历全圆仍可能永不相遇",
+    "en": "Refute collision from two individually uniform marginals"
+  },
+  "brief": {
+    "zh": "取同速转动并错开一个单位。每个位置的边际频率都相同，但同步轨道避开对角线。",
+    "en": "Use the same speed with a unit offset. Both marginals are uniform and the joint orbit misses the diagonal."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-geometric-tools.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "track": "representations",
+  "role": "lemma",
+  "imports": []
+}

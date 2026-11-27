@@ -1,0 +1,24 @@
+{
+  "id": "L-goldbach-beaumont-central-prediction-transfer",
+  "statement": "let H := fun n : ℕ => ((Finset.range (n+1)).filter (fun p => p.Prime ∧ p ≤ n ∧ (n-p).Prime ∧ n ≤ 3*p ∧ 3*p ≤ 2*n)).card; let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); let M := fun X : ℕ => (X:ℝ)/(Real.log (X:ℝ))^2; let R := fun n : ℕ => ((H n + H (n+2)):ℝ); (∀ ε : ℝ, 0 < ε → ∃ X₀ : ℕ, ∀ X ≥ X₀, ∃ b : ℕ → ℝ, (∀ n ∈ E X, M X ≤ b n) ∧ (∑ n ∈ E X, (R n-b n)^2) ≤ ε*(X:ℝ)*(M X)^2) → (∀ ε : ℝ, 0 < ε → ∃ X₀ : ℕ, ∀ X ≥ X₀, (((Finset.Icc X (2*X)).filter (fun n => Even n ∧ H n=0 ∧ H (n+2)=0)).card:ℝ) ≤ ε*(X:ℝ))",
+  "plain_statement": {
+    "zh": "用已证能量引理把局部预测转成双漏密度上界",
+    "en": "Transfer a local prediction to a double-miss bound"
+  },
+  "brief": {
+    "zh": "导入已证 DynExceptionEnergy，令 r(n)=H(n)+H(n+2)。从 X≥2 保证预算为正。预测假设由独立猜想提供。",
+    "en": "Import the verified DynExceptionEnergy, set r(n)=H(n)+H(n+2), and ensure positivity by taking X≥2. The prediction is a separate open input."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-geometric-tools.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-dyn-exception-energy",
+    "L-goldbach-beaumont-central-local-prediction"
+  ],
+  "track": "representations",
+  "role": "conditional",
+  "imports": [
+    "Conjectures.Goldbach.DynExceptionEnergy"
+  ]
+}

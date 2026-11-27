@@ -1,0 +1,19 @@
+{
+  "id": "L-goldbach-beaumont-resonance-window",
+  "statement": "∀ n p q : ℕ, 0 < n → n ≤ p+q → p+q < 2*n → (n ∣ p+q ↔ p+q=n)",
+  "plain_statement": {
+    "zh": "在无混叠窗口中从碰撞恢复精确和",
+    "en": "Recover an exact sum from a collision in an alias-free window"
+  },
+  "brief": {
+    "zh": "把反向运动写成 p 与 −q 的相位差。窗口排除零倍和二倍目标。",
+    "en": "Opposite motion gives the phase difference p+q. The window excludes the zero and double multiples."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-geometric-tools.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "track": "representations",
+  "role": "lemma",
+  "imports": []
+}

@@ -1,0 +1,19 @@
+{
+  "id": "L-goldbach-beaumont-central-gap-density",
+  "statement": "let H := fun n : ℕ => ((Finset.range (n+1)).filter (fun p => p.Prime ∧ p ≤ n ∧ (n-p).Prime ∧ n ≤ 3*p ∧ 3*p ≤ 2*n)).card; ∀ ε : ℝ, 0 < ε → ∃ X₀ : ℕ, ∀ X ≥ X₀, (((Finset.Icc X (2*X)).filter (fun n => Even n ∧ H n=0 ∧ H (n+2)=0)).card:ℝ) ≤ ε*(X:ℝ)",
+  "plain_statement": {
+    "zh": "相邻两个偶数都缺中央表示的起点密度趋零",
+    "en": "Vanishing density of adjacent central misses"
+  },
+  "brief": {
+    "zh": "允许任意单点漏失。尝试对相邻两个卷积的共同下尾建立估计，并标明对照的已知中央区间例外集结果。",
+    "en": "Bound the common lower tail of the two adjacent convolution values. Compare explicitly with existing exceptional-set results before claiming an improvement."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-geometric-tools.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "track": "representations",
+  "role": "lemma",
+  "imports": []
+}

@@ -1,0 +1,19 @@
+{
+  "id": "L-goldbach-beaumont-one-sided-hole-cluster",
+  "statement": "let H := fun n : ℕ => ((Finset.range (n+1)).filter (fun p => p.Prime ∧ p ≤ n ∧ (n-p).Prime ∧ n ≤ 3*p ∧ 3*p ≤ 2*n)).card; ∀ ε : ℝ, 0 < ε → ∃ X₀ : ℕ, ∀ X ≥ X₀, ∀ y : ℕ, X ≤ y → y ≤ 2*X → ((((Finset.Icc y (y+Nat.sqrt X)).filter (fun n => Even n ∧ H n=0)).card):ℝ) ≤ ε*(Nat.sqrt X:ℝ)",
+  "plain_statement": {
+    "zh": "猜想：平方根长度短窗中的中央漏点不会聚集",
+    "en": "Conjecture: central misses do not cluster in square-root intervals"
+  },
+  "brief": {
+    "zh": "对区间位置要求一致，但仍允许每个小窗有漏点。用局部均方估计结合已证 DynExceptionEnergy。",
+    "en": "Require uniformity over window positions while permitting misses. Combine local mean-square estimates with verified DynExceptionEnergy."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-geometric-tools.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "track": "representations",
+  "role": "lemma",
+  "imports": []
+}
