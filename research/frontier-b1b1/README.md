@@ -247,3 +247,15 @@ First step of the Möbius sieve
 `∑_{(a,q)=1} f a = ∑_{d|q} μ(d) ∑_{a: d|a} f a`: the divisors of `q` that
 divide `a` are exactly the divisors of `gcd a q`, so the pointwise Möbius
 weight is `∑_{d | gcd a q} μ d = [gcd a q = 1]`.
+
+## Milestone 16: pointwise Möbius inversion
+
+`musum.lean`:
+
+```lean
+sum_moebius_divisors_eq (n : ℕ) :
+  ∑ d ∈ n.divisors, μ(d) = if n = 1 then 1 else 0
+```
+
+From `ArithmeticFunction.coe_moebius_mul_coe_zeta` (`μ * ζ = 1`), `mul_apply`,
+and the `divisorsAntidiagonal → divisors` reindexing via `Finset.sum_nbij'`.
