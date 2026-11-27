@@ -197,4 +197,25 @@ lemma ramanujan_eq (h : ℤ) (q : ℕ) (hq : 0 < q) :
   rw [sum_filter_dvd_phase h q d hq hdpos hdvd]
   rw [E_div_eq_one_iff h (q/d) hq'pos]
 
+lemma norm_E (x : ℝ) : ‖E x‖ = 1 := by
+  unfold E
+  exact Complex.norm_exp_ofReal_mul_I _
+
+/-- Trivial Ramanujan bound: at most `q` terms of modulus one. -/
+lemma norm_ramanujan_le_q (h : ℤ) (q : ℕ) :
+    ‖∑ a ∈ (Finset.range q).filter (fun a => Nat.Coprime a q),
+        E ((h:ℝ)*(a:ℝ)/(q:ℝ))‖ ≤ (q:ℝ) := by
+  refine (norm_sum_le _ _).trans ?_
+  calc ∑ a ∈ (Finset.range q).filter (fun a => Nat.Coprime a q),
+        ‖E ((h:ℝ)*(a:ℝ)/(q:ℝ))‖
+      = ∑ a ∈ (Finset.range q).filter (fun a => Nat.Coprime a q), (1:ℝ) := by
+        apply Finset.sum_congr rfl
+        intro a _
+        rw [norm_E]
+    _ ≤ ∑ a ∈ Finset.range q, (1:ℝ) := by
+        apply Finset.sum_le_sum_of_subset_of_nonneg (Finset.filter_subset _ _)
+        intro a _ _
+        positivity
+    _ = (q:ℝ) := by simp
+
 end B1B1

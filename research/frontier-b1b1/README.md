@@ -323,3 +323,23 @@ ramanujan_eq (h : ℤ) (hq : 0 < q) :
 
 Combines `sum_coprime_eq_sum_mu`, `sum_filter_dvd_phase`, and
 `E_div_eq_one_iff`.  This is the classical Ramanujan sum `c_q(h)`.
+
+## Milestone 21: trivial Ramanujan bound suffices
+
+`dvdsum.lean` adds
+
+```lean
+norm_E (x) : ‖E x‖ = 1
+norm_ramanujan_le_q (h : ℤ) (q : ℕ) :
+  ‖c_q(h)‖ ≤ q
+```
+
+**Key observation:** the sharp `|c_q(h)| ≤ gcd(q,h)` (needing multiplicative
+`φ`) is *not needed*.  With the trivial bound, the kernel estimate is
+`|K(h)| ≤ [h=0] + O(H Q₁ / n)`, and
+
+  H Q₁ / n = 256 Q₁² Q / n = O(log⁴ n / n^(1/3)) → 0,
+
+so the whole wide-arc/Ramanujan part is already `o(1)`.  The remaining
+`o(n)` in b1-b1 comes from the dispersion/large-sieve step, not from sharper
+Ramanujan bounds.
