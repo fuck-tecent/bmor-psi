@@ -1791,4 +1791,68 @@ theorem deepIntegral_eq_integral_quadruple (n : ℕ) :
   intro t _
   exact deepIntegrand_eq_quadruple_sum n t
 
+/-- Interval integrability of a finite sum, in the `fun t => ∑ i, f i t` form. -/
+theorem intervalIntegrable_finset_sum' {ι : Type*} (s : Finset ι) {f : ι → ℝ → ℂ}
+    (h : ∀ i ∈ s, IntervalIntegrable (f i) MeasureTheory.volume 0 1) :
+    IntervalIntegrable (fun t => ∑ i ∈ s, f i t) MeasureTheory.volume 0 1 := by
+  have := IntervalIntegrable.sum s h
+  convert this using 1
+  ext x
+  simp only [Finset.sum_apply]
+
+/-- **The quadruple-sum form of `Jdeep`.** -/
+theorem deepIntegral_eq_quadruple_sum (n : ℕ) :
+    deepIntegral n =
+      ∑ a ∈ Finset.Icc (cutoffU n + 1) (lowCut n),
+        ∑ a' ∈ Finset.Icc (cutoffU n + 1) (lowCut n),
+          ((lowMoebiusWeight (cutoffU n) a : ℂ) * (lowMoebiusWeight (cutoffU n) a' : ℂ)) *
+            ∑ j ∈ Finset.Ioc (cutoffU n) (n / a),
+              ∑ k ∈ Finset.Ioc (cutoffU n) (n / a'),
+                ((ArithmeticFunction.vonMangoldt j : ℂ) *
+                  (ArithmeticFunction.vonMangoldt k : ℂ)) *
+                  arcKernel n (((a*j : ℕ) : ℤ) + ((a'*k : ℕ) : ℤ) - (n : ℤ)) := by
+  classical
+  have hmeas : MeasurableSet (wideSet n) := wide_measurable n (cutoffB n) (cutoffH n)
+  rw [deepIntegral_eq_integral_quadruple]
+  rw [intervalIntegral.integral_finsetSum]
+  swap
+  · intro a _
+    exact intervalIntegrable_finset_sum' _ (fun a' _ =>
+      IntervalIntegrable.const_mul (intervalIntegrable_finset_sum' _ (fun j _ =>
+        intervalIntegrable_finset_sum' _ (fun k _ =>
+          IntervalIntegrable.const_mul
+            (indicator_intervalIntegrable (by unfold phase; fun_prop) hmeas.compl) _))) _)
+  refine Finset.sum_congr rfl fun a _ => ?_
+  rw [intervalIntegral.integral_finsetSum]
+  swap
+  · intro a' _
+    exact IntervalIntegrable.const_mul (intervalIntegrable_finset_sum' _ (fun j _ =>
+      intervalIntegrable_finset_sum' _ (fun k _ =>
+        IntervalIntegrable.const_mul
+          (indicator_intervalIntegrable (by unfold phase; fun_prop) hmeas.compl) _))) _
+  refine Finset.sum_congr rfl fun a' _ => ?_
+  rw [intervalIntegral.integral_const_mul]
+  congr 1
+  rw [intervalIntegral.integral_finsetSum]
+  swap
+  · intro j _
+    exact intervalIntegrable_finset_sum' _ (fun k _ =>
+      IntervalIntegrable.const_mul
+        (indicator_intervalIntegrable (by unfold phase; fun_prop) hmeas.compl) _)
+  refine Finset.sum_congr rfl fun j _ => ?_
+  rw [intervalIntegral.integral_finsetSum]
+  swap
+  · intro k _
+    exact IntervalIntegrable.const_mul
+      (indicator_intervalIntegrable (by unfold phase; fun_prop) hmeas.compl) _
+  refine Finset.sum_congr rfl fun k _ => ?_
+  rw [intervalIntegral.integral_const_mul]
+  congr 1
+  unfold arcKernel
+  congr 1
+  ext x
+  congr 2
+  push_cast
+  ring
+
 end B1B1Port

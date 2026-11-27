@@ -1233,3 +1233,39 @@ pointwise quadruple expansion.  The only formal step left before the
 with integrability of each `(a,a',j,k)` term supplied by
 `indicator_intervalIntegrable` + `const_mul`, and the `IntervalIntegrable.sum`
 defeq gap closed by `convert … using 1; ext x; simp only [Finset.sum_apply]`.
+
+## Milestone 27: `Jdeep` in quadruple-sum form (`exact_split`, first half done)
+
+```lean
+intervalIntegrable_finset_sum' (s) (h) :
+  (∀ i ∈ s, IntervalIntegrable (f i)) →
+    IntervalIntegrable (fun t => ∑ i ∈ s, f i t)
+
+deepIntegral_eq_quadruple_sum (n) :
+  Jdeep n
+    = ∑_{a, a' ∈ (U,B₁]} (c a · c a') ·
+        ∑_{j ∈ (U, n/a]} ∑_{k ∈ (U, n/a']} (Λ j · Λ k) ·
+          arcKernel n ((a j) + (a' k) - n)
+```
+
+This is the `τ₁`-analogue of the first half of the verified `spatial_exact_split`:
+the deep-minor integral is now an explicit quadruple sum over the atom indices,
+each term weighted by the coefficient and by the arc kernel at the frequency
+`a j + a' k - n`.
+
+The remaining half is the explicit kernel formula
+
+```text
+arcKernel n m = [m = 0] - ∑_{q ≤ cutoffB n} ∑_{a, (a,q)=1}
+                  e(m a/q) · sin(2π m H/(q n))/(π m)      (m ≠ 0),
+```
+
+whose ingredients are all verified (`integral_phase_symmetric`,
+`integral_arcSet_phase`, `integral_arcSet_indicator_phase_of_inside`,
+`integral_boundary_arcs`, `sum_arcSet_one`, `integral_compl_indicator_phase_eq`);
+only the `q = 1` vs `q ≥ 2` case split remains (with `Nat.coprime_self q` for the
+index-set equality).
+
+### Dossier
+
+27 verified milestones, 1811 lines, no `sorry`, branch `research/b1b1-arcsplit`.
