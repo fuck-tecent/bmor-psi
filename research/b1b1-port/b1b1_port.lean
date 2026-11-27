@@ -2,6 +2,8 @@ import Mathlib
 import PEqualNP.Outside.L_goldbach_frontier_type2_b1_b4
 import Conjectures.Goldbach.FrontierType2B1B1BilinearExpansion
 
+set_option maxHeartbeats 4000000
+
 open Finset MeasureTheory
 open ArithmeticFunction
 open scoped ArithmeticFunction.Moebius
@@ -1722,5 +1724,9 @@ theorem sum_arcSet_phase_interior (n : ℕ) (m : ℤ) (hm : m ≠ 0)
                 ((Real.pi*(m:ℝ) : ℝ) : ℂ)) := by
   refine Finset.sum_congr rfl fun q hq => Finset.sum_congr rfl fun a ha => ?_
   exact integral_arcSet_clipped_eq_sinc n q a m hm (hint q hq a ha).1 (hint q hq a ha).2
+
+/-- The deep-minor arc kernel in frequency form: `∫_{wideArcsᶜ} e(m t) dt`. -/
+def arcKernel (n : ℕ) (m : ℤ) : ℂ :=
+  ∫ t in (0:ℝ)..1, (wideSet n)ᶜ.indicator (fun x => phase ((m:ℝ)*x)) t
 
 end B1B1Port

@@ -1131,3 +1131,61 @@ structural ingredient of the `τ₁` circle-method computation:
 
 Remaining: the assembly of the sinc collection, then the `τ₁` `exact_split`, then
 the ports of `lowmod_model_match` and `macro_sinc_tail`.
+
+## Milestone 24: repository update — a new verified large sieve, and a heartbeat fix
+
+### `maxHeartbeats` (important)
+
+The port file is compiled with `lake env lean <path>`, which does **not** apply the
+project's `leanOptions` (`maxHeartbeats = 4000000` from `leanfile.toml`). Several
+earlier failures ("deterministic timeout at whnf", and possibly some of the
+`simp`-shape mismatches) were caused by the default 200000 limit.  The file now
+starts with
+
+```lean
+set_option maxHeartbeats 4000000
+```
+
+### A newly verified tool: the finite large sieve
+
+`L-goldbach-finite-large-sieve` is **accepted** on the board (`proved: true`) and
+proves (source at `~/github.com/fuck-tencent/goldback-artifacts/finite-large-sieve/`)
+
+```lean
+theorem L_goldbach_finite_large_sieve (N Q : ℕ) [NeZero Q] (a : ℕ → ℂ) :
+  ∑_{r : ZMod Q} ‖∑_{n ≤ N} a n * ZMod.stdAddChar (r * n)‖²
+    ≤ (N + Q) * ∑_{n ≤ N} ‖a n‖²
+```
+
+together with the `ZMod` Parseval identity.  This is exactly the single-modulus
+large sieve needed for the near-side Ramanujan estimates (and for
+`∑_q |∑_m a_m c_q(m-n)|²`-type bounds).  It is not yet on local `main`
+(`1133bda2`), so it must be imported after merging upstream (now at `513184b2`)
+or copied from the artifacts repository.
+
+### Other repository news
+
+* upstream `main` advanced `1133bda2 → 513184b2` (new tasks
+  `L-goldbach-adaptive-minor-negative-tail`,
+  `L-goldbach-dyn-short-restricted-power-saving`,
+  `L-goldbach-short-window-power-exceptions`, …; new proved files
+  `L_twin_primes_unconditional_short`, `DynThinWindowExceptions`, …).
+* board: 1003 published, 940 accepted, 63 open.
+* other sessions' branches in the research repo:
+  `proof/finite-large-sieve`, `rebase/finite-large-sieve`,
+  `rebase/type2-b1-b1-split` (the latter only adds the four prerequisite task
+  JSONs, no Lean).
+
+### New definition this round
+
+```lean
+def arcKernel (n : ℕ) (m : ℤ) : ℂ :=
+  ∫_{0}^{1} 1_{wideSet n}ᶜ · e(m t) dt
+```
+
+so that the quadruple expansion reads
+`Jdeep = ∑_{a,a'} c(a)c(a') ∑_{j,k} Λ(j)Λ(k) · arcKernel n (a j + a' k - n)`.
+The formal term-by-term integration of `plainPolynomial_sq_dilated_expand` over
+`wideSetᶜ` is what remains: the pointwise rewrite goes through, but the final
+matching of the two nested-sum shapes (coefficient association) was not closed
+this round.
