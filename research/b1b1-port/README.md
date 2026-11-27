@@ -1986,3 +1986,87 @@ missing Type-II instrument.
 * Therefore: **no clear path to b1-b1 with the current toolset**; no PR can be
   opened; this dossier (exact reduction + quantified impossibilities + the position
   of the cell in the upstream chain) is the deliverable.
+
+## Milestone 36: correction — the `d,e` joint treatment *does* exist, and it draws the gap at `n^(2/5)`
+
+M34 claimed "there is no Type-II / Bombieri–Vinogradov instrument for the `τ` family
+anywhere in the tree".  **That is wrong.**  There is a complete, verified Vaughan
+Type-II bilinear engine.  Retracting it.
+
+### 36.1 What exists
+
+`lean/PEqualNP/Outside/L_goldbach_bulk_density_one.lean`
+(10 406 lines, no `sorry`, on `main`; main theorem
+`PEqualNP.Outside.L_goldbach_bulk_density_one`).  The Type-II machinery sits in
+`OAI.Problem337.Vaughan`:
+
+| theorem | content |
+|---|---|
+| `typeII_eq_hyperbola` | joint `d,e` parametrisation: `∑_{k≤N} (typeIICoefficient U * longPart V Λ) k · w k = ∑_{d·e≤N, d>U, e>V} typeIICoefficient U d · Λ e · w (d·e)` |
+| `typeII_eq_sum_dyadic_blocks` | splits the hyperbolic region into dyadic blocks |
+| `norm_typeII_le_dyadic_log_budget` | assembles per-block bounds with a `log` budget |
+| `norm_bilinear_sq_le`, `norm_bilinear_sq_le_energy` | bilinear Cauchy–Schwarz on the `d,e` pair |
+| `near_rational_hyperbolic_bilinear_sq_le` | the joint square bound at a near-rational phase: `‖∑_{m∈[L,U]} c m ∑_{n∈t} b n · column θ X n m‖² ≤ (∑‖c m‖²)·((2N/q+1)(2(U+1−L)+4q(1+log 2q)))·(∑‖b n‖²)` |
+| `typeIIBlock_sq_le_raw / _normalized / _uniform` | per-block, uniform in the block |
+| `optimized_typeIIBlock_bound` | per-block optimised |
+| **`optimized_typeII_bound`** | `‖∑‖ ≤ 54·(1+log 2N)^4 · (N/√q + N^(4/5) + √(Nq))` for `|θ−a/q| ≤ 1/q²`, `q ≤ N`, `N^(2/5) ≥ 2` |
+
+with
+
+```lean
+def optimizedCutoff (X : ℝ) : ℕ := ⌊X ^ (2/5 : ℝ)⌋₊
+def approximationEnvelope (X q : ℝ) : ℝ := X/Real.sqrt q + X^(4/5:ℝ) + Real.sqrt (X*q)
+```
+
+So the engine covers the Type-II range **`d, e > N^(2/5)`**, and the envelope is the
+classical `N/√q + N^(4/5) + √(Nq)`.
+
+### 36.2 The precise coverage, and hence the gap
+
+Vaughan's verified coverage in this tree is
+
+```text
+Type-I   : one factor ≤ U = n^(1/16)        -- type1_elimination, n^(23/24) error
+Type-II  : both factors > n^(2/5)           -- optimized_typeII_bound
+gap      : U < factor ≤ n^(2/5)             -- nothing
+```
+
+`U = ⌊n^(1/16)⌋` is literally the `U` in the task statements
+(`vaughan_type1_elimination`, line 1500; `type1_cut_parameters` line 1150).
+
+Cell by cell:
+
+| band | range | vs Vaughan |
+|---|---|---|
+| τ₁ | `(n^(1/16), n^(1/4)]` | **entirely in the gap** |
+| τ₂ | `(n^(1/4), n^(1/3)]` | **entirely in the gap** |
+| τ₃ | `(n^(1/3), n^(2/3)]` | straddles `n^(2/5)`; `(n^(2/5), n^(2/3)]` covered |
+| τ₄ | `(n^(2/3), n/U]` | fully in the Type-II range |
+
+**This is the sharp reason why the four `-b4` cells are proved and the six others are
+open**: the `τ₄` column is the only one whose divisor band lies entirely in a
+Vaughan-covered range.  b1-b1 (`τ₁ × τ₁`) is entirely inside the classical
+**Vaughan gap** `(n^(1/16), n^(2/5))`.
+
+### 36.3 What this changes and what it does not
+
+* **Changes:** the sentence in M34 "no Type-II instrument exists" is retracted.
+  The correct statement is "the Type-II instrument exists but stops at `n^(2/5)`,
+  and b1-b1's band `(n^(1/16), n^(1/4)]` is below it".
+* **Does not change:** the verdict.  b1-b1 still has no available path.  Pushing
+  `optimized_typeII_bound` from `N^(2/5)` down to `N^(1/4)` is a Type-II estimate at
+  level `n^(1/4)` with one factor unbounded — i.e. exactly the Bombieri–Vinogradov
+  strength input that is not formalized anywhere, and the `n^(5/24)` shortfall of
+  §35.4 is the same obstruction seen from the Type-I side.
+* The `a`-sum over `(n^(1/16), n^(1/4)]` in §35.4 is now interpretable precisely: it
+  is *trying to push Vaughan's Type-II estimate down into the gap*, which is why the
+  triangle inequality over `a` overruns by `n^(5/24)`.
+
+### 36.4 Revised one-line summary
+
+```text
+最先进的已验证 Vaughan 覆盖 = {某因子 ≤ n^(1/16)} ∪ {两因子均 > n^(2/5)}
+b1-b1 的除数带 (n^(1/16), n^(1/4)] 整段落在缺口里。
+```
+
+That, not "no instrument", is the reason b1-b1 is open for this port.
