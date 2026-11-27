@@ -184,3 +184,67 @@ steps are `a ≤ lowCut n ≤ cutoffB n ≤ maximumStep n`.
   (absolute values, `|c_q| ≤ q`, `|window| ≤ 2·radius M`) gives only
   `≈ n^(5/4+o(1))`, so the `progressionAverage` / `windowKernel` smoothing must
   be redone in weighted form.  This is the remaining substantial piece.
+
+## Milestone 3: decoding the far-side machinery, and the exact gap
+
+I read the far-side chain of the verified module:
+
+```text
+smoothKernel a c t = 1/(a + |t - c|)
+nearestCenter  : ∃ i ≤ u, |u t - i| ≤ 1/2
+waveBound      : ‖wave u l r t‖ ≤ (2/u) * smoothKernel (1/(n+1)) (i/u) t
+pairEnv / awayPoint / awayBound
+offWave_mass_le_pairwise / offWave_mass_le_weighted
+```
+
+`waveBound` is built from exactly two inputs:
+
+```text
+(1) length      ‖wave u l r t‖ ≤ n/u                       (from r - l ≤ n/u)
+(2) oscillation ‖wave u l r t‖ * |t - i/u| ≤ 1/u           (from wave_sin)
+```
+
+and these give `‖wave‖ * (1/(n+1) + |t - i/u|) ≤ 2/u`, i.e.
+`‖wave u l r t‖ ≤ (2/u) * smoothKernel (1/(n+1)) (i/u) t`.
+
+For b1-b1 the progression is `Λ`-weighted, so the weighted `waveBound` needs
+
+```text
+(1) ‖wwave Λ u l r t‖ ≤ ∑_{h ∈ (l,r]} Λ h            -- proved below (wwave_mangoldt_cap)
+(2) ‖wwave Λ u l r t‖ · |t - i/u| ≤ (log-factor) / u  -- MISSING
+```
+
+and (2) is precisely a **weighted exponential-sum estimate**:
+with `θ = u t` and `‖θ‖ ≥ H/(u n)` (valid on `wideArcsᶜ`),
+
+```text
+‖∑_{h ∈ (l,r]} Λ(h) e(θ h)‖ * ‖θ‖/u  ≲  log^C n .
+```
+
+The standard route is `Λ = μ * log` followed by partial summation over the
+*monotone* weight `log k`:
+
+```text
+∑_h Λ(h) e(θ h) = ∑_d μ(d) ∑_k log k · e(θ d k),
+|∑_{k ≤ K} log k · e(θ d k)| ≤ 2 log K · sup_K' |∑_{k ≤ K'} e(θ d k)|
+                             ≤ 2 log K / ‖d θ‖ .
+```
+
+This is the one genuinely missing analytic ingredient for the far side.
+
+### What the far side can and cannot afford
+
+* Target (as in b1-b4): `‖far‖ ≲ √n · maximumStep n · W = n^(43/48+o(1))`.
+* The *trivial* far bound is `‖S_{τ₁}‖₂ · ‖G‖₂` with
+  `‖S_{τ₁}‖₂² = ∑_m |τ₁(m)|² ≈ n log⁴ n` and `‖G‖₂² ≤ ‖S_{τ₁}‖₂²`, giving only
+  `n log⁴ n` — a `log⁴` miss.  So the far side, too, cannot be closed by `L²`
+  alone: it needs the weighted oscillation bound (2) to get `‖G‖_{L²(gridᶜ)}`
+  down to `n^(19/48+o(1))`.
+
+### Revised status
+
+`deepIntegral_split` is exact and verified.  Both remaining estimates (far and
+near) now reduce to the *same* missing analytic input: a weighted
+(equivalently, `Λ = μ * log` + Abel) exponential-sum bound for
+`∑_{h} Λ(h) e(θ h)` off the wide arcs.  Everything else (arc geometry,
+Ramanujan sums, the split, the `L²` identities) is in place.

@@ -315,4 +315,35 @@ theorem deepIntegral_split (n : ℕ) (nPositive : 0 < n)
         (continuous_wwave (fun h => (ArithmeticFunction.vonMangoldt h : ℂ)) a (cutoffU n) (n / a)))
       ((wide_measurable n (cutoffB n) (cutoffH n)).compl)).const_mul _
 
+
+/-! ### The two ingredients of a weighted `waveBound`
+
+`waveBound` in the verified module controls `wave u l r` by
+`(2/u) * smoothKernel (1/(n+1)) (i/u)` and is built from two inputs:
+`‖wave u l r t‖ ≤ n/u` (length) and `‖wave u l r t‖ · |t - i/u| ≤ 1/u`
+(oscillation, via `wave_sin`).  Below is the weighted length bound.  The weighted
+oscillation bound
+
+  `‖wwave (Λ) u l r t‖ · |t - i/u| ≤ (something) / u`
+
+is the remaining analytic input; it requires a weighted exponential-sum estimate
+for `∑_{h} Λ(h) e(u h t)`.
+-/
+
+/-- Weighted length bound: a weighted progression is bounded by its total weight. -/
+theorem wwave_cap (c : ℕ → ℂ) (u l r : ℕ) (t : ℝ) :
+    ‖wwave c u l r t‖ ≤ ∑ h ∈ Finset.Ioc l r, ‖c h‖ := by
+  unfold wwave
+  calc ‖∑ h ∈ Finset.Ioc l r, c h * phase ((u*h : ℕ) * t)‖
+      ≤ ∑ h ∈ Finset.Ioc l r, ‖c h * phase ((u*h : ℕ) * t)‖ := norm_sum_le _ _
+    _ = ∑ h ∈ Finset.Ioc l r, ‖c h‖ := by simp
+
+/-- The `Λ`-weighted length bound: at most the Chebyshev sum over the range. -/
+theorem wwave_mangoldt_cap (u l r : ℕ) (t : ℝ) :
+    ‖wwave (fun h => (ArithmeticFunction.vonMangoldt h : ℂ)) u l r t‖
+      ≤ ∑ h ∈ Finset.Ioc l r, ArithmeticFunction.vonMangoldt h := by
+  refine (wwave_cap _ u l r t).trans_eq ?_
+  refine Finset.sum_congr rfl fun h _ => ?_
+  rw [Complex.norm_real, Real.norm_eq_abs, abs_of_nonneg ArithmeticFunction.vonMangoldt_nonneg]
+
 end B1B1Port
