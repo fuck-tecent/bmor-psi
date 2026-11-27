@@ -152,3 +152,18 @@ So two distinct wide arcs meeting at `t` must satisfy `q q' ≥ n/(2H)`.  Since
 `H = 256 Q₁ Q`, this says overlapping denominators are large; combined with
 `farey_spacing` it gives the bounded-overlap count.  (This file contains its
 own copy of `farey_spacing` to stay self-contained.)
+
+## Milestone 10: one numerator per denominator
+
+`unique.lean`:
+
+```lean
+arc_unique_per_denominator (hH : 0 ≤ H) (hn : 2H < n) (hq : 0 < q)
+  (h1 : |t - a/q| ≤ H/(q n)) (h2 : |t - a'/q| ≤ H/(q n))
+  (hne : a ≠ a') : False
+```
+
+So for `n > 2H` each denominator `q` contributes at most one arc through `t`.
+Together with `overlap_denominator_bound`, the multiplicity of `wideArcs` at a
+point is controlled by: at most one small-`q` arc (`q q' ≥ n/(2H)`) and at most
+`1 + Q₁/√(n/(2H)) = O(1 + log² n)` large-`q` ones.
