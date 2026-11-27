@@ -1583,3 +1583,93 @@ major-arc model wants to approximate, so keeping the `a₀`-sum outermost is nat
 ### Dossier
 
 31 verified milestones, 2040 lines, no `sorry`, branch `research/b1b1-arcsplit`.
+
+## Milestones 32-33: sinc as an arc integral; local coordinates
+
+### The correction to the route-2 plan
+
+Route 2 asked for
+
+```text
+W = ∑_q ∑_{a₀} e(-n a₀/q) · S(a₀/q)² · sinc(...)
+```
+
+That is **not** a valid identity: the sinc amplitude `sin(2πmρ)/(πm)` depends on the
+frequency `m`, so it cannot be pulled out of the quadruple sum as a constant.  The
+correct statement is that the sinc *is* an arc integral:
+
+```lean
+sineFactor_eq_arcIntegral (n q a m) (hm : m ≠ 0) :
+  sineFactor n m q a = ∫ t in arcSet n q a, phase (m·t)          -- M32
+
+sincSum_eq_sum_arcIntegral (n m) (hm : m ≠ 0) :
+  sincSum n m = ∑_{q ≤ Q₁} ∑_{a<q,(a,q)=1} ∫_{arcSet n q a} phase (m·t)
+```
+
+so the frequency dependence stays inside.  Everything below uses that.
+
+### Milestone 32: `Jdeep` as `D` minus arc integrals
+
+```lean
+deepIntegral_eq_diagonal_sub_arc_sum (n) :
+  Jdeep n = diagonalSum n
+    − ∑_{q ≤ Q₁} ∑_{a ∈ (range(q+1)),(a,q)=1}
+        ∫₀¹ 1_{arcSet n q a} · S² · e(−n·)
+```
+
+(clipped arcs, the `integral_wideSet_eq_sum` normal form).
+
+Then the **unclipping**: the `q = 1` arcs `0/1`, `1/1` stick out of `(0,1]`, but for a
+`1`-periodic integrand the two clipped pieces recombine into the single full ball
+`arcSet n 1 0`, and for `q ≥ 2` the numerator `a = q` is never coprime.  Hence
+
+```lean
+sum_arcSet_clipped_eq_sum_arcSet (n) (hQ : 1 ≤ cutoffB n) {f} (hf : Continuous f)
+    (hper : ∀ u, f (u+1) = f u) (hint) (hρ0) (hρ1) :
+  ∑_{q ∈ Icc 1 Q₁} ∑_{a ∈ (range(q+1)),(a,q)=1} ∫₀¹ 1_{arcSet n q a} f
+    = ∑_{q ∈ Icc 1 Q₁} ∑_{a ∈ (range q),(a,q)=1} ∫_{arcSet n q a} f
+```
+
+with the `(range q)` family — exactly the `sincSum` index family.  Supporting lemmas:
+
+```lean
+plainPolynomial_add_one      -- S is 1-periodic
+periodic_deepIntegrand       -- S²·e(−n·) is 1-periodic
+integral_boundary_arcs_periodic  -- boundary pieces = full ball, any periodic f
+arcSet_one_zero_eq_Icc
+integral_arcSet_one_zero_gen / integral_arcSet_one_one_gen
+sum_arcSet_one_gen           -- the q = 1 pair = ∫_{−ρ₁}^{ρ₁}
+integral_arcSet_indicator_of_inside_gen
+filter_range_succ_coprime    -- (range(q+1)) ∩ coprime = (range q) ∩ coprime for q ≥ 2
+```
+
+Result:
+
+```lean
+deepIntegral_eq_diagonal_sub_periodic_arc_sum (n) (hn) (hQ) (hρ0) (hρ1) (hint) :
+  Jdeep n = D n − ∑_{q ≤ Q₁} ∑_{a<q,(a,q)=1} ∫_{arcSet n q a} S² e(−n·)
+```
+
+### Milestone 33: local coordinates on one arc
+
+```lean
+integral_arcSet_shift (n q a) :
+  ∫_{arcSet n q a} S² e(−n·)
+    = e(−n·a/q) · ∫_{−ρ_q}^{ρ_q} S(a/q+β)² e(−nβ) dβ        (ρ_q = H/(qn))
+```
+
+and therefore
+
+```lean
+deepIntegral_eq_diagonal_sub_shifted_arc_sum (n) (hn) (hQ) (hρ0) (hρ1) (hint) :
+  Jdeep n = D n − ∑_{q ≤ Q₁} ∑_{a<q,(a,q)=1} e(−n·a/q) ·
+      ∫_{−ρ_q}^{ρ_q} S(a/q+β)² e(−nβ) dβ
+```
+
+This is the **correct** form of the requested `W` identity, and the interface for the
+major-arc approximation: `S(a/q+β)` is now a one-variable object on a short
+archimedean interval.
+
+### Dossier
+
+33 verified milestones, 2379 lines, no `sorry`, branch `research/b1b1-arcsplit`.

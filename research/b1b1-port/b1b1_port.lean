@@ -2033,4 +2033,304 @@ theorem sum_plainPolynomial_sq_phase_eq_quad (n : ℕ) (T : Finset ℝ) :
   refine Finset.sum_congr rfl fun x _ => ?_
   exact plainPolynomial_sq_dilated_expand n x
 
+/-! ### Stage 2, step 1: the sinc factor as an arc integral
+
+The amplitude `sin(2π m ρ)/(π m)` depends on `m`, so it **cannot** be pulled out of
+the quadruple sum as a constant.  The correct reading is `sineFactor = ∫_{arc} e(m·)`,
+which lets the whole `m`-dependence stay inside the integral. -/
+
+/-- The sinc factor of one arc is the arc integral of its mode. -/
+theorem sineFactor_eq_arcIntegral (n q a : ℕ) (m : ℤ) (hm : m ≠ 0) :
+    sineFactor n m q a = ∫ t in arcSet n q a, phase ((m:ℝ)*t) := by
+  unfold sineFactor
+  exact (integral_arcSet_phase n q a m hm).symm
+
+/-- **The sinc sum is a sum of arc integrals.** -/
+theorem sincSum_eq_sum_arcIntegral (n : ℕ) (m : ℤ) (hm : m ≠ 0) :
+    sincSum n m
+      = ∑ q ∈ Finset.Icc 1 (cutoffB n),
+          ∑ a ∈ (Finset.range q).filter (fun a => Nat.Coprime a q),
+            ∫ t in arcSet n q a, phase ((m:ℝ)*t) := by
+  unfold sincSum
+  refine Finset.sum_congr rfl fun q _ => Finset.sum_congr rfl fun a _ => ?_
+  exact sineFactor_eq_arcIntegral n q a m hm
+
+/-- **`Jdeep` as `D` minus the sum of arc integrals.** -/
+theorem deepIntegral_eq_diagonal_sub_arc_sum (n : ℕ)
+    (hn : 512 * (cutoffB n)^2 * logSq n < n) :
+    deepIntegral n = diagonalSum n
+      - ∑ q ∈ Finset.Icc 1 (cutoffB n),
+          ∑ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q),
+            ∫ t in (0:ℝ)..1, (arcSet n q a).indicator
+              (fun x => plainPolynomial n (tauCoeff n) x ^ 2 * phase (-(n:ℝ)*x)) t := by
+  rw [deepIntegral_eq_diagonal_sub_wide]
+  congr 1
+  exact integral_wideSet_eq_sum n hn _
+    (by unfold plainPolynomial phase; fun_prop)
+
+/-! ### Stage 2, step 2: unclipping the arcs at `q = 1`
+
+The `q = 1` arcs `0/1` and `1/1` stick out of `(0,1]`; for a `1`-periodic
+integrand the two clipped pieces recombine into the single full ball at `0/1`,
+which is exactly `arcSet n 1 0`.  This turns the clipped sum over
+`range (q+1)` into the unclipped sum over `range q` used by `sincSum`. -/
+
+/-- The plain polynomial is `1`-periodic. -/
+theorem plainPolynomial_add_one (n : ℕ) (c : ℕ → ℂ) (t : ℝ) :
+    plainPolynomial n c (t + 1) = plainPolynomial n c t := by
+  unfold plainPolynomial
+  refine Finset.sum_congr rfl fun m _ => ?_
+  have h1 : phase ((m:ℝ)) = 1 := by
+    simpa using phase_int (m : ℤ)
+  rw [show (m:ℝ)*(t+1) = (m:ℝ)*t + (m:ℝ) by ring, phase_add, h1, mul_one]
+
+/-- The deep integrand `S²·e(-n·)` is `1`-periodic. -/
+theorem periodic_deepIntegrand (n : ℕ) (t : ℝ) :
+    plainPolynomial n (tauCoeff n) (t + 1) ^ 2 * phase (-(n:ℝ)*(t+1))
+      = plainPolynomial n (tauCoeff n) t ^ 2 * phase (-(n:ℝ)*t) := by
+  rw [plainPolynomial_add_one]
+  have h1 : phase (-(n:ℝ)) = 1 := by
+    simpa using phase_int (-(n : ℤ))
+  rw [show -(n:ℝ)*(t+1) = -(n:ℝ)*t + (-(n:ℝ)) by ring, phase_add, h1, mul_one]
+
+/-- **Boundary arcs for a `1`-periodic integrand** (generalises
+`integral_boundary_arcs` beyond single modes). -/
+theorem integral_boundary_arcs_periodic {f : ℝ → ℂ} (hf : Continuous f)
+    (hper : ∀ u : ℝ, f (u+1) = f u) (ρ : ℝ) :
+    (∫ t in (0:ℝ)..ρ, f t) + (∫ t in (1-ρ)..1, f t) = ∫ t in (-ρ)..ρ, f t := by
+  have hshift : (∫ t in (1-ρ)..1, f t) = ∫ u in (-ρ)..0, f u := by
+    have h := intervalIntegral.integral_comp_add_right (f := f) (a := -ρ) (b := 0) (1:ℝ)
+    simp only [neg_add_cancel, zero_add] at h
+    rw [show (-ρ + 1 : ℝ) = 1 - ρ by ring] at h
+    rw [← h]
+    exact intervalIntegral.integral_congr fun u _ => hper u
+  rw [hshift, add_comm,
+    intervalIntegral.integral_add_adjacent_intervals (hf.intervalIntegrable _ _)
+      (hf.intervalIntegrable _ _)]
+
+/-- `arcSet n 1 0` is the full ball at `0/1`. -/
+theorem arcSet_one_zero_eq_Icc (n : ℕ) :
+    arcSet n 1 0 = Set.Icc (-((cutoffH n : ℝ)/(n:ℝ))) ((cutoffH n : ℝ)/(n:ℝ)) := by
+  rw [arcSet_eq_Icc]
+  simp only [Nat.cast_one, one_mul, Nat.cast_zero, zero_div, zero_sub, zero_add]
+
+/-- The arc at `0/1` clipped to `[0,1]` is `[0,ρ]` (any integrand). -/
+theorem integral_arcSet_one_zero_gen (n : ℕ) (f : ℝ → ℂ)
+    (hρ0 : 0 ≤ (cutoffH n : ℝ)/(n:ℝ)) (hρ1 : (cutoffH n : ℝ)/(n:ℝ) < 1) :
+    (∫ t in (0:ℝ)..1, (arcSet n 1 0).indicator f t)
+      = ∫ t in (0:ℝ)..((cutoffH n : ℝ)/(n:ℝ)), f t := by
+  have hset := arcSet_one_zero_eq_Icc n
+  have hI : Set.Ioc (0:ℝ) 1 ∩ Set.Icc (-((cutoffH n : ℝ)/(n:ℝ))) ((cutoffH n : ℝ)/(n:ℝ))
+      = Set.Ioc 0 ((cutoffH n : ℝ)/(n:ℝ)) := by
+    ext x
+    simp only [Set.mem_inter_iff, Set.mem_Ioc, Set.mem_Icc]
+    constructor
+    · rintro ⟨⟨h0, _⟩, _, hle⟩
+      exact ⟨h0, hle⟩
+    · rintro ⟨h0, hle⟩
+      exact ⟨⟨h0, le_trans hle (le_of_lt hρ1)⟩, by linarith, hle⟩
+  rw [hset, intervalIntegral.integral_of_le zero_le_one,
+    MeasureTheory.setIntegral_indicator measurableSet_Icc, hI,
+    ← intervalIntegral.integral_of_le hρ0]
+
+/-- The arc at `1/1` clipped to `[0,1]` is `[1-ρ,1]` (any integrand). -/
+theorem integral_arcSet_one_one_gen (n : ℕ) (f : ℝ → ℂ)
+    (hρ0 : 0 ≤ (cutoffH n : ℝ)/(n:ℝ)) (hρ1 : (cutoffH n : ℝ)/(n:ℝ) < 1) :
+    (∫ t in (0:ℝ)..1, (arcSet n 1 1).indicator f t)
+      = ∫ t in (1 - (cutoffH n : ℝ)/(n:ℝ))..1, f t := by
+  have hset : arcSet n 1 1 = Set.Icc (1 - (cutoffH n : ℝ)/(n:ℝ)) (1 + (cutoffH n : ℝ)/(n:ℝ)) := by
+    rw [arcSet_eq_Icc]
+    simp only [Nat.cast_one, one_mul, Nat.cast_zero, div_one]
+  have hI : Set.Ioc (0:ℝ) 1 ∩ Set.Icc (1 - (cutoffH n : ℝ)/(n:ℝ)) (1 + (cutoffH n : ℝ)/(n:ℝ))
+      = Set.Icc (1 - (cutoffH n : ℝ)/(n:ℝ)) 1 := by
+    ext x
+    simp only [Set.mem_inter_iff, Set.mem_Ioc, Set.mem_Icc]
+    constructor
+    · rintro ⟨⟨_, h1⟩, hlo, _⟩
+      exact ⟨hlo, h1⟩
+    · rintro ⟨hlo, h1⟩
+      exact ⟨⟨by linarith, h1⟩, hlo, by linarith⟩
+  rw [hset, intervalIntegral.integral_of_le zero_le_one,
+    MeasureTheory.setIntegral_indicator measurableSet_Icc, hI,
+    integral_Icc_eq_integral_Ioc,
+    ← intervalIntegral.integral_of_le (by linarith : (1:ℝ) - (cutoffH n : ℝ)/(n:ℝ) ≤ 1)]
+
+/-- The `q = 1` pair of clipped arcs is the full ball at `0/1`. -/
+theorem sum_arcSet_one_gen (n : ℕ) (f : ℝ → ℂ) (hf : Continuous f)
+    (hper : ∀ u : ℝ, f (u+1) = f u)
+    (hρ0 : 0 ≤ (cutoffH n : ℝ)/(n:ℝ)) (hρ1 : (cutoffH n : ℝ)/(n:ℝ) < 1) :
+    (∑ a ∈ (Finset.range (1+1)).filter (fun a => Nat.Coprime a 1),
+        ∫ t in (0:ℝ)..1, (arcSet n 1 a).indicator f t)
+      = ∫ t in (-((cutoffH n : ℝ)/(n:ℝ)))..((cutoffH n : ℝ)/(n:ℝ)), f t := by
+  have hfilter : (Finset.range (1+1)).filter (fun a => Nat.Coprime a 1) = {0, 1} := by decide
+  rw [hfilter, Finset.sum_insert (by simp), Finset.sum_singleton,
+    integral_arcSet_one_zero_gen n f hρ0 hρ1, integral_arcSet_one_one_gen n f hρ0 hρ1]
+  exact integral_boundary_arcs_periodic hf hper ((cutoffH n : ℝ)/(n:ℝ))
+
+/-- For an arc strictly inside `(0,1)`, the clipped indicator integral is the full
+arc integral (any integrand). -/
+theorem integral_arcSet_indicator_of_inside_gen (n q a : ℕ) (f : ℝ → ℂ)
+    (hleft : 0 < (a:ℝ)/(q:ℝ) - (cutoffH n:ℝ)/((q:ℝ)*(n:ℝ)))
+    (hright : (a:ℝ)/(q:ℝ) + (cutoffH n:ℝ)/((q:ℝ)*(n:ℝ)) < 1) :
+    (∫ t in (0:ℝ)..1, (arcSet n q a).indicator f t) = ∫ t in arcSet n q a, f t := by
+  have hsub : arcSet n q a ⊆ Set.Ioc (0:ℝ) 1 := by
+    intro t ht
+    rw [arcSet_eq_Icc] at ht
+    obtain ⟨h1, h2⟩ := ht
+    exact ⟨by linarith, by linarith⟩
+  have hmeas : MeasurableSet (arcSet n q a) := arcSet_measurable n q a
+  have hsupp : ∀ x ∉ Set.Ioc (0:ℝ) 1, (arcSet n q a).indicator f x = 0 := by
+    intro x hx
+    exact Set.indicator_of_notMem (fun hc => hx (hsub hc)) f
+  rw [intervalIntegral.integral_of_le zero_le_one,
+    MeasureTheory.setIntegral_eq_integral_of_forall_compl_eq_zero hsupp,
+    MeasureTheory.integral_indicator hmeas]
+
+/-- For `q ≥ 2` the coprime numerators in `range (q+1)` are exactly those in `range q`. -/
+theorem filter_range_succ_coprime {q : ℕ} (hq : 2 ≤ q) :
+    (Finset.range (q+1)).filter (fun a => Nat.Coprime a q)
+      = (Finset.range q).filter (fun a => Nat.Coprime a q) := by
+  rw [Finset.range_add_one, Finset.filter_insert]
+  have hq' : ¬ Nat.Coprime q q := by
+    intro h
+    have h1 : q = 1 := by simpa [Nat.Coprime] using h
+    omega
+  rw [if_neg hq']
+
+/-- **The clipped arc sum is the unclipped arc sum.**  This is the precise sense in
+which the `sincSum` index family `(range q) ∩ coprime` is the right one: the
+missing numerators at `q = 1` (`a = 1`) are absorbed by the periodicity of the
+integrand, and for `q ≥ 2` they are not coprime anyway. -/
+theorem sum_arcSet_clipped_eq_sum_arcSet (n : ℕ) (hQ : 1 ≤ cutoffB n)
+    {f : ℝ → ℂ} (hf : Continuous f) (hper : ∀ u : ℝ, f (u+1) = f u)
+    (hint : ∀ q ∈ Finset.Icc 2 (cutoffB n),
+      ∀ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q),
+        0 < (a:ℝ)/(q:ℝ) - (cutoffH n:ℝ)/((q:ℝ)*(n:ℝ)) ∧
+          (a:ℝ)/(q:ℝ) + (cutoffH n:ℝ)/((q:ℝ)*(n:ℝ)) < 1)
+    (hρ0 : 0 ≤ (cutoffH n : ℝ)/(n:ℝ)) (hρ1 : (cutoffH n : ℝ)/(n:ℝ) < 1) :
+    (∑ q ∈ Finset.Icc 1 (cutoffB n),
+        ∑ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q),
+          ∫ t in (0:ℝ)..1, (arcSet n q a).indicator f t)
+      = ∑ q ∈ Finset.Icc 1 (cutoffB n),
+          ∑ a ∈ (Finset.range q).filter (fun a => Nat.Coprime a q),
+            ∫ t in arcSet n q a, f t := by
+  classical
+  have hsplit : Finset.Icc 1 (cutoffB n) = insert 1 (Finset.Icc 2 (cutoffB n)) := by
+    ext x
+    simp only [Finset.mem_Icc, Finset.mem_insert]
+    omega
+  have hnot1 : (1:ℕ) ∉ Finset.Icc 2 (cutoffB n) := by simp
+  have h1 : (∑ a ∈ (Finset.range (1+1)).filter (fun a => Nat.Coprime a 1),
+      ∫ t in (0:ℝ)..1, (arcSet n 1 a).indicator f t)
+      = ∑ a ∈ (Finset.range 1).filter (fun a => Nat.Coprime a 1),
+          ∫ t in arcSet n 1 a, f t := by
+    rw [sum_arcSet_one_gen n f hf hper hρ0 hρ1]
+    rw [show (Finset.range 1).filter (fun a => Nat.Coprime a 1) = {0} from by decide,
+      Finset.sum_singleton, arcSet_one_zero_eq_Icc, integral_Icc_eq_integral_Ioc,
+      ← intervalIntegral.integral_of_le
+        (by linarith : -((cutoffH n : ℝ)/(n:ℝ)) ≤ (cutoffH n : ℝ)/(n:ℝ))]
+  have h2 : (∑ q ∈ Finset.Icc 2 (cutoffB n),
+        ∑ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q),
+          ∫ t in (0:ℝ)..1, (arcSet n q a).indicator f t)
+      = ∑ q ∈ Finset.Icc 2 (cutoffB n),
+          ∑ a ∈ (Finset.range q).filter (fun a => Nat.Coprime a q),
+            ∫ t in arcSet n q a, f t := by
+    refine Finset.sum_congr rfl fun q hq => ?_
+    have hq2 : 2 ≤ q := (Finset.mem_Icc.mp hq).1
+    rw [filter_range_succ_coprime hq2]
+    refine Finset.sum_congr rfl fun a ha => ?_
+    have ha' : a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q) := by
+      rw [filter_range_succ_coprime hq2]
+      exact ha
+    exact integral_arcSet_indicator_of_inside_gen n q a f (hint q hq a ha').1 (hint q hq a ha').2
+  rw [hsplit, Finset.sum_insert hnot1, Finset.sum_insert hnot1, h1, h2]
+
+/-- **The arc decomposition of `Jdeep` in the `sincSum` index family.**
+
+`Jdeep = D - ∑_{q ≤ Q₁} ∑_{a<q, (a,q)=1} ∫_{arc(a/q)} S(t)² e(-n t) dt`,
+i.e. `Jdeep = D - W` with `W` the integral over the wide arcs.  This is the
+`τ₁`-analogue of `spatial_exact_split`, and the form in which the major-arc
+approximation of `S` applies arc by arc. -/
+theorem deepIntegral_eq_diagonal_sub_periodic_arc_sum (n : ℕ)
+    (hn : 512 * (cutoffB n)^2 * logSq n < n) (hQ : 1 ≤ cutoffB n)
+    (hρ0 : 0 ≤ (cutoffH n : ℝ)/(n:ℝ))
+    (hρ1 : (cutoffH n : ℝ)/(n:ℝ) < 1)
+    (hint : ∀ q ∈ Finset.Icc 2 (cutoffB n),
+      ∀ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q),
+        0 < (a:ℝ)/(q:ℝ) - (cutoffH n:ℝ)/((q:ℝ)*(n:ℝ)) ∧
+          (a:ℝ)/(q:ℝ) + (cutoffH n:ℝ)/((q:ℝ)*(n:ℝ)) < 1) :
+    deepIntegral n = diagonalSum n
+      - ∑ q ∈ Finset.Icc 1 (cutoffB n),
+          ∑ a ∈ (Finset.range q).filter (fun a => Nat.Coprime a q),
+            ∫ t in arcSet n q a,
+              plainPolynomial n (tauCoeff n) t ^ 2 * phase (-(n:ℝ)*t) := by
+  rw [deepIntegral_eq_diagonal_sub_arc_sum n hn]
+  congr 1
+  exact sum_arcSet_clipped_eq_sum_arcSet n hQ
+    (by unfold plainPolynomial phase; fun_prop)
+    (fun u => periodic_deepIntegrand n u) hint hρ0 hρ1
+
+/-! ### Stage 2, step 3: shifting to local coordinates on one arc
+
+On the arc of `a/q` write `t = a/q + β`.  The arithmetic information (`S` sampled
+at the rational point) separates from the archimedean integral over
+`|β| ≤ ρ_q = H/(q n)`.  This is the form in which the major-arc model of `S` is
+inserted. -/
+
+/-- **Arc-shift identity.**  On `arcSet n q a`, with `ρ = H/(q n)`,
+`∫_{arc} S²e(-n t) dt = e(-n a/q) · ∫_{-ρ}^{ρ} S(a/q+β)² e(-n β) dβ`. -/
+theorem integral_arcSet_shift (n q a : ℕ) :
+    (∫ t in arcSet n q a,
+        plainPolynomial n (tauCoeff n) t ^ 2 * phase (-(n:ℝ)*t))
+      = phase (-(n:ℝ)*((a:ℝ)/(q:ℝ))) *
+          ∫ β in (-((cutoffH n:ℝ)/((q:ℝ)*(n:ℝ))))..((cutoffH n:ℝ)/((q:ℝ)*(n:ℝ))),
+            plainPolynomial n (tauCoeff n) ((a:ℝ)/(q:ℝ) + β) ^ 2 * phase (-(n:ℝ)*β) := by
+  set c : ℝ := (a:ℝ)/(q:ℝ) with hc
+  set ρ : ℝ := (cutoffH n:ℝ)/((q:ℝ)*(n:ℝ)) with hρ
+  have hρnn : 0 ≤ ρ := by rw [hρ]; positivity
+  rw [show arcSet n q a = Set.Icc (c - ρ) (c + ρ) from by
+    rw [hc, hρ]; exact arcSet_eq_Icc n q a]
+  rw [integral_Icc_eq_integral_Ioc,
+    ← intervalIntegral.integral_of_le (a := c - ρ) (b := c + ρ) (by linarith)]
+  rw [show c - ρ = c + (-ρ) from by ring]
+  rw [← intervalIntegral.integral_comp_add_left
+    (f := fun t : ℝ => plainPolynomial n (tauCoeff n) t ^ 2 * phase (-(n:ℝ)*t))
+    (a := -ρ) (b := ρ) (d := c)]
+  have hpt : ∀ β : ℝ,
+      plainPolynomial n (tauCoeff n) (c+β) ^ 2 * phase (-(n:ℝ)*(c+β))
+        = phase (-(n:ℝ)*c) *
+            (plainPolynomial n (tauCoeff n) (c+β) ^ 2 * phase (-(n:ℝ)*β)) := by
+    intro β
+    rw [show -(n:ℝ)*(c+β) = -(n:ℝ)*c + (-(n:ℝ)*β) by ring, phase_add]
+    ring
+  simp_rw [hpt]
+  rw [intervalIntegral.integral_const_mul]
+
+/-- **The shifted arc decomposition.**  `Jdeep = D - W` with
+
+`W = ∑_{q ≤ Q₁} ∑_{a<q, (a,q)=1} e(-n a/q) ∫_{-ρ_q}^{ρ_q} S(a/q+β)² e(-nβ) dβ`
+
+— the correct form of the requested `W = ∑_q ∑_{a₀} e(-n a₀/q) S(a₀/q)² sinc`.
+The `sinc` is the archimedean integral, so `S` must be evaluated at `a/q + β`
+inside it, not at `a/q`. -/
+theorem deepIntegral_eq_diagonal_sub_shifted_arc_sum (n : ℕ)
+    (hn : 512 * (cutoffB n)^2 * logSq n < n) (hQ : 1 ≤ cutoffB n)
+    (hρ0 : 0 ≤ (cutoffH n : ℝ)/(n:ℝ))
+    (hρ1 : (cutoffH n : ℝ)/(n:ℝ) < 1)
+    (hint : ∀ q ∈ Finset.Icc 2 (cutoffB n),
+      ∀ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q),
+        0 < (a:ℝ)/(q:ℝ) - (cutoffH n:ℝ)/((q:ℝ)*(n:ℝ)) ∧
+          (a:ℝ)/(q:ℝ) + (cutoffH n:ℝ)/((q:ℝ)*(n:ℝ)) < 1) :
+    deepIntegral n = diagonalSum n
+      - ∑ q ∈ Finset.Icc 1 (cutoffB n),
+          ∑ a ∈ (Finset.range q).filter (fun a => Nat.Coprime a q),
+            phase (-(n:ℝ)*((a:ℝ)/(q:ℝ))) *
+              ∫ β in (-((cutoffH n:ℝ)/((q:ℝ)*(n:ℝ))))..((cutoffH n:ℝ)/((q:ℝ)*(n:ℝ))),
+                plainPolynomial n (tauCoeff n) ((a:ℝ)/(q:ℝ) + β) ^ 2 *
+                  phase (-(n:ℝ)*β) := by
+  rw [deepIntegral_eq_diagonal_sub_periodic_arc_sum n hn hQ hρ0 hρ1 hint]
+  congr 1
+  refine Finset.sum_congr rfl fun q _ => Finset.sum_congr rfl fun a _ => ?_
+  exact integral_arcSet_shift n q a
+
 end B1B1Port
