@@ -602,3 +602,68 @@ This should be checked (it is a paper computation), and it changes what the next
 investment should be: either the main-term computation of `W` on the wide arcs, or
 a genuinely new dispersion argument.  I am flagging it rather than porting thousands
 of lines into a bound that may be false.
+
+## Milestone 11: the far/near split provably cannot close b1-b1
+
+I checked the warning of the previous milestone, analytically and numerically.
+
+### Analytic
+
+For one atom `a` with `N = n/a`, put `V(θ) = ∑_{h ∈ (U,N]} Λ(h) e(θ h)`.  On the
+grid intervals `t = j/a + x`,
+
+```text
+wwave Λ a U N (t) = V(a x) ,
+```
+
+so
+
+```text
+∫_{grid_a} |wwave|²  =  ∫_{|θ| ≤ a·radius M} |V(θ)|² dθ ,
+∫_{0}^{1}  |wwave|²  =  ∑_{h ≤ N} Λ(h)²  ≈  N log N .
+```
+
+The crude bound `|V| ≤ ψ(N) ≈ N` on the grid gives
+
+```text
+∫_{grid_a} |wwave|² ≤ 2·a·radius M · N² = n²/(4 a M²) ,
+```
+
+hence `‖G‖₂² ≤ n²/(4M²)·∑_a τ(a)²/a ≈ n^(29/24) log³` and
+`far ≤ ‖S‖₂‖G‖₂ ≈ n^(53/48) log^(5/2)` — **larger than `n`**.  Using instead the
+oscillation bound `|V(θ)| ≲ 1/‖θ‖` gives `∫_{grid_a} ≲ N`, so
+`‖G‖₂² ≲ n∑_a τ(a)²/a ≈ n log³`, and `far ≲ n log^(5/2)`.  Either way the far part
+is `n·log^{Θ(1)}`, **not** `o(n)`.
+
+### Numerical (`vmass_numerics.py`)
+
+`R(δ) := ∫_{|θ| ≤ δ}|V(θ)|²dθ / ∫₀¹|V|²` for `N = 2·10^4`:
+
+| δ | δ·N | R(δ) |
+|---|---|---|
+| 0.001 | 20 | 0.2247 |
+| 0.003 | 60 | 0.2278 |
+| 0.010 | 200 | 0.2400 |
+| 0.030 | 600 | 0.5128 |
+
+(The `0.3`/`0.1` rows are unreliable: the spikes have width `1/N = 5·10^-5`, far
+below the sampling step.)  In the b1-b1 regime `a·radius M·N = n/(8M²) = n^(5/24)/8`,
+which for `n ≳ 10^16` is `≈ 10^3`, so `R ≈ 0.25`: **the grid captures only about a
+quarter of the `L²` mass**, and `∫_{gridᶜ}|S_{τ₁}|² = Θ(n log^{1+o(1)})`.
+
+### Conclusion
+
+The verified `b1-b4` far/near mechanism **cannot** prove b1-b1: for `τ₄` the grid
+captures essentially all the mass (short waves), for `τ₁` it captures only `1/log`
+of it.  Since the off-grid mass is a positive fraction of `n log`, no absolute-value
+bound on the far part can be `o(n)`; the saving has to come from the **signed**
+cancellation `D - W = o(n)`, i.e. the main-term route (b) proper.
+
+`b1-b1` therefore reduces to:
+
+```text
+W  =  D + o(n) ,      W = ∫_{wideArcs} S² e(-n·) ,   D = ∑_{m+m'=n} τ₁(m) τ₁(m') .
+```
+
+i.e. the classical major-arc main-term computation (singular series × archimedean
+factor) with enough precision to cancel `D ≈ 2 n θ²`, `θ = ∑ c(a)/a`.
