@@ -683,3 +683,20 @@ New files:
 `check.sh` now builds `arcs.olean` and `assembly.olean` as well.  The
 remaining Type-I work is the minor-arc estimate and the integral assembly;
 the major-arc set and its pointwise estimate are now formalized.
+
+### Farey/Dirichlet approximation and the minor-arc entry
+
+`arcs.lean` now also contains:
+
+- `exists_farey_approx`: for `α ∈ [0,1]` and `Q > 0`, there are
+  `1 ≤ q ≤ Q`, `a ≤ q`, `gcd(a,q)=1`, with
+  `|α - a/q| ≤ 1/(q Q)` (Dirichlet, reduced to lowest terms);
+- `exists_farey_approx_minor`: if moreover `α` is in the minor arcs
+  `(typeIMajorArcs U Q)ᶜ`, the same approximation can be chosen with
+  `1/(16 q U²) < |α - a/q| ≤ 1/(q Q)`.  This is the entry point for the
+  Type-I minor-arc estimate: the approximation is outside the major-arc
+  radius (small-`q` multiples) but inside the Dirichlet radius.
+
+The remaining Type-I minor-arc step is the actual estimate of the Type-I
+sums in the two regimes `q Q ≥ 16 U` and `q Q < 16 U`; the Farey
+approximation and the minor-arc entry are now formalized.

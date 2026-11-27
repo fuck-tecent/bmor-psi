@@ -256,3 +256,11 @@ measurable, and extracts the `a/q + β` representation.  `assembly.lean`
 applies the combined Type-I bound on the major-arc union, including the
 uniform `6 U² Q log n + 6 n log n (1 + log n)` form.  Next: the Type-I
 minor-arc estimate, then the circle-method integral assembly.
+
+## Farey approximation and minor-arc entry
+
+`exists_farey_approx` gives the Dirichlet approximation with a reduced
+denominator `q ≤ Q`; `exists_farey_approx_minor` additionally places the
+approximation outside the major-arc radius when `α` is in the minor arcs.
+Next: the Type-I minor-arc estimate in the regimes `q Q ≥ 16 U` and
+`q Q < 16 U`, then the integral assembly.
