@@ -476,3 +476,15 @@ Target:
   ∑_{de ≤ M, q∤de} Λ(e) · 2q/r_{de}
     ≤ log(U²) · 2q · ∑_{k≤M} 1/r_k
     ≤ 4q log(U²)(1 + log q).
+
+## Third term: fibre reindexing done
+
+`sum_div_residue_le` gives
+
+  ∑_{de ≤ M, q∤de} Λ(e)·2q/r_{de} ≤ log(U²)·2q·2(1+log q),   (M ≤ U², M < q)
+
+so the third-term threshold part is `O(q log(U²)(1+log q))`, no `M`.
+
+Remaining Type-I work: assemble the refined third-term theorem
+(threshold + tail + `q`-multiples) and then the Type-I minor-arc
+uniform bound with the wide arcs.

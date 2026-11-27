@@ -1344,6 +1344,154 @@ lemma sum_inv_residue_le (q a U : ℕ) (hq : 0 < q) (hcop : Nat.Coprime a q)
     _ ≤ 2 * (1 + Real.log (q:ℝ)) := by linarith [hsum1, hsum2]
 
 
+set_option maxHeartbeats 1000000 in
+/-- Fibre reindexing for the residue-weighted threshold sum: the pairs
+`d * e ≤ M` weighted by `Λ(e) / r_{de}` are bounded by
+`log(U²) · ∑_{k≤M} 1/r_k`. -/
+lemma sum_div_residue_le (U M q a : ℕ) (hq : 0 < q) (hcop : Nat.Coprime a q)
+    (hMU : M ≤ U * U) (hMq : M < q) :
+    (∑ d ∈ Finset.Icc 1 U, ∑ e ∈ Finset.Icc 1 U,
+        (if d * e ≤ M ∧ ¬ (q : ℕ) ∣ d * e then
+          ((Λ : ArithmeticFunction ℝ) e) *
+            (2 * (q:ℝ) / (((min (((d * e) * a) % q) (q - ((d * e) * a) % q) : ℕ)) : ℝ))
+        else 0))
+      ≤ Real.log (((U * U : ℕ)) : ℝ) * (2 * (q:ℝ)) *
+          (2 * (1 + Real.log (q:ℝ))) := by
+  classical
+  set rr : ℕ → ℝ := fun k =>
+    ((min ((k * a) % q) (q - (k * a) % q) : ℕ) : ℝ) with hrr
+  set s : Finset (ℕ × ℕ) := (Finset.Icc 1 U) ×ˢ (Finset.Icc 1 U) with hs
+  set F : ℕ × ℕ → ℝ := fun p =>
+    if p.1 * p.2 ≤ M ∧ ¬ (q : ℕ) ∣ p.1 * p.2 then
+      ((Λ : ArithmeticFunction ℝ) p.2) * (2 * (q:ℝ) / rr (p.1 * p.2))
+    else 0 with hF
+  have hprod : ∑ p ∈ s, F p =
+      ∑ d ∈ Finset.Icc 1 U, ∑ e ∈ Finset.Icc 1 U,
+        (if d * e ≤ M ∧ ¬ (q : ℕ) ∣ d * e then
+          ((Λ : ArithmeticFunction ℝ) e) * (2 * (q:ℝ) / rr (d * e))
+        else 0) := by
+    rw [hs, Finset.sum_product]
+  rw [← hprod]
+  have hmaps : ∀ p ∈ s, p.1 * p.2 ∈ Finset.Icc 1 (U * U) := by
+    intro p hp
+    rw [hs, Finset.mem_product, Finset.mem_Icc, Finset.mem_Icc] at hp
+    obtain ⟨⟨hp11, hp1U⟩, ⟨hp21, hp2U⟩⟩ := hp
+    exact Finset.mem_Icc.mpr ⟨Nat.succ_le_of_lt (Nat.mul_pos (by omega) (by omega)),
+      Nat.mul_le_mul hp1U hp2U⟩
+  have hfib := Finset.sum_fiberwise_of_maps_to (s := s) (t := Finset.Icc 1 (U * U))
+    (g := fun p : ℕ × ℕ => p.1 * p.2) hmaps F
+  rw [← hfib]
+  have hantidiag : ∀ k : ℕ, ∑ p ∈ k.divisorsAntidiagonal,
+      ((Λ : ArithmeticFunction ℝ) p.2) = Real.log (k : ℝ) := by
+    intro k
+    rw [Nat.sum_divisorsAntidiagonal' (fun a b => (Λ : ArithmeticFunction ℝ) b)]
+    have h := ArithmeticFunction.vonMangoldt_sum (n := k)
+    rw [← h]
+  -- Fibre bound at each product `k`.
+  have hfiber : ∀ k ∈ Finset.Icc 1 (U * U),
+      ∑ p ∈ s.filter (fun p => p.1 * p.2 = k), F p ≤
+        (if k ≤ M then Real.log (k : ℝ) * (2 * (q:ℝ) / rr k) else 0) := by
+    intro k hk
+    obtain ⟨hk1, _hkU⟩ := Finset.mem_Icc.mp hk
+    have hkne : k ≠ 0 := by omega
+    by_cases hkM : k ≤ M
+    · rw [if_pos hkM]
+      by_cases hqk : (q : ℕ) ∣ k
+      · -- all terms vanish
+        have hzero : ∀ p ∈ s.filter (fun p => p.1 * p.2 = k), F p = 0 := by
+          intro p hp
+          rw [Finset.mem_filter] at hp
+          simp only [hF]
+          rw [if_neg]
+          intro hcon
+          exact hcon.2 (by rw [hp.2]; exact hqk)
+        rw [Finset.sum_eq_zero hzero]
+        have hka : (k * a) % q = 0 := by
+          have : q ∣ k * a := Dvd.dvd.mul_right hqk a
+          exact Nat.mod_eq_zero_of_dvd this
+        simp only [hrr, hka]
+        norm_num
+      · -- sum of `Λ` times the constant
+        have hconst : ∀ p ∈ s.filter (fun p => p.1 * p.2 = k), F p =
+            ((Λ : ArithmeticFunction ℝ) p.2) * (2 * (q:ℝ) / rr k) := by
+          intro p hp
+          rw [Finset.mem_filter] at hp
+          simp only [hF]
+          rw [if_pos ⟨by rw [hp.2]; exact hkM, by rw [hp.2]; exact hqk⟩, hp.2]
+        calc
+          ∑ p ∈ s.filter (fun p => p.1 * p.2 = k), F p
+              = ∑ p ∈ s.filter (fun p => p.1 * p.2 = k),
+                  ((Λ : ArithmeticFunction ℝ) p.2) * (2 * (q:ℝ) / rr k) := by
+            apply Finset.sum_congr rfl
+            exact hconst
+          _ = (∑ p ∈ s.filter (fun p => p.1 * p.2 = k),
+                  ((Λ : ArithmeticFunction ℝ) p.2)) * (2 * (q:ℝ) / rr k) := by
+            rw [Finset.sum_mul]
+          _ ≤ Real.log (k : ℝ) * (2 * (q:ℝ) / rr k) := by
+            apply mul_le_mul_of_nonneg_right _ (by positivity)
+            calc ∑ p ∈ s.filter (fun p => p.1 * p.2 = k),
+                  ((Λ : ArithmeticFunction ℝ) p.2)
+                ≤ ∑ p ∈ k.divisorsAntidiagonal,
+                    ((Λ : ArithmeticFunction ℝ) p.2) := by
+                  apply Finset.sum_le_sum_of_subset_of_nonneg
+                  · intro p hp
+                    rw [Finset.mem_filter] at hp
+                    rw [Nat.mem_divisorsAntidiagonal]
+                    exact ⟨hp.2, hkne⟩
+                  · intro p _ _
+                    exact ArithmeticFunction.vonMangoldt_nonneg
+              _ = Real.log (k : ℝ) := hantidiag k
+    · rw [if_neg hkM]
+      apply Finset.sum_nonpos
+      intro p hp
+      rw [Finset.mem_filter] at hp
+      simp only [hF]
+      rw [if_neg (fun hcon => hkM (by rw [← hp.2]; exact hcon.1))]
+  have hlogU2 : 0 ≤ Real.log (((U * U : ℕ)) : ℝ) := Real.log_natCast_nonneg (U * U)
+  have hqR : (0:ℝ) < (q:ℝ) := by exact_mod_cast hq
+  calc
+    ∑ k ∈ Finset.Icc 1 (U * U),
+        ∑ p ∈ s.filter (fun p => p.1 * p.2 = k), F p
+        ≤ ∑ k ∈ Finset.Icc 1 (U * U),
+            (if k ≤ M then Real.log (k : ℝ) * (2 * (q:ℝ) / rr k) else 0) :=
+      Finset.sum_le_sum hfiber
+    _ = ∑ k ∈ Finset.Icc 1 M, Real.log (k : ℝ) * (2 * (q:ℝ) / rr k) := by
+      rw [← Finset.sum_filter]
+      congr 1
+      ext k
+      simp only [Finset.mem_filter, Finset.mem_Icc]
+      omega
+    _ ≤ ∑ k ∈ Finset.Icc 1 M,
+          Real.log (((U * U : ℕ)) : ℝ) * (2 * (q:ℝ)) * (1 / rr k) := by
+      apply Finset.sum_le_sum
+      intro k hk
+      obtain ⟨hk1, hkM'⟩ := Finset.mem_Icc.mp hk
+      have hkpos : (0:ℝ) < (k:ℝ) := by exact_mod_cast (by omega : 0 < k)
+      have hkUU : k ≤ U * U := le_trans hkM' hMU
+      have hlogk : Real.log (k : ℝ) ≤ Real.log (((U * U : ℕ)) : ℝ) :=
+        Real.log_le_log hkpos (by exact_mod_cast hkUU)
+      have hnonneg : 0 ≤ 2 * (q:ℝ) / rr k := div_nonneg (by positivity) (by
+        rw [hrr]
+        positivity)
+      calc Real.log (k : ℝ) * (2 * (q:ℝ) / rr k)
+          ≤ Real.log (((U * U : ℕ)) : ℝ) * (2 * (q:ℝ) / rr k) :=
+            mul_le_mul_of_nonneg_right hlogk hnonneg
+        _ = Real.log (((U * U : ℕ)) : ℝ) * (2 * (q:ℝ)) * (1 / rr k) := by ring
+    _ = Real.log (((U * U : ℕ)) : ℝ) * (2 * (q:ℝ)) *
+          ∑ k ∈ Finset.Icc 1 M, (1 / rr k) := by
+      rw [Finset.mul_sum]
+    _ ≤ Real.log (((U * U : ℕ)) : ℝ) * (2 * (q:ℝ)) *
+          (2 * (1 + Real.log (q:ℝ))) := by
+      apply mul_le_mul_of_nonneg_left _ (by positivity)
+      have hsum := sum_inv_residue_le q a M hq hcop hMq
+      calc ∑ k ∈ Finset.Icc 1 M, (1 / rr k)
+          = ∑ k ∈ Finset.Icc 1 M,
+              (1 / ((min ((k * a) % q) (q - (k * a) % q) : ℕ) : ℝ)) := by
+            apply Finset.sum_congr rfl
+            intro k _
+            rw [hrr]
+        _ ≤ 2 * (1 + Real.log (q:ℝ)) := hsum
+
 /-- Trivial (no oscillation) bound for the second Type-I term. -/
 lemma norm_expSum_low_mu_mul_log_le_trivial (n U : ℕ) (t : ℝ) (hUn : U ≤ n) :
     ‖expSum n (low U (μ : ArithmeticFunction ℝ) * ArithmeticFunction.log) t‖ ≤

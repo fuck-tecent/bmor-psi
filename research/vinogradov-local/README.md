@@ -1151,3 +1151,24 @@ What remains for the full third-term refinement is the fibre
 reindexing `k = d e`: with `∑_{e | k} Λ e = log k ≤ log(U²)` and
 `∑_{k ≤ M} 1/r_k ≤ 2(1+log q)`, the threshold term
 `2qM log n (1+log U)` becomes `O(q log n log(U²) (1+log q))`.
+
+### Third-term fibre reindexing done
+
+`sum_div_residue_le` completes the bilinear residue refinement:
+
+```lean
+sum_div_residue_le (hMU : M ≤ U²) (hMq : M < q) :
+  ∑_{d,e ≤ U} (if de ≤ M ∧ q ∤ de then Λ(e) · 2q/r_{de} else 0)
+    ≤ log(U²) · 2q · 2(1 + log q).
+```
+
+Proof: the fibre map `(d,e) ↦ d·e` with
+`Finset.sum_fiberwise_of_maps_to` over `Icc 1 (U²)`; the fibre at `k`
+has `∑_{e|k} Λ(e) = log k` (`Nat.sum_divisorsAntidiagonal'` +
+`vonMangoldt_sum`), and `∑_{k≤M} 1/r_k ≤ 2(1+log q)`
+(`sum_inv_residue_le`, now with `M < q`).  For `q | k` both sides
+vanish because `r_k = 0` and `2q/0 = 0` in `ℝ`.
+
+Together with `norm_third_inner_le_residue`, the threshold part of the
+third Type-I term is now `O(q log(U²)(1+log q))` instead of
+`2qM log n (1+log U)`.
