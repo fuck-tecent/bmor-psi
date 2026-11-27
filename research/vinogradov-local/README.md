@@ -662,3 +662,24 @@ typeII_energy_le_nonresonant_add_resonant :
 The remaining Type-II gap is exactly the **resonant** part `q | (l1-l2)`
 (the diagonal subpart is already bounded by `diagonal_dispersion_part_le`;
 the resonant off-diagonal correlation is still open).
+
+### Type-I major/minor arc infrastructure
+
+New files:
+
+- `arcs.lean`:
+  - `typeIMajorArcs U Q = ⋃_{q≤Q} ⋃_{a≤q, (a,q)=1} Icc (a/q - r_q) (a/q + r_q)`,
+    with `r_q = 1/(16 q U²)` (the Type-I major-arc width);
+  - `typeIMinorArcs U Q = (typeIMajorArcs U Q)ᶜ`;
+  - `measurableSet_typeIMajorArcs`, `measurableSet_typeIMinorArcs`;
+  - `exists_majorArc_representation`: every major-arc point is
+    `t = a/q + β` with `|β| ≤ 1/(16 q U²)`.
+- `assembly.lean`:
+  - `norm_expSum_vaughan_typeI_le_on_majorArc`: the combined Type-I bound
+    on the major-arc union, with the representative `q ≤ Q`;
+  - `norm_expSum_vaughan_typeI_le_on_majorArc_uniform`: a single uniform
+    bound `6 U² Q log n + 6 n log n (1 + log n)` on all major arcs.
+
+`check.sh` now builds `arcs.olean` and `assembly.olean` as well.  The
+remaining Type-I work is the minor-arc estimate and the integral assembly;
+the major-arc set and its pointwise estimate are now formalized.

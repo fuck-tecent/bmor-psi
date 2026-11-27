@@ -248,3 +248,11 @@ into non-resonant + resonant parts:
 
 Remaining Type-II gap: the resonant `q | (l1-l2)` off-diagonal correlation.
 The diagonal part is bounded by `diagonal_dispersion_part_le`.
+
+## Type-I major/minor arcs formalized
+
+`arcs.lean` defines `typeIMajorArcs`/`typeIMinorArcs`, proves both
+measurable, and extracts the `a/q + β` representation.  `assembly.lean`
+applies the combined Type-I bound on the major-arc union, including the
+uniform `6 U² Q log n + 6 n log n (1 + log n)` form.  Next: the Type-I
+minor-arc estimate, then the circle-method integral assembly.

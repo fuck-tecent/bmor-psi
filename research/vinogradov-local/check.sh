@@ -9,5 +9,7 @@ lean -o build/finite_large_sieve.olean finite_large_sieve.lean
 lean -o build/separated_large_sieve.olean separated_large_sieve.lean
 lean -o build/rational.olean rational.lean
 lean -o build/vaughan.olean vaughan.lean
-lean type1_bound.lean
+lean -o build/arcs.olean arcs.lean
+lean -o build/type1_bound.olean type1_bound.lean
+lean -o build/assembly.olean assembly.lean
 echo "vinogradov-local: OK"
