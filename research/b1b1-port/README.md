@@ -2070,3 +2070,46 @@ b1-b1 的除数带 (n^(1/16), n^(1/4)] 整段落在缺口里。
 ```
 
 That, not "no instrument", is the reason b1-b1 is open for this port.
+
+### 36.5 Correction to §36.2: τ₃ is *not* "half covered"
+
+The §36.2 row for τ₃ ("straddles `n^(2/5)`; `(n^(2/5), n^(2/3)]` covered") is
+**imprecise** and should not be used as a plan.  Two reasons.
+
+**(i) Vaughan's Type-II condition is on *both* factors, not on the divisor alone.**
+`optimized_typeII_bound` applies to `typeIICoefficient U' * longPart U' Λ` with
+`U' = optimizedCutoff N = ⌊N^(2/5)⌋`, i.e. it needs
+
+```text
+a > N^(2/5)   AND   m/a > N^(2/5)      (hence m > N^(4/5)).
+```
+
+For τ₃ the divisor is `a ∈ (n^(1/3), n^(2/3)]` but the cofactor is only
+`m/a ∈ (n^(1/16), n^(2/3)]`.  So the genuinely covered sub-region is
+
+```text
+{ a > n^(2/5)  ∧  m/a > n^(2/5) }  ⊆  { m > n^(4/5) } ,
+```
+
+which is much smaller than "the right half of the divisor band".  In particular the
+whole piece with `m/a ≤ n^(2/5)` is outside Vaughan.
+
+**(ii) τ₃ is a bounded band, not a `typeIICoefficient`.**  The verified coefficient has
+only a *lower* bound `a > U'`; τ₃ also requires `a ≤ B₃ = n^(2/3)`.  Since
+`a > n^(2/3)` and `m/a > n^(1/16)` is compatible with `m ≤ n`
+(`n^(2/3+1/16) = n^(35/48) < n`), the truncation is not empty and has to be removed
+separately, e.g. by writing τ₃ as a combination of `typeIICoefficient` at different
+cutoffs plus the two boundary regions `{a > B₃}` and `{U < m/a ≤ B₂}`.  That bookkeeping
+is routine; it does not change the budget.
+
+**Consequence.**  b3-b3-parity is *not* tryable in the sense "we can close it".  What it
+does support is a **partial reduction**: the sub-region
+`a > n^(2/5) ∧ m/a > n^(2/5)` can be discharged by `optimized_typeII_bound`, leaving
+(i) the gap band `a ∈ (n^(1/3), n^(2/5))` and (ii) the small-cofactor region
+`m/a ≤ n^(2/5)`.  Piece (ii) is supported on `m ≤ B₃·n^(2/5) = n^(13/15)`, whose total
+coefficient mass is `≈ n^(13/15) log² n` (estimate:
+`∑_{a∈(B₂,B₃]} τ(a)/a ≈ (1/6) log² n`), so it is *small* as a mass but still needs a
+bilinear `L²` handle because `Jdeep` is a product of two such sums.
+
+So: no new path; the correct statement is "τ₃ has a Vaughan-covered sub-region, and two
+named residual regions, neither of which is covered".
