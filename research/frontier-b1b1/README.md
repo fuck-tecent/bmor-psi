@@ -200,3 +200,20 @@ So the `a`-sum in each arc becomes a geometric progression with ratio
 `ω = E(h/q)`, ready for `geom_sum_eq`.  The remaining Ramanujan step is
 `∑_{a,(a,q)=1} ω^a`, whose size is `≤ gcd(q,h)`, using
 `Complex.exp_eq_one_iff` for `ω = 1 ↔ q ∣ h`.
+
+## Milestone 13: full-period geometric sum
+
+`geom.lean`:
+
+```lean
+geom_sum_E (h : ℤ) (q : ℕ) (hq : 0 < q) :
+  ∑_{a < q} E (h a / q) = if E (h/q) = 1 then q else 0
+```
+
+Proof: the summand is `ω^a` with `ω = E(h/q)`, and `ω^q = E(h) = 1`; apply
+`geom_sum_eq`.  The `ω = 1` criterion is kept in terms of `E`, avoiding the
+integer-divisibility conversion.
+
+Next: the Möbius sieve over `d | q` turns the coprime `a`-sum into a
+combination of such full-period sums (Ramanujan sum), giving
+`|c_q(h)| ≤ gcd(q,h)`.
