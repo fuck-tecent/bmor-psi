@@ -51,4 +51,3 @@ def Target : Prop :=
 
 end B1B1
 
-end B1B1
