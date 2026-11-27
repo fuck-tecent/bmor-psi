@@ -1631,4 +1631,68 @@ theorem integral_compl_indicator_phase_eq (n : ℕ) (m : ℤ) (hm : m ≠ 0) :
       = - ∫ t in (0:ℝ)..1, (wideSet n).indicator (fun y => phase ((m:ℝ)*y)) t := by
   rw [integral_compl_indicator_phase, integral_phase_int, if_neg hm, zero_sub]
 
+/-! ### The two boundary arcs at `q = 1` -/
+
+/-- The arc at `0/1` clipped to `[0,1]` is `[0, ρ]`. -/
+theorem integral_arcSet_one_zero (n : ℕ) (m : ℤ)
+    (hρ0 : 0 ≤ (cutoffH n : ℝ)/(n:ℝ)) (hρ1 : (cutoffH n : ℝ)/(n:ℝ) < 1) :
+    (∫ t in (0:ℝ)..1, (arcSet n 1 0).indicator (fun y => phase ((m:ℝ)*y)) t)
+      = ∫ t in (0:ℝ)..((cutoffH n : ℝ)/(n:ℝ)), phase ((m:ℝ)*t) := by
+  have hset : arcSet n 1 0 = Set.Icc (-((cutoffH n : ℝ)/(n:ℝ))) ((cutoffH n : ℝ)/(n:ℝ)) := by
+    rw [arcSet_eq_Icc]
+    simp only [Nat.cast_one, one_mul, Nat.cast_zero, zero_div, zero_sub, zero_add]
+  have hI : Set.Ioc (0:ℝ) 1 ∩ Set.Icc (-((cutoffH n : ℝ)/(n:ℝ))) ((cutoffH n : ℝ)/(n:ℝ))
+      = Set.Ioc 0 ((cutoffH n : ℝ)/(n:ℝ)) := by
+    ext x
+    simp only [Set.mem_inter_iff, Set.mem_Ioc, Set.mem_Icc]
+    constructor
+    · rintro ⟨⟨h0, _⟩, _, hle⟩
+      exact ⟨h0, hle⟩
+    · rintro ⟨h0, hle⟩
+      exact ⟨⟨h0, le_trans hle (le_of_lt hρ1)⟩, by linarith, hle⟩
+  rw [hset, intervalIntegral.integral_of_le zero_le_one,
+    MeasureTheory.setIntegral_indicator measurableSet_Icc, hI,
+    ← intervalIntegral.integral_of_le hρ0]
+
+/-- The arc at `1/1` clipped to `[0,1]` is `[1-ρ, 1]`. -/
+theorem integral_arcSet_one_one (n : ℕ) (m : ℤ)
+    (hρ0 : 0 ≤ (cutoffH n : ℝ)/(n:ℝ)) (hρ1 : (cutoffH n : ℝ)/(n:ℝ) < 1) :
+    (∫ t in (0:ℝ)..1, (arcSet n 1 1).indicator (fun y => phase ((m:ℝ)*y)) t)
+      = ∫ t in (1 - (cutoffH n : ℝ)/(n:ℝ))..1, phase ((m:ℝ)*t) := by
+  have hset : arcSet n 1 1 = Set.Icc (1 - (cutoffH n : ℝ)/(n:ℝ)) (1 + (cutoffH n : ℝ)/(n:ℝ)) := by
+    rw [arcSet_eq_Icc]
+    simp only [Nat.cast_one, one_mul, Nat.cast_zero, div_one]
+  have hI : Set.Ioc (0:ℝ) 1 ∩ Set.Icc (1 - (cutoffH n : ℝ)/(n:ℝ)) (1 + (cutoffH n : ℝ)/(n:ℝ))
+      = Set.Icc (1 - (cutoffH n : ℝ)/(n:ℝ)) 1 := by
+    ext x
+    simp only [Set.mem_inter_iff, Set.mem_Ioc, Set.mem_Icc]
+    constructor
+    · rintro ⟨⟨_, h1⟩, hlo, _⟩
+      exact ⟨hlo, h1⟩
+    · rintro ⟨hlo, h1⟩
+      exact ⟨⟨by linarith, h1⟩, hlo, by linarith⟩
+  rw [hset, intervalIntegral.integral_of_le zero_le_one,
+    MeasureTheory.setIntegral_indicator measurableSet_Icc, hI,
+    integral_Icc_eq_integral_Ioc,
+    ← intervalIntegral.integral_of_le (by linarith : (1:ℝ) - (cutoffH n : ℝ)/(n:ℝ) ≤ 1)]
+
+/-- **The `q = 1` contribution** is the full sinc term. -/
+theorem sum_arcSet_one (n : ℕ) (m : ℤ) (hm : m ≠ 0)
+    (hρ0 : 0 ≤ (cutoffH n : ℝ)/(n:ℝ)) (hρ1 : (cutoffH n : ℝ)/(n:ℝ) < 1) :
+    (∑ a ∈ (Finset.range 2).filter (fun a => Nat.Coprime a 1),
+        ∫ t in (0:ℝ)..1, (arcSet n 1 a).indicator (fun y => phase ((m:ℝ)*y)) t)
+      = (((Real.sin (2*Real.pi*(m:ℝ)*((cutoffH n : ℝ)/(n:ℝ))) : ℝ) : ℂ) /
+          ((Real.pi*(m:ℝ) : ℝ) : ℂ)) := by
+  have hmem : (0:ℕ) ∈ (Finset.range 2).filter (fun a => Nat.Coprime a 1) := by
+    simp
+  have hmem1 : (1:ℕ) ∈ (Finset.range 2).filter (fun a => Nat.Coprime a 1) := by
+    simp
+  have hfilter : (Finset.range 2).filter (fun a => Nat.Coprime a 1) = {0, 1} := by
+    decide
+  rw [hfilter, Finset.sum_insert (by simp), Finset.sum_singleton,
+    integral_arcSet_one_zero n m hρ0 hρ1, integral_arcSet_one_one n m hρ0 hρ1]
+  have hsin := integral_boundary_arcs m ((cutoffH n : ℝ)/(n:ℝ))
+  rw [hsin]
+  exact integral_phase_symmetric m hm ((cutoffH n : ℝ)/(n:ℝ))
+
 end B1B1Port

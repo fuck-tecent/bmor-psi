@@ -1054,3 +1054,38 @@ Remaining (all porting, with verified templates):
 * multiply into `plainPolynomial_sq_dilated_expand` (the `τ₁` `exact_split`);
 * port `lowmod_model_match` (local densities `1/φ(q)² → (∑_a c(a)…)²`);
 * port `macro_sinc_tail`.
+
+## Milestone 22: the `q = 1` boundary case
+
+```lean
+integral_arcSet_one_zero (n) (m) (0 ≤ ρ) (ρ < 1) :
+  ∫_{0}^{1} 1_{arcSet n 1 0} e(m t) dt = ∫_{0}^{ρ} e(m t) dt          -- ρ = H/n
+
+integral_arcSet_one_one (n) (m) (0 ≤ ρ) (ρ < 1) :
+  ∫_{0}^{1} 1_{arcSet n 1 1} e(m t) dt = ∫_{1-ρ}^{1} e(m t) dt
+
+sum_arcSet_one (n) (m) (hm : m ≠ 0) (0 ≤ ρ) (ρ < 1) :
+  ∑_{a ∈ {0,1}} ∫_{0}^{1} 1_{arcSet n 1 a} e(m t) dt
+    = sin (2π m ρ) / (π m)
+```
+
+The last is the `q = 1` contribution in closed form, using
+`integral_boundary_arcs` and `integral_phase_symmetric`.
+
+### What remains for the complete sinc collection
+
+Only `q ≥ 2`: for those `a` is coprime and `a ≤ q` forces `1 ≤ a ≤ q-1`,
+`ρ_q = H/(qn) < 1/q`, so the arc lies strictly inside `(0,1)` and
+`integral_arcSet_indicator_phase_of_inside` + `integral_arcSet_phase` apply
+(hypotheses: `H < n`).  Splitting `Icc 1 Q₁ = {1} ∪ Icc 2 Q₁` then gives
+
+```text
+∫_{0}^{1} 1_{wideSet n} e(m t) dt
+  = ∑_{q ≤ cutoffB n} ∑_{a ∈ [1,q), (a,q)=1} e(m a/q) · sin(2π m H/(q n))/(π m)
+```
+
+and hence, by `integral_compl_indicator_phase_eq`,
+
+```text
+∫_{(wideSet n)ᶜ} e(m t) dt = - ∑_{q,a} e(m a/q) sin(2π m H/(q n))/(π m)   (m ≠ 0).
+```
