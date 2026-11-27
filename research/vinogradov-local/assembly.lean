@@ -228,6 +228,52 @@ lemma norm_expSum_vaughan_typeI_le_uniform_of_large_Q (n U Q : ℕ) (α : ℝ)
   norm_expSum_vaughan_typeI_le_on_majorArc_uniform n U Q α hn hUn hU1
     (typeIMajorArcs_Icc_subset_of_large_Q U Q hU1 hQpos hQ ⟨hα0, hα1⟩)
 
+/-- Trivial global Type-I bound, valid for every real `t`. -/
+lemma norm_expSum_vaughan_typeI_le_trivial (n U : ℕ) (t : ℝ)
+    (hn : 1 ≤ n) (hUn : U ≤ n) :
+    ‖expSum n Λ t - expSum n (high U (μ : ArithmeticFunction ℝ) *
+      (ζ : ArithmeticFunction ℝ) * high U (Λ : ArithmeticFunction ℝ)) t‖ ≤
+      ((U:ℝ) + 1) * Real.log (n:ℝ)
+        + (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ))
+        + (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) ^ 2 := by
+  have hdecomp : expSum n Λ t - expSum n (high U (μ : ArithmeticFunction ℝ) *
+      (ζ : ArithmeticFunction ℝ) * high U (Λ : ArithmeticFunction ℝ)) t =
+      expSum n (low U (Λ : ArithmeticFunction ℝ)) t +
+        expSum n (low U (μ : ArithmeticFunction ℝ) * ArithmeticFunction.log) t -
+        expSum n (low U (μ : ArithmeticFunction ℝ) * low U (Λ : ArithmeticFunction ℝ) *
+          (ζ : ArithmeticFunction ℝ)) t := by
+    rw [expSum_vaughan n U]
+    ring
+  rw [hdecomp]
+  have h1 := norm_expSum_low_vonMangoldt_le n U hn hUn t
+  have h2 := norm_expSum_low_mu_mul_log_le_trivial n U t hUn
+  have h3 := norm_expSum_low_mu_lowLambda_zeta_le_trivial n U t hUn
+  calc
+    ‖expSum n (low U (Λ : ArithmeticFunction ℝ)) t +
+        expSum n (low U (μ : ArithmeticFunction ℝ) * ArithmeticFunction.log) t -
+        expSum n (low U (μ : ArithmeticFunction ℝ) * low U (Λ : ArithmeticFunction ℝ) *
+          (ζ : ArithmeticFunction ℝ)) t‖
+        ≤ ‖expSum n (low U (Λ : ArithmeticFunction ℝ)) t +
+            expSum n (low U (μ : ArithmeticFunction ℝ) * ArithmeticFunction.log) t‖ +
+          ‖expSum n (low U (μ : ArithmeticFunction ℝ) * low U (Λ : ArithmeticFunction ℝ) *
+            (ζ : ArithmeticFunction ℝ)) t‖ :=
+      norm_sub_le _ _
+    _ ≤ (‖expSum n (low U (Λ : ArithmeticFunction ℝ)) t‖ +
+          ‖expSum n (low U (μ : ArithmeticFunction ℝ) * ArithmeticFunction.log) t‖) +
+        ‖expSum n (low U (μ : ArithmeticFunction ℝ) * low U (Λ : ArithmeticFunction ℝ) *
+          (ζ : ArithmeticFunction ℝ)) t‖ := by
+      gcongr
+      exact norm_add_le _ _
+    _ ≤ (((U:ℝ) + 1) * Real.log (n:ℝ) +
+          (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ))) +
+        (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) ^ 2 := by
+      apply add_le_add
+      · exact add_le_add h1 h2
+      · exact h3
+    _ = ((U:ℝ) + 1) * Real.log (n:ℝ)
+          + (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ))
+          + (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) ^ 2 := by ring
+
 end
 
 end PEqualNP.Outside.Vaughan

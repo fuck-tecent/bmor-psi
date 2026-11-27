@@ -333,3 +333,13 @@ threshold inner bound and these two sums.
 This is the third-term minor-arc truncation with threshold `M`; the
 remaining optimization is choosing `M ≈ 1/(16q|β|)` and combining with
 the second-term estimate.
+
+## Trivial global Type-I baseline
+
+`norm_expSum_vaughan_typeI_le_trivial` bounds the whole Type-I part for
+every real `t` by
+
+  (U+1) log n + n log n (1+log n) + n log n (1+log n)^2.
+
+This is a fallback baseline (`O(n log^3 n)`); the optimized major-arc,
+second-term minor-arc and third-term truncated bounds are separate.

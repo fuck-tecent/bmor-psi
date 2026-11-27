@@ -846,3 +846,24 @@ the third-term minor-arc truncation: choosing
 `M ≈ 1/(16 q |β|)` makes the first term the usual `2q M log² n`, while
 the second and third terms are the trivial tail and the `q | de`
 multiples.
+
+### Trivial global Type-I baseline
+
+Three unconditional (no arc) bounds:
+
+```lean
+norm_expSum_low_mu_mul_log_le_trivial :
+  ‖S₂(t)‖ ≤ n log n (1 + log n)
+
+norm_expSum_low_mu_lowLambda_zeta_le_trivial :
+  ‖S₃(t)‖ ≤ n log n (1 + log n)^2
+
+norm_expSum_vaughan_typeI_le_trivial :
+  ‖S_I(t)‖ ≤ (U+1) log n
+             + n log n (1 + log n)
+             + n log n (1 + log n)^2.
+```
+
+The last is a baseline valid for **every** real `t`; it is
+`O(n log^3 n)` for `U ≤ n`.  It complements the optimized major-arc
+bounds (`6U²q log n + ...`) and the minor-arc/truncation estimates.
