@@ -1485,3 +1485,62 @@ Only the **local-density aggregation**:
 ### Dossier
 
 30 verified milestones, 2035 lines, no `sorry`, branch `research/b1b1-arcsplit`.
+
+## Correction before the "second layer": `D` cannot be bounded by `o(n)`
+
+I had planned to "bound `D`" as the first step of the local-density layer.  That is
+**wrong** and would waste effort:
+
+```text
+D = ∑_{a j + a' k = n} c(a)c(a')Λ(j)Λ(k) = ∑_{m + m' = n} τ₁(m)τ₁(m')
+```
+
+is the same diagonal that `theta_numerics.py` measures: `D/n = 3.688, 2.360, 3.550,
+5.321` for `n = 10^4 … 10^7`, and `D ≈ 2 n θ²` with `θ = ∑ c(a)/a ≈ -log B₁ log log B₁`.
+So `D = Θ(n log log² n)` — **not** `o(n)`, and no upper bound on `D` alone can help.
+
+### What the second layer actually is
+
+`Jdeep = D·(1-|A|) - W'` where `W'` is the `m ≠ 0` part of the wide-arc integral.
+Since `D = Θ(n log log² n)`, the statement `Jdeep = o(n)` is precisely the
+**main-term matching** `W' = D + o(n)` — the classical singular-series computation.
+Nothing smaller suffices.
+
+Two useful exact reformulations, both immediate from
+`plainPolynomial_sq_dilated_expand` evaluated at `t = a₀/q`:
+
+```text
+∑_{a,a',j,k} c(a)c(a')Λ(j)Λ(k) · e((a j + a' k) a₀/q)
+  = S_{τ₁}(a₀/q)² ,                                   (pointwise expansion)
+
+∑_{quad} coeff · c_q(a j + a' k - n)
+  = ∑_{a₀ ∈ (range q), (a₀,q)=1} e(-n a₀/q) · S_{τ₁}(a₀/q)² ,
+```
+
+so
+
+```text
+W = ∫_{A} S² e(-n·) = ∑_{q ≤ Q₁} ∑_{a₀, (a₀,q)=1}
+      e(-n a₀/q) S_{τ₁}(a₀/q)² · sin(2π·(…))/(π·(…))
+```
+
+i.e. `W` is the arc integral, and matching it against `D` requires the
+**major-arc approximation of `S_{τ₁}(a₀/q)`** —
+`S_{τ₁}(a₀/q) ≈ (1/q) ∑_{r mod q} e(r a₀/q) · v(0)`-type, with `v` the archimedean
+transform.  That needs the distribution of `τ₁ = c * Λ` in residue classes, i.e. the
+`c`-weighted version of Bombieri–Vinogradov (the verified `w`-version is
+`frontier_medcore_bv_band` + `frontier_spatial_lowmod_model_match`).
+
+### Consequence for the plan
+
+* Do **not** try to bound `D`.  The only viable route is:
+  1. major-arc model for `S_{τ₁}(a₀/q)` (needs the `c`-weighted BV / Siegel–Walfisz);
+  2. sum the model over `q ≤ Q₁` to get `W_model`;
+  3. show `W_model = D + o(n)` (the singular series identity).
+
+* Everything up to the model is now verified (30 milestones): the exact split, the
+  kernel, the sinc sum, and the reformulation above.
+
+* The cheapest next concrete lemma is the second displayed identity
+  (`∑_{quad} coeff · c_q(m) = ∑_{a₀} e(-n a₀/q) S_{τ₁}(a₀/q)²`), which is a finite
+  sum interchange using `plainPolynomial_sq_dilated_expand` at `t = a₀/q`.
