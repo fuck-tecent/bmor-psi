@@ -82,3 +82,17 @@ norm_integral_E_le_osc (h : ℤ) (hh : h ≠ 0) :
 
 So every arc integral is `≤ min(length, 1/(π|h|))`, exactly the input for the
 non-resonant bound (`integral_exp_mul_complex` + `‖exp (i·)‖ = 1`).
+
+## Milestone 5: arc parametrisation
+
+`arc.lean`:
+
+```lean
+integral_E_arc (h : ℤ) (c ρ : ℝ) :
+  ∫ t in (c - ρ)..(c + ρ), E(h t) = E(h c) * ∫ β in (-ρ)..ρ, E(h β)
+```
+
+So each wide-arc integral factors into the central phase `E(h a/q)` times the
+translated kernel.  Combined with `norm_integral_E_le_osc`, every arc
+contributes `≤ min(2ρ, 1/(π|h|))` in absolute value; the `E(h a/q)` phases are
+what the Ramanujan cancellation acts on when summing over `a`.
