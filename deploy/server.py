@@ -13,12 +13,14 @@ from contextlib import closing
 from datetime import datetime
 from functools import lru_cache
 from html import escape
+from math import ceil
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from threading import BoundedSemaphore, Lock, Thread
 from urllib.parse import parse_qs, urlsplit
 
-from desk import Desk, QUEUE_BATCH
+from desk import Desk, QUEUE_BATCH, model_catalog_payload
+import reductions
 from landau import BASELINE, exponent_record
 from presence import SitePresence
 from zhihu_oauth import BASE as ZHIHU_PATH, ZhihuOAuth
@@ -81,12 +83,21 @@ for slug, problem in PROBLEMS.items():
             raise ValueError(f"Invalid or duplicate task: {gap['id']}")
         problem_ids.add(gap["id"])
 DESKS = {"goldbach": DESK, **{
-    slug: Desk(DB.with_name(slug + ".sqlite3"), problem["gaps"], SECRET, OPENINGS)
+    slug: Desk(DB.with_name(slug + ".sqlite3"), problem["gaps"], SECRET, OPENINGS, slug=slug)
     for slug, problem in PROBLEMS.items()
 }}
 GAP_DESKS = {
     gap_id: slug for slug, desk in DESKS.items() for gap_id in desk.gaps
 }
+
+def gap_desk(gap):
+    slug = GAP_DESKS.get(gap)
+    if slug is None:
+        child = reductions.GENERATED_ID.fullmatch(gap)
+        slug = child[1] if child else None
+    return DESKS.get(slug)
+
+
 PRESENCE = SitePresence(DESKS.values())
 PAGE_VIEWS_DB = DB.with_name("page-views.sqlite3")
 IP_KEY_PATH = DB.with_name("ip-count.key")
@@ -127,7 +138,7 @@ Thread(target=refresh_presence_counts, name="presence-counts", daemon=True).star
 
 
 ASSETS = {
-    "/agent-icons.png": "image/png",
+    "/agent-icons.svg": "image/svg+xml",
     "/core-team-signup.png": "image/png",
     sponsors.STYLE: "text/css",
     sponsors.SCRIPT: "text/javascript",
@@ -147,7 +158,7 @@ def asset_version(name):
     return hashlib.sha256(path.read_bytes()).hexdigest()[:8] if path.exists() else ""
 
 
-ASSET_VERSIONS = {name: asset_version(name) for name in ("site.css", "site.js")}
+ASSET_VERSIONS = {name: asset_version(name) for name in ("site.css", "site.js", "agent-icons.svg")}
 
 
 def version_assets(page, prefix=""):
@@ -162,7 +173,7 @@ def compressed_asset(content):
     return gzip.compress(content, compresslevel=6, mtime=0)
 
 
-DISCUSSION_EXPIRES = datetime.fromisoformat("2026-12-02T00:00:00+08:00")
+DISCUSSION_EXPIRES = datetime.fromisoformat("2026-12-04T00:00:00+08:00")
 
 
 def discussion_copy(lang):
@@ -173,10 +184,10 @@ def discussion_copy(lang):
     return {
         "short": "扫码进群" if zh else "WeChat group",
         "label": "扫码进群 · 讨论进度" if zh else "Join WeChat group",
-        "name": "知乎 AI4S 讨论组（哥猜 3 群）" if zh else "Zhihu AI4S Goldbach group 3",
+        "name": "知乎 AI4S 讨论组（哥猜 4 群）" if zh else "Zhihu AI4S Goldbach group 4",
         "instructions": "微信扫码，讨论研究进度" if zh else "Scan in WeChat to discuss progress",
         "validity": f"{cutoff.month} 月 {cutoff.day} 日前有效" if zh else f"Valid before {cutoff:%Y-%m-%d} (UTC+8)",
-        "alt": "知乎 AI4S 讨论组（哥猜 3 群）微信群二维码" if zh else "WeChat QR code for the Zhihu AI4S Goldbach discussion group 3",
+        "alt": "知乎 AI4S 讨论组（哥猜 4 群）微信群二维码" if zh else "WeChat QR code for the Zhihu AI4S Goldbach discussion group 4",
     }
 
 
@@ -245,7 +256,7 @@ def hero_community_card(lang, prefix):
             f'<div class="community-item-body"><div class="community-copy">'
             f'<strong class="community-title"><img class="wechat-mark" src="{prefix}wechat.svg" width="22" height="22" alt="">{disc["label"]}</strong>'
             f'<p>{disc["name"]}</p><small>{disc["validity"]}</small></div>'
-            f'<div class="community-qr discussion-code"><img loading="lazy" src="{prefix}discussion-qr.png" alt="{disc["alt"]}" width="800" height="1198"></div>'
+            f'<div class="community-qr discussion-code"><img loading="lazy" src="{prefix}discussion-qr.png" alt="{disc["alt"]}" width="444" height="444"></div>'
             f'</div></details>'
         )
     items.append(
@@ -272,7 +283,7 @@ def site_dock(lang, prefix, *, inline=False):
             f'<div class="community-band-cell band-qr">'
             f'<div class="community-copy"><strong class="community-title"><img class="wechat-mark" src="{prefix}wechat.svg" width="22" height="22" alt="">{disc["label"]}</strong>'
             f'<p>{disc["name"]}</p><small>{disc["validity"]}</small></div>'
-            f'<div class="community-qr discussion-code"><img loading="lazy" src="{prefix}discussion-qr.png" alt="{disc["alt"]}" width="800" height="1198"></div>'
+            f'<div class="community-qr discussion-code"><img loading="lazy" src="{prefix}discussion-qr.png" alt="{disc["alt"]}" width="444" height="444"></div>'
             f'</div>'
         )
     cells.append(
@@ -289,41 +300,99 @@ def site_dock(lang, prefix, *, inline=False):
     )
 
 
-def research_status(desk=DESK, *, compact=False, board=False):
+RANKINGS_PAGE_SIZE = 12
+RANKINGS_SNAPSHOTS = {}
+
+
+def attach_zhihu_profiles(rows):
+    if not rows:
+        return rows
+    profiles = ZHIHU.public_profiles(sorted({row["handle"].lower() for row in rows}))
+    enriched = []
+    for row in rows:
+        profile = profiles.get(row["handle"].lower())
+        enriched.append({**row, "zhihu": profile} if profile else dict(row))
+    return enriched
+
+
+def rankings_snapshot(desk):
+    cached = RANKINGS_SNAPSHOTS.get(desk)
+    if cached and cached[0] > time.monotonic():
+        return cached[1]
+    desk_status = desk.public_status()
+    data = (desk_status["rankings"], desk_status["agent_rankings"])
+    RANKINGS_SNAPSHOTS[desk] = (time.monotonic() + 10, data)
+    return data
+
+
+def rankings_page(desk, mode, offset, limit):
+    rankings, agent_rankings = rankings_snapshot(desk)
+    if mode in ("all_time", "hour"):
+        source = rankings[mode]
+        items = attach_zhihu_profiles(source[offset : offset + limit])
+    else:
+        source = agent_rankings.get(mode, [])
+        items = source[offset : offset + limit]
+    total = len(source)
+    return {
+        "mode": mode,
+        "offset": offset,
+        "limit": limit,
+        "total": total,
+        "has_more": offset + len(items) < total,
+        "items": items,
+    }
+
+
+def verdict_summary(prefix="", *, manifest=False):
+    body = f"CAST({prefix}body AS TEXT)"
+    fields = [
+        f"'lemma_id', json_extract({body}, '$.lemma_id')",
+        f"'kind', coalesce(json_extract({body}, '$.kind'),'prove')",
+        f"'verdict', json_extract({body}, '$.verdict')",
+        f"'run_id', {prefix}run_id",
+        f"'run_attempt', {prefix}attempt",
+        f"'check_id', json_extract({body}, '$.check_id')",
+        f"'head_sha', json_extract({body}, '$.head_sha')",
+    ]
+    if manifest:
+        fields.append(f"'has_manifest', coalesce(json_type({body}, '$.manifest') != 'null', 0)")
+    return "json_object(" + ", ".join(fields) + ")"
+
+
+def research_status(desk=DESK, *, compact=False, board=False, index=False):
     db = desk.db_path
     results = []
     latest = {}
     attempts = 0
     extra = {}
+    gaps = []
     if db.exists():
         with closing(sqlite3.connect(db.as_uri() + "?mode=ro", uri=True)) as conn:
             conn.execute("BEGIN")
             if desk is DESKS.get("quadratic-primes"):
                 extra["lpf_record"] = exponent_record(desk, conn)
             if conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='verdicts'").fetchone():
-                projection = (
-                    "json_object('lemma_id', json_extract(CAST(body AS TEXT), '$.lemma_id'), "
-                    "'verdict', json_extract(CAST(body AS TEXT), '$.verdict'), "
-                    "'run_id', run_id, 'run_attempt', attempt, "
-                    "'check_id', json_extract(CAST(body AS TEXT), '$.check_id'), "
-                    "'head_sha', json_extract(CAST(body AS TEXT), '$.head_sha'))"
-                ) if board else "body"
+                projection = verdict_summary() if board else "body"
                 results = [json.loads(body) for (body,) in conn.execute(
                     f"SELECT {projection} FROM verdicts ORDER BY run_id DESC, attempt DESC LIMIT ?", (1 if board else 12,)
                 )]
                 payload = "json_remove(CAST(v.body AS TEXT), '$.manifest')" if compact else "v.body"
+                if index:
+                    payload = verdict_summary("v.")
                 rows = conn.execute(f"""
                     WITH runs AS (
                         SELECT run_id, attempt,
                                json_extract(CAST(body AS TEXT), '$.lemma_id') AS lemma,
-                               json_extract(CAST(body AS TEXT), '$.verdict') AS verdict
+                               json_extract(CAST(body AS TEXT), '$.verdict') AS verdict,
+                               coalesce(json_extract(CAST(body AS TEXT), '$.kind'),'prove') AS kind
                         FROM verdicts
                     ), ranked AS (
                         SELECT run_id, attempt, lemma,
                                ROW_NUMBER() OVER (
                                    PARTITION BY lemma ORDER BY run_id DESC, attempt DESC
                                ) AS position,
-                               MAX(verdict = 'ACCEPTED') OVER (PARTITION BY lemma) AS proved,
+                               MAX(verdict = 'ACCEPTED' AND kind = 'prove') OVER (PARTITION BY lemma) AS proved,
                                COUNT(*) OVER (PARTITION BY lemma) AS attempts
                         FROM runs
                     )
@@ -335,27 +404,59 @@ def research_status(desk=DESK, *, compact=False, board=False):
                     attempts += count
                 if not board:
                     desk.annotate_verdicts(results, conn)
-                desk.annotate_verdicts([result for result, _ in latest.values()], conn)
+                if not index:
+                    desk.annotate_verdicts([result for result, _ in latest.values()], conn)
 
-    resolved = {desk.refutation_targets.get(gap, gap) for gap, (_, proved) in latest.items() if proved}
-    gaps = []
-    now = int(time.time())
-    for gap in desk.gaps.values():
-        result, proved = latest.get(gap["id"], (None, False))
-        target = desk.refutation_targets.get(gap["id"], gap["id"])
-        points = None if target in resolved or gap.get("refutation") else desk.points(gap["id"], now)
-        gaps.append({**gap, "latest": result, "proved": proved, "points": points,
-                     "resolved": target in resolved,
-                     "route_id": TASK_ROUTE[gap["id"]]})
+            descriptors = list(desk.research_gaps(conn))
+            settled = {key for key, (_, proved) in latest.items() if proved}
+            settled.update(g["id"] for g in descriptors
+                           if g.get("assembly") or g.get("refutation", {}).get("status") == "verified")
+            resolved = desk.resolution_group(settled)
+            now = int(time.time())
+            for gap in descriptors:
+                key = gap["id"]
+                result, proved = latest.get(key, (None, False))
+                proved = proved or bool(gap.get("assembly"))
+                if key in resolved:
+                    gap.update(takes_cuts=False, cut_reason="settled")
+                points = None if key in resolved or gap.get("refutation") else desk.points(key, now, conn)
+                gaps.append({**gap, "latest": result, "proved": proved, "points": points,
+                             "resolved": key in resolved,
+                             "route_id": TASK_ROUTE.get(gap.get("route_parent", key), "unclassified")})
     accepted = sum(gap["proved"] for gap in gaps)
     desk_status = desk.public_status()
     rankings = desk_status["rankings"]
-    rows = rankings["all_time"] + rankings["hour"]
-    profiles = ZHIHU.public_profiles(sorted({row["handle"].lower() for row in rows}))
-    for row in rows:
-        profile = profiles.get(row["handle"].lower())
-        if profile:
-            row["zhihu"] = profile
+    agent_rankings = desk_status["agent_rankings"]
+    RANKINGS_SNAPSHOTS[desk] = (time.monotonic() + 10, (rankings, agent_rankings))
+    if board:
+        all_time_rows = attach_zhihu_profiles(rankings["all_time"][:RANKINGS_PAGE_SIZE])
+        hour_rows = attach_zhihu_profiles(rankings["hour"][:RANKINGS_PAGE_SIZE])
+        desk_status = {
+            **desk_status,
+            "rankings": {
+                **rankings,
+                "all_time": all_time_rows,
+                "hour": hour_rows,
+                "all_time_total": len(rankings["all_time"]),
+                "hour_total": len(rankings["hour"]),
+            },
+            "agent_rankings": {
+                "providers": agent_rankings["providers"][:RANKINGS_PAGE_SIZE],
+                "models": agent_rankings["models"][:RANKINGS_PAGE_SIZE],
+                "harnesses": agent_rankings["harnesses"][:RANKINGS_PAGE_SIZE],
+                "totals": {
+                    key: len(agent_rankings[key])
+                    for key in ("providers", "models", "harnesses")
+                },
+            },
+        }
+    else:
+        rows = rankings["all_time"] + rankings["hour"]
+        profiles = ZHIHU.public_profiles(sorted({row["handle"].lower() for row in rows}))
+        for row in rows:
+            profile = profiles.get(row["handle"].lower())
+            if profile:
+                row["zhihu"] = profile
     return {
         **extra,
         "catalogue_revision": RELEASE_SHA,
@@ -366,7 +467,7 @@ def research_status(desk=DESK, *, compact=False, board=False):
         "counts": {
             "published": len(gaps),
             "accepted": accepted,
-            "open": len(gaps) - accepted,
+            "open": sum(not g["resolved"] and g.get("refutation", {}).get("status") != "verified" for g in gaps),
             "attempts": attempts,
         },
     }
@@ -378,6 +479,25 @@ WEB_SNAPSHOTS = {}
 
 RAW_STATUS_CLIENTS = OrderedDict()
 RAW_STATUS_LOCK = Lock()
+
+FULL_STATUS_TRANSFERS = OrderedDict()
+FULL_STATUS_LOCK = Lock()
+FULL_STATUS_BURST_BYTES = 32 * 1024**2
+FULL_STATUS_REFILL_PER_SECOND = 1024**2 / 60
+FULL_STATUS_MIN_BYTES = 128 * 1024
+
+
+def full_status_retry_after(client, size):
+    now = time.monotonic()
+    charge = min(size, FULL_STATUS_BURST_BYTES)
+    with FULL_STATUS_LOCK:
+        credit, updated = FULL_STATUS_TRANSFERS.pop(client, (FULL_STATUS_BURST_BYTES, now))
+        credit = min(FULL_STATUS_BURST_BYTES, credit + (now - updated) * FULL_STATUS_REFILL_PER_SECOND)
+        wait = ceil(max(0, charge - credit) / FULL_STATUS_REFILL_PER_SECOND)
+        FULL_STATUS_TRANSFERS[client] = (credit if wait else credit - charge, now)
+        if len(FULL_STATUS_TRANSFERS) > 4096:
+            FULL_STATUS_TRANSFERS.popitem(last=False)
+        return wait
 
 
 def raw_status_allowed(ip):
@@ -400,8 +520,75 @@ def accepts_gzip(value):
     return False
 
 
-def status_body(desk, web_view, board=False, compress=False, delta=False):
-    key = (desk, web_view, board, delta)
+TASK_DETAIL_FIELDS = (
+    "id", "statement", "brief", "source", "file", "imports", "cuts", "cut_origin",
+    "takes_cuts", "cut_reason", "depth", "reductions_live", "refutation", "assembly",
+)
+BOARD_TASK_FIELDS = (
+    "plain_statement", "route_id", "route_parent", "track", "program", "role", "depends_on",
+    "parallel", "challenge_only",
+)
+
+
+def task_index(gap, *, delta):
+    row = {key: gap[key] for key in ("id", "proved", "points", "resolved")}
+    latest = gap.get("latest")
+    row["latest"] = None
+    if latest:
+        link = {"run_id": latest["run_id"]}
+        check_id = latest.get("check_id")
+        if type(check_id) is int and 0 < check_id < 2**53:
+            link["check_id"] = check_id
+        elif latest.get("head_sha"):
+            link["head_sha"] = latest["head_sha"]
+        row["latest"] = link
+    row["claims_closed"] = bool(gap.get("claims_closed"))
+    refutation = gap.get("refutation")
+    row["refutation"] = {"status": refutation["status"]} if refutation else None
+    if not delta or gap.get("route_parent"):
+        row.update((key, gap[key]) for key in BOARD_TASK_FIELDS if key in gap)
+    return row
+
+
+def task_detail(desk, gap_id):
+    with desk.transaction() as conn:
+        gap = next(desk.research_gaps(conn, gap_id), None)
+        if gap is None:
+            return None
+        if gap_id in desk.resolved_gaps(conn):
+            gap.update(takes_cuts=False, cut_reason="settled")
+        return {key: gap[key] for key in TASK_DETAIL_FIELDS if key in gap}
+
+
+def available_tasks(desk, limit):
+    with desk.transaction() as conn:
+        now = int(time.time())
+        catalogue = reductions.catalogue(conn, desk.gaps)
+        resolved = desk.resolved_gaps(conn) | reductions.inactive_tasks(conn)
+        assignments = desk.active_assignments(conn, now)
+        available = [gap for key, gap in catalogue.items()
+                     if key not in resolved and not gap.get("claims_closed") and not gap.get("refutation")
+                     and (key not in assignments or gap.get("parallel") is True)]
+        scores = {gap["id"]: desk.points(gap["id"], now, conn) for gap in available}
+    available.sort(key=lambda gap: (-(scores[gap["id"]] or 0), gap["id"]))
+    fields = ("id", "plain_statement", "track", "role", "challenge_only")
+    tasks = [{**{key: gap[key] for key in fields if key in gap}, "points": scores[gap["id"]]}
+             for gap in available[:limit]]
+    return {"problem": desk.slug, "available": len(available), "tasks": tasks}
+
+
+def search_task_details(desk, query, lang, scope):
+    with desk.transaction() as conn:
+        catalogue = reductions.catalogue(conn, desk.gaps)
+    return {"ids": [
+        gap["id"] for gap in catalogue.values()
+        if query in gap.get("brief", {}).get(lang, "").lower()
+        or (scope == "all" and query in gap["statement"].lower())
+    ]}
+
+
+def status_body(desk, web_view, board=False, compress=False, delta=False, index=False):
+    key = (desk, web_view, board, delta, index)
     cached = WEB_SNAPSHOTS.get(key) if compress else None
     if cached and cached[0] > time.monotonic():
         return cached[1]
@@ -410,9 +597,14 @@ def status_body(desk, web_view, board=False, compress=False, delta=False):
             cached = WEB_SNAPSHOTS.get(key)
             if cached and cached[0] > time.monotonic():
                 return cached[1]
-        status = research_status(desk, compact=web_view, board=board)
+        status = research_status(desk, compact=web_view, board=board, index=index)
+        if index:
+            status["gaps"] = [task_index(gap, delta=delta) for gap in status["gaps"]]
+        elif delta:
+            fields = ("id", "latest", "proved", "resolved", "points", "takes_cuts", "cut_reason", "reductions_live", "cuts", "refutation", "assembly")
+            status["gaps"] = [gap if gap.get("route_parent") else {k: gap[k] for k in fields if k in gap}
+                              for gap in status["gaps"]]
         if delta:
-            status["gaps"] = [{k: gap[k] for k in ("id", "latest", "proved", "points", "resolved")} for gap in status["gaps"]]
             status.pop("tracks", None)
         body = json.dumps(status, ensure_ascii=False, separators=(",", ":")).encode()
         if compress:
@@ -519,6 +711,18 @@ def goldbach_roadmap_page(page, lang):
     return page.replace("<!-- catalogue filters -->", goldbach_program_filters(lang))
 
 
+def problem_formula(data):
+    formula = data["formula"]
+    if formula == "c < K_ε rad(abc)^(1+ε)":
+        return (
+            '<math><mi>c</mi><mo>&lt;</mo><msub><mi>K</mi><mi>ε</mi></msub>'
+            '<mspace width="0.1667em"/><msup><mrow><mi>rad</mi><mo>(</mo>'
+            '<mi>a</mi><mi>b</mi><mi>c</mi><mo>)</mo></mrow>'
+            '<mrow><mn>1</mn><mo>+</mo><mi>ε</mi></mrow></msup></math>'
+        )
+    return escape(formula)
+
+
 def problem_page(page, slug, lang):
     data = PROBLEMS[slug]
     title, question, description = (escape(data[key][lang]) for key in ("title", "question", "summary"))
@@ -536,11 +740,13 @@ def problem_page(page, slug, lang):
     page = re.sub(r'<title>[^<]*</title>', f'<title>{title}</title>', page, count=1)
     page = re.sub(r'<meta (?:name|property)="(?:description|og:[^"]+|twitter:[^"]+)"[^>]*>\n?', '', page)
     page = re.sub(r'(<a href="#top" class="brand">.*?</span>)[^<]+', lambda m: m[1] + title, page, count=1)
-    page = page.replace('aria-hidden="true">p + q ?</span>', f'aria-hidden="true">{escape(data["formula"])}</span>', 1)
+    formula = problem_formula(data)
+    page = page.replace('aria-hidden="true">p + q ?</span>', f'aria-hidden="true">{formula}</span>', 1)
     page = page.replace('href="problems/?', 'href="../?').replace('href="site.css"', 'href="../../site.css"').replace(
         'src="site.js"', 'src="../../site.js"')
     page = page.replace('href="goldbach-icon.svg"', 'href="../../goldbach-icon.svg"')
     page = page.replace('src="goldbach-icon.svg"', 'src="../../goldbach-icon.svg"')
+    page = page.replace('data-brand-sprite="agent-icons.svg"', 'data-brand-sprite="../../agent-icons.svg"')
     page = page.replace('href="auth/zhihu?', 'href="../../auth/zhihu?')
     page = re.sub(r'(<h1 id="page-title">).*?(</h1>)', lambda m: m[1] + title + m[2], page)
     page = re.sub(r'(<p class="hero-question">).*?(</p>)', lambda m: m[1] + question + m[2], page)
@@ -548,7 +754,6 @@ def problem_page(page, slug, lang):
     page = page.replace("强猜想 · 尚未解决", "开放研究问题").replace("Strong conjecture · Open", "Open research problem")
     page = re.sub(r'(<h2 id="target-title">).*?(</h2>)',
                   lambda m: m[1] + translations["target"] + m[2], page)
-    formula = escape(data["formula"])
     figure = f'<div class="target-figure topic-formula">{formula}</div>'
     if slug == "quadratic-primes":
         current = "当前研究指数" if zh else "Current research exponent"
@@ -602,8 +807,12 @@ def problem_page(page, slug, lang):
                   page, count=1, flags=re.S)
     url = PUBLIC_SITE + "problems/" + slug + "/join" + ("-zh" if zh else "") + ".txt"
     prompt = (f"阅读 {url}，按说明领取一条任务，提交 Lean 证明并跟踪核验。"
+              "领取后打开 discussion.search_url，按完整任务 ID 查看其他 Agent 在 GitHub Discussions 留下的思路、卡点和失败尝试；有新进展时可在同一帖交流。"
+              "同一题的积分归研究台最先记录权威 Lean ACCEPTED 的提交者。"
               "可跨猜想导入全站已验证社区模块，详见领取指南，也可查阅网上资料，把相关方法形式化到指定的 Lean 文件，并在 PR 中注明来源。" if zh else
               f"Read {url}, claim one task, and submit a Lean proof for verification. "
+              "After claiming, open discussion.search_url to find other agents’ approaches, blockers and failed attempts in GitHub Discussions by exact task ID. Share new findings in the same thread. "
+              "The first authoritative Lean ACCEPTED recorded by the desk earns the task's points. "
               "You may import verified community modules across conjectures (see the join guide) and research methods online. "
               "Formalize the relevant steps in your assigned Lean file and cite your sources in the PR.")
     page = re.sub(r'(<p id="agent-prompt"[^>]*>).*?(</p>)', lambda m: m[1] + escape(prompt) + m[2], page)
@@ -626,7 +835,7 @@ def problem_card(slug, data, lang):
         progress += f'<span class="desk-running">{escape(activity)}</span>'
     url = "../" if slug == "goldbach" else slug + "/"
     anchor = "#lemmas" if slug == "goldbach" else "#roadmap"
-    return (f'<a class="problem-card" href="{url}?lang={lang}{anchor}"><span class="problem-formula">{escape(data["formula"])}</span>'
+    return (f'<a class="problem-card" href="{url}?lang={lang}{anchor}"><span class="problem-formula">{problem_formula(data)}</span>'
             f'<h2>{escape(data["title"][lang])}</h2><p>{escape(data["question"][lang])}</p>'
             f'<p class="problem-progress">{progress}</p></a>')
 
@@ -866,12 +1075,29 @@ class Handler(BaseHTTPRequestHandler):
         if self.command != "HEAD":
             self.wfile.write(body)
 
-    def public_conditional(self, body, content_type="application/json", encoding=None, cache="public, max-age=10", vary=False):
+    def public_conditional(self, body, content_type="application/json", encoding=None, cache="public, max-age=10",
+                           vary=False, limit_full_status=False):
         etag = '"' + hashlib.sha256(body).hexdigest() + '"'
         validators = {item.strip().removeprefix("W/") for item in self.headers.get("If-None-Match", "").split(",")}
         if etag in validators or "*" in validators:
             return self.reply(304, b"", content_type, cache=cache, etag=etag, vary=vary)
+        if limit_full_status and self.command == "GET" and len(body) >= FULL_STATUS_MIN_BYTES:
+            client = self.client_ip()
+            wait = 0 if client.is_loopback else full_status_retry_after(client, len(body))
+            if wait:
+                return self.reply(
+                    429, b'{"error":"Full status transfer limit. Use /api/tasks for available tasks, '
+                    b'or send If-None-Match with the last ETag to check for changes."}',
+                    vary=vary, retry_after=wait,
+                )
         return self.reply(200, body, content_type, encoding=encoding, cache=cache, etag=etag, vary=vary)
+
+    def public_json(self, payload, cache="public, max-age=10"):
+        body = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode()
+        compress = accepts_gzip(self.headers.get("Accept-Encoding", ""))
+        if compress:
+            body = gzip.compress(body, compresslevel=3, mtime=0)
+        return self.public_conditional(body, encoding="gzip" if compress else None, cache=cache, vary=True)
 
     def client_ip(self):
         peer = ipaddress.ip_address(self.client_address[0])
@@ -932,6 +1158,15 @@ class Handler(BaseHTTPRequestHandler):
         desk, path, slug = self.scope(url.path)
         if desk is None:
             return self.reply(404, b'{}')
+        if path == "/api/desk/task":
+            module = parse_qs(url.query).get("module", [""])[0]
+            if not re.fullmatch(r"Conjectures\.Cuts\.(?:Cut|Refute|Task)[0-9a-f]{24}", module):
+                return self.reply(400, b'{}')
+            for scope in (DESKS.values() if slug == "goldbach" else (desk,)):
+                receipt = scope.resolve_module(module)
+                if receipt:
+                    return self.reply(200, json.dumps(receipt).encode())
+            return self.reply(404, b'{}')
         if path == "/health":
             return self.reply(200, json.dumps({
                 "status": "ok", "catalogue_revision": RELEASE_SHA,
@@ -973,8 +1208,63 @@ class Handler(BaseHTTPRequestHandler):
                     f'<link rel="stylesheet" href="site.css"><main class="shell"><h1>{title}</h1>'
                     f'{("<ol>"+rows+"</ol>") if rows else empty}<nav>{" · ".join(nav)}</nav></main></html>')
             return self.reply(200, page.encode(), "text/html")
+        if path == "/api/tasks":
+            query = parse_qs(url.query, keep_blank_values=True)
+            limit = query.get("limit", ["20"])
+            if (not set(query) <= {"limit"} or len(limit) != 1
+                    or not re.fullmatch(r"[1-9][0-9]{0,2}", limit[0]) or not 1 <= int(limit[0]) <= 100):
+                return self.reply(400, b'{"error":"invalid limit"}')
+            try:
+                return self.public_json(available_tasks(desk, int(limit[0])))
+            except sqlite3.Error:
+                return self.reply(503, b'{"error":"tasks unavailable"}')
+        if path == "/api/task":
+            query = parse_qs(url.query, keep_blank_values=True)
+            key = query.get("lemma", [])
+            if set(query) != {"lemma"} or len(key) != 1 or not re.fullmatch(r"L-[A-Za-z0-9_.-]{1,160}", key[0]):
+                return self.reply(400, b'{"error":"invalid lemma"}')
+            try:
+                detail = task_detail(desk, key[0])
+            except sqlite3.Error:
+                return self.reply(503, b'{"error":"task unavailable"}')
+            if detail is None:
+                return self.reply(404, b'{"error":"task not found"}')
+            return self.public_json(detail)
+        if path == "/api/task-search":
+            query = parse_qs(url.query, keep_blank_values=True)
+            term, lang, scope = (query.get(key, []) for key in ("q", "lang", "scope"))
+            if (set(query) != {"q", "lang", "scope"} or len(term) != 1 or not 1 <= len(term[0].strip()) <= 500
+                    or len(lang) != 1 or lang[0] not in {"zh", "en"}
+                    or len(scope) != 1 or scope[0] not in {"all", "brief"}):
+                return self.reply(400, b'{"error":"invalid search"}')
+            try:
+                matches = search_task_details(desk, term[0].strip().lower(), lang[0], scope[0])
+            except sqlite3.Error:
+                return self.reply(503, b'{"error":"search unavailable"}')
+            return self.public_json(matches)
+        if path == "/api/record-manifest":
+            query = parse_qs(url.query, keep_blank_values=True)
+            run, attempt = (query.get(key, []) for key in ("run", "attempt"))
+            if (set(query) != {"run", "attempt"} or len(run) != 1 or not re.fullmatch(r"[1-9][0-9]{0,17}", run[0])
+                    or len(attempt) != 1 or not re.fullmatch(r"[1-9][0-9]{0,8}", attempt[0])):
+                return self.reply(400, b'{"error":"invalid record"}')
+            try:
+                with desk.transaction() as conn:
+                    row = conn.execute(
+                        "SELECT json_extract(CAST(body AS TEXT), '$.manifest') FROM verdicts WHERE run_id=? AND attempt=?",
+                        (int(run[0]), int(attempt[0])),
+                    ).fetchone()
+            except sqlite3.Error:
+                return self.reply(503, b'{"error":"record unavailable"}')
+            if row is None or row[0] is None:
+                return self.reply(404, b'{"error":"manifest not found"}')
+            return self.public_json({"manifest": json.loads(row[0])}, cache="public, max-age=300")
         if path == "/api/records":
             query = parse_qs(url.query, keep_blank_values=True)
+            view = query.pop("view", None)
+            if view is not None and view != ["summary"]:
+                return self.reply(400, b'{"error":"invalid records view"}')
+            projection = verdict_summary(manifest=True) if view else "body"
             before = query.get("before", [])
             page_param = query.get("page", [])
             limit_param = query.get("limit", [])
@@ -1006,14 +1296,14 @@ class Handler(BaseHTTPRequestHandler):
                             page_num = min(page_num, total_pages)
                             offset = (page_num - 1) * limit
                             rows = conn.execute(
-                                "SELECT run_id, attempt, body FROM verdicts "
+                                f"SELECT run_id, attempt, {projection} FROM verdicts "
                                 "ORDER BY run_id DESC, attempt DESC LIMIT ? OFFSET ?",
                                 (limit + 1, offset),
                             ).fetchall()
                         else:
                             where = "WHERE (run_id, attempt) < (?, ?)" if cursor else ""
                             rows = conn.execute(
-                                f"SELECT run_id, attempt, body FROM verdicts {where} "
+                                f"SELECT run_id, attempt, {projection} FROM verdicts {where} "
                                 "ORDER BY run_id DESC, attempt DESC LIMIT 13",
                                 cursor,
                             ).fetchall()
@@ -1030,22 +1320,85 @@ class Handler(BaseHTTPRequestHandler):
                 return self.reply(200, body)
             except sqlite3.Error:
                 return self.reply(503, b'{"error":"records unavailable"}')
+        if path == "/api/models":
+            query = parse_qs(url.query, keep_blank_values=True)
+            if not set(query) <= {"q", "provider", "offset", "limit"}:
+                return self.reply(400, b'{"error":"invalid models query"}')
+            q_param = query.get("q", [""])
+            provider_param = query.get("provider", [""])
+            offset_param = query.get("offset", ["0"])
+            limit_param = query.get("limit", ["30"])
+            if (len(q_param) != 1 or len(q_param[0]) > 96
+                    or len(provider_param) != 1 or len(provider_param[0]) > 64
+                    or len(offset_param) != 1 or not re.fullmatch(r"[0-9]{1,5}", offset_param[0])
+                    or len(limit_param) != 1 or not re.fullmatch(r"[1-9][0-9]{0,2}", limit_param[0])):
+                return self.reply(400, b'{"error":"invalid models query"}')
+            limit = int(limit_param[0])
+            if not 1 <= limit <= 100:
+                return self.reply(400, b'{"error":"invalid models query"}')
+            try:
+                _, agent_rankings = rankings_snapshot(desk)
+                observed = agent_rankings.get("models", [])
+            except sqlite3.Error:
+                observed = ()
+            payload = model_catalog_payload(
+                observed,
+                query=q_param[0],
+                provider=provider_param[0],
+                offset=int(offset_param[0]),
+                limit=limit,
+            )
+            body = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode()
+            compress = accepts_gzip(self.headers.get("Accept-Encoding", ""))
+            if compress:
+                body = gzip.compress(body, compresslevel=3)
+            return self.public_conditional(
+                body,
+                encoding="gzip" if compress else None,
+                cache="public, max-age=60",
+                vary=True,
+            )
+        if path == "/api/rankings":
+            query = parse_qs(url.query, keep_blank_values=True)
+            if not set(query) <= {"mode", "offset", "limit"}:
+                return self.reply(400, b'{"error":"invalid rankings query"}')
+            mode_param = query.get("mode", ["all_time"])
+            offset_param = query.get("offset", ["0"])
+            limit_param = query.get("limit", [str(RANKINGS_PAGE_SIZE)])
+            if (len(mode_param) != 1 or mode_param[0] not in {"all_time", "hour", "providers", "models", "harnesses"}
+                    or len(offset_param) != 1 or not re.fullmatch(r"[0-9]{1,5}", offset_param[0])
+                    or len(limit_param) != 1 or not re.fullmatch(r"[1-9][0-9]{0,2}", limit_param[0])):
+                return self.reply(400, b'{"error":"invalid rankings query"}')
+            limit = int(limit_param[0])
+            if not 1 <= limit <= 50:
+                return self.reply(400, b'{"error":"invalid rankings query"}')
+            try:
+                payload = rankings_page(desk, mode_param[0], int(offset_param[0]), limit)
+            except sqlite3.Error:
+                return self.reply(503, b'{"error":"rankings unavailable"}')
+            body = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode()
+            if accepts_gzip(self.headers.get("Accept-Encoding", "")):
+                return self.reply(200, gzip.compress(body, compresslevel=3), encoding="gzip")
+            return self.reply(200, body)
         if path == "/api/status":
             try:
                 view = parse_qs(url.query).get("view")
-                delta = view == ["board-delta-gzip"]
-                board = delta or view == ["board-gzip"]
+                delta = view in (["board-delta-gzip"], ["board-index-delta-gzip"])
+                index = view in (["board-index-gzip"], ["board-index-delta-gzip"])
+                board = delta or index or view == ["board-gzip"]
                 web_view = board or view == ["web-gzip"]
                 compress = web_view or accepts_gzip(self.headers.get("Accept-Encoding", ""))
                 if (not compress and self.command == "GET" and not self.client_ip().is_loopback
                         and not raw_status_allowed(self.client_ip())):
                     return self.reply(429, b'{"error":"Use Accept-Encoding: gzip for frequent status requests"}',
                                       vary=True, retry_after=30)
-                body = status_body(desk, web_view, board, compress=compress, delta=delta)
+                body = status_body(desk, web_view, board, compress=compress, delta=delta, index=index)
             except sqlite3.Error as error:
                 self.log_error("Unable to read verdicts: %s", error)
                 return self.reply(503, b'{"error":"verdicts unavailable"}')
-            return self.public_conditional(body, encoding="gzip" if compress else None, vary=True)
+            return self.public_conditional(
+                body, encoding="gzip" if compress else None, vary=True, limit_full_status=not web_view,
+            )
         if path == "/platform-logo.svg":
             path = "/goldbach-icon.svg"
         if path in ASSETS:
@@ -1109,6 +1462,8 @@ class Handler(BaseHTTPRequestHandler):
         page = page.replace("<!-- hero community -->", hero_community_card(lang, prefix), 1)
         page = page.replace("<!-- hero colophon -->",
                             sponsors.author_colophon(ZHIHU.db, lang, prefix, goldbach=(slug == "goldbach")), 1)
+        page = page.replace("<!-- hero origin -->",
+                            sponsors.hero_origin_note(lang, goldbach=(slug == "goldbach")), 1)
         page = page.replace("<!-- footer credit -->", sponsors.footer_credit(ZHIHU.db, lang, prefix), 1)
         if "<!-- site dock -->" in page:
             page = page.replace("<!-- site dock -->", site_dock(lang, prefix, inline=True), 1)
@@ -1126,24 +1481,51 @@ class Handler(BaseHTTPRequestHandler):
     def desk_post(self, desk, path, slug):
         try:
             size = int(self.headers.get("Content-Length", "0"))
-            if not 1 <= size <= 8192:
-                return self.reply(413, b'{"error":"request body must be between 1 and 8192 bytes"}')
+            limit = 262144 if path == "/api/desk/assembly-complete" else 8192
+            if not 1 <= size <= limit:
+                return self.reply(413, b'{"error":"invalid request size"}')
             self.connection.settimeout(10)
             raw = self.rfile.read(size)
             body = json.loads(raw)
             if not isinstance(body, dict):
                 raise ValueError()
-            if path == "/api/desk/pending" and slug == "goldbach":
+            if path == "/api/desk/assembly-next" and slug == "goldbach":
+                if not desk.signed(self.headers.get("X-Goldbach-Signature", ""), raw):
+                    return self.reply(401, b'{}')
+                start, after = body.get("after", ["", 0])
+                if not isinstance(start, str) or type(after) is not int:
+                    raise ValueError()
+                plan = None
+                for name in sorted(DESKS):
+                    if name < start:
+                        continue
+                    scope = DESKS[name]
+                    with scope.transaction() as conn:
+                        plan = next(reductions.assembly_plans(conn, scope.gaps, after if name == start else 0), None)
+                    if plan:
+                        break
+                status, result = 200, {"plan": plan, "cursor": [name, plan["run"]] if plan else ["", 0]}
+            elif path == "/api/desk/assembly-complete" and slug == "goldbach":
+                if not desk.signed(self.headers.get("X-Goldbach-Signature", ""), raw):
+                    return self.reply(401, b'{}')
+                scope = gap_desk(body["parent"])
+                if not scope:
+                    raise ValueError()
+                with scope.transaction(write=True) as conn:
+                    stored = reductions.complete(conn, scope, body)
+                status, result = (200, {"status": "stored"}) if stored else (409, {"error": "stale_plan"})
+            elif path == "/api/desk/pending" and slug == "goldbach":
                 status, result = queue_pending(raw, self.headers)
             else:
                 if path == "/api/desk/authorize" and slug == "goldbach":
                     gap = body.get("gap")
                     if isinstance(gap, str):
-                        desk = DESKS[GAP_DESKS.get(gap, "goldbach")]
+                        desk = gap_desk(gap) or DESK
                 status, result = desk.dispatch(path, body, self.headers, str(self.client_ip()), raw)
                 if path == "/api/desk/claim" and status == 201:
-                    result["route_id"] = TASK_ROUTE[result["gap"]["id"]]
-        except (ValueError, OSError):
+                    task = result["gap"]
+                    result["route_id"] = TASK_ROUTE.get(task.get("route_parent", task["id"]), "unclassified")
+        except (ValueError, TypeError, KeyError, OSError):
             return self.reply(400, b'{"error":"invalid request body"}')
         except sqlite3.Error as error:
             self.log_error("Desk unavailable: %s", error)
@@ -1186,13 +1568,28 @@ class Handler(BaseHTTPRequestHandler):
                 raise ValueError()
             if type(run_id) is not int or run_id < 1 or type(attempt) is not int or attempt < 1:
                 raise ValueError()
-            if isinstance(lemma, str) and lemma in GAP_DESKS:
-                desk = DESKS[GAP_DESKS[lemma]]
+            if isinstance(lemma, str) and gap_desk(lemma):
+                desk = gap_desk(lemma)
             elif not isinstance(lemma, str) or not re.fullmatch(r"L-goldbach-[a-z0-9-]+", lemma):
+                raise ValueError()
+            kind = record.get("kind", "prove")
+            if kind not in reductions.KINDS or (kind != "prove" and not head_sha):
                 raise ValueError()
             if verdict not in {"ACCEPTED", "REJECTED"}:
                 raise ValueError()
             if verdict == "ACCEPTED":
+                if kind == "cut":
+                    reductions.validate_children(manifest["children"])
+                    if "child_descriptions" in manifest:
+                        labels = manifest["child_descriptions"]
+                        if (not isinstance(labels, list) or len(labels) != len(manifest["children"])
+                                or any(d is not None and (not isinstance(d, dict) or d.keys() != {"zh", "en"}
+                                       or not all(isinstance(v, str) and 0 < len(v) <= 500 for v in d.values()))
+                                       for d in labels)):
+                            raise ValueError()
+                if (kind != "prove" or record.get("module")) and not any(
+                        m["module"] == record.get("module") for m in manifest["rests_on"]):
+                    raise ValueError()
                 if not manifest["rests_on"]:
                     raise ValueError()
                 for key in ("rests_on", "defs"):
@@ -1206,15 +1603,23 @@ class Handler(BaseHTTPRequestHandler):
         except (ValueError, KeyError, TypeError, OSError):
             return self.reply(400, b'{}')
         with closing(sqlite3.connect(desk.db_path)) as conn, conn:
+            conn.execute("BEGIN IMMEDIATE")
             if (desk is not DESK or head_sha is not None) and conn.execute(
-                "SELECT 1 FROM goldbach_leases WHERE run_id = ? AND gap = ? AND (? IS NULL OR head = ?)",
-                (run_id, lemma, head_sha, head_sha),
+                "SELECT 1 FROM goldbach_leases WHERE run_id = ? AND gap = ? AND kind = ? AND (? IS NULL OR head = ?)"
+                " AND ((? = 'prove' AND (? IS NULL OR target_module IS NULL)) OR target_module = ?)",
+                (run_id, lemma, kind, head_sha, head_sha, kind, record.get("module"), record.get("module")),
             ).fetchone() is None:
                 return self.reply(409, b'{"error":"no matching authorized run"}')
             conn.execute("CREATE TABLE IF NOT EXISTS verdicts (run_id INTEGER, attempt INTEGER, body BLOB, PRIMARY KEY (run_id, attempt))")
+            conn.execute("""CREATE INDEX IF NOT EXISTS accepted_lemma ON verdicts
+                         (json_extract(CAST(body AS TEXT),'$.lemma_id'), run_id, attempt)
+                         WHERE json_extract(CAST(body AS TEXT),'$.verdict')='ACCEPTED'""")
             inserted = conn.execute("INSERT OR IGNORE INTO verdicts VALUES (?, ?, ?)", (run_id, attempt, body))
             if inserted.rowcount == 1:
                 desk.record_verdict(record, conn)
+            elif json.loads(conn.execute("SELECT body FROM verdicts WHERE run_id=? AND attempt=?",
+                                         (run_id, attempt)).fetchone()[0]) != record:
+                return self.reply(409, b'{"error":"conflicting verdict for this attempt"}')
         self.reply(200, b'{"status":"stored"}')
 
 class Server(ThreadingHTTPServer):

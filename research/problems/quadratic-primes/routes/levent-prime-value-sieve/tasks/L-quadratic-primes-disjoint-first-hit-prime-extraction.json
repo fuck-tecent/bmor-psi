@@ -1,0 +1,21 @@
+{
+  "id": "L-quadratic-primes-disjoint-first-hit-prime-extraction",
+  "statement": "∀ (R H U E P : ℕ → ℝ) (a b ε : ℝ), 0<ε → a+b+ε<1 → (∀ x, R x ≤ H x + U x + E x + P x) → (∀ x, H x ≤ a*R x) → (∀ x, E x ≤ ε*R x) → ∀ x, U x ≤ b*R x → (1-a-b-ε)*R x ≤ P x",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 方法与自然推广 · 两个独立筛损失的组合",
+    "en": "New route · Levent GRH methods and extensions · Combine two disjoint sieve losses"
+  },
+  "brief": {
+    "zh": "令 $U_x$ 计 $f(k)=pq,\\ 2z_1<p<q,\\ q-p>H$ 的参数。若有固定 $a,b\\ge0,\\ a+b<1$，最终 $H_x(2z_0,z_1]\\le aR_x(z_0)$，且无界的 $x$ 满足 $U_x\\le bR_x(z_0)$，则 S01、S03、S06 给真素数参数数目 $\\ge(1-a-b)c_0 x/(2\\log x)$ 沿同一列成立。先按第一素因子切去两端，再切近等因子带，将近等因子带限于 $p>2z_1$ 以保持互斥。乘以窗内的 $\\log f(k)$，接 `levent-prime-values-recurrent-mass`。",
+    "en": "Use the same scale and reserve a strictly positive margin after both losses and the edge cost."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/近平方素数任务拆分3.md",
+  "program": "foundation",
+  "role": "conditional",
+  "parallel": true,
+  "depends_on": [
+    "L-quadratic-primes-first-factor-edge-bands",
+    "L-quadratic-primes-near-equal-semiprime-count"
+  ],
+  "imports": []
+}

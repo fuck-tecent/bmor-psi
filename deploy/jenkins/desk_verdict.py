@@ -12,7 +12,7 @@ class NoRedirect(HTTPRedirectHandler):
         return None
 
 
-def signed_post(url, secret, payload, expected):
+def signed_request(url, secret, payload):
     target = urlsplit(url)
     if target.scheme != "https" or not target.hostname or target.username is not None or target.fragment:
         raise ValueError("Expected an HTTPS verdict endpoint")
@@ -24,17 +24,24 @@ def signed_post(url, secret, payload, expected):
         "X-Goldbach-Signature": "sha256=" + signature,
     })
     with build_opener(NoRedirect()).open(request, timeout=15) as response:
-        if response.status != 200 or json.loads(response.read(1025)) != expected:
-            raise RuntimeError("Desk endpoint did not acknowledge the request")
+        data = response.read(262145)
+        if response.status != 200 or len(data) > 262144:
+            raise RuntimeError("Invalid signed Desk response")
+        return json.loads(data)
 
 
-def authorize(url, secret, *, pr, head, handle, gap, run_id, statement):
+def signed_post(url, secret, payload, expected):
+    if signed_request(url, secret, payload) != expected:
+        raise RuntimeError("Desk endpoint did not acknowledge the request")
+
+
+def authorize(url, secret, *, pr, head, handle, gap, run_id, statement, kind="prove", module=None):
     payload = json.dumps({
         "pr": pr,
         "head": head,
         "handle": handle,
         "gap": gap,
-        "run_id": run_id,
+        "run_id": run_id, "kind": kind, "module": module,
         "statement_sha256": hashlib.sha256(statement).hexdigest(),
     }).encode()
     signed_post(url.rstrip("/") + "/authorize", secret, payload, {"authorized": True})

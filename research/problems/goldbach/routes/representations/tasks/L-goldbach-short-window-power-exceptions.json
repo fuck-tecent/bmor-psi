@@ -1,0 +1,17 @@
+{
+  "id": "L-goldbach-short-window-power-exceptions",
+  "statement": "∀ ε : ℝ, 0 < ε → ∃ δ C : ℝ, 0 < δ ∧ δ < 1 ∧ 0 < C ∧ ∃ N : ℕ, ∀ X H : ℕ, N ≤ X → H ≤ X → (X:ℝ)^((7:ℝ)/120 + ε) < (H:ℝ) → ((((Finset.Icc (X-H) X).filter (fun n => 4 ≤ n ∧ Even n ∧ ∀ p ∈ Finset.range (n+1), ¬ (Nat.Prime p ∧ Nat.Prime (n-p)))).card):ℝ) ≤ C*(H:ℝ)^(1-δ)",
+  "plain_statement": {
+    "zh": "在 Grimmelt 的全部短窗尺度上获得幂次例外界",
+    "en": "Power saving throughout Grimmelt’s short-window range"
+  },
+  "brief": {
+    "zh": "针对每个窗口的真实无表示偶数集，研究其 Fourier 变换与素数卷积的相关；在非负下界模型中定位只给对数节省的误差，争取一个依赖 ε 的幂次 δ。须对所有起点一致。改变 A 或仅缩短窗长的估计均不足。可按 imports 引用核验引理。",
+    "en": "Use the transform of the actual exceptional set in each window against the prime convolution. Isolate the logarithmic losses in the nonnegative minorant and seek a power gain depending on epsilon, uniformly in the endpoint. A larger fixed logarithmic saving or shorter windows alone do not suffice. Verified lemmas may be used according to task imports."
+  },
+  "source": "https://arxiv.org/pdf/1910.05187v2",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "role": "lemma"
+}

@@ -1,0 +1,22 @@
+{
+  "id": "L-goldbach-adaptive-minor-negative-tail",
+  "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let A := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ Q n ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ r q a * (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let T := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => (intervalIntegral (fun t => (A n r)ᶜ.indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume).re; ∃ C : ℝ, 0 < C ∧ ∃ N : ℕ, ∀ X ≥ N, ∃ D : Finset ℕ, (D.card:ℝ) ≤ C*(X:ℝ)^((4:ℝ)/7) ∧ ∀ n ∈ Finset.Icc X (2*X), Even n → n ∉ D → ∃ r : ℕ → ℕ → ℝ, (∀ q a, (1/2:ℝ) ≤ r q a ∧ r q a ≤ 2) ∧ -(3/4:ℝ)*(n:ℝ) ≤ T n r",
+  "plain_statement": {
+    "zh": "自适应弧宽下次弧负贡献的 4/7 尾界",
+    "en": "A four-sevenths tail for adaptive signed minor arcs"
+  },
+  "brief": {
+    "zh": "保留每个 n 的带符号 Fourier 系数；先研究一族可选的弧边界，估计所有选择都低于安全线的交集。只需找到一个好选择。已证主弧下界与同一选择合用，给出至少 n/4 的加权表示量。全体深次弧的绝对四次矩已有反例。可按 imports 引用核验引理。",
+    "en": "Estimate signed coefficients and the intersection of failures for a tractable family of boundaries. One good profile per target suffices. Combine it with the verified major floor for the same profile to obtain weight at least n/4. The blanket absolute fourth-moment route has a counterexample. Verified lemmas may be imported as listed."
+  },
+  "source": "https://arxiv.org/abs/2610.15559",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-major-numerator-dilation"
+  ],
+  "role": "lemma",
+  "imports": [
+    "Conjectures.Goldbach.MajorNumeratorDilation"
+  ]
+}

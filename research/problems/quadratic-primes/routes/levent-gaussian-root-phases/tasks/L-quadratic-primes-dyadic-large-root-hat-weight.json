@@ -1,0 +1,18 @@
+{
+  "id": "L-quadratic-primes-dyadic-large-root-hat-weight",
+  "statement": "∀ Y n : ℕ, ((Finset.Ico Y (2*Y)).filter fun x => x<n ∧ n≤2*x).card = min (2*Y) n - max Y ((n+1)/2)",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 方法与自然推广 · 倍增尺度的整数帽形权",
+    "en": "New route · Levent GRH methods and extensions · Count the integer scales captured by the moving window"
+  },
+  "brief": {
+    "zh": "对大带仅平均整数 $Y\\le x<2Y$。将素数范围共同放大到 $Y^\\beta<p\\le(4Y)^\\alpha$。令 $g_Y(n)=Y^{-1}[\\min(2Y,n)-\\max(Y,\\lceil n/2\\rceil)]_+$，证明这正是 $x<n\\le2x$ 在这 $Y$ 个尺度中的频率，$\\sum_n g_Y(n)=(3Y-1)/2$。对充分大 $Y$ 有 $p>8Y$，实际平均由 $\\sum_p g_Y(r_p)\\log p$ 控制。相应模型为 $(\\alpha-\\beta+o(1))\\overline B_Y$，$\\overline B_Y=Y^{-1}\\sum_{Y\\le x<2Y}B_x$。",
+    "en": "Intersect the integer conditions Y ≤ x < 2Y and x < n ≤ 2x before counting the half-open interval."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/近平方素数任务拆分3.md",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

@@ -1,0 +1,23 @@
+{
+  "id": "L-log-rank-two-orbit-full-detector",
+  "statement": "∃ K : ℕ, ∀ k : ℕ, K ≤ k → 2 ≤ k → let n := 3*k+1; let adj := fun (A B : Finset (Fin n)) (a : ℤ) => ((A ∩ B).card : ℤ) = a ∨ ((A ∩ B).card : ℤ) = a+1; let detects := fun (Y : Finset (Finset (Fin n))) => ∀ A : Finset (Fin n), 2 ≤ A.card → A.card + 2 ≤ n → ∀ a : ℤ, ∃ B ∈ Y, ¬ adj A B a; let shift := fun (S : Finset (Fin n)) (t : Fin n) => S.image (fun i => i+t); let orbit := fun (S : Finset (Fin n)) => (Finset.univ : Finset (Fin n)).image (shift S); let I := (Finset.univ : Finset (Fin n)).filter (fun i => i.val < k); ∃ S : Finset (Fin n), S.card = k ∧ detects (orbit I ∪ orbit S)",
+  "plain_statement": {
+    "zh": "猜想：一个循环区间和一个种子的平移即可检测全部内部行",
+    "en": "Conjecture: an interval orbit and one seed orbit detect all interior rows"
+  },
+  "brief": {
+    "zh": "已证构造用至多 8010 个轨道。目标是两个轨道、同一批列覆盖全部行。可搜索小参数；证伪须给出任意阈值以上的障碍。",
+    "en": "Reduce 8010 orbits to two without weakening the detection quantifiers. A refutation needs arbitrarily large counterexamples."
+  },
+  "program": "correlation",
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/1133bda2e6/lean/PEqualNP/Outside/L_log_rank_cyclic_detector_family.lean",
+  "parallel": true,
+  "depends_on": [
+    "L-log-rank-cyclic-detector-family",
+    "L-log-rank-cyclic-small-rows"
+  ],
+  "imports": [
+    "PEqualNP.Outside.L_log_rank_cyclic_detector_family",
+    "Conjectures.LogRank.CyclicSmallRows"
+  ]
+}

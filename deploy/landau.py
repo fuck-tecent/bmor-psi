@@ -24,9 +24,11 @@ def exponent_record(desk, conn):
     # record_verdict() sets ACCEPTED only after the signed report for that run.
     accepted = {(gap, digest): run_id for gap, digest, run_id in conn.execute("""
         SELECT gap, statement_sha256, MIN(run_id) FROM goldbach_leases
-        WHERE verdict = 'ACCEPTED' AND run_id IS NOT NULL
+        WHERE kind = 'prove' AND verdict = 'ACCEPTED' AND run_id IS NOT NULL
         GROUP BY gap, statement_sha256
     """)}
+    composed = {gap: digest for gap, digest in conn.execute(
+        "SELECT gap,json_extract(certificate,'$.statement_sha256') FROM assembled_proofs")}
     verified = None
     for gap in desk.gaps.values():
         exponent = gap.get("lpf_exponent")
@@ -35,11 +37,13 @@ def exponent_record(desk, conn):
         if gap["statement"] != record_statement(exponent):
             raise ValueError(f"Unexpected record statement for {gap['id']}")
         run = accepted.get((gap["id"], desk.statement_hashes[gap["id"]]))
-        if run is not None and (verified is None or Fraction(exponent) > Fraction(verified["exponent"])):
+        assembled = composed.get(gap["id"]) == desk.statement_hashes[gap["id"]]
+        if (run is not None or assembled) and (verified is None or Fraction(exponent) > Fraction(verified["exponent"])):
             verified = {
                 "exponent": exponent,
                 "kind": "lean_accepted",
-                "source_url": f"https://github.com/CGandGameEngineLearner/goldbach-proofs/actions/runs/{run}",
+                "source_url": (f"https://github.com/CGandGameEngineLearner/goldbach-proofs/actions/runs/{run}"
+                               if run is not None else "https://www.movan.tech/goldbach/problems/quadratic-primes/?lemma=" + gap["id"]),
             }
     current = BASELINE
     if verified and Fraction(verified["exponent"]) >= Fraction(BASELINE["exponent"]):

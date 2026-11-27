@@ -1,0 +1,18 @@
+{
+  "id": "L-quadratic-primes-semiprime-gap-conic-bijection",
+  "statement": "∀ n p q : ℕ, Even n → p.Prime → q.Prime → p < q → n^2+1 = p*q → ∃ h v : ℕ, Even h ∧ Odd v ∧ v*(2*n+v)=h^2+1 ∧ p+h=n+v ∧ q=n+v+h ∧ 2*n ≤ h^2",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 方法与自然推广 · 近平方半素数的间距和二次曲线参数",
+    "en": "New route · Levent GRH methods and extensions · Parametrize the gap between distinct semiprime factors"
+  },
+  "brief": {
+    "zh": "对 $x<n\\le2x$ 的偶数与 $n^2+1=pq,\\ p<q$ 均素，取 $h=(q-p)/2,\\ v=(p+q)/2-n$，证明 $h$ 偶、$v>0$ 奇且 $v(2n+v)=h^2+1$。反向由 $v\\mid h^2+1$ 恢复 $n=((h^2+1)/v-v)/2$ 和 $p=n+v-h,\\ q=n+v+h$，保留窗口与两端素性。得 $h^2\\ge2n$，故 $q-p\\ge\\sqrt{8n}$。",
+    "en": "Take the half difference and the excess of the midpoint above n. Recover both factors from the conic equation."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/近平方素数任务拆分3.md",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

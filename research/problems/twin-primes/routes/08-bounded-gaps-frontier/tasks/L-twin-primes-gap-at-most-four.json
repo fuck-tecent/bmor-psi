@@ -1,0 +1,18 @@
+{
+  "id": "L-twin-primes-gap-at-most-four",
+  "statement": "∀ B : ℕ, ∃ p q : ℕ, B < p ∧ p < q ∧ q ≤ p + 4 ∧ p.Prime ∧ q.Prime",
+  "plain_statement": {
+    "zh": "无条件把无限复现的素数间隔压到 4 以内",
+    "en": "Prove infinitely many prime gaps at most four unconditionally"
+  },
+  "brief": {
+    "zh": "待证。对每个下界 B 找到两个大于 B 且距离至多 4 的素数，等价于 H₁≤4。Polymath8b 定理 1.4 在 GEH 下给出 6。可研究实际素数权的差二、差四相关合计能否在无界尺度压过素数幂污染；纯筛上界不能提供这里的正性。结果会把无限复现的候选间隔缩到 2、4。",
+    "en": "Open. A prime pair within four beyond every bound is equivalent to H₁ ≤ 4. Polymath8b Theorem 1.4 gives six under GEH. Seek an actual gap-two plus gap-four correlation surplus on unbounded scales after prime-power contamination. This leaves two and four as the possible recurring gaps at this scale."
+  },
+  "source": "https://arxiv.org/html/1407.4897v4",
+  "depends_on": [],
+  "program": "correlation",
+  "parallel": true,
+  "role": "target",
+  "challenge_only": true
+}

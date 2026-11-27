@@ -1,0 +1,30 @@
+{
+  "id": "L-goldbach-dyn-short-restricted-power-saving",
+  "statement": "let W := fun y : ℕ => Nat.floor ((y : ℝ) ^ ((13 : ℝ) / 225)); let P := fun X : ℕ => (Finset.Icc (Nat.sqrt X) (2 * Nat.sqrt X)).filter Nat.Prime; let R := fun (X n : ℕ) => ((P X).filter (fun p => p ≤ n ∧ Nat.Prime (n-p))).card; ∃ C δ : ℝ, 0 < C ∧ 0 < δ ∧ ∃ X₀ : ℕ, ∀ X ≥ X₀, ∀ y : ℕ, X ≤ y → y + W y ≤ 2 * X → (((Finset.Icc y (y + W y)).filter (fun n => Even n ∧ R X n = 0)).card : ℝ) ≤ C * ((W y : ℝ) + 1) * (X : ℝ) ^ (-δ)",
+  "plain_statement": {
+    "zh": "短窗内平方根量级加数的漏点数有幂次节省",
+    "en": "Power-saving exceptional set with a square-root-sized summand in every short window"
+  },
+  "brief": {
+    "zh": "待证。对充分大的 X，每个完整落在 [X,2X] 的闭窗 [y,y+⌊y^(13/225)⌋] 中，不能写成 p+q 且 ⌊√X⌋≤p≤2⌊√X⌋ 的偶数至多为 C(⌊y^(13/225)⌋+1)X^(-δ) 个。p、q 都是素数。尝试为实际受限计数构造带奇异级数的正主项，并用逐窗局部均方误差和已证漏点能量引理计数。Li 定理 6 在同窗给出无加数限制的密度趋一结论。本题同时限制加数并要求幂次节省。可引用全站已核验的 Lean 模块；见 https://jenkins-hook.goldbach.tech/verified-imports.json。",
+    "en": "Open. For large X, every closed window [y,y+floor(y^(13/225))] inside [X,2X] has at most C(floor(y^(13/225))+1)X^(-δ) even integers without a prime pair p+q with floor(sqrt X) ≤ p ≤ 2 floor(sqrt X). Try a positive singular-series main term and a uniform local mean-square error to which the verified exception-energy lemma applies. Li's Theorem 6 gives density one on the same window with unrestricted summands. This target adds a summand constraint and a power saving. You may import verified Lean modules listed at https://jenkins-hook.goldbach.tech/verified-imports.json."
+  },
+  "depends_on": [
+    "L-goldbach-dyn-exception-energy",
+    "L-goldbach-dyn-block-first-mass",
+    "L-goldbach-dyn-block-collision-budget"
+  ],
+  "source": "https://arxiv.org/html/2308.04458v8#S7",
+  "program": "correlation",
+  "parallel": true,
+  "module": "Conjectures.Goldbach.DynShortRestrictedPowerSaving",
+  "file": "lean/Conjectures/Goldbach/DynShortRestrictedPowerSaving.lean",
+  "imports": [
+    "Mathlib",
+    "Conjectures.Goldbach.DynExceptionEnergy",
+    "Conjectures.Goldbach.DynBlockFirstMass",
+    "Conjectures.Goldbach.DynBlockCollisionBudget"
+  ],
+  "track": "representations",
+  "role": "target"
+}

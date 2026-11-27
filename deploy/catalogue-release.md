@@ -33,3 +33,13 @@ Jenkins 在 `/var/cache/goldbach-lean-deps` 复用社区依赖的 `.olean`。缓
 ## 故障处理
 
 查看 journalctl -u goldbach-catalogue.service，区分身份不符、CI 待完成、清单合并冲突和重载失败。网络错误由下一轮定时器重试。需要人工回滚时先停止 timer 和发布服务，核对旧版本后原子切回 current，重启 goldbach-web 并核对 health。恢复 timer 前在 Git 上创建并审核修复 PR；若队列头仍是有冲突或未获授权的提交，须由管理员明确核对并协调基线。历史记录属于正在提供服务的快照。
+
+## 启用可核验拆题
+
+先部署带 reduce 模式的 CheckLemma 并按锁定版本重建受信 checklemma，更新受信快照的 outside-guard.mjs、Jenkins controller（含 assemble.py）、合并服务脚本、网站发布器允许列表与 Desk 运行文件（含 reductions.py），再在任务源文件上启用 reductions。已有 SQLite 库会在启动时增量迁移。研究台和 CI 共用原正式裁决签名配置。使用原有 GOLDBACH_TRUSTED_BASE、GOLDBACH_DESK_URL 和 GOLDBACH_DESK_SECRET_FILE。配置正式 Desk 的 site runner 每轮从所有分站获取一套就绪的拆法，在原有并发配额内核验；暂缺已合并源文件时会轮询重试。父题的冻结声明、组合 Lean 源码、依赖哈希和各方 PR 可从任务详情及 /api/status 复核。
+
+在备有锁定 Lean、Mathlib、PEqualNP.Defs 和 checklemma 的开发 checkout 中，通过下列命令重放两套拆法、正式反驳和父题核验。测试使用独立的本地 HTTPS Desk 和临时数据库。
+
+```sh
+GOLDBACH_TEST_LEAN=1 python3 -B -m unittest -v deploy.test_cut_refute
+```

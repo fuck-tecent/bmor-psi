@@ -1,0 +1,18 @@
+{
+  "id": "L-quadratic-primes-binomial-imaginary-two-adic-gap",
+  "statement": "∀ (a : ℤ) (j : ℕ), a ≠ 0 → Even a → Odd j → 3 ≤ j → let d := ((⟨a,1⟩ : GaussianInt)^j).im - (-1 : ℤ)^((j-1)/2); d ≠ 0 ∧ padicValNat 2 d.natAbs = padicValNat 2 (j.choose 2) + 2 * padicValNat 2 a.natAbs",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 方法与自然推广 · 二项展开的最低二进赋值",
+    "en": "New route · Levent GRH methods and extensions · Find the unique least two-adic valuation in the binomial expansion"
+  },
+  "brief": {
+    "zh": "对非零偶数 $a$ 与奇数 $j\\ge3$，设 $s=(-1)^{(j-1)/2}$。证明 $v_2(\\Im(a+i)^j-s)=v_2\\binom j2+2v_2(a)$，且差非零。展开 $\\Im$，首个非常数项是 $\\pm\\binom j2a^2$。对 $2\\le t\\le(j-1)/2$，用 $(2t)(2t-1)\\binom j{2t}=j(j-1)\\binom{j-2}{2t-2}$ 得 $v_2\\binom j{2t}\\ge v_2\\binom j2-v_2(t)$。$2(t-1)v_2(a)>v_2(t)$ 使其余项的赋值严格较高。",
+    "en": "Compare each higher even power of a against the first nonconstant term using the binomial coefficient identity."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/近平方素数任务拆分3.md",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

@@ -1,0 +1,21 @@
+{
+  "id": "L-quadratic-primes-near-equal-semiprime-count",
+  "statement": "letI := Classical.propDecidable; ∃ C : ℝ, 0 < C ∧ ∀ x H : ℕ, 1 ≤ H → H ≤ x → (((Finset.Ioc x (2*x)).filter fun n => Even n ∧ ∃ p q : ℕ, p.Prime ∧ q.Prime ∧ p<q ∧ n^2+1=p*q ∧ q-p≤H).card : ℝ) ≤ C*H",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 方法与自然推广 · 近等双素因子的计数上界",
+    "en": "New route · Levent GRH methods and extensions · Bound semiprimes with nearly equal prime factors"
+  },
+  "brief": {
+    "zh": "对 $1\\le H'\\le x$ 证明真半素数中 $q-p\\le H'$ 的参数数目 $\\ll H'$。由 S04 有 $h\\le H'/2,\\ v\\ll (H')^2/x$，若有解则 $(H')^2\\ge8x$。固定 $v$ 时 $h\\ll\\sqrt{xv}$，由同余至多有 $O(\\rho(v)(1+\\sqrt{x/v}))$ 个。用 S05 得 $O((H')^2/x+H')$。取 $H'=H$，此带只花 $O(x/\\log^2 x)$。",
+    "en": "Use the conic parameter to bound v by the squared gap divided by x. Then sum over roots modulo v."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/近平方素数任务拆分3.md",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-quadratic-primes-semiprime-gap-conic-bijection",
+    "L-quadratic-primes-odd-quadratic-root-average"
+  ],
+  "imports": []
+}

@@ -1,0 +1,11 @@
+{
+  "id": "general-monochromatic-rectangles",
+  "title": {
+    "zh": "一般矩阵的单色矩形指数",
+    "en": "Monochromatic rectangle exponent for general matrices"
+  },
+  "description": {
+    "zh": "对标 Cogentic 的一般实秩界，寻找更大的单色矩形。",
+    "en": "Seek larger monochromatic rectangles than the Cogentic real-rank bound guarantees."
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "id": "L-twin-primes-square-neighbour-mod-three",
+  "statement": "∀ n : ℕ, 10 ≤ n → ArithmeticFunction.vonMangoldt n * ArithmeticFunction.vonMangoldt (n+2) ≠ 0 → (¬ n.Prime ∨ ¬ (n+2).Prime) → (∃ p a : ℕ, p.Prime ∧ 3 ≤ a ∧ (p^a=n ∨ p^a=n+2)) ∨ (n.Prime ∧ ∃ p : ℕ, p.Prime ∧ p^2=n+2)",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 方法与自然推广 · 差二窄窗的平方污染分类",
+    "en": "New route · Levent GRH methods and extensions · Classify square contamination in gap two"
+  },
+  "brief": {
+    "zh": "对 $n\\ge10$ 且 $\\Lambda(n)\\Lambda(n+2)>0$ 的坏项，证明至少一端是指数 $\\ge3$ 的素数幂，或 $n=r^2-2$ 与 $r$ 均为素数。若左端为素数平方且底数 $r>3$，则 $3\\mid r^2+2$，右端有权只能是 $3^k$，且 $k\\ge3$。枚举小底数。",
+    "en": "Reduce a prime square plus two modulo three and check the exceptional small bases."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/孪生素数任务拆分3.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

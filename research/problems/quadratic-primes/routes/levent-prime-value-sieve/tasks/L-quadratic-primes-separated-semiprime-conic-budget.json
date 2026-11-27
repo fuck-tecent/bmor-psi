@@ -1,0 +1,21 @@
+{
+  "id": "L-quadratic-primes-separated-semiprime-conic-budget",
+  "statement": "letI := Classical.propDecidable; ∃ b : ℝ, 0≤b ∧ b<1 ∧ ∀ N : ℕ, ∃ x z : ℕ, N<x ∧ 4*x^2+1≤z^3 ∧ (z-1)^3<4*x^2+1 ∧ (let F := fun k : ℕ => 4*k^2+1; let z₀ := Nat.nthRoot 5 (x^2); let H := x / (Nat.log 2 (2+x))^2; let K := Finset.Ioc (x/2) x; let R := (K.filter fun k => z₀ < (F k).minFac).card; ((K.filter fun k => ∃ p q : ℕ, p.Prime ∧ q.Prime ∧ 2*z<p ∧ p<q ∧ H<q-p ∧ F k=p*q).card : ℝ) ≤ b*R)",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 方法与自然推广 · 远离对角的半素数损失常数",
+    "en": "New route · Levent GRH methods and extensions · Bound the separated semiprime loss"
+  },
+  "brief": {
+    "zh": "对 S07 的 $U_x$，用 S04 在 $2h>H,\\ v\\mid h^2+1$ 上只计两式 $n+v-h,\\ n+v+h$ 均素且前者 $>2z_1$ 的解。对指定 $v$ 范围交带根重数的上筛常数、互斥求和域和余项。总目标是无界整数 $x$ 上的 $U_x/R_x(z_0)\\le b$，允许只交覆盖一部分的上界。",
+    "en": "Use the conic parameter only on factors separated by more than the cutoff. The target is recurrent in x."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/近平方素数任务拆分3.md",
+  "program": "foundation",
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true,
+  "depends_on": [
+    "L-quadratic-primes-semiprime-gap-conic-bijection"
+  ],
+  "imports": []
+}

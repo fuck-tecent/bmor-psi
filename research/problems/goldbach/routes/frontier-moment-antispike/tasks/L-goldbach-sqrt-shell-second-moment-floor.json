@@ -1,0 +1,22 @@
+{
+  "id": "L-goldbach-sqrt-shell-second-moment-floor",
+  "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (u : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (u k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let Q₁ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊; let H := fun n : ℕ => 256 * Q₁ n * Q n; let wideArcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q₁ n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (H n:ℝ)/((q:ℝ)*(n:ℝ))}; let Q₂ := fun n : ℕ => ⌊Real.sqrt (n : ℝ) / ((Nat.log 2 (n + 2) : ℝ) ^ 4)⌋₊; let sqrtArcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ Q₂ n ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t - (a : ℝ) / (q : ℝ)| ≤ ((256 * Q₂ n * Q n : ℕ) : ℝ) / ((q : ℝ) * (n : ℝ))}; ∃ c : ℝ, 0 < c ∧ ∃ N : ℕ, ∀ n : ℕ, N ≤ n → c * (n : ℝ) * Real.log (n : ℝ) ≤ intervalIntegral (fun t => (sqrtArcs n \\ wideArcs n).indicator (fun u => ‖S n w u‖ ^ 2) t) (0 : ℝ) 1 MeasureTheory.volume",
+  "plain_statement": {
+    "zh": "对所有充分大的整数 n，仅在平方根主弧中扣除立方根主弧后留下的区域内，素数对数权指数和的二阶矩已经至少为 c n log n，其中 c>0 与 n 无关。",
+    "en": "For every sufficiently large integer n, the second moment of the prime-log exponential sum on the portion of sqrtArcs outside wideArcs is at least c n log n for an absolute c > 0."
+  },
+  "brief": {
+    "zh": "取分母在 n 的三分之一次方与十二分之五次方之间的平方自由既约分数。在每个分数右边取宽 1/(6n) 的小窗。用有理数的间距避开 wideArcs，并用分数自身作为中心证明整窗包含于 sqrtArcs。对各几何分母区间的贡献求和。",
+    "en": "Use squarefree denominators between the cube-root cutoff and n^(5/12). Place a window of width 1/(6n) to the right of each reduced fraction. Rational spacing puts the windows outside wideArcs, and their own centers put them inside sqrtArcs. Sum their second-moment contributions across geometric blocks."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/3586",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-sqrt-arc-second-moment-floor"
+  ],
+  "imports": [
+    "Conjectures.Goldbach.SqrtArcSecondMomentFloor"
+  ]
+}

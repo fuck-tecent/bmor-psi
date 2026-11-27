@@ -41,3 +41,12 @@ Localize square-root prime steps to every block of length about X^(3/4). Togethe
 
 - `L-goldbach-dyn-block-first-mass` — 每个四分之三次幂短窗中的素数路径总量下界 / Lower-bound prime arrivals in every three-quarter-power block
 - `L-goldbach-dyn-block-collision-budget` — 每个四分之三次幂短窗中的共同终点碰撞预算 / Bound common-endpoint collisions in every three-quarter-power block
+
+## 可对照文献的短窗目标 / Short-window benchmarks
+
+两个待证目标都把一个素数加数留在平方根带 [⌊√X⌋, 2⌊√X⌋]。检索截至 2026-11-27。对照 [Li v8 定理 6、7](https://arxiv.org/html/2308.04458v8#S7)、[Grimmelt 定理 1](https://arxiv.org/abs/1910.05187) 和 [Halupczok 定理 5](https://arxiv.org/html/1212.4406)。Halupczok 要求平均窗长 R 不超过受限加数窗长 Y 的同阶量，并对两个窗的端点相对位置有要求。取小素数窗 Y ≍ √X 时，平方根带与目标窗相隔约 X，端点条件不成立；交换加数后，在大素数上取由目标窗决定的短区间也达不到其 Y ≫ X^(7/12+ε) 的要求。已知短窗素数下界无法在这两道题的超短尺度逐窗使用。已有 X^(3/4) 窗矩估计允许更短的子窗完全漏掉。
+
+- `L-goldbach-dyn-short-restricted-power-saving` — 同一 13/225 窗长下，要求平方根加数约束和漏点幂次节省。取 X=y 并放开加数即推出 Li 定理 6 的密度结论。它还控制每个合法窗的漏点，铺窗后将父题的全区间漏点数压到 O(X^(1−δ)+X^(13/225))。切入口是带局部算术因子的正主项与一次逐窗均方估计。
+- `L-goldbach-dyn-ultrashort-restricted-hit` — 同一 26/1075 窗长下，要求至少一个由平方根带素数参与的表示。取 X=y 并放开加数即推出 Li 定理 7 的存在结论。它排除同尺度全漏，且铺窗可得到 Ω(X^(1−26/1075)) 个不同命中。要得到父题的密度结论，还需控制剩余漏点。切入口是对带短窗权的素数二元卷积直接建立正下界。
+
+Both targets are open and retain the square-root constraint. With X=y and that constraint dropped, their conclusions recover Li's Theorems 6 and 7 respectively. The first controls every comparable window at exponent 13/225 and gives a power saving in the exception count. The second rules out wholly missed windows at the shorter exponent 26/1075. The literature comparison establishes the stated improvements over these baselines; priority for the exact restricted statements remains subject to further literature review.

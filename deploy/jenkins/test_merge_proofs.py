@@ -54,6 +54,23 @@ class MergeProofTests(unittest.TestCase):
                                        {"sha": self.head, "merge_method": "squash"})
         tree.assert_called_once_with(app, current_main["object"]["sha"])
 
+    def test_generated_modules_follow_the_official_kind_and_head(self):
+        for kind, prefix in (("prove", "Task"), ("cut", "Cut"), ("refute", "Refute")):
+            module = "Conjectures.Cuts." + prefix + "a" * 24
+            path = "lean/" + module.replace(".", "/") + ".lean"
+            record = dict(self.record, kind=kind, module=module, manifest={
+                "rests_on": [{"module": module, "sha256": hashlib.sha256(self.proof).hexdigest()}], "defs": []})
+            app = Mock()
+            app.request.return_value = {"object": {"sha": self.main}}
+            with self.subTest(kind=kind), patch("merge_proofs.pull_request", return_value={
+                    **self.pr, "merged": True, "merge_commit_sha": self.merged}), patch(
+                    "merge_proofs.proven_content", return_value=self.proof) as content, patch(
+                    "merge_proofs.metadata", return_value={"sha": git_blob(self.proof)}):
+                self.assertEqual(merge(app, 55, self.head, record, self.base), (self.merged, path, self.proof))
+                self.assertEqual(content.call_args.args[1], path)
+                with self.assertRaises(SkipMerge):
+                    merge(app, 55, self.head, dict(record, kind="refute" if kind == "cut" else "cut"), self.base)
+
     def test_existing_path_on_main_blocks_old_pull_request(self):
         app = Mock()
         app.request.side_effect = [[{"filename": self.file, "status": "added"}],

@@ -1,0 +1,18 @@
+{
+  "id": "L-twin-primes-admissible-long-prime-power-convolution",
+  "statement": "∀ d : ℕ, 0<d → (∑ k ∈ d.divisors, (ArithmeticFunction.moebius (d/k) : ℝ)*ArithmeticFunction.vonMangoldt k) = -(ArithmeticFunction.moebius d : ℝ)*Real.log d",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 方法与自然推广 · 对数 Möbius 权的素幂卷积",
+    "en": "New route · Levent GRH methods and extensions · Expand the logarithmic Möbius weight as a prime-power convolution"
+  },
+  "brief": {
+    "zh": "对 D05 的同一 $k_Y$ 和 $md-2\\equiv2\\bmod3$，以 $-\\mu(d)\\log d=\\sum_{e\\ell^a=d}\\mu(e)\\log\\ell$（$\\ell$ 素，$a\\ge1$）重排。给出 $m e\\ell^a-2$ 素、$me\\ell^a\\equiv1\\bmod3$ 及原硬窗的求和域。先从 $\\mu*1$ 的对数微分证明系数恒等式，含非平方自由 $d$ 的相消。",
+    "en": "Use the divisor convolution identity for the logarithmic derivative of the Möbius series."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/孪生素数任务拆分3.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

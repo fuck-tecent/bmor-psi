@@ -1,6 +1,7 @@
 """Translate completed advisory, website, catalogue, GRH and formal proof results into durable GitHub checks."""
 
 import argparse
+import re
 import sqlite3
 from contextlib import closing
 from pathlib import Path
@@ -12,6 +13,15 @@ CONCLUSIONS = {
     "SUCCESS": "success", "FAILURE": "failure", "UNSTABLE": "failure",
     "ABORTED": "cancelled", "CANCELLED": "cancelled", "NOT_BUILT": "neutral",
 }
+
+
+def refusal_summary(reason):
+    summary = ("REFUSED: The file guard stopped this submission before Lean ran. "
+               f"No Lean verdict or points were issued.\n\n    {reason}")
+    if re.match(r'^line \d+: "[A-Za-z0-9_]%" is not allowed\b', reason):
+        summary += ("\n\nIf this is natural-number remainder, use an explicit expression such as "
+                    "`Nat.mod p 30` and verify the revised proof locally.")
+    return summary
 
 
 def enqueue_build_checks(jobs, outbox, *, staging=False, first_job_id=1):
@@ -42,6 +52,16 @@ def enqueue_formal_checks(jobs, outbox, *, first_job_id=1):
         conclusion = {"ACCEPTED": "success", "REJECTED": "failure"}[verdict]
         enqueue(outbox, "authoritative-pr", sha, conclusion,
                 f"Lean verdict for {gap}: {verdict}. Task desk run {run_id}.", pr=pr, run_id=run_id)
+
+    if jobs.execute("SELECT 1 FROM sqlite_master WHERE name='proof_refusals' AND type='table'").fetchone():
+        refusals = jobs.execute("""SELECT j.sha, j.pr, r.run_id, f.reason
+            FROM proof_refusals f JOIN ci_jobs j ON j.id=f.job_id
+            JOIN desk_runs r ON r.job_id=j.id
+            WHERE j.id>=? AND j.kind='authoritative' AND j.pr>0
+              AND NOT EXISTS (SELECT 1 FROM desk_outbox o WHERE o.run=r.run_id AND o.attempt=1)
+        """, (first_job_id,))
+        for sha, pr, run_id, reason in refusals:
+            enqueue(outbox, "proof-refused-pr", sha, "failure", refusal_summary(reason), pr=pr, run_id=run_id)
 
 
 def main():

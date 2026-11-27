@@ -1,0 +1,17 @@
+{
+  "id": "L-log-rank-improved-general-rectangle-exponent",
+  "statement": "∃ C : ℝ, 0 < C ∧ ∀ (m n : ℕ) (M : Matrix (Fin m) (Fin n) ℝ), 0 < m → 0 < n → (∀ i j, M i j = 0 ∨ M i j = 1) → 1 ≤ M.rank → ∃ (A : Finset (Fin m)) (B : Finset (Fin n)) (v : ℝ), (∀ i ∈ A, ∀ j ∈ B, M i j = v) ∧ (m : ℝ) * n ≤ (A.card : ℝ) * B.card * Real.rpow 2 (C * Real.rpow (M.rank : ℝ) (49999 / 100000 : ℝ))",
+  "plain_statement": {
+    "zh": "猜想：任意正实秩布尔矩阵都有密度至少 2^(−C r^0.49999) 的单色矩形",
+    "en": "Conjecture: every positive-rank Boolean matrix has a monochromatic rectangle of density at least 2^(−C r^0.49999)"
+  },
+  "brief": {
+    "zh": "Cogentic 的指数是 0.499995。本题保持任意矩阵与统一常数，要求将指数降至 0.49999。审计偏置稳定矩阵归约中造成指数损失的步骤；减小乘法常数不足以得证。",
+    "en": "Audit the exponent losses in the biased stable matrix reduction (Theorem 3.1). Improve the exponent uniformly for all Boolean matrices; a smaller prefactor alone is insufficient."
+  },
+  "program": "correlation",
+  "source": "https://github.com/google-research/google-research/tree/master/cogentic_research_papers/logrank_conjecture",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

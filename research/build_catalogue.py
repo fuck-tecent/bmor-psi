@@ -96,6 +96,10 @@ def build(root):
             if (ident != g.get("id") or not ident.startswith(f"L-{slug}-") or ident in seen
                     or not g.get("statement", "").strip() or g.get("track", route) != route):
                 raise ValueError(f"Conflicting task ID, route or missing statement: {task}")
+            if not isinstance(g.get("reductions", False), bool):
+                raise ValueError(f"Expected a boolean reductions setting: {task}")
+            if g.get("reductions") and slug != "twin-primes":
+                raise ValueError(f"Proof decomposition pilot is restricted to twin primes: {task}")
             if not bilingual(g.get("plain_statement", {})) or not bilingual(g.get("brief", {})):
                 raise ValueError(f"Missing bilingual task description: {task}")
             if ident in old_statements and g["statement"] != old_statements[ident]:

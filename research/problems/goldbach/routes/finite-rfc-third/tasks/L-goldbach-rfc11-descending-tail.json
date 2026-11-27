@@ -1,0 +1,18 @@
+{
+  "id": "L-goldbach-rfc11-descending-tail",
+  "statement": "let P := fun (lo hi : ℕ) => ∀ n : ℕ, lo≤n → n<hi → 2∣n → ∃ p q : ℕ, p.Prime ∧ q.Prime ∧ p+q=n; ∀ a b c : ℕ, P a b → P b c → P a c",
+  "plain_statement": {
+    "zh": "新路线 · B02 · 拼接两个相邻半开区间的覆盖",
+    "en": "New route · B02 · Join coverage on two adjacent half-open intervals"
+  },
+  "brief": {
+    "zh": "拼接两个相邻半开区间的覆盖",
+    "en": "Join coverage on two adjacent half-open intervals"
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

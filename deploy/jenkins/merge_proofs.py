@@ -111,7 +111,17 @@ def proven_content(app, path, revision, expected):
 def merge(app, number, head, record, base, *, dry_run=False):
     if record["verdict"] != "ACCEPTED" or record["head_sha"] != head:
         raise SkipMerge("No official ACCEPTED verdict for this revision")
-    gap = task(base, record["lemma_id"])
+    module = record.get("module", "")
+    generated = re.fullmatch(r"Conjectures\.Cuts\.(Task|Cut|Refute)[0-9a-f]{24}", module)
+    kind = record.get("kind", "prove")
+    if generated:
+        if generated[1] != {"prove": "Task", "cut": "Cut", "refute": "Refute"}.get(kind):
+            raise SkipMerge("The verified task kind differs from its assigned module")
+        gap = {"module": module, "file": "lean/" + module_path(module)}
+    else:
+        if kind != "prove":
+            raise SkipMerge("Missing assigned module in the verdict")
+        gap = task(base, record["lemma_id"])
     path = gap["file"]
     module = path.removeprefix("lean/").removesuffix(".lean").replace("/", ".")
     if gap["module"] != module or path != "lean/" + module_path(module):

@@ -206,7 +206,7 @@ export function headerImports(text, name) {
   return out;
 }
 
-export function importClosure(listed, read, judged, buildOrder = []) {
+export function importClosure(listed, read, judged, buildOrder = [], limit = MAX_OUTSIDE) {
   const outside = new Set(), base = new Set();
   const visit = (m, from) => {
     if (outside.has(m) || base.has(m)) return;
@@ -217,7 +217,7 @@ export function importClosure(listed, read, judged, buildOrder = []) {
     if (isOutside(m)) {
       if (!OUTSIDE_MODULE_RE.test(m)) refuse(`${m} is not the name of an outside proof file`);
       outside.add(m);
-      if (outside.size > MAX_OUTSIDE) refuse(`more than ${MAX_OUTSIDE} outside modules are listed or reached (${[...outside].slice(0, 3).join(', ')}, ...); list fewer`);
+      if (outside.size > limit) refuse(`more than ${limit} outside modules are listed or reached (${[...outside].slice(0, 3).join(', ')}, ...); list fewer`);
       // The same rules a proof file passes before it is built, on the text as it is on the base.
       let imports;
       try { imports = checkImports(bytes, (x) => PROJECT_RE.test(x)); } catch (e) { if (e instanceof Refused) refuse(`the listed outside module ${m}: ${e.message}`); throw e; }
@@ -256,7 +256,7 @@ const main = () => {
     const seen = checkImports(readFileSync(a[0]), listed);
     if (a[2]) writeFileSync(a[2], JSON.stringify([...new Set([...listed, ...seen.filter((m) => MODULE_RE.test(m))])]));
     process.stdout.write(`imports allowed: ${seen.join(' ') || '(none)'}\n`);
-  } else if (cmd === 'closure' && a.length === 4) {
+  } else if ((cmd === 'closure' || cmd === 'assembly-closure') && a.length === 4) {
     const [baseDir, importsPath, judgedFile, out] = a;
     if (!FILE_RE.test(judgedFile)) refuse('the judged file is not a registered community proof path');
     const listed = json(importsPath);
@@ -269,7 +269,8 @@ const main = () => {
       return readFileSync(p);
     };
     const buildOrder = [];
-    const r = importClosure(listed, read, moduleOf(judgedFile), buildOrder);
+    const r = importClosure(listed, read, moduleOf(judgedFile), buildOrder,
+      cmd === 'assembly-closure' ? (MAX_OUTSIDE + 1) * listed.length : MAX_OUTSIDE);
     put(out, 'outside-build-order.txt', buildOrder.map((m) => `${m}\n`).join(''));
     put(out, 'base-imports.txt', r.base.map((m) => `${m}\n`).join(''));
     put(out, 'outside-imports.txt', r.outside.map((m) => `${m}\n`).join(''));

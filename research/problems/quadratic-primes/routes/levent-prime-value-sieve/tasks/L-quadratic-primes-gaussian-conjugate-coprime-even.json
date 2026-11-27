@@ -1,0 +1,18 @@
+{
+  "id": "L-quadratic-primes-gaussian-conjugate-coprime-even",
+  "statement": "∀ n : ℕ, Even n → IsCoprime ((n : GaussianInt) + ⟨0,1⟩) ((n : GaussianInt) - ⟨0,1⟩)",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 方法与自然推广 · 高斯共轭互素",
+    "en": "New route · Levent GRH methods and extensions · Coprimality of Gaussian conjugates"
+  },
+  "brief": {
+    "zh": "证明偶数 $n$ 的 $n+i,n-i$ 在 $\\mathbb Z[i]$ 互素。公共高斯素因子整除 $2i$，只能与 $1+i$ 相伴，但 $1+i\\mid a+bi$ 要求 $a,b$ 同奇偶。奇数 $n$ 另有 $v_2(n^2+1)=1$。",
+    "en": "A common divisor divides 2i. The prime above 2 divides a Gaussian integer precisely when its coordinates have the same parity."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/近平方素数任务拆分3.md",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

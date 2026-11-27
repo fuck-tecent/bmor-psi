@@ -25,5 +25,6 @@
     "PEqualNP.Outside.L_twin_primes_divisor_bridge",
     "Conjectures.TwinPrimes.EnergyBridgeV2"
   ],
-  "challenge_only": true
+  "challenge_only": true,
+  "reductions": true
 }

@@ -1,0 +1,20 @@
+{
+  "id": "L-quadratic-primes-first-factor-edge-bands",
+  "statement": "∃ C : ℝ, 0<C ∧ ∃ N : ℕ, ∀ x z : ℕ, N≤x → (z=Nat.nthRoot 5 (x^2) ∨ (z^3≥4*x^2+1 ∧ (z-1)^3<4*x^2+1)) → (((Finset.Ioc (x/2) x).filter fun k => z<(4*k^2+1).minFac ∧ (4*k^2+1).minFac≤2*z).card : ℝ) ≤ C*x/(Real.log x)^2",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 方法与自然推广 · 首次命中两端窄带的成本",
+    "en": "New route · Levent GRH methods and extensions · Bound the first hits in each edge band"
+  },
+  "brief": {
+    "zh": "用 S02 对两段 $(z_0,2z_0]$、$(z_1,2z_1]$ 的实际首次命中各证 $O(x/\\log^2 x)$。每个奇素数至多两个根，每个带内 $\\sum_{z<p\\le2z}1/p\\ll1/\\log z$。后一段只在终带的合数损失中扣一次。",
+    "en": "Sum the switched upper-sieve estimates over roots and prime reciprocals in each doubled band."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/近平方素数任务拆分3.md",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-quadratic-primes-switched-cofactor-small-sieve"
+  ],
+  "imports": []
+}

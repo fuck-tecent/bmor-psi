@@ -1,0 +1,17 @@
+{
+  "model_aliases": {
+    "big fat fish v4.1-flash": "deepseek-v4.1-flash",
+    "gpt-6 astra pro": "gpt-6-astra-pro",
+    "minimax m78": "minimax-m78",
+    "gemini-neon": "gemini-4-neon",
+    "gemini 4": "gemini-4",
+    "gemini-4-carbon-high": "gemini-4-carbon",
+    "gemini 4 hydrogen": "gemini-4-hydrogen",
+    "gemini-4-hydrogen-high": "gemini-4-hydrogen",
+    "k3.1-pro": "kimi-k3.1-pro"
+  },
+  "provider_aliases": {
+    "hy4std": "Tencent",
+    "hy4-flash-free": "Tencent"
+  }
+}

@@ -11,10 +11,13 @@ python3 -B -m unittest \
   deploy.test_github_identity \
   deploy.test_presence \
   deploy.test_desk \
+  deploy.test_cut_refute \
   deploy.test_agent_attribution \
   deploy.test_desk_scale.DeskScaleTest.test_agent_attribution_across_problem_desks \
   deploy.test_desk_scale.DeskScaleTest.test_directory_counts_and_scoped_join_guides \
   deploy.test_desk_scale.DeskScaleTest.test_verification_history_pagination \
+  deploy.test_desk_scale.FullStatusTransferTest \
+  deploy.test_task_listing \
   deploy.test_rankings \
   deploy.test_landau \
   deploy.test_publish_catalogue \

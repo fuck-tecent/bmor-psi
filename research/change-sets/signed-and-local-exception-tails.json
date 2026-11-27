@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "problem": "goldbach",
+  "base_revision": "e24cf0dfc3fa414cf91c05515274d72e7fbd9f3a",
+  "request_id": "signed-and-local-exception-tails",
+  "parent": {
+    "id": "L-goldbach-binary-pointwise-positivity",
+    "statement_sha256": "e14f2af0ceebde21345816fb72044035c2eff2be922b02234078a77003be19b1"
+  },
+  "motivation": {
+    "zh": "分别控制自适应次弧的大负尾和所有短窗内的真实漏点。",
+    "en": "Bound adaptive negative tails globally and actual exceptions in each short window."
+  },
+  "tasks": [
+    {
+      "id": "L-goldbach-adaptive-minor-negative-tail",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let A := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ Q n ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ r q a * (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let T := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => (intervalIntegral (fun t => (A n r)ᶜ.indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume).re; ∃ C : ℝ, 0 < C ∧ ∃ N : ℕ, ∀ X ≥ N, ∃ D : Finset ℕ, (D.card:ℝ) ≤ C*(X:ℝ)^((4:ℝ)/7) ∧ ∀ n ∈ Finset.Icc X (2*X), Even n → n ∉ D → ∃ r : ℕ → ℕ → ℝ, (∀ q a, (1/2:ℝ) ≤ r q a ∧ r q a ≤ 2) ∧ -(3/4:ℝ)*(n:ℝ) ≤ T n r",
+      "plain_statement": {
+        "zh": "自适应弧宽下次弧负贡献的 4/7 尾界",
+        "en": "A four-sevenths tail for adaptive signed minor arcs"
+      },
+      "brief": {
+        "zh": "保留每个 n 的带符号 Fourier 系数；先研究一族可选的弧边界，估计所有选择都低于安全线的交集。只需找到一个好选择。已证主弧下界与同一选择合用，给出至少 n/4 的加权表示量。全体深次弧的绝对四次矩已有反例。可按 imports 引用核验引理。",
+        "en": "Estimate signed coefficients and the intersection of failures for a tractable family of boundaries. One good profile per target suffices. Combine it with the verified major floor for the same profile to obtain weight at least n/4. The blanket absolute fourth-moment route has a counterexample. Verified lemmas may be imported as listed."
+      },
+      "source": "https://arxiv.org/abs/2610.15559",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-major-numerator-dilation"
+      ],
+      "route": "minor-truncation",
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-short-window-power-exceptions",
+      "statement": "∀ ε : ℝ, 0 < ε → ∃ δ C : ℝ, 0 < δ ∧ δ < 1 ∧ 0 < C ∧ ∃ N : ℕ, ∀ X H : ℕ, N ≤ X → H ≤ X → (X:ℝ)^((7:ℝ)/120 + ε) < (H:ℝ) → ((((Finset.Icc (X-H) X).filter (fun n => 4 ≤ n ∧ Even n ∧ ∀ p ∈ Finset.range (n+1), ¬ (Nat.Prime p ∧ Nat.Prime (n-p)))).card):ℝ) ≤ C*(H:ℝ)^(1-δ)",
+      "plain_statement": {
+        "zh": "在 Grimmelt 的全部短窗尺度上获得幂次例外界",
+        "en": "Power saving throughout Grimmelt’s short-window range"
+      },
+      "brief": {
+        "zh": "针对每个窗口的真实无表示偶数集，研究其 Fourier 变换与素数卷积的相关；在非负下界模型中定位只给对数节省的误差，争取一个依赖 ε 的幂次 δ。须对所有起点一致。改变 A 或仅缩短窗长的估计均不足。可按 imports 引用核验引理。",
+        "en": "Use the transform of the actual exceptional set in each window against the prime convolution. Isolate the logarithmic losses in the nonnegative minorant and seek a power gain depending on epsilon, uniformly in the endpoint. A larger fixed logarithmic saving or shorter windows alone do not suffice. Verified lemmas may be used according to task imports."
+      },
+      "source": "https://arxiv.org/pdf/1910.05187v2",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "route": "representations",
+      "assumptions": []
+    }
+  ],
+  "links": [
+    {
+      "kind": "exploration",
+      "inputs": [
+        "L-goldbach-adaptive-minor-negative-tail"
+      ],
+      "output": "L-goldbach-binary-pointwise-positivity",
+      "explanation": {
+        "zh": "逐个偶数合并同一剖面的主弧和补弧，坏集外 R(n)≥n/4。按尺度几何求和控制真正漏点至 O(X^(4/7))；坏集内的逐点正性仍缺。",
+        "en": "The same-profile full integral gives R(n)≥n/4 off the exceptional set. Dyadic summation bounds genuine misses by O(X^(4/7)); positivity inside the bad set remains open."
+      }
+    },
+    {
+      "kind": "exploration",
+      "inputs": [
+        "L-goldbach-short-window-power-exceptions"
+      ],
+      "output": "L-goldbach-binary-pointwise-positivity",
+      "explanation": {
+        "zh": "在 H>X^(7/120+ε) 的每一个窗口，把父题的失败数压至 O(H^(1−δ))。由 H^δ 支配每个固定的 log(X)^A，恢复原定理；仍允许孤立例外。",
+        "en": "In every admissible window the parent fails on at most O(H^(1−δ)) targets. H^δ dominates any fixed log power, recovering the published bound; isolated misses remain possible."
+      }
+    }
+  ],
+  "route_note": {
+    "zh": "分别控制自适应次弧的大负尾和所有短窗内的真实漏点。",
+    "en": "Bound adaptive negative tails globally and actual exceptions in each short window."
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "id": "L-goldbach-beaumont-central-local-prediction-refute",
+  "statement": "¬ (let H := fun n : ℕ => ((Finset.range (n+1)).filter (fun p => p.Prime ∧ p ≤ n ∧ (n-p).Prime ∧ n ≤ 3*p ∧ 3*p ≤ 2*n)).card; let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); let M := fun X : ℕ => (X:ℝ)/(Real.log (X:ℝ))^2; let R := fun n : ℕ => ((H n + H (n+2)):ℝ); ∀ ε : ℝ, 0 < ε → ∃ X₀ : ℕ, ∀ X ≥ X₀, ∃ b : ℕ → ℝ, (∀ n ∈ E X, M X ≤ b n) ∧ (∑ n ∈ E X, (R n-b n)^2) ≤ ε*(X:ℝ)*(M X)^2)",
+  "plain_statement": {
+    "zh": "证伪相邻偶数中央表示数的统一预测下限与均方误差条件",
+    "en": "Refute the uniform predictor floor with vanishing mean-square error for adjacent central counts"
+  },
+  "brief": {
+    "zh": "取 X≤n≤65X/64 且 n≡26 (mod 30)。两个目标各只允许三对有序既约余数。用固定模 30 的算术级数素数定理控制均值，再用柯西不等式给出对任意预测函数都成立的均方误差下界。",
+    "en": "Restrict to n ≡ 26 mod 30 in [X,65X/64]. Each target permits three ordered pairs of reduced residues. Use the prime number theorem modulo 30 to bound their average, then Cauchy–Schwarz to give a mean-square error floor uniform in the predictor."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-central-prediction-obstruction.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "track": "representations",
+  "role": "lemma",
+  "imports": []
+}

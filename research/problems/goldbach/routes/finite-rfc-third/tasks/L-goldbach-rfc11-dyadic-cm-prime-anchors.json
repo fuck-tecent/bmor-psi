@@ -1,0 +1,18 @@
+{
+  "id": "L-goldbach-rfc11-dyadic-cm-prime-anchors",
+  "statement": "∀ j m : ℕ, 61≤j → j≤1049 → m<2^j/2 → ((m:ℝ)^(1/4 : ℝ)+1)^2 < (2:ℝ)^((j+2)/2+2 : ℕ)",
+  "plain_statement": {
+    "zh": "新路线 · E04 · 核对二进段的点阶超过 Hasse 素性阈值",
+    "en": "New route · E04 · Verify that the dyadic point order exceeds the Hasse primality threshold"
+  },
+  "brief": {
+    "zh": "核对二进段的点阶超过 Hasse 素性阈值",
+    "en": "Verify that the dyadic point order exceeds the Hasse primality threshold"
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

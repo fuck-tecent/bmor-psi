@@ -1,0 +1,18 @@
+{
+  "id": "L-quadratic-primes-odd-quadratic-root-average",
+  "statement": "let ρ := fun v : ℕ => ((Finset.range v).filter fun h => (h^2+1)%v=0).card; ∃ C : ℝ, 0 < C ∧ ∀ V : ℕ, 1 ≤ V → (∑ v ∈ (Finset.Icc 1 V).filter Odd, (ρ v : ℝ)) ≤ C*V ∧ (∑ v ∈ (Finset.Icc 1 V).filter Odd, (ρ v : ℝ)/Real.sqrt v) ≤ C*Real.sqrt V",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 方法与自然推广 · 奇模数上的二次根数平均",
+    "en": "New route · Levent GRH methods and extensions · Bound the average number of quadratic roots at odd moduli"
+  },
+  "brief": {
+    "zh": "对奇 $v$ 记 $\\rho(v)=\\#\\{h\\bmod v:h^2+1\\equiv0\\}$。证明 $\\rho(v)\\le r_2(v)/4$，其中 $r_2$ 计有序、有符号的两个整数平方和。用高斯整数素因子分解或二平方表示公式逐素幂核对，$\\rho(1)=1$ 单列。由半径 $\\sqrt V$ 的整格点数推 $\\sum_{v\\le V,\\ 2\\nmid v}\\rho(v)\\ll V$ 和 $\\sum\\rho(v)/\\sqrt v\\ll\\sqrt V$。",
+    "en": "Use the two-square representation formula at prime powers and count lattice points in a disk."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/近平方素数任务拆分3.md",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

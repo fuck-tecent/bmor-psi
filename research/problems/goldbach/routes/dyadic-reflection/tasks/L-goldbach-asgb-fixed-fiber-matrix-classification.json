@@ -1,0 +1,18 @@
+{
+  "id": "L-goldbach-asgb-fixed-fiber-matrix-classification",
+  "statement": "∀ a b c d : ℤ, a+c=1 → b+d=1 → (a*d-b*c=1 ∨ a*d-b*c = -1) → a-b=1 ∨ a-b = -1",
+  "plain_statement": {
+    "zh": "新路线 · K01 · 分类保持固定和的整数幺模矩阵在纤维上的作用",
+    "en": "New route · K01 · Classify the slopes of sum-preserving unimodular matrices on a fixed fiber"
+  },
+  "brief": {
+    "zh": "分类保持固定和的整数幺模矩阵在纤维上的作用",
+    "en": "Classify the slopes of sum-preserving unimodular matrices on a fixed fiber"
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

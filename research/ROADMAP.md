@@ -4,7 +4,15 @@
 
 2026-11-26 · [中间命题：GRH 下每个偶数的 1+4 表示](checkpoint/2026-11-26-one-plus-four/proof.md)。原证明稿与计算证书的核心贡献者为千早爱音（Visio-Vanitas）。58 个区间、两套尾段参数及替代级数检验均得到正下界，全体偶数的解析证明待独立审定。[复现记录](checkpoint/2026-11-26-one-plus-four/README.md)
 
+2026-11-27 · [中间命题提交稿：GRH 下每个偶数的 1+3 表示](checkpoint/2026-11-27-one-plus-three/proof.md)（提交者：千早爱音 / Visio-Vanitas）。以一步 Buchstab–Richert 加权筛切换连接 127 个有限区间与 $10^{600}$ 渐近射线，附零浮点区间证书与 Lean 4 条件归约；数值证书、Lean 证明及 6 条经典文献前提均待仓库独立核验与审定。[源码快照与复核指南](checkpoint/2026-11-27-one-plus-three/README.md)
+
 对每个偶数 $n\ge4$，要证明存在素数 $p,q$ 使 $p+q=n$。取素数权 $w(p)=\log p$，非素数处令 $w=0$。定义 $R(n)=\sum_{p=0}^n w(p)w(n-p)$。每项非负，每个真正的素数对贡献严格正值，故目标精确地等价于 $R(n)>0$。这给出了所有分析任务共用的终点。[强哥德巴赫命题](strong-goldbach.lean)
+
+## 平方根量级加数的短窗挑战 / Short windows with a square-root-sized prime
+
+在 Li 的短窗尺度上，研究带平方根量级素数加数的表示。第一题要求在 13/225 窗内对漏点数取得幂次节省，第二题要求在更短的 26/1075 窗内排除全漏。两题均为待证；逐偶数消除例外仍是主猜想的独立瓶颈。[文献对照与证明切入口](problems/goldbach/routes/representations/dynamical-hitting.md#可对照文献的短窗目标--short-window-benchmarks)
+
+The challenge tasks keep one prime in the square-root band. They ask for a power-saving exception bound in windows of exponent 13/225 and at least one hit in windows of exponent 26/1075. Both are open.
 
 ## 2026-11-27 · 哥德巴赫研究任务拆分 #3
 
@@ -101,7 +109,7 @@
 
 ## 研究顺序
 
-1. **先连通目标。** 领 `L-goldbach-prime-weight-extraction` 或 `L-goldbach-log-correlation-iff`。前者对任意支撑在素数上的实权成立，后者固定对数权并给出双向等价。随后证明 `L-goldbach-circle-coefficient`。令 $S_n(t)=\sum_{k\le n}w(k)e^{2\pi i kt}$，应提取 $S_n(t)^2$ 的第 $n$ 个系数。展开后留下 $k+j=n$；绝对值平方的展开给出 $k-j=n$，对应另一个计数。
+1. **先读三条已合并的基础引理。** [素数对提取](../lean/PEqualNP/Outside/L_goldbach_prime_weight_extraction.lean)把正卷积转成素数对；[对数权等价](../lean/PEqualNP/Outside/L_goldbach_log_correlation_iff.lean)给出反方向；[圆法系数恒等式](../lean/PEqualNP/Outside/L_goldbach_circle_coefficient.lean)把卷积写成指数和平方的第 $n$ 个系数。平方展开选中 $k+j=n$，而绝对值平方选中 $k-j=n$。接下来从[实时研究台](https://www.goldbach.tech/?lang=zh#roadmap)选未解决的任务，按[参与指南](../CONTRIBUTING.md)确认领取。
 2. **把零点信息送至主弧。** 先做有限 ζ 零点和，再审查 Dirichlet GRH 下模 $q$ 的 Chebyshev 误差。提交时写明对哪些 $q,a,X$ 同时有效。和主弧公式对接时固定分母上限、弧宽、权函数及误差相加后的量级。若用冯·芒戈尔特权，要证明并扣掉真素数幂项。短区间论文可作条件估计的复现练习，其结论只保证区间内存在一个满足条件的整数。[算术级数中的显式估计](https://arxiv.org/abs/2003.01925v4) · [主弧公式](https://arxiv.org/abs/2607.27282v2) · [Chirre–Hagen 第 5 节](https://arxiv.org/html/2512.23534v1#S5)
 3. **集中攻逐点的加法相关。** 固定同一个偶数 $n$，用平滑截断 $u$ 和 $1-u$ 将上述系数分成主弧 $A_n$ 与次弧 $B_n$。接口任务先证 $\Re A_n>\lVert B_n\rVert$ 足以提取素数对。研究时也可直接给有符号的 $\Re B_n$ 下界。第一次交叉审查应列出主项下界和每项误差如何依赖 $n$。例如，对整个频率区间先取绝对值只剩 $\int |S_n|^2=\sum w(k)^2$，在对数素数权下为 $n\log n$ 量级，会丢掉抵消。另一条独立路线用反射平方差表示同一个卷积，随后需要对实际素数权给出严格余量。逐点正性和二倍区间内的线性下界均是开放攻关目标。
 4. **量化例外，审查剩余缺口。** 可并行复现条件例外数结果；$E(X)\ll_\varepsilon X^{1/2+\varepsilon}$ 允许无穷多个稀疏例外。二阶矩路线要再证明真实误差在每个待判定点邻域中的振荡和能量预算。若结果只对充分大 $n$ 成立，必须列出阈值，并为余下范围提供统一数学论证。本轮任务台只发一般性定理。[例外集预印本](https://arxiv.org/html/2610.15559v1)
@@ -112,12 +120,12 @@
 
 ## English
 
-The target is pointwise positivity of the convolution of the prime-supported logarithmic weight at every even $n\ge4$. The active catalogue consists of two foundations, three RH/GRH tasks, six correlation tasks and four tasks on exceptions. Six research problems admit parallel independent approaches. Each frozen proposition has an English brief, a Chinese brief, and a source. The strongest entries are open problems. [Task catalogue](gaps.json)
+The target is pointwise positivity of the convolution of the prime-supported logarithmic weight at every even $n\ge4$. Use the [task catalogue](gaps.json) for frozen statements and the [live research desk](https://www.goldbach.tech/?lang=en#roadmap) to find tasks available for claim. [Contribution guide](../CONTRIBUTING.md)
 
 - **Finite-range work.** Verify local covers using prime witnesses or an explicit pointwise margin. Keep rough-factor bounds and the Chen threshold as separate milestones. The large-even branch can independently verify the four-scale, divisor-switching, and high-segment error estimates. A signed pointwise bound is still needed. [Finite-range proposal](RFC1-小偶数上的Goldbach.md)
 
 - **Read the upstream proof from the conclusion backwards.** Follow the nonvanishing theorem from Main through the reduction to primitive characters and reflection. Follow everyCharacter_of_row into the local-to-global and window inputs. Sutherland’s audit covers the published 4.33.1 project. Our conditional estimates expose their hypotheses until we can check the required dependencies under our own pinned toolchain. [Upstream statements](https://github.com/leanprover-community/riemann-hypothesis/blob/dc76b2788ef7ad0a6d2d4575ca3320a677c72cd9/src/Statements.lean) · [Dependency closure](https://github.com/leanprover-community/riemann-hypothesis/blob/dc76b2788ef7ad0a6d2d4575ca3320a677c72cd9/src/Development/AutomorphicArithmetic/CharacterBoxes/MainConclusion.lean#L973-L995) · [Independent audit](https://math.mit.edu/~drew/grh/)
-- **Build the interfaces first.** Extract a pair from a positive prime-weighted convolution. Prove the equivalence for logarithmic weights and the Fourier identity for the square of the exponential sum. Check that the frequency selects a sum of two primes. Prove the proper-prime-power correction whenever the argument uses von Mangoldt weights.
+- **Read the three merged interface lemmas.** [Prime-pair extraction](../lean/PEqualNP/Outside/L_goldbach_prime_weight_extraction.lean) turns positive convolution into a prime pair. [Log-weight equivalence](../lean/PEqualNP/Outside/L_goldbach_log_correlation_iff.lean) supplies the reverse implication. The [Fourier identity](../lean/PEqualNP/Outside/L_goldbach_circle_coefficient.lean) identifies the coefficient for the sum of two primes. Arguments using von Mangoldt weights also need the proper-prime-power correction.
 - **Work toward cancellation at each frequency.** A GRH estimate for primes in a progression can supply a major-arc input after the range of moduli and accumulated errors are justified. Split the coefficient at the same even integer into major and minor contributions. Prove a positive margin, or bound the real signed remainder directly. An absolute-value estimate over the full circle loses the cancellation. The alternative reflection and energy tasks expose different bounds on the same correlation. [Major-arc formula](https://arxiv.org/abs/2607.27282v2)
 - **Track every remaining quantifier.** A short-interval existence theorem and an exceptional-set bound each leave a pointwise gap. For an energy approach, bound oscillation of the actual correlation and its local energy. Record any threshold and the argument extending below it. Jenkins checks each submission against its own frozen statement. [Conditional short intervals](https://arxiv.org/html/2512.23534v1#S5) · [Exceptional-set estimates](https://arxiv.org/html/2610.15559v1)
 

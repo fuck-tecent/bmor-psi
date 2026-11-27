@@ -1,0 +1,18 @@
+{
+  "id": "L-twin-primes-middle-next-factor-buchstab-domain",
+  "statement": "∀ p r s : ℕ, p.Prime → r.Prime → 1<s → p+2=r*s → r<s.minFac → (¬ Nat.Prime s) → ∃ ℓ m : ℕ, ℓ.Prime ∧ r<ℓ ∧ ℓ ≤ m ∧ ℓ ≤ Nat.minFac m ∧ s = ℓ * m ∧ r^3<p+2",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 方法与自然推广 · 中段 Buchstab 换元的整数范围",
+    "en": "New route · Levent GRH methods and extensions · Recover the middle-band Buchstab cofactor range"
+  },
+  "brief": {
+    "zh": "对 S06 以外的每个 $p$ 写 $p+2=rs$。若 $s$ 合成，取 $\\ell=\\operatorname{minFac}(s)$，则 $r<\\ell\\le m$，$s=\\ell m$，$\\operatorname{minFac}(m)\\ge\\ell$。给出 $X<r\\ell m-2<51X/50$ 的精确整数端点，并证明 $r^3<51X/50+2$。若 $s$ 素，则 $r<s$ 且 $p=rs-2$ 素。两族与 S06 互斥并穷尽中段。",
+    "en": "Choose the next least prime factor once repetitions of the first factor have been removed."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/孪生素数任务拆分3.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

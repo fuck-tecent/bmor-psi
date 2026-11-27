@@ -1,0 +1,24 @@
+{
+  "id": "L-quadratic-primes-quadratic-mangoldt-exact-support",
+  "statement": "∀ n : ℕ, 0 < n → ArithmeticFunction.vonMangoldt (n^2+1) = if (n^2+1).Prime then Real.log (n^2+1) else 0",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 方法与自然推广 · 二次 Mangoldt 权的精确支撑",
+    "en": "New route · Levent GRH methods and extensions · Identify the exact support of the quadratic Mangoldt weight"
+  },
+  "brief": {
+    "zh": "P03 的差为 4 的非零倍数，故 $\\Im(a+i)^j$ 不能等于 $1$ 或 $-1$。合并 P01–P03 和已有偶指数引理，对每个 $n\\ge1$ 证明 $\\Lambda(n^2+1)=\\mathbf1_{n^2+1\\ {\\rm prime}}\\log(n^2+1)$。特别地，原题任一非空窗口有正质量即有真素数值。交 `levent-prime-values-weight-split`、`lpf-endpoint`。",
+    "en": "Exclude even exponents by consecutive squares and odd exponents by the Gaussian binomial calculation."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/近平方素数任务拆分3.md",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-quadratic-primes-odd-power-imaginary-unit",
+    "L-quadratic-primes-binomial-imaginary-two-adic-gap",
+    "L-quadratic-primes-levent-prime-values-no-square"
+  ],
+  "imports": [
+    "PEqualNP.Outside.L_quadratic_primes_levent_prime_values_no_square"
+  ]
+}

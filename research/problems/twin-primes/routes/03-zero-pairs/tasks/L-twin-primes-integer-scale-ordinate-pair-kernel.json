@@ -1,0 +1,18 @@
+{
+  "id": "L-twin-primes-integer-scale-ordinate-pair-kernel",
+  "statement": "∀ (Y u v : ℕ) (θ : ℝ), 1≤Y → Y≤u → u≤v → v≤2*Y → ‖(∑ X ∈ Finset.Ico u v, Complex.exp (Complex.I * (θ * Real.log X : ℝ))) - ∫ t in (u:ℝ)..(v:ℝ), Complex.exp (Complex.I * (θ * Real.log t : ℝ))‖ ≤ 1+|θ|",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 方法与自然推广 · 整数尺度的零点差相位核",
+    "en": "New route · Levent GRH methods and extensions · Compare the discrete and continuous ordinate-pair kernels"
+  },
+  "brief": {
+    "zh": "对固定 $\\theta=\\gamma-\\gamma'$、$Y\\le u<v\\le2Y$ 的整数端点，比较 $Y^{-1}\\sum_{u\\le X<v}X^{i\\theta}$ 与同区间积分除以 $Y$，误差 $\\ll(1+\\vert\\theta\\vert)/Y$。积分显式给出 $O((1+\\vert\\theta\\vert)^{-1})$。对 Z06 的一个固定零点对，把含移动截断和时间核的剩余系数记为 $c_X$，分部求和得到上述两项上界之和乘以 $\\max\\vert c_X\\vert+\\sum\\vert c_{X+1}-c_X\\vert$。截断进出计入变差。",
+    "en": "Estimate the quadrature error from the derivative of t raised to an imaginary power."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/孪生素数任务拆分3.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

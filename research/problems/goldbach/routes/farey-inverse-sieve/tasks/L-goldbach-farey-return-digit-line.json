@@ -1,0 +1,18 @@
+{
+  "id": "L-goldbach-farey-return-digit-line",
+  "statement": "∀ n u : ℕ, 1≤u → u<n → (n-1+u)/(n-u) = (2*n-1)/(n-u)-1",
+  "plain_statement": {
+    "zh": "新路线 · H01 · 把 Farey 首返数字改写为中线分母的商",
+    "en": "New route · H01 · Rewrite the first return digit as a quotient on the central denominator line"
+  },
+  "brief": {
+    "zh": "把 Farey 首返数字改写为中线分母的商",
+    "en": "Rewrite the first return digit as a quotient on the central denominator line"
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

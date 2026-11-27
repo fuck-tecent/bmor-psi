@@ -1,0 +1,22 @@
+{
+  "id": "L-goldbach-denominator-cutoff-fourth-moment-floor",
+  "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k : ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2 * Real.pi * x : ℝ) : ℂ) * Complex.I); let S := fun (n : ℕ) (t : ℝ) => Finset.sum (Finset.range (n + 1)) (fun k => (w k : ℂ) * E ((k : ℝ) * t)); let arcs := fun (n D H : ℕ) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ D ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t - (a : ℝ) / q| ≤ (H : ℝ) / ((q : ℝ) * n)}; ∃ N : ℕ, ∀ n : ℕ, N ≤ n → ∀ D H : ℕ, 0 < D → 32 * (D : ℝ) ≤ Real.sqrt n → (H : ℝ) ≤ Real.sqrt n → (n : ℝ) ^ 3 ≤ 12582912 * (D : ℝ) ^ 2 * intervalIntegral (fun t => (arcs n D H)ᶜ.indicator (fun u => ‖S n u‖ ^ 4) t) (0 : ℝ) 1 MeasureTheory.volume",
+  "plain_statement": {
+    "zh": "对充分大的每个整数 n，同时对满足 1 ≤ D、32D ≤ √n、0 ≤ H ≤ √n 的所有整数参数，删去分母至多 D 的每个既约分数 a/q 周围半径 H/(qn) 的区间后，素数对数权指数和在 [0,1] 剩余部分上的四阶矩至少为 n³/(12582912 D²)。",
+    "en": "For every sufficiently large integer n, uniformly for integers D ≥ 1 and 0 ≤ H ≤ √n with 32D ≤ √n, remove the intervals of radius H/(qn) about the reduced fractions a/q of denominator at most D. The fourth moment of the prime-log exponential sum on the rest of [0,1] is at least n³/(12582912 D²)."
+  },
+  "brief": {
+    "zh": "取 D < q ≤ 8D 的平方自由分母，其倒数和至少为 1/8。对既约剩余类上的振幅应用柯西不等式，再将缩放后的平方振幅在互不相交、避开所删弧的窗口中积分。立方根截断给出 n^(7/3) 的下界，平方根除以四次对数的截断给出 n² 乘八次对数的下界。",
+    "en": "Use squarefree denominators D < q ≤ 8D, whose reciprocal mass is at least 1/8. Apply Cauchy–Schwarz on reduced residues and integrate the rescaled squared amplitude on disjoint windows outside the mask. The cube-root cutoff gives order n^(7/3), and the square-root cutoff divided by a fourth power of a logarithm gives order n² times an eighth power of that logarithm."
+  },
+  "source": "https://doi.org/10.5281/zenodo.24550608",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-sqrt-arc-second-moment-floor"
+  ],
+  "imports": [
+    "Conjectures.Goldbach.SqrtArcSecondMomentFloor"
+  ]
+}

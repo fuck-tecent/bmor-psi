@@ -1,0 +1,18 @@
+{
+  "id": "L-goldbach-rfc11-cm-parameter-local-density",
+  "statement": "∀ n s a : ℕ, 2∣n → 1 ≤ s → 15 ≤ ((Finset.range 105).filter (fun i => let x := 2^s*(2*(a+i)+1); Nat.Coprime (x+104) 105 ∧ Nat.Coprime ((n+1+105-(x%105))%105) 105)).card",
+  "plain_statement": {
+    "zh": "新路线 · E05 · 核对每 105 个连续奇参数的双边局部筛密度",
+    "en": "New route · E05 · Verify the two-sided local density in every block of 105 odd parameters"
+  },
+  "brief": {
+    "zh": "核对每 105 个连续奇参数的双边局部筛密度",
+    "en": "Verify the two-sided local density in every block of 105 odd parameters"
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

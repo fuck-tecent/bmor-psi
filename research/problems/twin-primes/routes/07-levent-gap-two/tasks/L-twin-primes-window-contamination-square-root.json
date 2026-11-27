@@ -1,0 +1,21 @@
+{
+  "id": "L-twin-primes-window-contamination-square-root",
+  "statement": "∃ C : ℝ, 0<C ∧ ∀ X : ℕ, 2≤X → (∑ n ∈ (Finset.Ioo X (2*X)).filter (fun n => 50*n<51*X ∧ (¬n.Prime ∨ ¬(n+2).Prime)), ArithmeticFunction.vonMangoldt n * ArithmeticFunction.vonMangoldt (n+2)) ≤ C*Real.sqrt X",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 方法与自然推广 · 差二窄窗的平方根污染预算",
+    "en": "New route · Levent GRH methods and extensions · Bound contamination at square-root scale"
+  },
+  "brief": {
+    "zh": "由 W01、W04、`higher-power-log-mass` 证明 $\\exists C>0,\\ \\forall X\\ge2,\\ E_X\\le C/\\sqrt X$。立方及以上幂在两端的未归一化总损失 $\\ll X^{1/3}\\log^2(2+X)$，剩下的平方底数在 $\\asymp\\sqrt X$ 的区间，每项 $\\ll\\log^2(2+X)$。用有限个二进区间覆盖，吸收小 $X$。交 `window-extraction`。",
+    "en": "Use the sieve for square neighbors and the count of proper prime powers with exponent at least three."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/孪生素数任务拆分3.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-square-neighbour-mod-three",
+    "L-twin-primes-prime-square-minus-two-upper-sieve"
+  ],
+  "imports": []
+}

@@ -1,0 +1,18 @@
+{
+  "id": "L-goldbach-rfc11-top316-anchor-bank",
+  "statement": "∀ t ∈ ([25787, 23073, 28121, 30291, 29519, 51747, 29183, 30693, 46539, 27299, 55077, 35117, 58401, 48851, 29673, 44813, 22041, 52193, 40623, 35561, 59667, 54623, 31341, 41939, 42603, 49467, 57963, 12377, 33269, 18117, 18191, 42833, 46341, 38403, 48893, 1821, 8307, 14831, 15039, 60269, 71799, 73059, 66447] : List ℕ), Nat.Prime (10^316-t)",
+  "plain_statement": {
+    "zh": "新路线 · V11 · 核验新上界下方 43 个大素数锚",
+    "en": "New route · V11 · Certify the 43 large prime anchors below the new cutoff"
+  },
+  "brief": {
+    "zh": "核验新上界下方 43 个大素数锚",
+    "en": "Certify the 43 large prime anchors below the new cutoff"
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

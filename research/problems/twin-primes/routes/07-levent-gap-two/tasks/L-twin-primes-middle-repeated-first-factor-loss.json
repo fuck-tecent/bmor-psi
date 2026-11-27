@@ -1,0 +1,18 @@
+{
+  "id": "L-twin-primes-middle-repeated-first-factor-loss",
+  "statement": "∀ X r : ℕ, 1<r → ((Finset.Icc X (2*X)).filter fun p => p.Prime ∧ r^2 ∣ p+2).card ≤ X/r^2+1",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 方法与自然推广 · 重复最小素因子的整除上界",
+    "en": "New route · Levent GRH methods and extensions · Count the repeated least-factor divisibility loss"
+  },
+  "brief": {
+    "zh": "对 $2z_0\\le r<z_*$，只计最小素因子为 $r$ 且 $r^2\\mid p+2$ 的项。逐 $r$ 的整除计数至多 $2X/r^2+1$，故这些项的总权 $\\ll(X/z_0+\\sqrt X)\\log^2(2+X)$。",
+    "en": "For fixed r bound the number of candidates by the number of multiples of r² in the containing interval."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/孪生素数任务拆分3.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

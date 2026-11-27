@@ -1,0 +1,18 @@
+{
+  "id": "L-goldbach-rfc11-compatible-two-field-classes",
+  "statement": "∀ n : ℕ, 2∣n → ∃ a b : ℕ, a<28 ∧ b<28 ∧ (a+b)%28=n%28 ∧ a%4=1 ∧ (b%7=2 ∨ b%7=4) ∧ a%7≠1 ∧ Nat.Coprime a 28 ∧ Nat.Coprime b 28",
+  "plain_statement": {
+    "zh": "新路线 · T03 · 为两个二次域选择相容的模 28 单位类",
+    "en": "New route · T03 · Choose compatible unit classes modulo 28 for the two quadratic fields"
+  },
+  "brief": {
+    "zh": "为两个二次域选择相容的模 28 单位类",
+    "en": "Choose compatible unit classes modulo 28 for the two quadratic fields"
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

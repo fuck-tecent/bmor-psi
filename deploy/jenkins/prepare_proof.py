@@ -6,10 +6,18 @@ import hashlib
 import re
 import subprocess
 from pathlib import Path
+from urllib.parse import urlencode
+from urllib.request import build_opener
+
+from desk_verdict import NoRedirect
 
 from github_revision import REPO, SHA, StaleDelivery, pull_request
 from proof_blob import proof_blob
 from verdict_manifest import PROOF_MODULE, module_path
+
+
+class ProofRefused(ValueError):
+    """The proof guard rejected the input before Lean ran."""
 
 
 def grh_enabled():
@@ -44,6 +52,35 @@ def allow_verified_imports(base, work):
     permissions.write_text(json.dumps(sorted(allowed)), encoding="utf-8")
 
 
+def generated_task(module):
+    match = re.fullmatch(r"Conjectures\.Cuts\.(Task|Cut|Refute)[0-9a-f]{24}", module)
+    if not match:
+        raise ValueError("Invalid generated module")
+    desk = os.environ.get("GOLDBACH_DESK_URL", "https://www.movan.tech/goldbach/api/desk")
+    url = desk.rstrip("/") + "/task?" + urlencode({"module": module})
+    with build_opener(NoRedirect()).open(url, timeout=15) as response:
+        data = response.read(262145)
+    if len(data) > 262144:
+        raise ValueError("Oversized Desk task descriptor")
+    receipt = json.loads(data)
+    kind = {"Task": "prove", "Cut": "cut", "Refute": "refute"}[match[1]]
+    if receipt["gap"]["module"] != module or receipt["kind"] != kind:
+        raise ValueError("Invalid Desk task descriptor")
+    return receipt
+
+
+def guard(base, work, *args):
+    subprocess.run([
+        "docker", "run", "--rm", "--pull", "never", "--runtime", "runsc",
+        "--network", "none", "--read-only", "--cap-drop", "ALL",
+        "--security-opt", "no-new-privileges", "--memory", "512m",
+        "--mount", f"type=bind,source={base},target=/base,readonly",
+        "--mount", f"type=bind,source={work},target=/input",
+        "--entrypoint", "node", "goldbach-site-agent:site-check",
+        "/base/.github/scripts/outside-guard.mjs", *args,
+    ], check=True, timeout=30)
+
+
 def prepare(app, number, expected_head, base, work):
     if not SHA.fullmatch(expected_head):
         raise ValueError("Expected a full PR head SHA")
@@ -70,28 +107,35 @@ def prepare(app, number, expected_head, base, work):
     for name, data in {"pr": pr, "files": files, "tree": tree, "gaps": {"gaps": gaps}}.items():
         (work / f"{name}.json").write_text(json.dumps(data), encoding="utf-8")
 
-    def guard(*args):
-        subprocess.run([
-            "docker", "run", "--rm", "--pull", "never", "--runtime", "runsc",
-            "--network", "none", "--read-only", "--cap-drop", "ALL",
-            "--security-opt", "no-new-privileges", "--memory", "512m",
-            "--mount", f"type=bind,source={base},target=/base,readonly",
-            "--mount", f"type=bind,source={work},target=/input",
-            "--entrypoint", "node", "goldbach-site-agent:site-check",
-            "/base/.github/scripts/outside-guard.mjs", *args,
-        ], check=True, timeout=30)
-
     os.chown(work, 1000, 1000)
-    guard("pr", "/input/pr.json", "/input/files.json", "/input/tree.json",
+    guard(base, work, "pr", "/input/pr.json", "/input/files.json", "/input/tree.json",
           "CGandGameEngineLearner/goldbach-proofs", "main", "/input")
     file = (work / "pr.file").read_text().strip()
     blob = (work / "pr.blob").read_text().strip()
     size = int((work / "pr.size").read_text())
-    guard("gap-of-file", "/input/gaps.json", file, "/input")
+    kind = "prove"
+    module = (work / "pr.module").read_text().strip()
+    if module.startswith("Conjectures.Cuts.") and not any(g["file"] == file for g in gaps):
+        receipt = generated_task(module)
+        kind = receipt["kind"]
+        (work / "gaps.json").write_text(json.dumps({"gaps": [receipt["gap"]]}))
+    guard(base, work, "gap-of-file", "/input/gaps.json", file, "/input")
+    (work / "task.kind").write_text(kind)
     (work / "proof.lean").write_bytes(proof_blob(app, blob, size))
     allow_verified_imports(base, work)
-    guard("imports", "/input/proof.lean", "/input/imports.json", "/input/build-imports.json")
+    guard(base, work, "imports", "/input/proof.lean", "/input/imports.json", "/input/build-imports.json")
     check_grh_imports(json.loads((work / "build-imports.json").read_text(encoding="utf-8")))
-    guard("closure", "/base", "/input/build-imports.json", file, "/input")
+    guard(base, work, "closure", "/base", "/input/build-imports.json", file, "/input")
     check_grh_imports((work / "base-imports.txt").read_text(encoding="utf-8").splitlines())
     return file
+
+
+def report_guard_result(result):
+    if result.returncode == 1:
+        refusal = next((line for line in result.stdout.splitlines() if line.startswith("REFUSED: ")), "")
+        if refusal:
+            # Keep the proof guard's diagnostic out of subprocess tracebacks and Markdown.
+            raise ProofRefused("".join(c if c.isprintable() else " " for c in refusal[9:])[:1000])
+    if result.stdout:
+        print(result.stdout, end="", flush=True)
+    result.check_returncode()

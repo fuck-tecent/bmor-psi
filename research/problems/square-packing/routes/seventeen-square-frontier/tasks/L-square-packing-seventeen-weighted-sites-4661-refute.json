@@ -1,0 +1,19 @@
+{
+  "id": "L-square-packing-seventeen-weighted-sites-4661-refute",
+  "statement": "¬ (let inside := fun (x y a b X Y : ℝ) => |a*(X-x)+b*(Y-y)| < 1/2 ∧ |(-b)*(X-x)+a*(Y-y)| < 1/2; ∃ (k : ℕ) (X Y : Fin k → ℚ) (w : Fin k → ℕ) (q : ℕ), 0 < q ∧ (∑ j, w j) < 17*q ∧ ∀ x y a b : ℝ, (a ^ 2 + b ^ 2 = 1 ∧ |a| + |b| ≤ 2*x ∧ |a| + |b| ≤ 2*((4661/1000:ℝ)-x) ∧ |a| + |b| ≤ 2*y ∧ |a| + |b| ≤ 2*((4661/1000:ℝ)-y)) → q ≤ (∑ j : Fin k, (if inside x y a b (X j) (Y j) then w j else 0)))",
+  "plain_statement": {
+    "zh": "证伪边长 4.661 的单点加权击中证书",
+    "en": "Refute weighted point piercing at side 4.661"
+  },
+  "brief": {
+    "zh": "用 70 个对称轨道生成 560 个带权合法方块，逐盒核对任一点的总荷载上界。若方块总权重严格超过该上界的 17 倍，对点与方块的双重求和即推出矛盾。",
+    "en": "Use 70 symmetry orbits of admissible weighted squares. Check the point depth on each box and double-count incidence when the total square weight exceeds 17 times the depth bound."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/square-packing/routes/seventeen-square-frontier/weighted-sites-4661-refutation.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "track": "seventeen-square-frontier",
+  "role": "lemma",
+  "imports": []
+}

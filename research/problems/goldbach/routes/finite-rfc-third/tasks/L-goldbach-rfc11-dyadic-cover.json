@@ -1,0 +1,18 @@
+{
+  "id": "L-goldbach-rfc11-dyadic-cover",
+  "statement": "(2:ℕ)^597 < 10^180 ∧ (10:ℕ)^180 < 2^598 ∧ (2:ℕ)^1049 < 10^316 ∧ (10:ℕ)^316 < 2^1050",
+  "plain_statement": {
+    "zh": "新路线 · B01 · 核验两处切点的二进制指数",
+    "en": "New route · B01 · Verify the dyadic exponents of both cutoffs"
+  },
+  "brief": {
+    "zh": "核验两处切点的二进制指数",
+    "en": "Verify the dyadic exponents of both cutoffs"
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

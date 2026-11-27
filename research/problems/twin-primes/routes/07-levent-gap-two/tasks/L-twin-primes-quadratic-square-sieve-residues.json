@@ -1,0 +1,18 @@
+{
+  "id": "L-twin-primes-quadratic-square-sieve-residues",
+  "statement": "∀ ℓ : ℕ, ℓ.Prime → ((Finset.range ℓ).filter fun a => (a=0 ∨ a^2%ℓ=2%ℓ)).card = if ℓ=2 then 1 else 1+((Finset.range ℓ).filter fun a => a^2%ℓ=2%ℓ).card",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 方法与自然推广 · 二次平方邻居筛的局部根数",
+    "en": "New route · Levent GRH methods and extensions · Count forbidden residue classes in the quadratic square-neighbor sieve"
+  },
+  "brief": {
+    "zh": "记 $\\nu(d)=\\#\\{r\\bmod d:d\\mid r(r^2-2)\\}$。证明 $\\nu(2)=1$，奇素数 $\\ell$ 有 $\\nu(\\ell)=2+(\\frac2\\ell)$，平方自由 $d$ 上可乘。任意连续 $U$ 个整数中命中此模数的个数与 $U\\nu(d)/d$ 相差至多 $\\nu(d)$。",
+    "en": "Separate a=0 and a²=2. Treat the modulus two separately."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/孪生素数任务拆分3.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

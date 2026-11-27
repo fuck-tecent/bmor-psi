@@ -14,6 +14,7 @@ from github_app import APP_ID, GitHubApp, RateLimited
 REPO = "/repos/CGandGameEngineLearner/goldbach-proofs"
 CHECKS = {
     "authoritative-pr": "Goldbach CI / formal Lean verdict",
+    "proof-refused-pr": "Goldbach CI / formal submission refused",
     "advisory-pr": "Goldbach CI / Lean advisory",
     "advisory-replay": "Goldbach CI / Jenkins Lean replay",
     "grh": "Goldbach CI / GRH source",

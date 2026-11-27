@@ -1,0 +1,18 @@
+{
+  "id": "L-goldbach-rfc11-wheel-convolution-main",
+  "statement": "∀ n : ℕ, 2∣n → 15 ≤ ((Finset.range 210).filter (fun r => Nat.Coprime r 210 ∧ Nat.Coprime ((n+210-r)%210) 210)).card",
+  "plain_statement": {
+    "zh": "新路线 · S01 · 核对每个偶数至少有 15 个允许的模 210 反射类",
+    "en": "New route · S01 · Verify at least 15 allowed reflected classes modulo 210 for every even target"
+  },
+  "brief": {
+    "zh": "核对每个偶数至少有 15 个允许的模 210 反射类",
+    "en": "Verify at least 15 allowed reflected classes modulo 210 for every even target"
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

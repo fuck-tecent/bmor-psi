@@ -7,6 +7,7 @@ import json
 import os
 import secrets
 import shutil
+import sqlite3
 import ssl
 import subprocess
 import sys
@@ -19,6 +20,7 @@ from concurrent.futures import ThreadPoolExecutor
 from contextlib import closing
 from http.client import HTTPSConnection
 from pathlib import Path
+from urllib.parse import urlencode
 
 from deploy.desk import QUEUE_BATCH, fleet_pass
 
@@ -28,16 +30,23 @@ SESSIONS = 128
 PROBLEMS = json.loads((ROOT / "research/problems.json").read_text(encoding="utf-8"))
 
 
-class DeskScaleTest(unittest.TestCase):
+class DeskServerTestCase(unittest.TestCase):
+    server_setup = ""
+
+    def configure_catalogue(self, folder):
+        pass
+
     def setUp(self):
         folder = Path(self.enterContext(tempfile.TemporaryDirectory()))
+        self.folder = folder
         self.secret = secrets.token_hex(32).encode()
         (folder / "webhook").write_bytes(self.secret)
         (folder / "china-apnic.txt").write_bytes(b"")
-        for source in ("deploy/server.py", "deploy/site.js", "deploy/site.css", "deploy/desk.py", "deploy/landau.py", "deploy/presence.py", "deploy/join.txt", "deploy/join-zh.txt",
+        for source in ("deploy/server.py", "deploy/site.js", "deploy/site.css", "deploy/desk.py", "deploy/reductions.py", "deploy/model-aliases.json", "deploy/agent-icons.svg", "deploy/landau.py", "deploy/presence.py", "deploy/join.txt", "deploy/join-zh.txt",
                        "deploy/zhihu_oauth.py", "deploy/sponsors.py", "deploy/github_identity.py", "deploy/zh.html", "deploy/en.html",
                        "research/gaps.json", "research/problems.json"):
             shutil.copy(ROOT / source, folder)
+        self.configure_catalogue(folder)
         openssl = os.environ.get("OPENSSL") or shutil.which("openssl")
         if not openssl and shutil.which("git"):
             git_openssl = Path(shutil.which("git")).parents[1] / "usr/bin/openssl.exe"
@@ -55,6 +64,7 @@ class DeskScaleTest(unittest.TestCase):
         # Use the production TLS/thread/SQLite handlers with a random loopback port and test-only state.
         launcher = (
             "from server import Server, Handler\n"
+            f"{self.server_setup}"
             "Handler.log_request = lambda *args: None\n"
             "with Server(('127.0.0.1', 0), Handler) as server:\n"
             "    print(server.server_port, flush=True)\n"
@@ -73,6 +83,31 @@ class DeskScaleTest(unittest.TestCase):
         self.server.wait(timeout=10)
         self.server.stdout.close()
 
+    def request(self, path, body=None, *, token=None, signed=False, ip=None, ticket=None, expected=200, text=False):
+        raw = json.dumps(body).encode() if body is not None else None
+        headers = {"Content-Type": "application/json"}
+        if token:
+            headers["Authorization"] = "Bearer " + token
+        if signed:
+            headers["X-Goldbach-Signature"] = "sha256=" + hmac.new(self.secret, raw, hashlib.sha256).hexdigest()
+        if ip:
+            # The production proxy supplies this header to the loopback upstream.
+            headers["X-Goldbach-Client-IP"] = ip
+        if ticket:
+            headers["X-Goldbach-Fleet"] = ticket
+        with closing(HTTPSConnection("127.0.0.1", self.port, timeout=45, context=self.context)) as conn:
+            conn.request("POST" if raw is not None else "GET", path, body=raw, headers=headers)
+            response = conn.getresponse()
+            if text:
+                self.assertEqual(response.status, expected, path)
+                return response.read().decode("utf-8")
+            result = (json.loads(gzip.decompress(response.read())) if response.getheader("Content-Encoding") == "gzip"
+                      else json.load(response))
+            self.assertEqual(response.status, expected, (path, result.get("error")))
+            return result
+
+
+class DeskScaleTest(DeskServerTestCase):
     def test_agent_attribution_across_problem_desks(self):
         for index, path in enumerate(("", "/problems/log-rank")):
             claim = self.request(path + "/api/desk/claim", {"handle": "alice"}, expected=201)
@@ -103,9 +138,28 @@ class DeskScaleTest(unittest.TestCase):
             self.assertNotIn("manifest", latest)
             self.assertEqual(latest["lemma_id"], gap["id"])
             self.assertEqual(status["results"][0]["agent"], {**agent, "source": "self_reported"})
+            summary = self.request(path + "/api/records?view=summary&page=1&limit=5")["results"][0]
+            self.assertTrue(summary["has_manifest"])
+            self.assertNotIn("manifest", summary)
+            self.assertEqual(summary["agent"], status["results"][0]["agent"])
+            manifest = f"{path}/api/record-manifest?run={run_id}&attempt=1"
+            self.assertEqual(self.request(manifest)["manifest"], record["manifest"])
+            self.request(manifest[:-1] + "2", expected=404)
+
+            detail = path + "/api/task?" + urlencode({"lemma": gap["id"]})
+            self.assertEqual(self.request(detail)["statement"], gap["statement"])
+            self.assertEqual(self.request(detail)["cut_reason"], "settled")
+            token_query = urlencode({"q": gap["statement"][:40], "lang": "zh", "scope": "all"})
+            self.assertIn(gap["id"], self.request(path + "/api/task-search?" + token_query)["ids"])
+            other_path = "/problems/log-rank" if not path else ""
+            self.request(other_path + "/api/task?" + urlencode({"lemma": gap["id"]}), expected=404)
+            listing = self.request(path + "/api/tasks?limit=3")
+            self.assertEqual(listing["problem"], "log-rank" if path else "goldbach")
+            self.assertLessEqual(len(listing["tasks"]), 3)
+            self.assertNotIn(gap["id"], {task["id"] for task in listing["tasks"]})
             self.assertEqual({k: v for k, v in status["desk"]["agent_rankings"].items() if k != "providers"}, {
                 "models": [{"name": "model-test-v1", "accepted": 1, "points": 1}],
-                "harnesses": [{"name": "codex", "accepted": 1, "points": 1}], "proofs": 1})
+                "harnesses": [{"name": "codex", "accepted": 1, "points": 1, "icon": "codex"}], "proofs": 1})
             self.assertEqual(status["desk"]["rankings"]["proofs"], 1)
             for lang in ("zh", "en"):
                 page = self.request(path + "/?lang=" + lang, text=True)
@@ -171,28 +225,6 @@ class DeskScaleTest(unittest.TestCase):
         self.assertEqual(get_total(), 1)
         self.request("/problems/", ip="2001:db8::1", text=True)
         self.assertEqual(get_total(), 2)
-
-    def request(self, path, body=None, *, token=None, signed=False, ip=None, ticket=None, expected=200, text=False):
-        raw = json.dumps(body).encode() if body is not None else None
-        headers = {"Content-Type": "application/json"}
-        if token:
-            headers["Authorization"] = "Bearer " + token
-        if signed:
-            headers["X-Goldbach-Signature"] = "sha256=" + hmac.new(self.secret, raw, hashlib.sha256).hexdigest()
-        if ip:
-            # The production proxy supplies this header to the loopback upstream.
-            headers["X-Goldbach-Client-IP"] = ip
-        if ticket:
-            headers["X-Goldbach-Fleet"] = ticket
-        with closing(HTTPSConnection("127.0.0.1", self.port, timeout=45, context=self.context)) as conn:
-            conn.request("POST" if raw is not None else "GET", path, body=raw, headers=headers)
-            response = conn.getresponse()
-            if text:
-                self.assertEqual(response.status, expected, path)
-                return response.read().decode("utf-8")
-            result = json.load(response)
-            self.assertEqual(response.status, expected, (path, result.get("error")))
-            return result
 
     def wave(self, pool, mode, label, action, size=SESSIONS):
         ready = threading.Barrier(size, timeout=30)
@@ -400,6 +432,118 @@ class DeskScaleTest(unittest.TestCase):
             goldbach_guide = self.request(f"/join{suffix}.txt", text=True)
             self.assertIn("python tools/goldbach.py claim", goldbach_guide)
             self.assertNotIn(f"--problem {slug}", goldbach_guide)
+
+    def test_rankings_pagination_and_board_initial_slice(self):
+        with closing(sqlite3.connect(self.folder / "verdicts.sqlite3")) as conn:
+            for i in range(18):
+                handle = f"prover{i:02d}"
+                gap = f"g{i:02d}"
+                model = f"gpt-6.{i:02d}"
+                conn.execute(
+                    """
+                    INSERT INTO goldbach_leases (
+                        token_hash, gap, statement_sha256, handle, ip_key, claimed_at,
+                        expires_at, absolute_expires_at, run_id, finished_at, verdict,
+                        points, model, harness, agent_reported
+                    ) VALUES (?, ?, 'hash', ?, 'network', 1, 2, 3, ?, ?, 'ACCEPTED', ?, ?, 'codex', 1)
+                    """,
+                    (f"tok-{i}", gap, handle, 100 + i, int(time.time()) - 10, 100 - i, model),
+                )
+            conn.commit()
+
+        with closing(HTTPSConnection("127.0.0.1", self.port, context=self.context)) as conn:
+            conn.request("GET", "/api/status?view=board-gzip")
+            response = conn.getresponse()
+            self.assertEqual(response.status, 200)
+            board = json.loads(gzip.decompress(response.read()))
+        self.assertEqual(len(board["desk"]["rankings"]["all_time"]), 12)
+        self.assertEqual(board["desk"]["rankings"]["all_time_total"], 18)
+        self.assertEqual(len(board["desk"]["agent_rankings"]["models"]), 12)
+        self.assertEqual(board["desk"]["agent_rankings"]["totals"]["models"], 18)
+        index = self.request("/api/status?view=board-index-gzip")
+        delta = self.request("/api/status?view=board-index-delta-gzip")
+        self.assertEqual(index["counts"], board["counts"])
+        self.assertEqual(index["tracks"], board["tracks"])
+        self.assertEqual(index["desk"]["rankings"], board["desk"]["rankings"])
+        self.assertNotIn("tracks", delta)
+        self.assertEqual([g["id"] for g in index["gaps"]], [g["id"] for g in board["gaps"]])
+        self.assertIn("statement", board["gaps"][0])
+        self.assertIn("plain_statement", index["gaps"][0])
+        self.assertNotIn("plain_statement", delta["gaps"][0])
+        for gap in index["gaps"] + delta["gaps"]:
+            self.assertFalse({"statement", "brief", "source", "file", "imports", "cuts", "assembly"} & gap.keys())
+
+        page1 = self.request("/api/rankings?mode=all_time&offset=0&limit=12")
+        self.assertEqual(len(page1["items"]), 12)
+        self.assertEqual(page1["total"], 18)
+        self.assertTrue(page1["has_more"])
+        self.assertEqual(page1["items"][0]["handle"], "prover00")
+
+        page2 = self.request("/api/rankings?mode=all_time&offset=12&limit=12")
+        self.assertEqual(len(page2["items"]), 6)
+        self.assertFalse(page2["has_more"])
+        self.assertEqual(page2["items"][0]["handle"], "prover12")
+
+        models_p2 = self.request("/api/rankings?mode=models&offset=12&limit=10")
+        self.assertEqual(len(models_p2["items"]), 6)
+        self.assertFalse(models_p2["has_more"])
+
+        self.request("/api/rankings?mode=invalid", expected=400)
+        self.request("/api/rankings?mode=all_time&limit=99", expected=400)
+
+        models_api = self.request("/api/models?q=glm")
+        self.assertTrue(any(m["id"] == "glm-5.4" and m["provider"] == "Z.ai" for m in models_api["models"]))
+        self.assertIn("providers", models_api)
+        self.assertIn("harnesses", models_api)
+        models_paged = self.request("/api/models?offset=10&limit=10")
+        self.assertEqual(len(models_paged["models"]), 10)
+        self.assertNotIn("providers", models_paged)
+        self.request("/api/models?unknown=1", expected=400)
+        self.request("/api/models?limit=101", expected=400)
+
+        with closing(HTTPSConnection("127.0.0.1", self.port, context=self.context)) as conn:
+            conn.request("GET", "/agent-icons.svg", headers={"Accept-Encoding": "gzip"})
+            response = conn.getresponse()
+            self.assertEqual(response.status, 200)
+            self.assertEqual(response.headers.get("Content-Type"), "image/svg+xml")
+            sprite_svg = gzip.decompress(response.read()).decode("utf-8")
+            self.assertIn('id="brand-nex-agi"', sprite_svg)
+            self.assertIn('id="brand-antigravity"', sprite_svg)
+            self.assertIn('id="brand-tool-other"', sprite_svg)
+
+
+class FullStatusTransferTest(DeskServerTestCase):
+    server_setup = (
+        "import server\n"
+        "server.FULL_STATUS_BURST_BYTES = 1\n"
+        "server.FULL_STATUS_MIN_BYTES = 1\n"
+        "server.FULL_STATUS_REFILL_PER_SECOND = 1e-8\n"
+    )
+
+    def test_only_limit_full_body_transfers(self):
+        headers = {"Accept-Encoding": "gzip", "X-Goldbach-Client-IP": "1.1.1.1"}
+        with closing(HTTPSConnection("127.0.0.1", self.port, context=self.context)) as conn:
+            conn.request("GET", "/api/status", headers=headers)
+            response = conn.getresponse()
+            self.assertEqual(response.status, 200)
+            etag = response.getheader("ETag")
+            self.assertIn("statement", json.loads(gzip.decompress(response.read()))["gaps"][0])
+
+            conn.request("GET", "/api/status", headers={**headers, "If-None-Match": etag})
+            response = conn.getresponse()
+            self.assertEqual(response.status, 304)
+            self.assertEqual(response.read(), b"")
+
+            conn.request("GET", "/api/status", headers=headers)
+            response = conn.getresponse()
+            self.assertEqual(response.status, 429)
+            self.assertGreater(int(response.getheader("Retry-After")), 0)
+            self.assertIn("/api/tasks", json.load(response)["error"])
+
+            conn.request("GET", "/api/status?view=board-index-gzip", headers=headers)
+            response = conn.getresponse()
+            self.assertEqual(response.status, 200)
+            self.assertNotIn("statement", json.loads(gzip.decompress(response.read()))["gaps"][0])
 
 
 if __name__ == "__main__":

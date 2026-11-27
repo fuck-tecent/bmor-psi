@@ -1,0 +1,18 @@
+{
+  "id": "L-goldbach-rfc11-top316-first-bank-cover",
+  "statement": "let offsets := ([25787, 23073, 28121, 30291, 29519, 51747, 29183, 30693, 46539, 27299, 55077, 35117, 58401, 48851, 29673, 44813, 22041, 52193, 40623, 35561, 59667, 54623, 31341, 41939, 42603, 49467, 57963, 12377, 33269, 18117, 18191, 42833, 46341, 38403, 48893, 1821, 8307, 14831, 15039, 60269, 71799, 73059, 66447] : List ℕ).take 40; ∀ i : ℕ, 1 ≤ i → i ≤ 12288 → ((∃ t ∈ offsets, Nat.Prime (t-2*i)) ↔ i ∉ ([7564,7909,11134,11329,11989,12154] : List ℕ))",
+  "plain_statement": {
+    "zh": "新路线 · V12 · 计算前 40 个新锚恰好漏掉的六个下标",
+    "en": "New route · V12 · Find the exact six indices missed by the first 40 new anchors"
+  },
+  "brief": {
+    "zh": "计算前 40 个新锚恰好漏掉的六个下标",
+    "en": "Find the exact six indices missed by the first 40 new anchors"
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

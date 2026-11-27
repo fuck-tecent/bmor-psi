@@ -1,0 +1,18 @@
+{
+  "id": "L-twin-primes-first-factor-doubled-fifth-band",
+  "statement": "∃ C : ℝ, 0<C ∧ ∃ N : ℕ, ∀ X : ℕ, N≤X → (∑ p ∈ (Finset.Ioo X (2*X)).filter (fun p => 50*p<51*X ∧ p.Prime ∧ Nat.nthRoot 5 X ≤ (p+2).minFac ∧ (p+2).minFac < 2*Nat.nthRoot 5 X), Real.log p * Real.log (p+2)) ≤ C*X/Real.log X",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 方法与自然推广 · 首次命中五次根边带的权上界",
+    "en": "New route · Levent GRH methods and extensions · Bound the first hits in the doubled fifth-root band"
+  },
+  "brief": {
+    "zh": "证明 $H_X[z_0,2z_0)\\ll X/\\log X$。对素数 $r=\\operatorname{minFac}(p+2)$ 写 $p=rs-2$。$s$ 可以合成，但没有小于 $r$ 的素因子。对 $s(rs-2)$ 上筛到 $X^{1/30}$，用 `cofactor-sieve-root-count`，得到每个 $r$ 至多 $O(X/(r\\log^2 X))$ 个候选。$r$ 大于该筛点，余项对 $r$ 一致。再用 $\\sum_{z_0\\le r<2z_0,\\ r\\ {\\rm prime}}1/r\\ll1/\\log X$。",
+    "en": "Switch to p=rs−2 and use an upper sieve for the two forms s and rs−2."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/孪生素数任务拆分3.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

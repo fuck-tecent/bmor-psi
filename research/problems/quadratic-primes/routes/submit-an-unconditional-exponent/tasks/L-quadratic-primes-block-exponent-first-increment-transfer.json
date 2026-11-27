@@ -1,0 +1,18 @@
+{
+  "id": "L-quadratic-primes-block-exponent-first-increment-transfer",
+  "statement": "∀ x n p : ℕ, x≤n → n≤2*x → 2^132301 < x^9 → x^13231 < p^10000 → n^132301 < p^100000",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 方法与自然推广 · 从倍增块指数换到单点 1.32301",
+    "en": "New route · Levent GRH methods and extensions · Transfer a dyadic exponent to the pointwise exponent 1.32301"
+  },
+  "brief": {
+    "zh": "若 `dyadic-prime-divisor` 成立，取 $x>2^{132301/9}$，则 $(2x)^{1.32301}<x^{1.3231}$，同一 $p$ 可交在途的 `lpf-first-increment`。已验收 `dyadic-witness-transfer` 对 $1.323$ 使用较小门槛 $2^{13230}$。给出整幂版本，如 $x^9>2^{132301}$，供两条声明核对严格不等式。",
+    "en": "Use n ≤ 2x and x⁹ > 2¹³²³⁰¹ to absorb the factor of two in the endpoint."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/近平方素数任务拆分3.md",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

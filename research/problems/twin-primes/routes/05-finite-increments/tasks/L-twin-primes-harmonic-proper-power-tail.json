@@ -1,0 +1,18 @@
+{
+  "id": "L-twin-primes-harmonic-proper-power-tail",
+  "statement": "∃ C : ℝ, 0<C ∧ ∀ U V : ℕ, 2≤U → (∑ n ∈ (Finset.range V).filter (fun n => U<n+2 ∧ (¬n.Prime ∨ ¬(n+2).Prime)), ArithmeticFunction.vonMangoldt n * ArithmeticFunction.vonMangoldt (n+2)/(n+2 : ℝ)) ≤ C*Real.log (2+U)/Real.sqrt U",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 方法与自然推广 · 非双素数的调和尾项",
+    "en": "New route · Levent GRH methods and extensions · Bound the harmonic tail from nonprime endpoints"
+  },
+  "brief": {
+    "zh": "证明 $\\sum_{n+2>U,\\ (n,n+2)\\text{非双素}}\\Lambda(n)\\Lambda(n+2)/(n+2)\\ll\\log(2+U)/\\sqrt U$，$U\\ge2$。由 `square-log-mass`、`higher-power-log-mass` 在 $[V,2V]$ 上分别计两端，另一端权至多 $\\log(2V+2)$，再取 $V=2^jU$ 求和。",
+    "en": "Count prime squares and higher powers on dyadic blocks and sum the weighted bounds."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/孪生素数任务拆分3.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

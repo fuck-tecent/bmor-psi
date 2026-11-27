@@ -1,0 +1,18 @@
+{
+  "id": "L-twin-primes-integer-scale-divisor-kernel",
+  "statement": "∀ Y p d : ℕ, (Finset.Ico Y (2*Y)).filter (fun X => X<p ∧ 50*p<51*X ∧ X<d^3) = Finset.Ico (max Y (50*p/51+1)) (min (2*Y) (min p (d^3)))",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 方法与自然推广 · 整数尺度硬窗的交换求和核",
+    "en": "New route · Levent GRH methods and extensions · Identify the integer-scale window and divisor cutoff"
+  },
+  "brief": {
+    "zh": "在 $Y\\le X<2Y$ 等权平均 $L_2(X)$，交换为 $\\sum_{m,d}\\mathbf1_{p=md-2\\ {\\rm prime},\\,p\\equiv2(3)}\\log p\\,c(d)\\,K_Y(p,d)$。其中 $l=\\max(Y,\\lfloor50p/51\\rfloor+1)$，$u=\\min(2Y,p,d^3)$，$K_Y=Y^{-1}\\sum_{l\\le X<u}1/X$。空区间取零，$Y\\ge2$，$m,d\\ge1$，只须 $Y<p<102Y/50$。$X<d^3$ 当且仅当 $D_X<d$。",
+    "en": "Intersect the three strict window inequalities with the dyadic block. Keep the end at d cubed excluded."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/孪生素数任务拆分3.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

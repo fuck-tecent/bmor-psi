@@ -1,0 +1,18 @@
+{
+  "id": "L-goldbach-rfc11-top-first-4096-witnesses",
+  "statement": "(fun (lo hi : ℕ) => ∀ n : ℕ, lo≤n → n<hi → 2∣n → ∃ p q : ℕ, p.Prime ∧ q.Prime ∧ p+q=n) (10^180-8192) (10^180)",
+  "plain_statement": {
+    "zh": "新路线 · V02 · 回放草案中的素数对并覆盖 [10^180-8192, 10^180)",
+    "en": "New route · V02 · Replay the prime pairs in the proposal for [10^180-8192, 10^180)"
+  },
+  "brief": {
+    "zh": "回放草案中的素数对并覆盖 [10^180-8192, 10^180)",
+    "en": "Replay the prime pairs in the proposal for [10^180-8192, 10^180)"
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

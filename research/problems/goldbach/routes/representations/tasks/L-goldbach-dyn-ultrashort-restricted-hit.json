@@ -1,0 +1,23 @@
+{
+  "id": "L-goldbach-dyn-ultrashort-restricted-hit",
+  "statement": "let W := fun y : ℕ => Nat.floor ((y : ℝ) ^ ((26 : ℝ) / 1075)); ∃ X₀ : ℕ, ∀ X ≥ X₀, ∀ y : ℕ, X ≤ y → y + W y ≤ 2 * X → ∃ n : ℕ, y ≤ n ∧ n ≤ y + W y ∧ Even n ∧ (∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ Nat.sqrt X ≤ p ∧ p ≤ 2 * Nat.sqrt X ∧ p + q = n)",
+  "plain_statement": {
+    "zh": "每个超短窗都有一个带平方根量级素数加数的哥德巴赫数",
+    "en": "A Goldbach hit with a square-root-sized prime in every ultra-short window"
+  },
+  "brief": {
+    "zh": "待证。对充分大的 X，每个完整落在 [X,2X] 的闭窗 [y,y+⌊y^(26/1075)⌋] 中，至少一个偶数能写成两个素数之和，且其中一个素数在 [⌊√X⌋,2⌊√X⌋]。可从 Li 定理 7 的短窗存在性及其筛法输入入手，研究短区间素数指示函数与平方根带素数的加权平均，直接证明一个非负短窗权下的总表示数为正。该窗明显短于 13/225 密度题；需要排除同窗全漏，长窗矩估计无法直接定位这个窗。可引用全站已核验的 Lean 模块；见 https://jenkins-hook.goldbach.tech/verified-imports.json。",
+    "en": "Open. For large X, each closed window [y,y+floor(y^(26/1075))] inside [X,2X] contains an even sum of two primes, one in [floor(sqrt X),2 floor(sqrt X)]. Start from the sieve inputs behind Li's Theorem 7 and seek a positive weighted short-window average against primes in the square-root band. The window is shorter than the 13/225 density window. The challenge is to rule out a wholly missed window at this scale. You may import verified Lean modules listed at https://jenkins-hook.goldbach.tech/verified-imports.json."
+  },
+  "depends_on": [],
+  "source": "https://arxiv.org/html/2308.04458v8#S7",
+  "program": "correlation",
+  "parallel": true,
+  "module": "Conjectures.Goldbach.DynUltrashortRestrictedHit",
+  "file": "lean/Conjectures/Goldbach/DynUltrashortRestrictedHit.lean",
+  "imports": [
+    "Mathlib"
+  ],
+  "track": "representations",
+  "role": "target"
+}

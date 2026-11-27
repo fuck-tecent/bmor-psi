@@ -1,0 +1,18 @@
+{
+  "id": "L-twin-primes-harmonic-kernel-cofactor-error",
+  "statement": "∀ l u : ℕ, 0<l → l≤u → |(∑ x ∈ Finset.Ico l u, (x : ℝ)⁻¹) - Real.log ((u : ℝ)/l)| ≤ (l : ℝ)⁻¹",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 方法与自然推广 · 调和窗的对数核误差",
+    "en": "New route · Levent GRH methods and extensions · Bound the harmonic-window logarithmic approximation"
+  },
+  "brief": {
+    "zh": "把 D04 的核换成 $k_Y=Y^{-1}\\max(0,\\log(u/l))$，其中 $u,l>0$。逐个非空区间误差至多 $1/(Yl)$。求和后误差 $\\ll\\log^3(2+Y)/Y$，用 $\\sum_{p\\le3Y}\\tau(p+2)\\ll Y\\log(2+Y)$。这样得到可作分部求和的实权，仍逐项保留 $\\mu(d)$ 与 $md-2$ 素性。供长段两类合并时使用。",
+    "en": "Integrate the decreasing function 1/t between successive integer endpoints."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/孪生素数任务拆分3.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

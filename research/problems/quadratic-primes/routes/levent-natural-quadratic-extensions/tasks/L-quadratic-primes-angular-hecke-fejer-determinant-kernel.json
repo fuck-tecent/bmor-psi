@@ -1,0 +1,18 @@
+{
+  "id": "L-quadratic-primes-angular-hecke-fejer-determinant-kernel",
+  "statement": "∀ (M : ℕ) (θ : ℝ), Real.sin (2*θ) ≠ 0 → ‖(∑ j ∈ Finset.range (M+1), Complex.exp (Complex.I * (4*(j:ℝ)*θ : ℝ)))‖^2 / (M+1 : ℝ) ≤ min (M+1 : ℝ) (1/((M+1 : ℝ)*(Real.sin (2*θ))^2))",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 方法与自然推广 · 角向 Fejér 相位的行列式上界",
+    "en": "New route · Levent GRH methods and extensions · Bound the angular Fejér kernel by a determinant"
+  },
+  "brief": {
+    "zh": "对整数 $M\\ge1$，展开 $\\sum_{\\vert m\\vert\\le M}(1-\\vert m\\vert/(M+1))\\vert V_m(x)\\vert^2$ 为实际理想对加权和，核为 $F_M(4(\\theta_z-\\theta_w))$，$F_M(t)=(M+1)^{-1}\\vert\\sum_{j=0}^M e^{ijt}\\vert^2$。在原环带置 $d=\\min(\\vert\\Re z\\bar w\\vert,\\vert\\Im z\\bar w\\vert)$，由模 $\\pi/2$ 的最短角差得核 $\\ll\\min(M+1,x^4/((M+1)d^2))$（$d>0$）。$d=0$ 精确给 $M+1$。这是角谱的二阶矩。",
+    "en": "Use the geometric sum and the shortest angle modulo a quarter turn."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/近平方素数任务拆分3.md",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

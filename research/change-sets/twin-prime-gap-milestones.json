@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "problem": "twin-primes",
+  "base_revision": "a9ebdf1a040daeb81826fb73eb194ada4c883d3d",
+  "request_id": "twin-prime-gap-milestones",
+  "parent": {
+    "id": "L-twin-primes-endpoint",
+    "statement_sha256": "aca0c3a13dd85aa8a693edac45d658012847fb4736f94451f7f634a36a1290e0"
+  },
+  "motivation": {
+    "zh": "缩小孪生素数与已知有界间隔之间的差距。推进任意可容许三元组的无条件结论，或把无穷复现间隔压到 2、4。固定差二仍由总目标验证。",
+    "en": "Narrow the gap between bounded prime gaps and the twin-prime target. Seek unconditional admissible triples or reduce infinite recurrence to gaps 2 and 4. The endpoint still requires gap 2."
+  },
+  "tasks": [
+    {
+      "id": "L-twin-primes-admissible-triple-unconditional",
+      "statement": "∀ H : Finset ℕ, H.card = 3 → (∀ p : ℕ, p.Prime → ∃ r : ℕ, r < p ∧ ∀ h ∈ H, h % p ≠ r) → ∀ B : ℕ, ∃ n : ℕ, B < n ∧ ∃ a ∈ H, ∃ b ∈ H, a < b ∧ Nat.Prime (n+a) ∧ Nat.Prime (n+b)",
+      "plain_statement": {
+        "zh": "任意可容许三元组的无穷多平移含两个素数",
+        "en": "Prove the admissible-triple two-prime theorem unconditionally"
+      },
+      "brief": {
+        "zh": "待证。Polymath8b 定理 3.2(xii) 在广义 Elliott–Halberstam 假设下证明同一结论。这里保留所有可容许三元组并去掉该假设。可先查 Theorem 3.2 如何把分布误差与筛权分离，再寻找仅需三元组的带符号相关余量。对 {0,2,6} 特化得到无穷多对距离不超过 6。",
+        "en": "Open. Polymath8b Theorem 3.2(xii) assumes generalized Elliott–Halberstam. Retain all admissible triples and remove that hypothesis. Study the separation of distribution error and sieve weights, then seek a signed correlation margin adapted to three shifts. The triple {0,2,6} gives arbitrarily large pairs at distance at most six."
+      },
+      "source": "https://arxiv.org/html/1407.4897v4",
+      "route": "08-bounded-gaps-frontier",
+      "assumptions": [],
+      "depends_on": [],
+      "program": "correlation",
+      "parallel": true
+    },
+    {
+      "id": "L-twin-primes-gap-at-most-four",
+      "statement": "∀ B : ℕ, ∃ p q : ℕ, B < p ∧ p < q ∧ q ≤ p + 4 ∧ p.Prime ∧ q.Prime",
+      "plain_statement": {
+        "zh": "无条件把无限复现的素数间隔压到 4 以内",
+        "en": "Prove infinitely many prime gaps at most four unconditionally"
+      },
+      "brief": {
+        "zh": "待证。对每个下界 B 找到两个大于 B 且距离至多 4 的素数，等价于 H₁≤4。Polymath8b 定理 1.4 在 GEH 下给出 6。可研究实际素数权的差二、差四相关合计能否在无界尺度压过素数幂污染；纯筛上界不能提供这里的正性。结果会把无限复现的候选间隔缩到 2、4。",
+        "en": "Open. A prime pair within four beyond every bound is equivalent to H₁ ≤ 4. Polymath8b Theorem 1.4 gives six under GEH. Seek an actual gap-two plus gap-four correlation surplus on unbounded scales after prime-power contamination. This leaves two and four as the possible recurring gaps at this scale."
+      },
+      "source": "https://arxiv.org/html/1407.4897v4",
+      "route": "08-bounded-gaps-frontier",
+      "assumptions": [],
+      "depends_on": [],
+      "program": "correlation",
+      "parallel": true
+    }
+  ],
+  "links": [
+    {
+      "kind": "exploration",
+      "inputs": [
+        "L-twin-primes-admissible-triple-unconditional"
+      ],
+      "output": "L-twin-primes-endpoint",
+      "explanation": {
+        "zh": "取 {0,2,6}，可容许性由模 2、3 检查，大于 3 的素数不可能被三元组占满。得到任意界外距离 2、4、6 的素数对。仍要排除距离 2 只出现有限次。",
+        "en": "Specialize to {0,2,6}, checking 2 and 3 directly and using cardinality for larger moduli. This supplies arbitrarily large pairs at gaps 2, 4 or 6. It leaves open whether gap two recurs."
+      }
+    },
+    {
+      "kind": "exploration",
+      "inputs": [
+        "L-twin-primes-gap-at-most-four"
+      ],
+      "output": "L-twin-primes-endpoint",
+      "explanation": {
+        "zh": "充分大素数都是奇数，所给素数对距离只能是 2 或 4。无穷抽屉原理给出至少一个距离无限复现。差四项是否能单独贡献全部剩余质量仍待排除。",
+        "en": "Both sufficiently large primes are odd. By finite pigeonhole, at least one of the two gaps 2 and 4 recurs infinitely often. Gap four could still account for the conclusion."
+      }
+    }
+  ],
+  "route_note": {
+    "zh": "缩小孪生素数与已知有界间隔之间的差距。推进任意可容许三元组的无条件结论，或把无穷复现间隔压到 2、4。固定差二仍由总目标验证。",
+    "en": "Narrow the gap between bounded prime gaps and the twin-prime target. Seek unconditional admissible triples or reduce infinite recurrence to gaps 2 and 4. The endpoint still requires gap 2."
+  }
+}

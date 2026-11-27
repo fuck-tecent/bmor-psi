@@ -38,6 +38,12 @@ class LandauRecordTests(unittest.TestCase):
                 best = exponent_record(desk, conn)["current"]
                 self.assertEqual(best["exponent"], "1.324")
                 self.assertTrue(best["source_url"].endswith("/runs/5"))
+                final = targets["2"]["id"]
+                conn.execute("INSERT INTO assembled_proofs VALUES (?,?,?)", (final, 42,
+                             json.dumps({"statement_sha256": desk.statement_hashes[final]})))
+                assembled = exponent_record(desk, conn)["current"]
+                self.assertEqual(assembled["exponent"], "2")
+                self.assertTrue(assembled["source_url"].endswith("?lemma=" + final))
                 report(targets["2"], 8, "ACCEPTED")
                 self.assertEqual(exponent_record(desk, conn)["current"]["exponent"], "2")
 

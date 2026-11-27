@@ -51,6 +51,8 @@ const strings = {
     occupied: '这条引理当前正在处理。',
     alreadyVerified: '这条引理已通过权威验证。',
     lemmaPrompt: gap => '读取 ' + guideUrl + '，按指南用 ' + claimCommand + ' ' + gap.id + ' 领取并验证这一条引理。可跨猜想导入全站已验证社区模块，完整清单见领取指南。'
+      + '同一题的积分归研究台最先记录权威 Lean ACCEPTED 的提交者。'
+      + (gap.takes_cuts ? '也可用 ' + claimCommand + ' ' + gap.id + ' --kind cut 提交拆题，每套经 Lean 核验并被采用的拆法另加 1 分。' : '')
       + (gap.imports?.length ? '本题推荐  ' + gap.imports.join('、') + '。' : '')
       + '可查阅网上资料，把相关方法形式化到指定的 Lean 文件，并在 PR 中注明来源。如果无法领取这条引理，请说明原因，不要改领其他题。'
   },
@@ -90,6 +92,8 @@ const strings = {
     occupied: 'This lemma is currently in progress.',
     alreadyVerified: 'The authoritative verifier has accepted this lemma.',
     lemmaPrompt: gap => 'Read ' + guideUrl + ' and follow it to claim and verify exactly ' + gap.id + ' with ' + claimCommand + ' ' + gap.id + '. Verified community modules are available across conjectures (see the guide). '
+      + "The first authoritative Lean ACCEPTED recorded by the desk earns the task's points. "
+      + (gap.takes_cuts ? 'You can also use ' + claimCommand + ' ' + gap.id + ' --kind cut. Each Lean-verified cut adopted by the desk earns a separate point. ' : '')
       + (gap.imports?.length ? 'Suggested imports include ' + gap.imports.join(', ') + '. ' : '')
       + 'You may research methods online. Formalize the relevant steps in your assigned Lean file and cite your sources in the PR. If that lemma is unavailable, report why and do not choose another.'
   }
@@ -118,6 +122,148 @@ function runLink(run, label) {
   return anchor(label + ' ↗', repository + path, 'evidence-link');
 }
 
+async function fetchPublicJson(url) {
+  const response = await fetch(url, { signal: AbortSignal.timeout(15000) });
+  if (!response.ok) throw new Error("Public data unavailable");
+  return response.json();
+}
+
+function loadDisclosure(target, request, render) {
+  target.setAttribute('aria-busy', 'true');
+  const loadingLabel = lang === 'zh' ? '正在加载详情…' : 'Loading details…';
+  target.replaceChildren(element('p', loadingLabel, 'detail-context'));
+  request().then(data => {
+    if (!target.isConnected) return;
+    target.removeAttribute('aria-busy');
+    render(data);
+  }).catch(() => {
+    if (!target.isConnected) return;
+    target.removeAttribute('aria-busy');
+    const retry = element('button', lang === 'zh' ? '重试' : 'Retry', 'button');
+    retry.type = 'button';
+    retry.addEventListener('click', () => loadDisclosure(target, request, render));
+    target.replaceChildren(element('p', strings.failure, 'detail-context'), retry);
+  });
+}
+
+const taskDetails = new Map();
+
+function loadTaskDetail(id) {
+  const now = Date.now();
+  const cached = taskDetails.get(id);
+  if (cached && cached.until > now) return cached.request;
+  const entry = { until: now + 30000 };
+  entry.request = fetchPublicJson('api/task?lemma=' + encodeURIComponent(id)).catch(error => {
+    if (taskDetails.get(id) === entry) taskDetails.delete(id);
+    throw error;
+  });
+  taskDetails.delete(id);
+  taskDetails.set(id, entry);
+  if (taskDetails.size > 48) taskDetails.delete(taskDetails.keys().next().value);
+  return entry.request;
+}
+
+function detailSearch(scope, refresh) {
+  let active = '';
+  let matches = new Set();
+  let debounce;
+  let pending;
+
+  return {
+    update(query) {
+      if (active === query) return;
+      active = query;
+      matches = new Set();
+      window.clearTimeout(debounce);
+      pending?.abort();
+      if (query.length === 0 || query.length > 500) return;
+      debounce = window.setTimeout(async () => {
+        const controller = new AbortController();
+        pending = controller;
+        const params = new URLSearchParams({q: query, lang, scope});
+        try {
+          const response = await fetch('api/task-search?' + params, {
+            signal: AbortSignal.any([controller.signal, AbortSignal.timeout(10000)]),
+          });
+          if (!response.ok) return;
+          const data = await response.json();
+          if (!controller.signal.aborted && active === query) {
+            matches = new Set(data.ids);
+            refresh();
+          }
+        } catch {
+          // Titles and IDs can still be searched locally.
+        }
+      }, 250);
+    },
+    matches(query, id) {
+      return query === active && matches.has(id);
+    },
+  };
+}
+
+function cutEvidence(gap) {
+  const zh = lang === 'zh';
+  const block = element('div', undefined, 'detail-context');
+  const reasons = {
+    cuts_disabled: zh ? '此题未开启拆题' : 'Cuts are disabled for this task',
+    cut_depth_limit: zh ? '已到拆题深度上限' : 'Cut depth limit reached',
+    cut_limit: zh ? '有效拆法数已达上限' : 'Live cut limit reached',
+    claims_closed: closedClaimLabel(),
+    settled: zh ? '此题已结案' : 'This task is settled'
+  };
+  const states = {
+    live: zh ? '可继续' : 'Live', refuted: zh ? '前提已证伪' : 'Premise refuted',
+    completed: zh ? '已组合证明' : 'Completed', superseded: zh ? '父题已结案' : 'Parent settled',
+    surplus: zh ? '未采用' : 'Unused'
+  };
+  block.append(element('p', [
+    gap.takes_cuts ? (zh ? '可提交拆题' : 'Open for cuts') : reasons[gap.cut_reason],
+    (zh ? '深度 ' : 'Depth ') + (gap.depth || 0),
+    (zh ? '有效拆法 ' : 'Live cuts ') + (gap.reductions_live || 0)
+  ].filter(Boolean).join(' · ')));
+  const credit = (row, item) => {
+    if (item.handle) row.append(' · @' + item.handle);
+    if (item.pr) row.append(' · ', anchor('PR #' + item.pr, repository + '/pull/' + item.pr));
+    if (item.head) row.append(' · ', runLink({run_id: item.run_id || item.run, head_sha: item.head}, item.head.slice(0, 8)));
+  };
+  for (const cut of gap.cuts || []) {
+    const row = element('p', (zh ? '拆法' : 'Cut') + ' · ' + states[cut.status]);
+    if (cut.reason) row.append(' · ' + (reasons[cut.reason] || cut.reason));
+    if (cut.points) row.append(' · +' + cut.points.toLocaleString(locale) + ' ' + strings.pointsUnit);
+    credit(row, cut);
+    for (const id of cut.children) row.append(' · ', anchor(id, '?lang=' + lang + '&lemma=' + encodeURIComponent(id)));
+    block.append(row);
+  }
+  if (gap.cut_origin?.contributor_wording) {
+    block.append(anchor(zh ? '查看拆题作者的双语说明' : 'Bilingual wording from the cut author',
+      repository + '/pull/' + gap.cut_origin.pr));
+  }
+  if (gap.refutation?.handle) {
+    const row = element('p', zh ? '已核验反证' : 'Verified refutation');
+    credit(row, gap.refutation);
+    if (gap.refutation.module) {
+      row.append(' · ', anchor(zh ? '反证源码' : 'Refutation source', repository + '/blob/' +
+        gap.refutation.head + '/lean/' + gap.refutation.module.replaceAll('.', '/') + '.lean'));
+    }
+    block.append(row);
+  }
+  if (gap.assembly) {
+    const details = element('details');
+    details.append(element('summary', zh ? '父题组合证明与贡献者' : 'Composed proof and contributors'));
+    const add = (node) => {
+      const row = element('p', node.gap);
+      credit(row, node);
+      details.append(row);
+      for (const premise of node.premises || []) add(premise);
+    };
+    add(gap.assembly.proof);
+    details.append(element('pre', gap.assembly.source));
+    block.append(details);
+  }
+  return block;
+}
+
 function verdictTag(label, status) {
   return element('span', label, status ? 'verdict verdict-' + status : 'verdict');
 }
@@ -130,14 +276,16 @@ const deskNotice = document.getElementById('desk-notice');
 const deskActivity = document.getElementById('desk-activity');
 const rankingsList = document.getElementById('rankings-list');
 const rankingsModes = Array.from(document.querySelectorAll('[data-ranking-mode]'));
-const rankingsAll = document.getElementById('rankings-all');
-const rankingsDialog = document.getElementById('rankings-dialog');
-const rankingsFullList = document.getElementById('rankings-full-list');
 const rankingsAnnouncement = document.getElementById('rankings-announcement');
+const RANKINGS_BATCH = 12;
 let rankingsData = null;
 let rankingsSnapshot = null;
 let rankingMode = null;
 let agentRankingsData = null;
+let rankingsEpoch = 0;
+let rankingObserver = null;
+let activeRankingScroll = null;
+const rankingFeeds = {};
 const locale = document.documentElement.lang;
 const eventTime = new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short' });
 const relativeTime = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
@@ -294,6 +442,12 @@ document.getElementById('roadmap')?.addEventListener('click', event => {
 function renderGapDetail() {
   const gap = publishedGaps.find(entry => entry.id === selectedGap);
   if (!gap) return;
+  const placeholder = element('div');
+  detailContent.replaceChildren(placeholder);
+  loadDisclosure(placeholder, () => loadTaskDetail(gap.id), detail => drawGapDetail({ ...gap, ...detail }));
+}
+
+function drawGapDetail(gap) {
   const status = gapStatus(gap);
   const identity = element('div', undefined, 'detail-identity');
   identity.append(element('code', gap.id), verdictTag(status.label, status.style));
@@ -311,6 +465,7 @@ function renderGapDetail() {
     element('pre', gap.statement, 'detail-statement')
   );
 
+  detailContent.append(cutEvidence(gap));
   if (gap.brief?.[lang]) detailContent.append(element('p', gap.brief[lang], 'detail-context'));
   if (gap.source) detailContent.append(anchor(lang === 'zh' ? '阅读来源 ↗' : 'Read the source ↗', gap.source, 'evidence-link'));
   if (canClaim(gap) && gap.parallel) detailContent.append(element('p',
@@ -324,7 +479,7 @@ function renderGapDetail() {
     detailContent.append(runLink(gap.latest, strings.latestRun));
   }
   if (gap.refutation) {
-    detailContent.append(anchor(status.label + ' · PR #' + gap.refutation.pr, repository + '/pull/' + gap.refutation.pr, 'evidence-link'));
+    if (!gap.refutation.handle) detailContent.append(anchor(status.label + ' · PR #' + gap.refutation.pr, repository + '/pull/' + gap.refutation.pr, 'evidence-link'));
     return;
   }
   if (!canClaim(gap)) {
@@ -372,8 +527,11 @@ function lemmaRow(gap) {
   return row;
 }
 
+const lemmaDetailSearch = detailSearch('all', renderLemmas);
+
 function renderLemmas() {
-  const query = lemmaSearch.value.trim().toLocaleLowerCase();
+  const query = lemmaSearch.value.trim().toLowerCase();
+  lemmaDetailSearch.update(query);
   const selection = lemmaState.value;
   const visibleGaps = publishedGaps.filter(gap => {
     if (selectedProgram && programOf(gap) !== selectedProgram) return false;
@@ -384,10 +542,9 @@ function renderLemmas() {
     if (!query) return true;
     const program = programOf(gap);
     const content = [
-      gap.id, gap.statement, gap.plain_statement.zh, gap.plain_statement.en,
-      program, programName(program), gap.brief?.[lang] || ''
+      gap.id, gap.plain_statement.zh, gap.plain_statement.en, program, programName(program)
     ];
-    return content.some(text => text.toLocaleLowerCase().includes(query));
+    return content.some(text => text.toLowerCase().includes(query)) || lemmaDetailSearch.matches(query, gap.id);
   });
   const maxPage = Math.max(1, Math.ceil(visibleGaps.length / pageSize));
   lemmaPage = Math.min(lemmaPage, maxPage);
@@ -426,6 +583,7 @@ function renderLogEntry(run) {
   const label = element('div', undefined, 'log-main');
   const meta = element('div', undefined, 'log-meta');
   meta.append(element('span', strings.attempt + ' ' + run.run_attempt + ' · #' + run.run_id, 'log-note'));
+  if (run.kind && run.kind !== 'prove') meta.append(element('span', run.kind, 'log-note'));
   const route = gapRoutes.get(run.lemma_id);
   if (route && programs.has(route)) {
     meta.append(element('span', '·', 'log-sep'), anchor(programName(route), '#track-' + route, 'log-note'));
@@ -442,12 +600,17 @@ function renderLogEntry(run) {
       (a.source === 'self_reported' ? (lang === 'zh' ? '提交者自报' : 'Self-reported') :
         (lang === 'zh' ? '未记录' : 'Unrecorded')), 'log-note agent-attribution'));
   }
-  if (run.manifest) {
+  if (run.has_manifest || run.manifest) {
     const details = element('details', undefined, 'manifest');
-    details.append(
-      element('summary', strings.manifest),
-      element('pre', JSON.stringify(run.manifest, null, 2))
-    );
+    const content = element('div');
+    details.append(element('summary', strings.manifest), content);
+    details.addEventListener('toggle', () => {
+      if (!details.open || content.hasChildNodes()) return;
+      const params = new URLSearchParams({run: run.run_id, attempt: run.run_attempt});
+      loadDisclosure(content,
+        () => run.manifest ? Promise.resolve(run) : fetchPublicJson('api/record-manifest?' + params),
+        record => content.replaceChildren(element('pre', JSON.stringify(record.manifest, null, 2))));
+    });
     article.append(details);
   }
   return article;
@@ -553,10 +716,11 @@ function renderRankingResult(entry, period) {
   const hasPoints = Number.isSafeInteger(entry.points);
   const score = element('span', '+' + (hasPoints ? entry.points : entry.accepted).toLocaleString(locale), 'ranking-score');
   if (hasPoints) score.append(element('span', strings.pointsUnit, 'ranking-unit'));
-  const detail = hasPoints && Number.isSafeInteger(entry.accepted)
-    ? strings.verifiedCount(entry.accepted) + ' · ' + period
-    : period;
-  result.append(score, element('span', detail, 'ranking-period'));
+  const detail = [];
+  if (hasPoints && Number.isSafeInteger(entry.accepted)) detail.push(strings.verifiedCount(entry.accepted));
+  if (entry.cuts) detail.push(entry.cuts.toLocaleString(locale) + (lang === 'zh' ? ' 套拆题' : entry.cuts === 1 ? ' cut' : ' cuts'));
+  detail.push(period);
+  result.append(score, element('span', detail.join(' · '), 'ranking-period'));
   return result;
 }
 
@@ -623,66 +787,210 @@ function agentName(name) {
   return Object.hasOwn(harnessLabels, name) ? harnessLabels[name] : name;
 }
 
-const agentBrandRules = [
-  [/(?:^|[ /:_-])(?:codex)(?=$|[ /:_.0-9-])/, 22],
-  [/(?:^|[ /:_-])(?:claude-code)(?=$|[ /:_.0-9-])/, 23],
-  [/(?:^|[ /:_-])(?:gemini-cli)(?=$|[ /:_.0-9-])/, 25],
-  [/(?:^|[ /:_-])(?:cursor)(?=$|[ /:_.0-9-])/, 24],
-  [/(?:^|[ /:_-])(?:opencode)(?=$|[ /:_.0-9-])/, 26],
-  [/(?:^|[ /:_-])(?:openai|gpt|chatgpt|o[134](?:-|$))(?=$|[ /:_.0-9-])/, 0],
-  [/(?:^|[ /:_-])(?:anthropic|claude)(?=$|[ /:_.0-9-])/, 1],
-  [/(?:^|[ /:_-])(?:gemini)(?=$|[ /:_.0-9-])/, 2],
-  [/(?:^|[ /:_-])(?:deepseek)(?=$|[ /:_.0-9-])/, 3],
-  [/(?:^|[ /:_-])(?:qwen|qwq|qvq|tongyi)(?=$|[ /:_.0-9-])/, 4],
-  [/(?:^|[ /:_-])(?:xai|x-ai|grok)(?=$|[ /:_.0-9-])/, 5],
-  [/(?:^|[ /:_-])(?:meta|llama)(?=$|[ /:_.0-9-])/, 6],
-  [/(?:^|[ /:_-])(?:mistral|mixtral|codestral|devstral|magistral)(?=$|[ /:_.0-9-])/, 7],
-  [/(?:^|[ /:_-])(?:kimi)(?=$|[ /:_.0-9-])/, 8],
-  [/(?:^|[ /:_-])(?:moonshot)(?=$|[ /:_.0-9-])/, 33],
-  [/(?:^|[ /:_-])(?:zhipu|zai|z-ai|glm|chatglm)(?=$|[ /:_.0-9-])/, 9],
-  [/(?:^|[ /:_-])(?:doubao|seed|bytedance)(?=$|[ /:_.0-9-])/, 10],
-  [/(?:^|[ /:_-])(?:baidu|ernie)(?=$|[ /:_.0-9-])/, 11],
-  [/(?:^|[ /:_-])(?:minimax)(?=$|[ /:_.0-9-])/, 12],
-  [/(?:^|[ /:_-])(?:yi(?:-|$)|01-ai)(?=$|[ /:_.0-9-])/, 13],
-  [/(?:^|[ /:_-])(?:cohere|command)(?=$|[ /:_.0-9-])/, 14],
-  [/(?:^|[ /:_-])(?:ai21|jamba)(?=$|[ /:_.0-9-])/, 15],
-  [/(?:^|[ /:_-])(?:nvidia|nemotron)(?=$|[ /:_.0-9-])/, 16],
-  [/(?:^|[ /:_-])(?:microsoft|phi)(?=$|[ /:_.0-9-])/, 17],
-  [/(?:^|[ /:_-])(?:hunyuan)(?=$|[ /:_.0-9-])/, 18],
-  [/(?:^|[ /:_-])(?:stepfun|step(?:-|$))(?=$|[ /:_.0-9-])/, 19],
-  [/(?:^|[ /:_-])(?:gemma)(?=$|[ /:_.0-9-])/, 20],
-  [/(?:^|[ /:_-])(?:google|palm)(?=$|[ /:_.0-9-])/, 21],
-  [/(?:^|[ /:_-])(?:perplexity|sonar)(?=$|[ /:_.0-9-])/, 27],
-  [/(?:^|[ /:_-])(?:alibaba)(?=$|[ /:_.0-9-])/, 28],
-  [/(?:^|[ /:_-])(?:tencent)(?=$|[ /:_.0-9-])/, 29],
-  [/(?:^|[ /:_-])(?:ibm|granite)(?=$|[ /:_.0-9-])/, 30],
-  [/(?:^|[ /:_-])(?:huggingface|smollm)(?=$|[ /:_.0-9-])/, 31],
-];
+const SVG_NS = 'http://www.w3.org/2000/svg';
+const XLINK_NS = 'http://www.w3.org/1999/xlink';
+const BRAND_ICON_KEY = /^[a-z0-9][a-z0-9-]{0,31}$/;
+let brandSpritePromise = null;
 
-function agentBrandIcon(name) {
-  const match = agentBrandRules.find(([pattern]) => pattern.test(name.toLowerCase()));
-  const icon = element('span', match ? '' : name.slice(0, 1).toUpperCase(), 'agent-brand-icon');
+function ensureBrandSprite() {
+  if (brandSpritePromise || document.getElementById('agent-brand-sprite')) return;
+  const spriteUrl = document.getElementById('rankings')?.dataset.brandSprite || 'agent-icons.svg';
+  brandSpritePromise = fetch(spriteUrl)
+    .then(res => (res.ok ? res.text() : ''))
+    .then(markup => {
+      if (!markup || document.getElementById('agent-brand-sprite')) return;
+      const doc = new DOMParser().parseFromString(markup, 'image/svg+xml');
+      const parsed = doc.documentElement;
+      if (!parsed || parsed.localName !== 'svg' || doc.querySelector('parsererror')) return;
+      const svg = document.importNode(parsed, true);
+      svg.id = 'agent-brand-sprite';
+      svg.setAttribute('aria-hidden', 'true');
+      svg.style.position = 'absolute';
+      svg.style.width = '0';
+      svg.style.height = '0';
+      svg.style.overflow = 'hidden';
+      svg.style.pointerEvents = 'none';
+      document.body.prepend(svg);
+    })
+    .catch(() => { brandSpritePromise = null; });
+}
+
+function agentBrandIcon(entry, kind = 'models') {
+  const name = typeof entry === 'string' ? entry : (entry?.name || '');
+  let key = entry && typeof entry === 'object' && typeof entry.icon === 'string' && BRAND_ICON_KEY.test(entry.icon)
+    ? entry.icon
+    : null;
+  if (!key && kind === 'providers' && name === 'unknown') key = 'provider-unknown';
+  const icon = element('span', key ? '' : name.slice(0, 1).toUpperCase(), 'agent-brand-icon');
   icon.setAttribute('aria-hidden', 'true');
-  if (match) {
+  if (key) {
+    ensureBrandSprite();
     icon.classList.add('has-brand');
-    icon.style.backgroundPosition = '-' + (match[1] * 32) + 'px 0';
+    const svg = document.createElementNS(SVG_NS, 'svg');
+    svg.setAttribute('class', 'agent-brand-svg');
+    svg.setAttribute('aria-hidden', 'true');
+    const use = document.createElementNS(SVG_NS, 'use');
+    use.setAttribute('href', '#brand-' + key);
+    use.setAttributeNS(XLINK_NS, 'xlink:href', '#brand-' + key);
+    svg.append(use);
+    icon.append(svg);
   }
   return icon;
 }
 
-function renderAgentRankingRow(entry, index) {
+function renderAgentRankingRow(entry, index, kind = 'models') {
+  const isProvider = kind === 'providers' || kind === true;
   const item = element('li', undefined, 'ranking-row agent-ranking-row');
-  const name = element('strong', undefined, 'ranking-name agent-brand-name');
-  name.append(agentBrandIcon(entry.name), element('span', agentName(entry.name)));
+  const labelText = isProvider && entry.name === 'unknown'
+    ? (lang === 'zh' ? '未识别厂商' : 'Unidentified provider')
+    : agentName(entry.name);
+  const name = element('div', undefined, 'ranking-name agent-brand-name');
+  name.append(agentBrandIcon(entry, kind), element('strong', labelText, 'agent-brand-label'));
+  if (isProvider && Array.isArray(entry.models) && entry.models.length) {
+    const showLabel = lang === 'zh' ? '查看旗下模型' : 'Show models';
+    const hideLabel = lang === 'zh' ? '收起旗下模型' : 'Hide models';
+    const toggle = element('button', showLabel, 'provider-toggle');
+    toggle.type = 'button';
+    toggle.setAttribute('aria-expanded', 'false');
+    let subList = null;
+    toggle.addEventListener('click', () => {
+      const expanded = toggle.getAttribute('aria-expanded') === 'true';
+      if (!subList) {
+        subList = element('ol', undefined, 'ranking-list provider-models-list');
+        subList.append(...entry.models.map((m, i) => renderAgentRankingRow(m, i, 'models')));
+        item.append(subList);
+      }
+      subList.hidden = expanded;
+      toggle.setAttribute('aria-expanded', String(!expanded));
+      toggle.textContent = expanded ? showLabel : hideLabel;
+      const scrollBox = item.closest('.ranking-scroll');
+      if (scrollBox) updateRankingFade(scrollBox);
+    });
+    name.append(toggle);
+  }
   item.append(element('span', index + 1, 'ranking-position'), name,
     renderRankingResult(entry, strings.rankingPeriods.all_time));
   return item;
 }
 
 let agentDimension = 'providers';
-let selectedModel = '';
 
-function renderAgentColumns(container, limit = Infinity) {
+function seedRankingFeeds(rankings, agentRankings) {
+  rankingsEpoch += 1;
+  const setFeed = (key, rows, total) => {
+    const items = Array.isArray(rows) ? rows.slice() : [];
+    const resolvedTotal = Number.isSafeInteger(total) ? Math.max(total, items.length) : items.length;
+    rankingFeeds[key] = {
+      items,
+      total: resolvedTotal,
+      hasMore: items.length < resolvedTotal,
+      loading: false,
+      epoch: rankingsEpoch,
+    };
+  };
+  setFeed('all_time', rankings?.all_time, rankings?.all_time_total ?? rankings?.contributors);
+  setFeed('hour', rankings?.hour, rankings?.hour_total);
+  const totals = agentRankings?.totals || {};
+  setFeed('providers', agentRankings?.providers, totals.providers);
+  setFeed('models', agentRankings?.models, totals.models);
+  setFeed('harnesses', agentRankings?.harnesses, totals.harnesses);
+}
+
+function updateRankingFade(scrollEl, hasMoreRemote = false) {
+  const canScrollDown = scrollEl.scrollHeight - scrollEl.clientHeight - scrollEl.scrollTop > 6;
+  scrollEl.classList.toggle('has-more-below', canScrollDown || hasMoreRemote);
+}
+
+function mountProgressiveRankings(scrollEl, key, renderRow, emptyText) {
+  if (rankingObserver) {
+    rankingObserver.disconnect();
+    rankingObserver = null;
+  }
+  if (activeRankingScroll && activeRankingScroll._onRankingScroll) {
+    activeRankingScroll.removeEventListener('scroll', activeRankingScroll._onRankingScroll);
+    delete activeRankingScroll._onRankingScroll;
+  }
+  activeRankingScroll = scrollEl;
+  const feed = rankingFeeds[key] || { items: [], total: 0, hasMore: false, loading: false, epoch: rankingsEpoch };
+  scrollEl.scrollTop = 0;
+
+  if (!feed.items.length && !feed.hasMore) {
+    scrollEl.replaceChildren(element('li', emptyText, 'ranking-empty'));
+    scrollEl.classList.remove('has-more-below');
+    return;
+  }
+
+  let rendered = 0;
+  const sentinel = element('li', '', 'ranking-sentinel');
+  sentinel.setAttribute('aria-hidden', 'true');
+  scrollEl.replaceChildren(sentinel);
+
+  function appendLocalBatch() {
+    const nextEnd = Math.min(feed.items.length, rendered + RANKINGS_BATCH);
+    if (nextEnd <= rendered) return false;
+    const frag = document.createDocumentFragment();
+    for (let i = rendered; i < nextEnd; i += 1) {
+      frag.append(renderRow(feed.items[i], i));
+    }
+    rendered = nextEnd;
+    scrollEl.insertBefore(frag, sentinel);
+    if (rendered >= feed.items.length && !feed.hasMore) sentinel.remove();
+    updateRankingFade(scrollEl, rendered < feed.items.length || feed.hasMore);
+    return true;
+  }
+
+  async function ensureMore() {
+    if (!scrollEl.isConnected || feed.epoch !== rankingsEpoch) return;
+    if (appendLocalBatch()) return;
+    if (!feed.hasMore || feed.loading) return;
+    feed.loading = true;
+    const requestEpoch = feed.epoch;
+    const offset = feed.items.length;
+    try {
+      const response = await fetch(
+        'api/rankings?mode=' + encodeURIComponent(key) + '&offset=' + offset + '&limit=' + RANKINGS_BATCH,
+        { cache: 'no-store' }
+      );
+      if (!response.ok) throw new Error('rankings_fetch_failed');
+      const page = await response.json();
+      if (requestEpoch !== rankingsEpoch || !scrollEl.isConnected) return;
+      const incoming = Array.isArray(page.items) ? page.items : [];
+      if (offset === feed.items.length && incoming.length) {
+        feed.items.push(...incoming);
+      }
+      if (Number.isSafeInteger(page.total)) feed.total = Math.max(page.total, feed.items.length);
+      feed.hasMore = Boolean(page.has_more) && incoming.length > 0 && feed.items.length < feed.total;
+      appendLocalBatch();
+      if (!feed.hasMore && rendered >= feed.items.length) sentinel.remove();
+      updateRankingFade(scrollEl, rendered < feed.items.length || feed.hasMore);
+    } catch {
+      feed.hasMore = false;
+      if (rendered >= feed.items.length) sentinel.remove();
+      updateRankingFade(scrollEl, false);
+    } finally {
+      feed.loading = false;
+    }
+  }
+
+  appendLocalBatch();
+  const onScroll = () => {
+    updateRankingFade(scrollEl, rendered < feed.items.length || feed.hasMore);
+    if (scrollEl.scrollHeight - scrollEl.clientHeight - scrollEl.scrollTop < 180) {
+      ensureMore();
+    }
+  };
+  scrollEl._onRankingScroll = onScroll;
+  scrollEl.addEventListener('scroll', onScroll, { passive: true });
+  if ('IntersectionObserver' in window && sentinel.isConnected) {
+    rankingObserver = new IntersectionObserver(entries => {
+      if (entries.some(entry => entry.isIntersecting)) ensureMore();
+    }, { root: scrollEl, rootMargin: '180px 0px' });
+    rankingObserver.observe(sentinel);
+  }
+  requestAnimationFrame(() => updateRankingFade(scrollEl, rendered < feed.items.length || feed.hasMore));
+}
+
+function renderAgentColumns(container) {
   const labels = lang === 'zh'
     ? {providers: '模型厂商', models: '具体模型', harnesses: 'Harness 工具'}
     : {providers: 'Model providers', models: 'Models', harnesses: 'Harness tools'};
@@ -691,9 +999,6 @@ function renderAgentColumns(container, limit = Infinity) {
   modes.setAttribute('role', 'group');
   modes.setAttribute('aria-label', lang === 'zh' ? '榜单分类' : 'Leaderboard categories');
   controls.append(modes);
-  const list = element('ol', undefined, 'ranking-list');
-  const dimension = agentDimension;
-  const rows = agentRankingsData?.[dimension] || [];
   for (const [key, label] of Object.entries(labels)) {
     const button = element('button', label);
     button.type = 'button';
@@ -706,83 +1011,41 @@ function renderAgentColumns(container, limit = Infinity) {
     };
     modes.append(button);
   }
+  const list = element('ol', undefined, 'ranking-list ranking-scroll');
   list.setAttribute('aria-label', labels[agentDimension]);
-  container.replaceChildren(controls);
-  if (dimension === 'models') {
-    const filter = element('select');
-    filter.setAttribute('aria-label', lang === 'zh' ? '选择模型' : 'Select model');
-    filter.append(new Option(lang === 'zh' ? '全部模型' : 'All models', ''));
-    for (const row of rows) filter.append(new Option(agentName(row.name), row.name));
-    filter.value = rows.some(row => row.name === selectedModel) ? selectedModel : '';
-    filter.onchange = () => {
-      selectedModel = filter.value;
-      renderRankingMode();
-      container.querySelector('select')?.focus();
-    };
-    controls.append(filter);
-  }
-  const index = dimension === 'models' && selectedModel
-    ? rows.findIndex(row => row.name === selectedModel) : -1;
-  if (index >= 0) list.append(renderAgentRankingRow(rows[index], index));
-  else fillRankings(list, dimension === 'harnesses' ? rows : rows.slice(0, limit), 'agents');
-  if (agentDimension === 'providers') {
-    rows.slice(0, limit).forEach((provider, i) => {
-      const item = list.children[i];
-      if (provider.name === 'unknown') {
-        item.querySelector('.agent-brand-name span:last-child').textContent =
-          lang === 'zh' ? '未识别厂商' : 'Unidentified provider';
-      }
-      const details = element('details', undefined, 'provider-models');
-      const models = element('ol', undefined, 'ranking-list');
-      fillRankings(models, provider.models, 'agents');
-      details.append(element('summary', lang === 'zh' ? '查看旗下模型' : 'Show contributing models'), models);
-      item.append(details);
-    });
-  }
-  container.append(list);
-}
-
-function renderFullRankings() {
-  const agents = rankingMode === 'agents';
-  const columns = document.getElementById('agent-rankings-full');
-  columns.hidden = !agents;
-  rankingsFullList.hidden = agents;
-  if (agents) renderAgentColumns(columns);
-  else fillRankings(rankingsFullList, rankingsData.all_time, 'all_time');
-}
-
-function fillRankings(list, data, mode) {
-  const empty = mode === 'agents'
-    ? (agentRankingsData ? (lang === 'zh' ? '暂无通过验证的记录。' : 'No verified contributions yet.') : strings.rankingsUnavailable)
-    : mode === 'hour' ? strings.noHourContributors : strings.noContributors;
-  list.replaceChildren(...(data.length
-    ? data.map((entry, index) => mode === 'agents' ? renderAgentRankingRow(entry, index) : renderRankingRow(entry, index, mode))
-    : [element('li', empty, 'ranking-empty')]));
+  container.replaceChildren(controls, list);
+  const empty = agentRankingsData
+    ? (lang === 'zh' ? '暂无通过验证的记录。' : 'No verified contributions yet.')
+    : strings.rankingsUnavailable;
+  mountProgressiveRankings(list, agentDimension, (entry, index) => renderAgentRankingRow(entry, index, agentDimension), empty);
 }
 
 function renderRankingMode() {
   if (!rankingsData) return;
   const agents = rankingMode === 'agents';
-  const rows = agents ? (agentRankingsData?.[agentDimension] || []) : rankingsData[rankingMode];
   const columns = document.getElementById('agent-ranking-columns');
   columns.hidden = !agents;
   rankingsList.hidden = agents;
-  if (agents) renderAgentColumns(columns, 6);
   document.getElementById('agent-ranking-controls').hidden = !agents;
   document.querySelector('.ranking-candidate').hidden = agents;
-  rankingsAll.disabled = agents && !agentRankingsData;
-  rankingsAll.textContent = agents ? (lang === 'zh' ? '查看完整榜单 ↗' : 'See full leaderboard ↗') :
-    (lang === 'zh' ? '查看全部贡献者 ↗' : 'See all contributors ↗');
-  document.getElementById('rankings-dialog-title').textContent = agents
-    ? (lang === 'zh' ? '厂商、模型与 Harness 贡献榜' : 'Provider, model and harness contributions')
-    : (lang === 'zh' ? '全部已核验贡献者' : 'All verified contributors');
   document.getElementById('rankings-summary').textContent = agents
-    ? (lang === 'zh' ? '按本研究台累计首次核验积分排列。旧规则下首次通过的题每道计 1 分。' : 'Ranked by points from first accepted proofs on this research desk. Each first acceptance under the old rules counts for one point.')
-    : strings.rankingsSummary(rankingsData.contributors.toLocaleString(locale), rankingsData.proofs.toLocaleString(locale));
-  fillRankings(rankingsList, rows.slice(0, 6), rankingMode);
-  document.getElementById('ranking-next-place').textContent = String(rows.length + 1);
-  rankingsAnnouncement.textContent = agents ? (lang === 'zh' ? '共 ' + rows.length + ' 项。' : rows.length + ' entries.') : strings.rankingsCount(rows.length);
-  if (rankingsDialog.open) renderFullRankings();
+    ? (topic === 'twin-primes'
+      ? (lang === 'zh' ? '积分来自首个通过的证明和正式采用的拆题。' : 'Points come from first accepted proofs and adopted cuts.')
+      : (lang === 'zh' ? '按本研究台累计首次核验积分排列。旧规则下首次通过的题每道计 1 分。' : 'Ranked by points from first accepted proofs on this research desk. Each first acceptance under the old rules counts for one point.'))
+    : topic === 'twin-primes'
+      ? (lang === 'zh' ? '贡献榜计入首个通过的证明和正式采用的拆题。' : 'The leaderboard credits first accepted proofs and adopted cuts.')
+      : strings.rankingsSummary(rankingsData.contributors.toLocaleString(locale), rankingsData.proofs.toLocaleString(locale));
+  if (agents) {
+    renderAgentColumns(columns);
+    const total = rankingFeeds[agentDimension]?.total ?? 0;
+    rankingsAnnouncement.textContent = lang === 'zh' ? '共 ' + total + ' 项。' : total + ' entries.';
+  } else {
+    const empty = rankingMode === 'hour' ? strings.noHourContributors : strings.noContributors;
+    mountProgressiveRankings(rankingsList, rankingMode, (entry, index) => renderRankingRow(entry, index, rankingMode), empty);
+    const total = rankingFeeds[rankingMode]?.total ?? 0;
+    document.getElementById('ranking-next-place').textContent = String(total + 1);
+    rankingsAnnouncement.textContent = strings.rankingsCount(total);
+  }
 }
 
 function selectRankingMode(mode) {
@@ -804,21 +1067,16 @@ function renderRankings(rankings, agentRankings) {
   rankingsData = rankings;
   agentRankingsData = agentRankings || null;
   rankingsSnapshot = snapshot;
-  rankingsAll.disabled = false;
+  seedRankingFeeds(rankings, agentRankings);
   document.getElementById('rankings-summary').textContent = strings.rankingsSummary(
     rankings.contributors.toLocaleString(locale), rankings.proofs.toLocaleString(locale)
   );
   selectRankingMode(rankingMode ?? (rankings.hour.length ? 'hour' : 'all_time'));
-
 }
 
 for (const button of rankingsModes) {
   button.addEventListener('click', () => selectRankingMode(button.dataset.rankingMode));
 }
-rankingsAll.addEventListener('click', () => {
-  renderFullRankings();
-  rankingsDialog.showModal();
-});
 
 function showDeskNotice(message) {
   if (deskNotice.textContent !== message) deskNotice.textContent = message;
@@ -995,7 +1253,7 @@ async function loadRecordPage(targetPage) {
   if (recordRetry) recordRetry.hidden = true;
   if (recordStatus) recordStatus.hidden = true;
   try {
-    const response = await fetch('api/records?page=' + encodeURIComponent(String(pageNum)) + '&limit=' + recordPageSize,
+    const response = await fetch('api/records?view=summary&page=' + encodeURIComponent(String(pageNum)) + '&limit=' + recordPageSize,
       {signal: AbortSignal.timeout(15000)});
     if (!response.ok) throw new Error('Records unavailable');
     const data = await response.json();
@@ -1104,9 +1362,9 @@ function dist(id,seen=new Set()){if(distance.has(id))return distance.get(id);if(
 function closure(id,next){let set=new Set(),stack=[id];while(stack.length){let x=stack.pop();if(set.has(x))continue;set.add(x);for(const v of next(x))stack.push(v)}return set}
 let focus=null,hover=null,onlyChain=false,compact=true,horizontal=false,directionChosen=false,field=null,globalFilter='all',savedScrollY=0,currentTrack=null,observer=null,pendingGap=null,expanded=null,localFilter='all',localSearch='',indexMode=false;
 const directionKey='goldbach-map-direction',wideDirection=()=>window.innerWidth>=2400;try{const saved=localStorage.getItem(directionKey);if(saved==='horizontal'||saved==='vertical'){horizontal=saved==='horizontal';directionChosen=true}}catch{}if(!directionChosen)horizontal=wideDirection();function syncDirection(){root?.querySelectorAll('[data-direction]').forEach(x=>x.classList.toggle('active',(x.dataset.direction==='horizontal')===horizontal))}syncDirection();
-function status(g){if(g.refutation)return 'progress';if(g.proved)return 'verified';if(g.claims_closed)return 'closed';if(assigned(g))return 'progress';return g.role==='target'?'target':'available'}
-function statusText(g){if(status(g)==='closed')return closedClaimLabel();if(g.refutation){const v=g.refutation.status==='verified';return lang==='zh'?(v?'已证伪':'反证待核验'):(v?'Refuted':'Refutation under review')}return ({verified:lang==='zh'?'已核查':'Verified',progress:lang==='zh'?'处理中':'In progress',target:lang==='zh'?'待突破':'Open target',available:lang==='zh'?'可领取':'Available'})[status(g)]}
-function stateOK(g,v){return v==='all'||(v==='open'&&status(g)!=='verified')||(v==='target'&&g.role==='target'&&status(g)!=='verified')}
+function status(g){if(g.refutation)return g.refutation.status==='verified'?'refuted':'progress';if(g.proved||g.resolved)return 'verified';if(g.claims_closed)return 'closed';if(assigned(g))return 'progress';return g.role==='target'?'target':'available'}
+function statusText(g){if(status(g)==='closed')return closedClaimLabel();if(g.refutation){const v=g.refutation.status==='verified';return lang==='zh'?(v?'已证伪':'反证待核验'):(v?'Refuted':'Refutation under review')}if(g.resolved&&!g.proved)return tr('已解决','Resolved');return ({verified:lang==='zh'?'已核查':'Verified',progress:lang==='zh'?'处理中':'In progress',target:lang==='zh'?'待突破':'Open target',available:lang==='zh'?'可领取':'Available'})[status(g)]}
+function stateOK(g,v){return v==='all'||(v==='open'&&!g.proved&&!g.resolved&&!g.refutation)||(v==='target'&&g.role==='target'&&!g.proved&&!g.resolved&&!g.refutation)}
 function counts(gs){let verified=gs.filter(g=>status(g)==='verified').length;return {verified,progress:gs.filter(g=>status(g)==='progress').length,available:gs.filter(g=>status(g)==='available').length,target:gs.filter(g=>status(g)==='target').length,pct:gs.length?100*verified/gs.length:0}}
 function program(t){let c={};for(const g of groups.get(t.id))c[g.program]=(c[g.program]||0)+1;return Object.keys(c).sort((a,b)=>c[b]-c[a])[0]||'foundation'}
 function trackSets(id){return {up:closure(id,x=>upstream.get(x)||[]),down:closure(id,x=>T.get(x)?.feeds||[])}}
@@ -1114,7 +1372,7 @@ function scrollRestore(){requestAnimationFrame(()=>{window.scrollTo({top:savedSc
 function enterTrack(id,gap){if(!groups.has(id))return;if(!currentTrack)savedScrollY=window.scrollY;pendingGap=gap||null;if(location.hash===`#route=${encodeURIComponent(id)}`){renderRoute();return}location.hash=`route=${encodeURIComponent(id)}`}
 function goOverview(){if(currentTrack)location.hash='';else renderRoute()}
 function renderRoute(){let wasTrack=currentTrack;let m=location.hash.match(/^#route=(.+)$/),id=m?decodeURIComponent(m[1]):null;if(id&&!groups.has(id))id=null;currentTrack=id;observer?.disconnect();if(id){localFilter='all';localSearch='';indexMode=false;expanded=pendingGap;pendingGap=null;root.querySelector('#map-overview').hidden=true;root.querySelector('#map-route-view').hidden=false;root.querySelector('#map-focusbar').hidden=true;renderTrack();root.scrollIntoView({block:'start',behavior:'instant'});if(expanded)requestAnimationFrame(()=>root.querySelector(`[data-item="${CSS.escape(expanded)}"]`)?.scrollIntoView({block:'center'}));}else{root.querySelector('#map-overview').hidden=false;root.querySelector('#map-route-view').hidden=true;root.querySelector('#map-route-view').innerHTML='';renderBoard();renderFocus();if(wasTrack)scrollRestore()}}
-function renderBoard(){let html='';let active=focus||hover,sets=active?trackSets(active):null,board=root.querySelector('#rm-board'),isHorizontal=horizontal&&window.innerWidth>640;board.classList.toggle('horizontal',isHorizontal);board.classList.toggle('chain-horizontal',isHorizontal&&onlyChain&&!!focus);for(let d=0;d<=Math.max(...distance.values());d++){let list=tracks.filter(t=>dist(t.id)===d).filter(t=>!onlyChain||!focus||sets.up.has(t.id)||sets.down.has(t.id)).filter(t=>groups.get(t.id).some(g=>(!field||(topic?programOf(g)===field:g.program===field))&&stateOK(g,globalFilter))).sort((a,b)=>Number(b.id.startsWith('frontier-'))-Number(a.id.startsWith('frontier-'))||a.title[lang].localeCompare(b.title[lang],locale));if(!list.length)continue;html+=`<section class="level" data-depth="${d}"><h3>${lang==='zh'?'第 '+(d+1)+' 层':'Layer '+(d+1)} · ${d===0?tr('直接汇合','Direct convergence'):`${tr('依赖深度','Dependency depth')} ${d}`}</h3><div class="grid count-${Math.min(list.length,4)}">`;for(const t of list){let gs=groups.get(t.id),c=counts(gs),n=gs.filter(g=>g.role==='target'&&status(g)!=='verified').length,muted=active&&!sets.up.has(t.id)&&!sets.down.has(t.id);html+=`<div class="track ${compact?'compact':'full'} ${focus===t.id?'selected':''} ${muted?'dim':''}" data-track="${esc(t.id)}" style="--c:${palette[program(t)]}" tabindex="0" role="button" aria-label="${tr('聚焦','Focus')} ${esc(t.title[lang])}" title="${esc(t.description[lang])}"><div class="track-title"><strong>${esc(t.title[lang])}</strong>${n?`<span class="target-badge">${lang==='zh'?`${n} 待突破`:`${n} open target${n===1?'':'s'}`}</span>`:''}</div>${compact?'':`<span class="description">${esc(t.description[lang])}</span>`}<span class="stats">${tr('已核查 / 全部','Verified / Total')}：${c.verified} / ${gs.length}</span><span class="bar"><i style="width:${c.pct}%"></i></span><button class="enter-small" data-enter="${esc(t.id)}">${tr('查看','View')} ${gs.length} ${tr('条引理','lemmas')} →</button></div>`}html+='</div></section>'}root.querySelector('#rm-levels').innerHTML=html;requestAnimationFrame(drawBoard)}
+function renderBoard(){let html='';let active=focus||hover,sets=active?trackSets(active):null,board=root.querySelector('#rm-board'),isHorizontal=horizontal&&window.innerWidth>640;board.classList.toggle('horizontal',isHorizontal);board.classList.toggle('chain-horizontal',isHorizontal&&onlyChain&&!!focus);for(let d=0;d<=Math.max(...distance.values());d++){let list=tracks.filter(t=>dist(t.id)===d).filter(t=>!onlyChain||!focus||sets.up.has(t.id)||sets.down.has(t.id)).filter(t=>groups.get(t.id).some(g=>(!field||(topic?programOf(g)===field:g.program===field))&&stateOK(g,globalFilter))).sort((a,b)=>Number(b.id.startsWith('frontier-'))-Number(a.id.startsWith('frontier-'))||a.title[lang].localeCompare(b.title[lang],locale));if(!list.length)continue;html+=`<section class="level" data-depth="${d}"><h3>${lang==='zh'?'第 '+(d+1)+' 层':'Layer '+(d+1)} · ${d===0?tr('直接汇合','Direct convergence'):`${tr('依赖深度','Dependency depth')} ${d}`}</h3><div class="grid count-${Math.min(list.length,4)}">`;for(const t of list){let gs=groups.get(t.id),c=counts(gs),n=gs.filter(g=>g.role==='target'&&!g.proved&&!g.resolved&&!g.refutation).length,muted=active&&!sets.up.has(t.id)&&!sets.down.has(t.id);html+=`<div class="track ${compact?'compact':'full'} ${focus===t.id?'selected':''} ${muted?'dim':''}" data-track="${esc(t.id)}" style="--c:${palette[program(t)]}" tabindex="0" role="button" aria-label="${tr('聚焦','Focus')} ${esc(t.title[lang])}" title="${esc(t.description[lang])}"><div class="track-title"><strong>${esc(t.title[lang])}</strong>${n?`<span class="target-badge">${lang==='zh'?`${n} 待突破`:`${n} open target${n===1?'':'s'}`}</span>`:''}</div>${compact?'':`<span class="description">${esc(t.description[lang])}</span>`}<span class="stats">${tr('已核查 / 全部','Verified / Total')}：${c.verified} / ${gs.length}</span><span class="bar"><i style="width:${c.pct}%"></i></span><button class="enter-small" data-enter="${esc(t.id)}">${tr('查看','View')} ${gs.length} ${tr('条引理','lemmas')} →</button></div>`}html+='</div></section>'}root.querySelector('#rm-levels').innerHTML=html;requestAnimationFrame(drawBoard)}
 function drawBoard(){if(currentTrack)return;let board=root.querySelector('#rm-board'),svg=root.querySelector('#rm-board-svg');if(!board||!svg)return;let rect=board.getBoundingClientRect();svg.setAttribute('viewBox',`0 0 ${rect.width} ${rect.height}`);let active=focus||hover,sets=active?trackSets(active):null,isHorizontal=board.classList.contains('horizontal'),center=el=>{let r=el.getBoundingClientRect();return{x:r.left-rect.left+r.width/2,y:r.top-rect.top+r.height/2,left:r.left-rect.left,right:r.right-rect.left,top:r.top-rect.top,bottom:r.bottom-rect.top}},nodes=new Map([...board.querySelectorAll('[data-track]')].map(x=>[x.dataset.track,center(x)])),goal=center(root.querySelector('#rm-goal')),paths='';function edge(a,b,gold,op,from,to){let d;if(isHorizontal){let x1=a.right,x2=b.left-2,span=Math.max(0,x2-x1),lead=Math.min(12,Math.max(6,span*.22)),ex=x2-lead,dx=Math.max(8,(ex-x1)*.5);d=`M ${x1} ${a.y} C ${x1+dx} ${a.y}, ${ex-dx} ${b.y}, ${ex} ${b.y} L ${x2} ${b.y}`}else{let y1=a.top,y2=b.bottom+2,span=Math.max(0,y1-y2),lead=Math.min(12,Math.max(6,span*.22)),ey=y2+lead,dy=Math.max(10,(y1-ey)*.5);d=`M ${a.x} ${y1} C ${a.x} ${y1-dy}, ${b.x} ${ey+dy}, ${b.x} ${ey} L ${b.x} ${y2}`}paths+=`<path data-from="${esc(from)}" data-to="${esc(to)}" d="${d}" stroke="${gold?'#e3c580':'#a0c6a1'}" stroke-width="${active?2:0.85}" stroke-opacity="${op}" fill="none" marker-end="url(#arr-${gold?'gold':'mint'})"/>`}
 for(const t of tracks){if(!nodes.has(t.id))continue;for(const f of t.feeds||[]){if(!nodes.has(f))continue;let down=active&&sets.down.has(t.id)&&sets.down.has(f),up=active&&sets.up.has(t.id)&&sets.up.has(f);if(!active||down||up)edge(nodes.get(t.id),nodes.get(f),!!down,active?.95:.2,t.id,f)}if(!(t.feeds||[]).length&&(!active||sets.down.has(t.id)))edge(nodes.get(t.id),goal,!!active,active?.95:.2,t.id,'goal')}
 for(const el of board.querySelectorAll('[data-track]')){el.classList.toggle('selected',focus===el.dataset.track);el.classList.toggle('dim',!!active&&!sets.up.has(el.dataset.track)&&!sets.down.has(el.dataset.track))}svg.innerHTML=`<defs><marker id="arr-gold" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="5.5" markerHeight="5.5" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#e3c580"/></marker><marker id="arr-mint" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="5.5" markerHeight="5.5" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#a0c6a1"/></marker></defs>${paths}`}
@@ -1123,12 +1381,40 @@ function renderFocus(){let bar=root.querySelector('#map-focusbar');bar.hidden=!f
 function gapGraph(id){let all=groups.get(id),set=new Set(all.map(g=>g.id)),parents=new Map(all.map(g=>[g.id,[]])),depths=new Map();for(const g of all)for(const d of g.depends_on||[])if(set.has(d))parents.get(d).push(g.id);function depth(g,seen=new Set()){if(depths.has(g.id))return depths.get(g.id);if(seen.has(g.id))return 0;let ns=new Set(seen);ns.add(g.id);let ds=(g.depends_on||[]).filter(x=>set.has(x)).map(x=>depth(G.get(x),ns));let n=ds.length?1+Math.max(...ds):0;depths.set(g.id,n);return n}all.forEach(g=>depth(g));return {set,parents,depths,hasEdges:all.some(g=>(g.depends_on||[]).some(x=>set.has(x)))}}
 function gapRelated(id,graph){if(!id)return new Set();let a=closure(id,x=>(G.get(x)?.depends_on||[]).filter(d=>graph.set.has(d))),b=closure(id,x=>graph.parents.get(x)||[]);return new Set([...a,...b])}
 function ordered(id,graph){let rank=g=>g.role==='target'?2:g.role==='conditional'?1:0;return [...groups.get(id)].sort((a,b)=>rank(b)-rank(a)||graph.depths.get(b.id)-graph.depths.get(a.id)||a.id.localeCompare(b.id,undefined,{numeric:true}))}
-function details(g){let parents=gaps.filter(x=>(x.depends_on||[]).includes(g.id)),links=ids=>ids.length?ids.map(id=>`<button data-gap-jump="${esc(id)}">${esc(id)}</button>`).join(' · '):tr('无','None');return `<div class="detail-inline"><div class="detail-title"><b>${esc(g.id)}</b><span class="state ${status(g)}">● ${statusText(g)}</span><span class="role">${esc(roleName[g.role]||tr('命题','Statement'))}</span></div><p>${esc(g.plain_statement?.[lang]||tr('无中文说明','No statement available'))}</p>${g.brief?.[lang]?`<p class="muted">${esc(g.brief[lang])}</p>`:''}<div class="related"><b>${tr('上游依赖：','Prerequisites: ')}</b>${links(g.depends_on||[])}<br><b>${tr('下游影响：','Supports: ')}</b>${links(parents.map(x=>x.id))}</div><p class="muted">${tr('文件路径：','File: ')}${esc(g.file||tr('未指定','Not specified'))}</p><b>${tr('Lean 表述','Lean statement')}</b>${g.latest?runLink(g.latest,strings.latestRun).outerHTML:''}${g.refutation?` <a href="${repository}/pull/${Number(g.refutation.pr)}">${statusText(g)} · PR #${Number(g.refutation.pr)}</a>`:''}${g.source && /^https?:\/\//i.test(g.source)?` <a href="${esc(g.source)}" rel="noopener noreferrer">${tr('阅读来源 ↗','Read source ↗')}</a>`:''}<pre>${esc(g.statement||tr('未提供','Not provided'))}</pre></div>`}
-function renderTrack(){if(!currentTrack)return;observer?.disconnect();let id=currentTrack,t=T.get(id),all=groups.get(id),graph=gapGraph(id),ct=counts(all),q=localSearch.trim().toLowerCase(),related=gapRelated(expanded,graph),shown=ordered(id,graph).filter(g=>stateOK(g,localFilter==='chain'?'all':localFilter)&&(!q||`${g.id} ${g.plain_statement?.[lang]||''} ${g.brief?.[lang]||''}`.toLowerCase().includes(q))&&(localFilter!=='chain'||related.has(g.id))),toButton=(x)=>`<button data-nav="${esc(x)}">${esc(T.get(x).title[lang])}</button>`,feed=t?.feeds||[],ups=upstream.get(id)||[];
+function details(g) {
+  return '<div class="detail-inline" data-task-detail>' +
+    '<code>' + esc(g.id) + '</code></div>';
+}
+
+function resolvedDetails(g){let parents=gaps.filter(x=>(x.depends_on||[]).includes(g.id)),links=ids=>ids.length?ids.map(id=>`<button data-gap-jump="${esc(id)}">${esc(id)}</button>`).join(' · '):tr('无','None');return `<div class="detail-inline"><div class="detail-title"><b>${esc(g.id)}</b><span class="state ${status(g)}">● ${statusText(g)}</span><span class="role">${esc(roleName[g.role]||tr('命题','Statement'))}</span></div><p>${esc(g.plain_statement?.[lang]||tr('无中文说明','No statement available'))}</p>${g.brief?.[lang]?`<p class="muted">${esc(g.brief[lang])}</p>`:''}<div class="related"><b>${tr('上游依赖：','Prerequisites: ')}</b>${links(g.depends_on||[])}<br><b>${tr('下游影响：','Supports: ')}</b>${links(parents.map(x=>x.id))}</div><p class="muted">${tr('文件路径：','File: ')}${esc(g.file||tr('未指定','Not specified'))}</p><b>${tr('Lean 表述','Lean statement')}</b>${g.latest?runLink(g.latest,strings.latestRun).outerHTML:''}${g.refutation?` <a href="${repository}/pull/${Number(g.refutation.pr)}">${statusText(g)} · PR #${Number(g.refutation.pr)}</a>`:''}${g.source && /^https?:\/\//i.test(g.source)?` <a href="${esc(g.source)}" rel="noopener noreferrer">${tr('阅读来源 ↗','Read source ↗')}</a>`:''}<pre>${esc(g.statement||tr('未提供','Not provided'))}</pre>${cutEvidence(g).outerHTML}</div>`}
+const trackDetailSearch = detailSearch('brief', () => {
+  if (currentTrack) renderTrackPreservingSearch();
+});
+
+function renderTrackPreservingSearch() {
+  const active = root.querySelector('#track-search');
+  if (document.activeElement !== active) {
+    renderTrack();
+    return;
+  }
+  const { selectionStart: start, selectionEnd: end } = active;
+  renderTrack();
+  const input = root.querySelector('#track-search');
+  input?.focus({ preventScroll: true });
+  if (input && start !== null) input.setSelectionRange(start, end);
+}
+
+function renderTrack(){if(!currentTrack)return;observer?.disconnect();trackDetailSearch.update(localSearch.trim().toLowerCase());let id=currentTrack,t=T.get(id),all=groups.get(id),graph=gapGraph(id),ct=counts(all),q=localSearch.trim().toLowerCase(),related=gapRelated(expanded,graph),shown=ordered(id,graph).filter(g=>stateOK(g,localFilter==='chain'?'all':localFilter)&&(!q||`${g.id} ${g.plain_statement?.[lang]||''}`.toLowerCase().includes(q)||trackDetailSearch.matches(q,g.id))&&(localFilter!=='chain'||related.has(g.id))),toButton=(x)=>`<button data-nav="${esc(x)}">${esc(T.get(x).title[lang])}</button>`,feed=t?.feeds||[],ups=upstream.get(id)||[];
 let toolbar=[['all',`${tr('全部','All')} ${all.length}`],['open',tr('仅未通过','Not verified')],['target',tr('仅待突破','Open targets')],...(graph.hasEdges?[['chain',tr('仅依赖链','Dependency chain')]]:[])].map(([k,v])=>`<button data-filter="${k}" class="${localFilter===k?'active':''}">${v}</button>`).join('');
 let rows=shown.map(g=>`<div class="item status-${status(g)}" data-item="${esc(g.id)}"><div class="row ${expanded===g.id?'active':''}" data-row="${esc(g.id)}" role="button" tabindex="0" aria-expanded="${expanded===g.id}"><span class="lemma-id" title="${esc(g.id)}">${esc(g.id.replace(/^L-goldbach-/,''))}</span><span class="state ${status(g)}">● ${statusText(g)}</span><span class="role">${esc(roleName[g.role]||tr('命题','Statement'))}</span><span class="statement">${esc(g.plain_statement?.[lang]||g.brief?.[lang]||tr('无中文说明','No statement available'))}</span><span class="expand">${expanded===g.id?tr('收起 ▴','Collapse ▴'):tr('展开 ▾','Expand ▾')}</span></div>${expanded===g.id?details(g):''}</div>`).join('');
 let chips=shown.map(g=>`<button data-index="${esc(g.id)}" class="index-chip ${status(g)} ${expanded===g.id?'selected':''}" title="${esc(g.id)}"><span>●</span> ${esc(g.id.replace(/^L-goldbach-/,''))}</button>`).join('');
 root.querySelector('#map-route-view').innerHTML=`<div class="backbar"><button id="back-overview">← ${tr('返回研究地图','Back to research map')}</button><span class="breadcrumb">${esc(goalTitle())} / ${t?`${lang==='zh'?'第 '+(dist(id)+1)+' 层':'Layer '+(dist(id)+1)} / ${esc(t.title[lang])}`:(id==='__goal'?tr('主命题','Main statement'):tr('核心主干引理','Core lemmas'))}</span></div><div class="track-header"><div class="header-info"><h1>${esc(t?.title[lang]||(id==='__goal'?tr('强哥德巴赫猜想','Strong Goldbach conjecture'):tr('核心主干引理','Core lemmas')))} <small>（${all.length} ${tr('条','lemmas')}）</small></h1><p>${esc(t?.description[lang]||(id==='__goal'?tr('查看主命题的正式表述。','Read the formal statement.'):tr('支撑研究地图的早期核心命题。','Early statements supporting the research map.')))}</p><div class="track-flows">${ups.length?`<span>${tr('上游路线：','Upstream: ')}</span>${ups.map(toButton).join(' ')}`:''}${feed.length?`<span>${tr('流向：','Feeds into: ')}</span>${feed.map(toButton).join(' ')}`:(t?`<span>${tr('流向：','Feeds into: ')}${esc(goalTitle())} →</span>`:'')}</div></div><div class="header-progress"><span>${tr('已核查 / 全部','Verified / Total')}</span><b>${ct.verified} / ${all.length}</b><div class="bar"><i style="width:${ct.pct}%"></i></div><div class="legend"><span class="verified">● ${tr('已核查','Verified')} ${ct.verified}</span><span class="target">● ${tr('待突破','Open targets')} ${ct.target}</span><span class="available">● ${tr('未通过','Not verified')} ${ct.progress+ct.available}</span></div></div></div><section class="track-content"><div class="toolbar">${toolbar}<input id="track-search" type="search" placeholder="${tr('路线内搜索编号或中文命题','Search ID or statement')}" value="${esc(localSearch)}"><div class="segments"><button data-view="list" class="${!indexMode?'active':''}">${tr('列表','List')}</button><button data-view="index" ${graph.hasEdges?`disabled title="${tr('该路线包含依赖关系','This route has dependencies')}"`:''} class="${indexMode?'active':''}">${tr('紧凑索引','Compact index')}</button></div></div><div class="countline">${tr('共','Total')} ${all.length} · ${tr('当前显示','shown')} ${shown.length}</div>${shown.length?(indexMode&&!graph.hasEdges?`<div class="index-area">${expanded&&shown.some(g=>g.id===expanded)?`<div class="index-detail" data-item="${esc(expanded)}">${details(G.get(expanded))}</div>`:''}<div class="index-grid">${chips}</div></div>`:`<div class="proof ${graph.hasEdges?'has-rail':''}">${graph.hasEdges?`<div class="rail"><svg aria-label="${tr('路线内真实依赖关系','Dependencies within this route')}"></svg></div>`:''}<div class="listing"><div class="table-head"><span>${tr('引理编号','Lemma ID')}</span><span>${tr('状态','Status')}</span><span>${tr('角色','Role')}</span><span>${tr('引理陈述','Statement')}</span><span>${tr('操作','Action')}</span></div><div class="items">${rows}</div></div></div>`):`<p class="empty">${tr('没有匹配的命题；请选择全部或清除搜索。','No matches; clear the search or filters.')}</p>`}</section>`;
+const detailTarget = root.querySelector('[data-task-detail]');
+if (detailTarget) {
+  const summary = G.get(expanded);
+  loadDisclosure(detailTarget, () => loadTaskDetail(summary.id),
+    detail => { detailTarget.outerHTML = resolvedDetails({ ...summary, ...detail }); });
+}
 if(graph.hasEdges&&shown.length&&!indexMode){let container=root.querySelector('.items');observer=new ResizeObserver(()=>drawRail(id));observer.observe(container);for(const item of container.children)observer.observe(item);requestAnimationFrame(()=>drawRail(id))}}
 function drawRail(id){if(id!==currentTrack)return;let rail=root.querySelector('.rail'),svg=rail?.querySelector('svg'),container=root.querySelector('.items');if(!svg||!container)return;let graph=gapGraph(id),items=[...container.querySelectorAll('.item')],map=new Map(items.map((it,i)=>{let row=it.querySelector('.row').getBoundingClientRect(),base=rail.getBoundingClientRect();return [it.dataset.item,{y:row.top+row.height/2-base.top,index:i}]})),w=rail.clientWidth,h=container.offsetHeight+(container.getBoundingClientRect().top-rail.getBoundingClientRect().top),orderedAll=ordered(id,graph),assigned=new Map(),xFor=i=>12+(w-28)*i/4;for(const [i,g] of orderedAll.entries()){let ps=graph.parents.get(g.id)||[],parent=ps.find(x=>assigned.has(x)),siblings=parent?(G.get(parent).depends_on||[]).filter(x=>graph.set.has(x)):[],j=siblings.indexOf(g.id);assigned.set(g.id,g.role==='target'||g.role==='endpoint'?4:parent&&j===0?assigned.get(parent):(graph.depths.get(g.id)+Math.max(0,j)+i)%4)}for(const [id,n] of map)n.x=xFor(assigned.get(id));let rel=gapRelated(expanded,graph),paths='';for(const [key,n] of map)for(const dep of G.get(key).depends_on||[])if(map.has(dep)){let a=map.get(dep),b=n,mid=(a.y+b.y)/2,on=rel.has(key)&&rel.has(dep);paths+=`<path data-from="${esc(dep)}" data-to="${esc(key)}" d="M${a.x} ${a.y} L${a.x} ${mid} C${a.x} ${mid-10},${b.x} ${mid+10},${b.x} ${mid} L${b.x} ${b.y}" stroke="${on?'#e3c580':'#a4b9a5'}" stroke-opacity="${expanded&&!on?.2:.75}" stroke-width="${on?2:1}" fill="none"/>`}
 for(const [key,n] of map){let target=G.get(key).role==='target';if(key===expanded)paths+=`<path d="M${n.x} ${n.y}H${w}" stroke="#e3c580" stroke-width="1.5"/>`;if(target)paths+=`<circle cx="${n.x}" cy="${n.y}" r="8" fill="#183126" stroke="#e3c580"/><path d="M${n.x} ${n.y-9}v-8 m-3 3 3-3 3 3" fill="none" stroke="#e3c580"/>`;paths+=`<circle data-node="${esc(key)}" cx="${n.x}" cy="${n.y}" r="${target?5:3.5}" fill="${rel.has(key)||target?'#e3c580':'#d8e5d8'}"/>`}rail.style.height=h+'px';svg.style.height=h+'px';svg.setAttribute('viewBox',`0 0 ${w} ${h}`);svg.innerHTML=paths}
@@ -1137,7 +1423,7 @@ function jumpGap(id){let g=G.get(id);if(!g)return;let tid=groupOf(g);if(currentT
 root.addEventListener('click',e=>{let el=e.target.closest('button,[data-track],[data-row],[data-goal]');if(!el){if(e.target.closest('#rm-board')&&focus)setFocus(null);return}if(el.dataset.goal&&!topic){enterTrack('__goal',endpointId);return}if(el.dataset.direction){horizontal=el.dataset.direction==='horizontal';directionChosen=true;try{localStorage.setItem(directionKey,el.dataset.direction)}catch{}syncDirection();renderBoard();return}if(el.dataset.cards){compact=el.dataset.cards==='compact';root.querySelectorAll('[data-cards]').forEach(x=>x.classList.toggle('active',x===el));renderBoard();return}if(el.dataset.focus){setFocus(el.dataset.focus);return}if(el.id==='clear-focus'){setFocus(null);return}if(el.id==='chain-toggle'){onlyChain=!onlyChain;renderBoard();renderFocus();return}if(el.id==='back-overview'){goOverview();return}if(el.dataset.enter){enterTrack(el.dataset.enter);return}if(el.dataset.nav){enterTrack(el.dataset.nav);return}if(el.dataset.gapJump){jumpGap(el.dataset.gapJump);return}if(el.dataset.resultGap){enterTrack(groupOf(G.get(el.dataset.resultGap)),el.dataset.resultGap);return}if(el.dataset.resultTrack){enterTrack(el.dataset.resultTrack);return}if(el.dataset.program)return;if(el.dataset.filter){localFilter=el.dataset.filter;if(localFilter==='chain'&&!expanded){let g=ordered(currentTrack,gapGraph(currentTrack)).find(g=>g.role==='target')||groups.get(currentTrack)[0];expanded=g.id}renderTrack();return}if(el.dataset.view){indexMode=el.dataset.view==='index';renderTrack();return}if(el.dataset.index){expandGap(el.dataset.index);return}if(el.dataset.row){expandGap(el.dataset.row);return}if(el.dataset.track){setFocus(el.dataset.track);return}});
 root.addEventListener('dblclick',e=>{let el=e.target.closest('[data-track]');if(el&&!e.target.closest('button'))enterTrack(el.dataset.track)});root.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('[data-track],[data-row],[data-goal]')){e.preventDefault();e.target.click()}});
 root.addEventListener('pointerover',e=>{let card=e.target.closest('[data-track]');if(card&&!focus&&hover!==card.dataset.track){hover=card.dataset.track;drawBoard()}});root.addEventListener('pointerout',e=>{let card=e.target.closest('[data-track]');if(card&&!focus&&!card.contains(e.relatedTarget)){hover=null;drawBoard()}});
-root.querySelector('#rm-state').addEventListener('change',e=>{globalFilter=e.target.value;renderBoard()});root.addEventListener('input',e=>{if(e.target.id==='track-search'){let val=e.target.value,pos=e.target.selectionStart;localSearch=val;renderTrack();let input=root.querySelector('#track-search');input.focus();input.setSelectionRange(pos,pos)}if(e.target.id==='rm-search'){let q=e.target.value.trim().toLowerCase(),box=root.querySelector('#rm-search-results');if(!q){box.innerHTML='';return}let ts=tracks.filter(t=>`${t.id} ${t.title[lang]}`.toLowerCase().includes(q)),gs=gaps.filter(g=>`${g.id} ${g.plain_statement?.[lang]||''}`.toLowerCase().includes(q));box.innerHTML=`<span>${ts.length} ${tr('条路线','routes')} · ${gs.length} ${tr('条命题匹配','matching lemmas')}:</span>`+ts.map(t=>`<button data-result-track="${esc(t.id)}">${esc(t.title[lang])}</button>`).join(' ')+gs.map(g=>`<button data-result-gap="${esc(g.id)}">${esc(g.id)}</button>`).join(' ')}});
+root.querySelector('#rm-state').addEventListener('change',e=>{globalFilter=e.target.value;renderBoard()});root.addEventListener('input',e=>{if(e.target.id==='track-search'){localSearch=e.target.value;renderTrackPreservingSearch()}if(e.target.id==='rm-search'){let q=e.target.value.trim().toLowerCase(),box=root.querySelector('#rm-search-results');if(!q){box.innerHTML='';return}let ts=tracks.filter(t=>`${t.id} ${t.title[lang]}`.toLowerCase().includes(q)),gs=gaps.filter(g=>`${g.id} ${g.plain_statement?.[lang]||''}`.toLowerCase().includes(q));box.innerHTML=`<span>${ts.length} ${tr('条路线','routes')} · ${gs.length} ${tr('条命题匹配','matching lemmas')}:</span>`+ts.map(t=>`<button data-result-track="${esc(t.id)}">${esc(t.title[lang])}</button>`).join(' ')+gs.map(g=>`<button data-result-gap="${esc(g.id)}">${esc(g.id)}</button>`).join(' ')}});
 window.addEventListener('hashchange',()=>{if(initialized)renderRoute()});window.addEventListener('resize',()=>{if(!directionChosen&&horizontal!==wideDirection()){horizontal=wideDirection();syncDirection()}if(currentTrack)drawRail(currentTrack);else if(horizontal!==root.querySelector('#rm-board')?.classList.contains('horizontal')&&window.innerWidth>640||horizontal&&window.innerWidth<=640&&root.querySelector('#rm-board')?.classList.contains('horizontal'))renderBoard();else drawBoard()});
 
 
@@ -1165,8 +1451,8 @@ async function loadStatus() {
   const request = new AbortController();
   const timeout = window.setTimeout(() => request.abort(), 30000);
   try {
-    const incremental = lastGaps !== null && Boolean(cachedRevision);
-    const response = await fetch(incremental ? 'api/status?view=board-delta-gzip' : 'api/status?view=board-gzip', {
+    const incremental = lastGaps !== null;
+    const response = await fetch(incremental ? 'api/status?view=board-index-delta-gzip' : 'api/status?view=board-index-gzip', {
       headers: { Accept: 'application/json' },
       signal: request.signal,
     });
@@ -1177,8 +1463,8 @@ async function loadStatus() {
       window.location.reload();
       return;
     }
-    const delta = incremental ? new Map(data.gaps.map(gap => [gap.id, gap])) : null;
-    const gaps = delta ? publishedGaps.map(gap => ({ ...gap, ...delta.get(gap.id) })) : data.gaps;
+    const previous = incremental ? new Map(publishedGaps.map(gap => [gap.id, gap])) : null;
+    const gaps = previous ? data.gaps.map(gap => ({ ...previous.get(gap.id), ...gap })) : data.gaps;
     const tracks = incremental ? cachedTracks : (data.tracks || []);
     cachedTracks = tracks;
     cachedRevision = catalogue_revision;
@@ -1192,7 +1478,7 @@ async function loadStatus() {
     document.getElementById('hero-available').textContent = gaps.filter(canClaim).length;
     const latest = results[0];
     document.getElementById('news-verdict').textContent = latest
-      ? latest.lemma_id + ' · ' + (latest.verdict === 'ACCEPTED' ? strings.accepted : strings.rejected)
+      ? latest.lemma_id + (latest.kind && latest.kind !== 'prove' ? ' · ' + latest.kind : '') + ' · ' + (latest.verdict === 'ACCEPTED' ? strings.accepted : strings.rejected)
       : strings.noRecords;
     const gapsSnapshot = JSON.stringify([gaps, tracks, assignments]);
     if (lastGaps !== gapsSnapshot) {

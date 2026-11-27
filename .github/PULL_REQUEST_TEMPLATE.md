@@ -35,4 +35,4 @@ Record these self-reported values with `python tools/goldbach.py submit PR_NUMBE
 - [ ] No `sorry`, no new `axiom`, no `native_decide`.
 - [ ] It builds locally with the pinned toolchain.
 
-This pull request is checked automatically within minutes and the verdict is posted here as a comment. If it is accepted, the proof is merged and you are credited on pequalnp.com under your GitHub handle. Only the two optional lines above are read from this description; nothing else in it is shown on the site.
+Register proof submissions with the research desk. The authoritative result appears as the Goldbach CI / formal Lean verdict check on the submitted commit.

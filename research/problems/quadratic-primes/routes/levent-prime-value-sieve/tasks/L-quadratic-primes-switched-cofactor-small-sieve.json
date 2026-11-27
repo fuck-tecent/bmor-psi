@@ -1,0 +1,18 @@
+{
+  "id": "L-quadratic-primes-switched-cofactor-small-sieve",
+  "statement": "∃ C : ℝ, 0<C ∧ ∃ N : ℕ, ∀ x p r : ℕ, N≤x → p.Prime → Nat.nthRoot 5 (x^2) < p → p ≤ 5 * Nat.nthRoot 3 (x^2) → r < p → (4*r^2+1)%p=0 → (((Finset.range (x+1)).filter fun t => let k:=p*t+r; x<2*k ∧ k≤x ∧ (4*k^2+1).minFac=p).card : ℝ) ≤ C*x/(p*Real.log x)",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 方法与自然推广 · 换元后最小因子的上筛界",
+    "en": "New route · Levent GRH methods and extensions · Upper-sieve the switched cofactor"
+  },
+  "brief": {
+    "zh": "对 $z_0<p\\le2z_1$ 的分裂素数及 $0\\le r<p,\\ p\\mid f(r)$，令 $k=pt+r$。在 $x/2<k\\le x$ 中，若 $p$ 是 $f(k)$ 的最小因子，已有 `sieve-switched-cofactor` 的二次余因子没有小于 $p$ 的素因子。证明这类 $t$ 每个 $(p,r)$ 至多 $C x/(p\\log x)$。筛到 $x^{1/40}$，取 $D'=x^{1/6}$，因 $x/p\\gg x^{1/3}$ 有充足余项空间。对 $(d,p)=1$，$pt+r\\bmod d$ 可逆换元，局部根数沿用旧题，逐模余项至多根数。上下限取整。",
+    "en": "Keep the least-factor constraint when switching k=pt+r. The small sieve primes are coprime to p."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/近平方素数任务拆分3.md",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

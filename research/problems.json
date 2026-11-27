@@ -4900,6 +4900,7 @@
           "Conjectures.TwinPrimes.SharpWindowContamination"
         ],
         "challenge_only": true,
+        "reductions": true,
         "track": "01-gap-two-windows",
         "route_source": "01-gap-two-windows"
       },
@@ -5250,6 +5251,28 @@
         "route_source": "03-zero-pairs"
       },
       {
+        "id": "L-twin-primes-integer-scale-ordinate-pair-kernel",
+        "statement": "∀ (Y u v : ℕ) (θ : ℝ), 1≤Y → Y≤u → u≤v → v≤2*Y → ‖(∑ X ∈ Finset.Ico u v, Complex.exp (Complex.I * (θ * Real.log X : ℝ))) - ∫ t in (u:ℝ)..(v:ℝ), Complex.exp (Complex.I * (θ * Real.log t : ℝ))‖ ≤ 1+|θ|",
+        "plain_statement": {
+          "zh": "新路线 · Levent GRH 方法与自然推广 · 整数尺度的零点差相位核",
+          "en": "New route · Levent GRH methods and extensions · Compare the discrete and continuous ordinate-pair kernels"
+        },
+        "brief": {
+          "zh": "对固定 $\\theta=\\gamma-\\gamma'$、$Y\\le u<v\\le2Y$ 的整数端点，比较 $Y^{-1}\\sum_{u\\le X<v}X^{i\\theta}$ 与同区间积分除以 $Y$，误差 $\\ll(1+\\vert\\theta\\vert)/Y$。积分显式给出 $O((1+\\vert\\theta\\vert)^{-1})$。对 Z06 的一个固定零点对，把含移动截断和时间核的剩余系数记为 $c_X$，分部求和得到上述两项上界之和乘以 $\\max\\vert c_X\\vert+\\sum\\vert c_{X+1}-c_X\\vert$。截断进出计入变差。",
+          "en": "Estimate the quadrature error from the derivative of t raised to an imaginary power."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/孪生素数任务拆分3.md",
+        "program": "correlation",
+        "role": "lemma",
+        "parallel": true,
+        "depends_on": [],
+        "imports": [],
+        "module": "Conjectures.TwinPrimes.IntegerScaleOrdinatePairKernel",
+        "file": "lean/Conjectures/TwinPrimes/IntegerScaleOrdinatePairKernel.lean",
+        "track": "03-zero-pairs",
+        "route_source": "03-zero-pairs"
+      },
+      {
         "id": "L-twin-primes-mellin-tail",
         "file": "lean/PEqualNP/Outside/L_twin_primes_mellin_tail.lean",
         "module": "PEqualNP.Outside.L_twin_primes_mellin_tail",
@@ -5382,6 +5405,28 @@
         "challenge_only": true,
         "track": "03-zero-pairs",
         "route_source": "03-zero-pairs"
+      },
+      {
+        "id": "L-twin-primes-admissible-long-prime-power-convolution",
+        "statement": "∀ d : ℕ, 0<d → (∑ k ∈ d.divisors, (ArithmeticFunction.moebius (d/k) : ℝ)*ArithmeticFunction.vonMangoldt k) = -(ArithmeticFunction.moebius d : ℝ)*Real.log d",
+        "plain_statement": {
+          "zh": "新路线 · Levent GRH 方法与自然推广 · 对数 Möbius 权的素幂卷积",
+          "en": "New route · Levent GRH methods and extensions · Expand the logarithmic Möbius weight as a prime-power convolution"
+        },
+        "brief": {
+          "zh": "对 D05 的同一 $k_Y$ 和 $md-2\\equiv2\\bmod3$，以 $-\\mu(d)\\log d=\\sum_{e\\ell^a=d}\\mu(e)\\log\\ell$（$\\ell$ 素，$a\\ge1$）重排。给出 $m e\\ell^a-2$ 素、$me\\ell^a\\equiv1\\bmod3$ 及原硬窗的求和域。先从 $\\mu*1$ 的对数微分证明系数恒等式，含非平方自由 $d$ 的相消。",
+          "en": "Use the divisor convolution identity for the logarithmic derivative of the Möbius series."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/孪生素数任务拆分3.md",
+        "program": "correlation",
+        "role": "lemma",
+        "parallel": true,
+        "depends_on": [],
+        "imports": [],
+        "module": "Conjectures.TwinPrimes.AdmissibleLongPrimePowerConvolution",
+        "file": "lean/Conjectures/TwinPrimes/AdmissibleLongPrimePowerConvolution.lean",
+        "track": "04-divisor-split",
+        "route_source": "04-divisor-split"
       },
       {
         "id": "L-twin-primes-ap-short-error",
@@ -5523,6 +5568,72 @@
           "L-twin-primes-euler-factor"
         ],
         "imports": [],
+        "track": "04-divisor-split",
+        "route_source": "04-divisor-split"
+      },
+      {
+        "id": "L-twin-primes-harmonic-kernel-cofactor-error",
+        "statement": "∀ l u : ℕ, 0<l → l≤u → |(∑ x ∈ Finset.Ico l u, (x : ℝ)⁻¹) - Real.log ((u : ℝ)/l)| ≤ (l : ℝ)⁻¹",
+        "plain_statement": {
+          "zh": "新路线 · Levent GRH 方法与自然推广 · 调和窗的对数核误差",
+          "en": "New route · Levent GRH methods and extensions · Bound the harmonic-window logarithmic approximation"
+        },
+        "brief": {
+          "zh": "把 D04 的核换成 $k_Y=Y^{-1}\\max(0,\\log(u/l))$，其中 $u,l>0$。逐个非空区间误差至多 $1/(Yl)$。求和后误差 $\\ll\\log^3(2+Y)/Y$，用 $\\sum_{p\\le3Y}\\tau(p+2)\\ll Y\\log(2+Y)$。这样得到可作分部求和的实权，仍逐项保留 $\\mu(d)$ 与 $md-2$ 素性。供长段两类合并时使用。",
+          "en": "Integrate the decreasing function 1/t between successive integer endpoints."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/孪生素数任务拆分3.md",
+        "program": "correlation",
+        "role": "lemma",
+        "parallel": true,
+        "depends_on": [],
+        "imports": [],
+        "module": "Conjectures.TwinPrimes.HarmonicKernelCofactorError",
+        "file": "lean/Conjectures/TwinPrimes/HarmonicKernelCofactorError.lean",
+        "track": "04-divisor-split",
+        "route_source": "04-divisor-split"
+      },
+      {
+        "id": "L-twin-primes-integer-scale-divisor-kernel",
+        "statement": "∀ Y p d : ℕ, (Finset.Ico Y (2*Y)).filter (fun X => X<p ∧ 50*p<51*X ∧ X<d^3) = Finset.Ico (max Y (50*p/51+1)) (min (2*Y) (min p (d^3)))",
+        "plain_statement": {
+          "zh": "新路线 · Levent GRH 方法与自然推广 · 整数尺度硬窗的交换求和核",
+          "en": "New route · Levent GRH methods and extensions · Identify the integer-scale window and divisor cutoff"
+        },
+        "brief": {
+          "zh": "在 $Y\\le X<2Y$ 等权平均 $L_2(X)$，交换为 $\\sum_{m,d}\\mathbf1_{p=md-2\\ {\\rm prime},\\,p\\equiv2(3)}\\log p\\,c(d)\\,K_Y(p,d)$。其中 $l=\\max(Y,\\lfloor50p/51\\rfloor+1)$，$u=\\min(2Y,p,d^3)$，$K_Y=Y^{-1}\\sum_{l\\le X<u}1/X$。空区间取零，$Y\\ge2$，$m,d\\ge1$，只须 $Y<p<102Y/50$。$X<d^3$ 当且仅当 $D_X<d$。",
+          "en": "Intersect the three strict window inequalities with the dyadic block. Keep the end at d cubed excluded."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/孪生素数任务拆分3.md",
+        "program": "correlation",
+        "role": "lemma",
+        "parallel": true,
+        "depends_on": [],
+        "imports": [],
+        "module": "Conjectures.TwinPrimes.IntegerScaleDivisorKernel",
+        "file": "lean/Conjectures/TwinPrimes/IntegerScaleDivisorKernel.lean",
+        "track": "04-divisor-split",
+        "route_source": "04-divisor-split"
+      },
+      {
+        "id": "L-twin-primes-long-divisor-large-base-power-tail",
+        "statement": "∃ C : ℝ, 0<C ∧ ∀ Y : ℕ, 2≤Y → (∑ p ∈ (Finset.Ioc (Nat.nthRoot 10 Y) (3*Y)).filter Nat.Prime, ∑ a ∈ Finset.Icc 2 (Nat.log 2 (3*Y)), (∑ t ∈ Finset.Icc 1 (3*Y/p^a), ((t.divisors.card : ℕ) : ℝ)) * Real.log p / Y) ≤ C*(Real.log (2+Y))^3 / (Y:ℝ)^(1/10:ℝ)",
+        "plain_statement": {
+          "zh": "新路线 · Levent GRH 方法与自然推广 · 大底数高次幂的卷积尾",
+          "en": "New route · Levent GRH methods and extensions · Bound the large-base higher-power convolution tail"
+        },
+        "brief": {
+          "zh": "在 D10 中只取 $a\\ge2,\\ \\ell>Y^{1/10}$。用 $0\\le k_Y\\le(\\log2)/Y$、$me\\le 3Y/\\ell^a$ 和 $\\sum_{t\\le V}\\tau(t)\\ll V\\log(2V)$，证其绝对贡献 $\\ll Y^{-1/10}\\log^3(2Y)$。留下 $a=1$ 的素数变量与小底数的高次幂，两者都保留 $\\mu(e)$ 符号。",
+          "en": "Use the harmonic kernel bound and sum reciprocal prime powers above the large-base cutoff."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/孪生素数任务拆分3.md",
+        "program": "correlation",
+        "role": "lemma",
+        "parallel": true,
+        "depends_on": [],
+        "imports": [],
+        "module": "Conjectures.TwinPrimes.LongDivisorLargeBasePowerTail",
+        "file": "lean/Conjectures/TwinPrimes/LongDivisorLargeBasePowerTail.lean",
         "track": "04-divisor-split",
         "route_source": "04-divisor-split"
       },
@@ -5701,6 +5812,28 @@
         "route_source": "04-divisor-split"
       },
       {
+        "id": "L-twin-primes-harmonic-proper-power-tail",
+        "statement": "∃ C : ℝ, 0<C ∧ ∀ U V : ℕ, 2≤U → (∑ n ∈ (Finset.range V).filter (fun n => U<n+2 ∧ (¬n.Prime ∨ ¬(n+2).Prime)), ArithmeticFunction.vonMangoldt n * ArithmeticFunction.vonMangoldt (n+2)/(n+2 : ℝ)) ≤ C*Real.log (2+U)/Real.sqrt U",
+        "plain_statement": {
+          "zh": "新路线 · Levent GRH 方法与自然推广 · 非双素数的调和尾项",
+          "en": "New route · Levent GRH methods and extensions · Bound the harmonic tail from nonprime endpoints"
+        },
+        "brief": {
+          "zh": "证明 $\\sum_{n+2>U,\\ (n,n+2)\\text{非双素}}\\Lambda(n)\\Lambda(n+2)/(n+2)\\ll\\log(2+U)/\\sqrt U$，$U\\ge2$。由 `square-log-mass`、`higher-power-log-mass` 在 $[V,2V]$ 上分别计两端，另一端权至多 $\\log(2V+2)$，再取 $V=2^jU$ 求和。",
+          "en": "Count prime squares and higher powers on dyadic blocks and sum the weighted bounds."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/孪生素数任务拆分3.md",
+        "program": "correlation",
+        "role": "lemma",
+        "parallel": true,
+        "depends_on": [],
+        "imports": [],
+        "module": "Conjectures.TwinPrimes.HarmonicProperPowerTail",
+        "file": "lean/Conjectures/TwinPrimes/HarmonicProperPowerTail.lean",
+        "track": "05-finite-increments",
+        "route_source": "05-finite-increments"
+      },
+      {
         "id": "L-twin-primes-increment-surplus",
         "file": "lean/PEqualNP/Outside/L_twin_primes_increment_surplus.lean",
         "module": "PEqualNP.Outside.L_twin_primes_increment_surplus",
@@ -5726,6 +5859,28 @@
           "PEqualNP.Outside.L_twin_primes_gap_one_sum"
         ],
         "challenge_only": true,
+        "track": "05-finite-increments",
+        "route_source": "05-finite-increments"
+      },
+      {
+        "id": "L-twin-primes-jump-abel-endpoint-identity",
+        "statement": "∀ N : ℕ, 2≤N → (∑ t ∈ Finset.Ico 2 N, (∑ n ∈ Finset.range (t-1), ArithmeticFunction.vonMangoldt n * ArithmeticFunction.vonMangoldt (n+2))/((t:ℝ)*(t+1))) = ∑ n ∈ Finset.range (N-1), ArithmeticFunction.vonMangoldt n * ArithmeticFunction.vonMangoldt (n+2) * ((n+2:ℝ)⁻¹-(N:ℝ)⁻¹)",
+        "plain_statement": {
+          "zh": "新路线 · Levent GRH 方法与自然推广 · 差二跳跃的 Abel 端点权",
+          "en": "New route · Levent GRH methods and extensions · Identify the Abel endpoint weight for gap two"
+        },
+        "brief": {
+          "zh": "对每个整数 $N\\ge2$，令 $\\Delta_t=F_t(3)-2F_t(2)+F_t(1)$，证明 $\\tfrac12\\sum_{t=2}^{N-1}\\Delta_t/(t(t+1))=\\sum_{n+2\\le N}\\Lambda(n)\\Lambda(n+2)(1/(n+2)-1/N)$。使用 `second-difference` 后先按 $n$ 求和，$n+2=N$ 处系数恰为零。",
+          "en": "Expand the nonnegative finite prefix and sum the reciprocal differences by telescoping."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/孪生素数任务拆分3.md",
+        "program": "correlation",
+        "role": "lemma",
+        "parallel": true,
+        "depends_on": [],
+        "imports": [],
+        "module": "Conjectures.TwinPrimes.JumpAbelEndpointIdentity",
+        "file": "lean/Conjectures/TwinPrimes/JumpAbelEndpointIdentity.lean",
         "track": "05-finite-increments",
         "route_source": "05-finite-increments"
       },
@@ -5876,6 +6031,7 @@
           "Conjectures.TwinPrimes.EnergyBridgeV2"
         ],
         "challenge_only": true,
+        "reductions": true,
         "track": "06-theta-for-shift",
         "route_source": "06-theta-for-shift"
       },
@@ -6270,6 +6426,50 @@
         "route_source": "07-levent-gap-two"
       },
       {
+        "id": "L-twin-primes-fifth-root-rough-prime-mass",
+        "statement": "∃ c : ℝ, 0<c ∧ ∃ N : ℕ, ∀ X : ℕ, N≤X → c*X ≤ ∑ p ∈ (Finset.Ioo X (2*X)).filter (fun p => 50*p<51*X ∧ p.Prime ∧ Nat.nthRoot 5 X ≤ (p+2).minFac), Real.log p * Real.log (p+2)",
+        "plain_statement": {
+          "zh": "新路线 · Levent GRH 方法与自然推广 · 五次根筛点的首端素数质量",
+          "en": "New route · Levent GRH methods and extensions · Lower-bound prime mass after the fifth-root sieve"
+        },
+        "brief": {
+          "zh": "在所有充分大的 $X$ 证明 $A_X(z_0)\\ge c_0X$，给出与 $X$ 无关的 $c_0>0$。对带 $\\log p$ 的序列 $p+2$ 用一维下筛，奇素数局部密度 $1/(\\ell-1)$，2 处不筛。Bombieri–Vinogradov 在 $D=X^{1/2}/\\log^A X$ 提供加权算术级数的余项，$\\log D/\\log z_0\\to5/2>2$。补乘窗内 $\\log(p+2)$。这给中段两个损失共用的起始质量。",
+          "en": "Apply a dimension-one lower sieve to p+2 with prime progression errors at Bombieri–Vinogradov level."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/孪生素数任务拆分3.md",
+        "program": "correlation",
+        "role": "lemma",
+        "parallel": true,
+        "depends_on": [],
+        "imports": [],
+        "module": "Conjectures.TwinPrimes.FifthRootRoughPrimeMass",
+        "file": "lean/Conjectures/TwinPrimes/FifthRootRoughPrimeMass.lean",
+        "track": "07-levent-gap-two",
+        "route_source": "07-levent-gap-two"
+      },
+      {
+        "id": "L-twin-primes-first-factor-doubled-fifth-band",
+        "statement": "∃ C : ℝ, 0<C ∧ ∃ N : ℕ, ∀ X : ℕ, N≤X → (∑ p ∈ (Finset.Ioo X (2*X)).filter (fun p => 50*p<51*X ∧ p.Prime ∧ Nat.nthRoot 5 X ≤ (p+2).minFac ∧ (p+2).minFac < 2*Nat.nthRoot 5 X), Real.log p * Real.log (p+2)) ≤ C*X/Real.log X",
+        "plain_statement": {
+          "zh": "新路线 · Levent GRH 方法与自然推广 · 首次命中五次根边带的权上界",
+          "en": "New route · Levent GRH methods and extensions · Bound the first hits in the doubled fifth-root band"
+        },
+        "brief": {
+          "zh": "证明 $H_X[z_0,2z_0)\\ll X/\\log X$。对素数 $r=\\operatorname{minFac}(p+2)$ 写 $p=rs-2$。$s$ 可以合成，但没有小于 $r$ 的素因子。对 $s(rs-2)$ 上筛到 $X^{1/30}$，用 `cofactor-sieve-root-count`，得到每个 $r$ 至多 $O(X/(r\\log^2 X))$ 个候选。$r$ 大于该筛点，余项对 $r$ 一致。再用 $\\sum_{z_0\\le r<2z_0,\\ r\\ {\\rm prime}}1/r\\ll1/\\log X$。",
+          "en": "Switch to p=rs−2 and use an upper sieve for the two forms s and rs−2."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/孪生素数任务拆分3.md",
+        "program": "correlation",
+        "role": "lemma",
+        "parallel": true,
+        "depends_on": [],
+        "imports": [],
+        "module": "Conjectures.TwinPrimes.FirstFactorDoubledFifthBand",
+        "file": "lean/Conjectures/TwinPrimes/FirstFactorDoubledFifthBand.lean",
+        "track": "07-levent-gap-two",
+        "route_source": "07-levent-gap-two"
+      },
+      {
         "id": "L-twin-primes-higher-power-log-mass",
         "statement": "let Λ := ArithmeticFunction.vonMangoldt; ∃ C : ℝ, 0 < C ∧ ∀ Y : ℕ, 2 ≤ Y → (@Finset.filter ℕ (fun n => ∃ p k : ℕ, p.Prime ∧ 3 ≤ k ∧ n = p^k) (fun _ => Classical.propDecidable _) (Finset.range (Y+1))).sum (fun n => Λ n) ≤ C*(Y:ℝ)^(1/3:ℝ)*Real.log (2+(Y:ℝ))",
         "plain_statement": {
@@ -6292,6 +6492,50 @@
         ],
         "file": "lean/Conjectures/TwinPrimes/HigherPowerLogMass.lean",
         "module": "Conjectures.TwinPrimes.HigherPowerLogMass",
+        "track": "07-levent-gap-two",
+        "route_source": "07-levent-gap-two"
+      },
+      {
+        "id": "L-twin-primes-middle-next-factor-buchstab-domain",
+        "statement": "∀ p r s : ℕ, p.Prime → r.Prime → 1<s → p+2=r*s → r<s.minFac → (¬ Nat.Prime s) → ∃ ℓ m : ℕ, ℓ.Prime ∧ r<ℓ ∧ ℓ ≤ m ∧ ℓ ≤ Nat.minFac m ∧ s = ℓ * m ∧ r^3<p+2",
+        "plain_statement": {
+          "zh": "新路线 · Levent GRH 方法与自然推广 · 中段 Buchstab 换元的整数范围",
+          "en": "New route · Levent GRH methods and extensions · Recover the middle-band Buchstab cofactor range"
+        },
+        "brief": {
+          "zh": "对 S06 以外的每个 $p$ 写 $p+2=rs$。若 $s$ 合成，取 $\\ell=\\operatorname{minFac}(s)$，则 $r<\\ell\\le m$，$s=\\ell m$，$\\operatorname{minFac}(m)\\ge\\ell$。给出 $X<r\\ell m-2<51X/50$ 的精确整数端点，并证明 $r^3<51X/50+2$。若 $s$ 素，则 $r<s$ 且 $p=rs-2$ 素。两族与 S06 互斥并穷尽中段。",
+          "en": "Choose the next least prime factor once repetitions of the first factor have been removed."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/孪生素数任务拆分3.md",
+        "program": "correlation",
+        "role": "lemma",
+        "parallel": true,
+        "depends_on": [],
+        "imports": [],
+        "module": "Conjectures.TwinPrimes.MiddleNextFactorBuchstabDomain",
+        "file": "lean/Conjectures/TwinPrimes/MiddleNextFactorBuchstabDomain.lean",
+        "track": "07-levent-gap-two",
+        "route_source": "07-levent-gap-two"
+      },
+      {
+        "id": "L-twin-primes-middle-repeated-first-factor-loss",
+        "statement": "∀ X r : ℕ, 1<r → ((Finset.Icc X (2*X)).filter fun p => p.Prime ∧ r^2 ∣ p+2).card ≤ X/r^2+1",
+        "plain_statement": {
+          "zh": "新路线 · Levent GRH 方法与自然推广 · 重复最小素因子的整除上界",
+          "en": "New route · Levent GRH methods and extensions · Count the repeated least-factor divisibility loss"
+        },
+        "brief": {
+          "zh": "对 $2z_0\\le r<z_*$，只计最小素因子为 $r$ 且 $r^2\\mid p+2$ 的项。逐 $r$ 的整除计数至多 $2X/r^2+1$，故这些项的总权 $\\ll(X/z_0+\\sqrt X)\\log^2(2+X)$。",
+          "en": "For fixed r bound the number of candidates by the number of multiples of r² in the containing interval."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/孪生素数任务拆分3.md",
+        "program": "correlation",
+        "role": "lemma",
+        "parallel": true,
+        "depends_on": [],
+        "imports": [],
+        "module": "Conjectures.TwinPrimes.MiddleRepeatedFirstFactorLoss",
+        "file": "lean/Conjectures/TwinPrimes/MiddleRepeatedFirstFactorLoss.lean",
         "track": "07-levent-gap-two",
         "route_source": "07-levent-gap-two"
       },
@@ -6323,6 +6567,30 @@
         "route_source": "07-levent-gap-two"
       },
       {
+        "id": "L-twin-primes-prime-square-minus-two-upper-sieve",
+        "statement": "∃ C : ℝ, 0<C ∧ ∀ U : ℕ, 3≤U → (((Finset.Ioc U (2*U)).filter fun r => r.Prime ∧ (r^2-2).Prime).card : ℝ) ≤ C*U/(Real.log U)^2",
+        "plain_statement": {
+          "zh": "新路线 · Levent GRH 方法与自然推广 · 素数平方减二的上筛",
+          "en": "New route · Levent GRH methods and extensions · Upper-sieve primes whose square minus two is prime"
+        },
+        "brief": {
+          "zh": "证明存在统一 $C$，使每个整数 $U\\ge3$ 都有 $\\#\\{U<r\\le2U:r,\\ r^2-2\\text{ 均素}\\}\\le CU/\\log^2 U$。对 W02 的多项式筛到 $z=U^{1/20}$，可取余项水平 $D=U^{1/2}$。逐模误差用 $\\sum_{d\\le D}\\mu^2(d)3^{\\omega(d)}\\nu(d)\\ll D\\log^8(2D)$ 支付，主项用 W03。两素数都大于筛点。与上一批两条线性式的上筛分开验收。",
+          "en": "Use the dimension-two local sieve factors for r(r²−2) and sum the squarefree modulus errors."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/孪生素数任务拆分3.md",
+        "program": "correlation",
+        "role": "lemma",
+        "parallel": true,
+        "depends_on": [
+          "L-twin-primes-quadratic-square-sieve-residues"
+        ],
+        "imports": [],
+        "module": "Conjectures.TwinPrimes.PrimeSquareMinusTwoUpperSieve",
+        "file": "lean/Conjectures/TwinPrimes/PrimeSquareMinusTwoUpperSieve.lean",
+        "track": "07-levent-gap-two",
+        "route_source": "07-levent-gap-two"
+      },
+      {
         "id": "L-twin-primes-prime-wheel-progression-budget",
         "statement": "(∀ (q : ℕ) [NeZero q] (χ : DirichletCharacter ℂ q) (s : ℂ), 0 < s.re → s.re < 1 → DirichletCharacter.LFunction χ s = 0 → s.re = 1/2) → (let w := fun (X : ℕ) => (Finset.range (2*X+1)).filter (fun n => X < n ∧ 50*n < 51*X); let S := fun (X q : ℕ) => ((w X).filter (fun p => p.Prime ∧ Nat.Coprime (p+2) q)).sum (fun p => Real.log p); let V := fun (q : ℕ) => q.primeFactors.prod (fun r => 1-1/((r:ℝ)-1)); ∃ C : ℝ, 0 < C ∧ ∀ (X q : ℕ), 2 ≤ X → q ≤ X → Odd q → Squarefree q → |S X q-(X:ℝ)/50*V q| ≤ C*(q.divisors.card:ℝ)*Real.sqrt X*(Real.log (2*(q:ℝ)*X))^2)",
         "plain_statement": {
@@ -6348,6 +6616,28 @@
         ],
         "file": "lean/Conjectures/TwinPrimes/PrimeWheelProgressionBudget.lean",
         "module": "Conjectures.TwinPrimes.PrimeWheelProgressionBudget",
+        "track": "07-levent-gap-two",
+        "route_source": "07-levent-gap-two"
+      },
+      {
+        "id": "L-twin-primes-quadratic-square-sieve-residues",
+        "statement": "∀ ℓ : ℕ, ℓ.Prime → ((Finset.range ℓ).filter fun a => (a=0 ∨ a^2%ℓ=2%ℓ)).card = if ℓ=2 then 1 else 1+((Finset.range ℓ).filter fun a => a^2%ℓ=2%ℓ).card",
+        "plain_statement": {
+          "zh": "新路线 · Levent GRH 方法与自然推广 · 二次平方邻居筛的局部根数",
+          "en": "New route · Levent GRH methods and extensions · Count forbidden residue classes in the quadratic square-neighbor sieve"
+        },
+        "brief": {
+          "zh": "记 $\\nu(d)=\\#\\{r\\bmod d:d\\mid r(r^2-2)\\}$。证明 $\\nu(2)=1$，奇素数 $\\ell$ 有 $\\nu(\\ell)=2+(\\frac2\\ell)$，平方自由 $d$ 上可乘。任意连续 $U$ 个整数中命中此模数的个数与 $U\\nu(d)/d$ 相差至多 $\\nu(d)$。",
+          "en": "Separate a=0 and a²=2. Treat the modulus two separately."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/孪生素数任务拆分3.md",
+        "program": "correlation",
+        "role": "lemma",
+        "parallel": true,
+        "depends_on": [],
+        "imports": [],
+        "module": "Conjectures.TwinPrimes.QuadraticSquareSieveResidues",
+        "file": "lean/Conjectures/TwinPrimes/QuadraticSquareSieveResidues.lean",
         "track": "07-levent-gap-two",
         "route_source": "07-levent-gap-two"
       },
@@ -6503,6 +6793,28 @@
         "route_source": "07-levent-gap-two"
       },
       {
+        "id": "L-twin-primes-square-neighbour-mod-three",
+        "statement": "∀ n : ℕ, 10 ≤ n → ArithmeticFunction.vonMangoldt n * ArithmeticFunction.vonMangoldt (n+2) ≠ 0 → (¬ n.Prime ∨ ¬ (n+2).Prime) → (∃ p a : ℕ, p.Prime ∧ 3 ≤ a ∧ (p^a=n ∨ p^a=n+2)) ∨ (n.Prime ∧ ∃ p : ℕ, p.Prime ∧ p^2=n+2)",
+        "plain_statement": {
+          "zh": "新路线 · Levent GRH 方法与自然推广 · 差二窄窗的平方污染分类",
+          "en": "New route · Levent GRH methods and extensions · Classify square contamination in gap two"
+        },
+        "brief": {
+          "zh": "对 $n\\ge10$ 且 $\\Lambda(n)\\Lambda(n+2)>0$ 的坏项，证明至少一端是指数 $\\ge3$ 的素数幂，或 $n=r^2-2$ 与 $r$ 均为素数。若左端为素数平方且底数 $r>3$，则 $3\\mid r^2+2$，右端有权只能是 $3^k$，且 $k\\ge3$。枚举小底数。",
+          "en": "Reduce a prime square plus two modulo three and check the exceptional small bases."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/孪生素数任务拆分3.md",
+        "program": "correlation",
+        "role": "lemma",
+        "parallel": true,
+        "depends_on": [],
+        "imports": [],
+        "module": "Conjectures.TwinPrimes.SquareNeighbourModThree",
+        "file": "lean/Conjectures/TwinPrimes/SquareNeighbourModThree.lean",
+        "track": "07-levent-gap-two",
+        "route_source": "07-levent-gap-two"
+      },
+      {
         "id": "L-twin-primes-wheel-marginal-counterexample",
         "statement": "let w := fun (X : ℕ) => (Finset.range (2*X+1)).filter (fun n => X < n ∧ 50*n < 51*X); ∀ (q X : ℕ), 0 < q → 200*(q+1) ≤ X → (∃ a : ℕ, a < q ∧ Nat.Coprime a q ∧ Nat.Coprime (a+2) q) → (∃ f g : ℕ → ℝ, (∀ n, (f n=0 ∨ f n=1) ∧ (g n=0 ∨ g n=1) ∧ (¬ (n ∈ w X ∧ Nat.Coprime n q) → f n=0 ∧ g n=0)) ∧ (∀ a : ℕ, a < q → ((w X).filter (fun n => n%q=a)).sum f = ((w X).filter (fun n => n%q=a)).sum g) ∧ (w X).sum (fun n => f n * f (n+2))=1 ∧ (w X).sum (fun n => g n * g (n+2))=0)",
         "plain_statement": {
@@ -6525,6 +6837,31 @@
         "imports": [],
         "file": "lean/Conjectures/TwinPrimes/WheelMarginalCounterexample.lean",
         "module": "Conjectures.TwinPrimes.WheelMarginalCounterexample",
+        "track": "07-levent-gap-two",
+        "route_source": "07-levent-gap-two"
+      },
+      {
+        "id": "L-twin-primes-window-contamination-square-root",
+        "statement": "∃ C : ℝ, 0<C ∧ ∀ X : ℕ, 2≤X → (∑ n ∈ (Finset.Ioo X (2*X)).filter (fun n => 50*n<51*X ∧ (¬n.Prime ∨ ¬(n+2).Prime)), ArithmeticFunction.vonMangoldt n * ArithmeticFunction.vonMangoldt (n+2)) ≤ C*Real.sqrt X",
+        "plain_statement": {
+          "zh": "新路线 · Levent GRH 方法与自然推广 · 差二窄窗的平方根污染预算",
+          "en": "New route · Levent GRH methods and extensions · Bound contamination at square-root scale"
+        },
+        "brief": {
+          "zh": "由 W01、W04、`higher-power-log-mass` 证明 $\\exists C>0,\\ \\forall X\\ge2,\\ E_X\\le C/\\sqrt X$。立方及以上幂在两端的未归一化总损失 $\\ll X^{1/3}\\log^2(2+X)$，剩下的平方底数在 $\\asymp\\sqrt X$ 的区间，每项 $\\ll\\log^2(2+X)$。用有限个二进区间覆盖，吸收小 $X$。交 `window-extraction`。",
+          "en": "Use the sieve for square neighbors and the count of proper prime powers with exponent at least three."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/孪生素数任务拆分3.md",
+        "program": "correlation",
+        "role": "lemma",
+        "parallel": true,
+        "depends_on": [
+          "L-twin-primes-square-neighbour-mod-three",
+          "L-twin-primes-prime-square-minus-two-upper-sieve"
+        ],
+        "imports": [],
+        "module": "Conjectures.TwinPrimes.WindowContaminationSquareRoot",
+        "file": "lean/Conjectures/TwinPrimes/WindowContaminationSquareRoot.lean",
         "track": "07-levent-gap-two",
         "route_source": "07-levent-gap-two"
       },
@@ -6552,6 +6889,52 @@
         "module": "Conjectures.TwinPrimes.WindowEndpointOverhang",
         "track": "07-levent-gap-two",
         "route_source": "07-levent-gap-two"
+      },
+      {
+        "id": "L-twin-primes-admissible-triple-unconditional",
+        "statement": "∀ H : Finset ℕ, H.card = 3 → (∀ p : ℕ, p.Prime → ∃ r : ℕ, r < p ∧ ∀ h ∈ H, h % p ≠ r) → ∀ B : ℕ, ∃ n : ℕ, B < n ∧ ∃ a ∈ H, ∃ b ∈ H, a < b ∧ Nat.Prime (n+a) ∧ Nat.Prime (n+b)",
+        "plain_statement": {
+          "zh": "任意可容许三元组的无穷多平移含两个素数",
+          "en": "Prove the admissible-triple two-prime theorem unconditionally"
+        },
+        "brief": {
+          "zh": "待证。Polymath8b 定理 3.2(xii) 在广义 Elliott–Halberstam 假设下证明同一结论。这里保留所有可容许三元组并去掉该假设。可先查 Theorem 3.2 如何把分布误差与筛权分离，再寻找仅需三元组的带符号相关余量。对 {0,2,6} 特化得到无穷多对距离不超过 6。",
+          "en": "Open. Polymath8b Theorem 3.2(xii) assumes generalized Elliott–Halberstam. Retain all admissible triples and remove that hypothesis. Study the separation of distribution error and sieve weights, then seek a signed correlation margin adapted to three shifts. The triple {0,2,6} gives arbitrarily large pairs at distance at most six."
+        },
+        "source": "https://arxiv.org/html/1407.4897v4",
+        "depends_on": [],
+        "program": "correlation",
+        "parallel": true,
+        "role": "target",
+        "challenge_only": true,
+        "file": "lean/Conjectures/TwinPrimes/AdmissibleTripleUnconditional.lean",
+        "module": "Conjectures.TwinPrimes.AdmissibleTripleUnconditional",
+        "track": "08-bounded-gaps-frontier",
+        "route_source": "08-bounded-gaps-frontier",
+        "imports": []
+      },
+      {
+        "id": "L-twin-primes-gap-at-most-four",
+        "statement": "∀ B : ℕ, ∃ p q : ℕ, B < p ∧ p < q ∧ q ≤ p + 4 ∧ p.Prime ∧ q.Prime",
+        "plain_statement": {
+          "zh": "无条件把无限复现的素数间隔压到 4 以内",
+          "en": "Prove infinitely many prime gaps at most four unconditionally"
+        },
+        "brief": {
+          "zh": "待证。对每个下界 B 找到两个大于 B 且距离至多 4 的素数，等价于 H₁≤4。Polymath8b 定理 1.4 在 GEH 下给出 6。可研究实际素数权的差二、差四相关合计能否在无界尺度压过素数幂污染；纯筛上界不能提供这里的正性。结果会把无限复现的候选间隔缩到 2、4。",
+          "en": "Open. A prime pair within four beyond every bound is equivalent to H₁ ≤ 4. Polymath8b Theorem 1.4 gives six under GEH. Seek an actual gap-two plus gap-four correlation surplus on unbounded scales after prime-power contamination. This leaves two and four as the possible recurring gaps at this scale."
+        },
+        "source": "https://arxiv.org/html/1407.4897v4",
+        "depends_on": [],
+        "program": "correlation",
+        "parallel": true,
+        "role": "target",
+        "challenge_only": true,
+        "file": "lean/Conjectures/TwinPrimes/GapAtMostFour.lean",
+        "module": "Conjectures.TwinPrimes.GapAtMostFour",
+        "track": "08-bounded-gaps-frontier",
+        "route_source": "08-bounded-gaps-frontier",
+        "imports": []
       }
     ],
     "roadmap": [
@@ -6718,6 +7101,12 @@
             "route_source": "03-zero-pairs"
           },
           {
+            "id": "L-twin-primes-integer-scale-ordinate-pair-kernel",
+            "zh": "新路线 · Levent GRH 方法与自然推广 · 整数尺度的零点差相位核",
+            "en": "New route · Levent GRH methods and extensions · Compare the discrete and continuous ordinate-pair kernels",
+            "route_source": "03-zero-pairs"
+          },
+          {
             "id": "L-twin-primes-mellin-tail",
             "zh": "新路线 · 零点对与相位 · TP-0022 · 由单位窗计数控制衰减核的远零点尾",
             "en": "New route · Zero pairs and phases · TP-0022 · Bound the far-zero tail of a decaying kernel from unit counts",
@@ -6761,6 +7150,12 @@
         ],
         "tasks": [
           {
+            "id": "L-twin-primes-admissible-long-prime-power-convolution",
+            "zh": "新路线 · Levent GRH 方法与自然推广 · 对数 Möbius 权的素幂卷积",
+            "en": "New route · Levent GRH methods and extensions · Expand the logarithmic Möbius weight as a prime-power convolution",
+            "route_source": "04-divisor-split"
+          },
+          {
             "id": "L-twin-primes-ap-short-error",
             "zh": "新路线 · 短长除数与奇偶 · TP-0030 · 在 −2 类上取得随模数一致的 GRH 窄窗误差",
             "en": "New route · Short and long divisors · TP-0030 · Obtain the GRH narrow-window error uniformly in the minus-two class",
@@ -6794,6 +7189,24 @@
             "id": "L-twin-primes-hard-cutoff",
             "zh": "新路线 · 短长除数与奇偶 · TP-0034 · 识别奇除数硬截断的 2C₂ 常数",
             "en": "New route · Short and long divisors · TP-0034 · Identify the hard cutoff limit over odd divisors",
+            "route_source": "04-divisor-split"
+          },
+          {
+            "id": "L-twin-primes-harmonic-kernel-cofactor-error",
+            "zh": "新路线 · Levent GRH 方法与自然推广 · 调和窗的对数核误差",
+            "en": "New route · Levent GRH methods and extensions · Bound the harmonic-window logarithmic approximation",
+            "route_source": "04-divisor-split"
+          },
+          {
+            "id": "L-twin-primes-integer-scale-divisor-kernel",
+            "zh": "新路线 · Levent GRH 方法与自然推广 · 整数尺度硬窗的交换求和核",
+            "en": "New route · Levent GRH methods and extensions · Identify the integer-scale window and divisor cutoff",
+            "route_source": "04-divisor-split"
+          },
+          {
+            "id": "L-twin-primes-long-divisor-large-base-power-tail",
+            "zh": "新路线 · Levent GRH 方法与自然推广 · 大底数高次幂的卷积尾",
+            "en": "New route · Levent GRH methods and extensions · Bound the large-base higher-power convolution tail",
             "route_source": "04-divisor-split"
           },
           {
@@ -6852,9 +7265,21 @@
         ],
         "tasks": [
           {
+            "id": "L-twin-primes-harmonic-proper-power-tail",
+            "zh": "新路线 · Levent GRH 方法与自然推广 · 非双素数的调和尾项",
+            "en": "New route · Levent GRH methods and extensions · Bound the harmonic tail from nonprime endpoints",
+            "route_source": "05-finite-increments"
+          },
+          {
             "id": "L-twin-primes-increment-surplus",
             "zh": "新路线 · 有限跳跃 · TP-0043 · 寻求长度三跳跃的超平方根余量",
             "en": "New route · Finite increments · TP-0043 · Seek a super-square-root gain for the length-three increment",
+            "route_source": "05-finite-increments"
+          },
+          {
+            "id": "L-twin-primes-jump-abel-endpoint-identity",
+            "zh": "新路线 · Levent GRH 方法与自然推广 · 差二跳跃的 Abel 端点权",
+            "en": "New route · Levent GRH methods and extensions · Identify the Abel endpoint weight for gap two",
             "route_source": "05-finite-increments"
           },
           {
@@ -7010,9 +7435,33 @@
             "route_source": "07-levent-gap-two"
           },
           {
+            "id": "L-twin-primes-fifth-root-rough-prime-mass",
+            "zh": "新路线 · Levent GRH 方法与自然推广 · 五次根筛点的首端素数质量",
+            "en": "New route · Levent GRH methods and extensions · Lower-bound prime mass after the fifth-root sieve",
+            "route_source": "07-levent-gap-two"
+          },
+          {
+            "id": "L-twin-primes-first-factor-doubled-fifth-band",
+            "zh": "新路线 · Levent GRH 方法与自然推广 · 首次命中五次根边带的权上界",
+            "en": "New route · Levent GRH methods and extensions · Bound the first hits in the doubled fifth-root band",
+            "route_source": "07-levent-gap-two"
+          },
+          {
             "id": "L-twin-primes-higher-power-log-mass",
             "zh": "新路线 · Levent GRH 与自然推广 · TP-0056 · 给三次及以上真素数幂分配三次根预算",
             "en": "New route · Levent GRH methods and extensions · TP-0056 · Bound the log mass of prime powers of exponent at least three",
+            "route_source": "07-levent-gap-two"
+          },
+          {
+            "id": "L-twin-primes-middle-next-factor-buchstab-domain",
+            "zh": "新路线 · Levent GRH 方法与自然推广 · 中段 Buchstab 换元的整数范围",
+            "en": "New route · Levent GRH methods and extensions · Recover the middle-band Buchstab cofactor range",
+            "route_source": "07-levent-gap-two"
+          },
+          {
+            "id": "L-twin-primes-middle-repeated-first-factor-loss",
+            "zh": "新路线 · Levent GRH 方法与自然推广 · 重复最小素因子的整除上界",
+            "en": "New route · Levent GRH methods and extensions · Count the repeated least-factor divisibility loss",
             "route_source": "07-levent-gap-two"
           },
           {
@@ -7022,9 +7471,21 @@
             "route_source": "07-levent-gap-two"
           },
           {
+            "id": "L-twin-primes-prime-square-minus-two-upper-sieve",
+            "zh": "新路线 · Levent GRH 方法与自然推广 · 素数平方减二的上筛",
+            "en": "New route · Levent GRH methods and extensions · Upper-sieve primes whose square minus two is prime",
+            "route_source": "07-levent-gap-two"
+          },
+          {
             "id": "L-twin-primes-prime-wheel-progression-budget",
             "zh": "新路线 · Levent GRH 与自然推广 · TP-0065 · 计算同窗真素数乘差二轮筛的主项与误差",
             "en": "New route · Levent GRH methods and extensions · TP-0065 · Compute the main term and error for a gap-two wheel on actual primes in the window",
+            "route_source": "07-levent-gap-two"
+          },
+          {
+            "id": "L-twin-primes-quadratic-square-sieve-residues",
+            "zh": "新路线 · Levent GRH 方法与自然推广 · 二次平方邻居筛的局部根数",
+            "en": "New route · Levent GRH methods and extensions · Count forbidden residue classes in the quadratic square-neighbor sieve",
             "route_source": "07-levent-gap-two"
           },
           {
@@ -7064,9 +7525,21 @@
             "route_source": "07-levent-gap-two"
           },
           {
+            "id": "L-twin-primes-square-neighbour-mod-three",
+            "zh": "新路线 · Levent GRH 方法与自然推广 · 差二窄窗的平方污染分类",
+            "en": "New route · Levent GRH methods and extensions · Classify square contamination in gap two",
+            "route_source": "07-levent-gap-two"
+          },
+          {
             "id": "L-twin-primes-wheel-marginal-counterexample",
             "zh": "新路线 · Levent GRH 与自然推广 · TP-0066 · 构造轮筛各余类质量一致但差二相关不同的同窗权重",
             "en": "New route · Levent GRH methods and extensions · TP-0066 · Construct two weights with the same wheel marginals and different gap-two correlations",
+            "route_source": "07-levent-gap-two"
+          },
+          {
+            "id": "L-twin-primes-window-contamination-square-root",
+            "zh": "新路线 · Levent GRH 方法与自然推广 · 差二窄窗的平方根污染预算",
+            "en": "New route · Levent GRH methods and extensions · Bound contamination at square-root scale",
             "route_source": "07-levent-gap-two"
           },
           {
@@ -7077,6 +7550,31 @@
           }
         ],
         "route_source": "07-levent-gap-two"
+      },
+      {
+        "en": [
+          "Bounded prime gap frontier",
+          "Narrow the gap between bounded prime gaps and the twin-prime target. Seek unconditional admissible triples or reduce infinite recurrence to gaps 2 and 4. The endpoint still requires gap 2."
+        ],
+        "zh": [
+          "有界素数间隔前沿",
+          "缩小孪生素数与已知有界间隔之间的差距。推进任意可容许三元组的无条件结论，或把无穷复现间隔压到 2、4。固定差二仍由总目标验证。"
+        ],
+        "tasks": [
+          {
+            "id": "L-twin-primes-admissible-triple-unconditional",
+            "zh": "任意可容许三元组的无穷多平移含两个素数",
+            "en": "Prove the admissible-triple two-prime theorem unconditionally",
+            "route_source": "08-bounded-gaps-frontier"
+          },
+          {
+            "id": "L-twin-primes-gap-at-most-four",
+            "zh": "无条件把无限复现的素数间隔压到 4 以内",
+            "en": "Prove infinitely many prime gaps at most four unconditionally",
+            "route_source": "08-bounded-gaps-frontier"
+          }
+        ],
+        "route_source": "08-bounded-gaps-frontier"
       }
     ]
   },
@@ -10728,6 +11226,28 @@
         "imports": []
       },
       {
+        "id": "L-square-packing-seventeen-weighted-sites-4661-refute",
+        "statement": "¬ (let inside := fun (x y a b X Y : ℝ) => |a*(X-x)+b*(Y-y)| < 1/2 ∧ |(-b)*(X-x)+a*(Y-y)| < 1/2; ∃ (k : ℕ) (X Y : Fin k → ℚ) (w : Fin k → ℕ) (q : ℕ), 0 < q ∧ (∑ j, w j) < 17*q ∧ ∀ x y a b : ℝ, (a ^ 2 + b ^ 2 = 1 ∧ |a| + |b| ≤ 2*x ∧ |a| + |b| ≤ 2*((4661/1000:ℝ)-x) ∧ |a| + |b| ≤ 2*y ∧ |a| + |b| ≤ 2*((4661/1000:ℝ)-y)) → q ≤ (∑ j : Fin k, (if inside x y a b (X j) (Y j) then w j else 0)))",
+        "plain_statement": {
+          "zh": "证伪边长 4.661 的单点加权击中证书",
+          "en": "Refute weighted point piercing at side 4.661"
+        },
+        "brief": {
+          "zh": "用 70 个对称轨道生成 560 个带权合法方块，逐盒核对任一点的总荷载上界。若方块总权重严格超过该上界的 17 倍，对点与方块的双重求和即推出矛盾。",
+          "en": "Use 70 symmetry orbits of admissible weighted squares. Check the point depth on each box and double-count incidence when the total square weight exceeds 17 times the depth bound."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/square-packing/routes/seventeen-square-frontier/weighted-sites-4661-refutation.md",
+        "program": "correlation",
+        "parallel": true,
+        "depends_on": [],
+        "track": "seventeen-square-frontier",
+        "role": "lemma",
+        "imports": [],
+        "file": "lean/Conjectures/SquarePacking/SeventeenWeightedSites4661Refute.lean",
+        "module": "Conjectures.SquarePacking.SeventeenWeightedSites4661Refute",
+        "route_source": "seventeen-square-frontier"
+      },
+      {
         "id": "L-square-packing-seventeen-weighted-sites-4661",
         "statement": "let inside := fun (x y a b X Y : ℝ) => |a*(X-x)+b*(Y-y)| < 1/2 ∧ |(-b)*(X-x)+a*(Y-y)| < 1/2; ∃ (k : ℕ) (X Y : Fin k → ℚ) (w : Fin k → ℕ) (q : ℕ), 0 < q ∧ (∑ j, w j) < 17*q ∧ ∀ x y a b : ℝ, (a ^ 2 + b ^ 2 = 1 ∧ |a| + |b| ≤ 2*x ∧ |a| + |b| ≤ 2*((4661/1000:ℝ)-x) ∧ |a| + |b| ≤ 2*y ∧ |a| + |b| ≤ 2*((4661/1000:ℝ)-y)) → q ≤ (∑ j : Fin k, (if inside x y a b (X j) (Y j) then w j else 0))",
         "plain_statement": {
@@ -11823,6 +12343,12 @@
             "id": "L-square-packing-seventeen-weighted-bridge-4661",
             "zh": "把加权击中点证书组合成 17 块装不下的结论。",
             "en": "Turn a weighted piercing certificate into impossibility for seventeen squares.",
+            "route_source": "seventeen-square-frontier"
+          },
+          {
+            "id": "L-square-packing-seventeen-weighted-sites-4661-refute",
+            "zh": "证伪边长 4.661 的单点加权击中证书",
+            "en": "Refute weighted point piercing at side 4.661",
             "route_source": "seventeen-square-frontier"
           },
           {
@@ -16320,6 +16846,28 @@
         "route_source": "levent-factor-mass-and-sieve"
       },
       {
+        "id": "L-quadratic-primes-dyadic-large-root-hat-weight",
+        "statement": "∀ Y n : ℕ, ((Finset.Ico Y (2*Y)).filter fun x => x<n ∧ n≤2*x).card = min (2*Y) n - max Y ((n+1)/2)",
+        "plain_statement": {
+          "zh": "新路线 · Levent GRH 方法与自然推广 · 倍增尺度的整数帽形权",
+          "en": "New route · Levent GRH methods and extensions · Count the integer scales captured by the moving window"
+        },
+        "brief": {
+          "zh": "对大带仅平均整数 $Y\\le x<2Y$。将素数范围共同放大到 $Y^\\beta<p\\le(4Y)^\\alpha$。令 $g_Y(n)=Y^{-1}[\\min(2Y,n)-\\max(Y,\\lceil n/2\\rceil)]_+$，证明这正是 $x<n\\le2x$ 在这 $Y$ 个尺度中的频率，$\\sum_n g_Y(n)=(3Y-1)/2$。对充分大 $Y$ 有 $p>8Y$，实际平均由 $\\sum_p g_Y(r_p)\\log p$ 控制。相应模型为 $(\\alpha-\\beta+o(1))\\overline B_Y$，$\\overline B_Y=Y^{-1}\\sum_{Y\\le x<2Y}B_x$。",
+          "en": "Intersect the integer conditions Y ≤ x < 2Y and x < n ≤ 2x before counting the half-open interval."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/近平方素数任务拆分3.md",
+        "program": "foundation",
+        "role": "lemma",
+        "parallel": true,
+        "depends_on": [],
+        "imports": [],
+        "module": "Conjectures.QuadraticPrimes.DyadicLargeRootHatWeight",
+        "file": "lean/Conjectures/QuadraticPrimes/DyadicLargeRootHatWeight.lean",
+        "track": "levent-gaussian-root-phases",
+        "route_source": "levent-gaussian-root-phases"
+      },
+      {
         "id": "L-quadratic-primes-gauss-band-error",
         "statement": "let block := fun x : ℕ => Finset.Ioc x (2*x); let window := fun x p : ℕ => (block x).filter (fun n => p^100000≤n^132301); let phase := fun p k (t : ℕ) => 2*Real.pi*(k : ℝ)*(t : ℝ)/(p : ℝ); let rootWave := fun q k t : ℕ => 2*Real.cos (phase q k t); let good := fun p a b r v : ℕ => p.Prime ∧ 2<p ∧ 0<a ∧ a≤b ∧ p=a^2+b^2 ∧ r<p ∧ v<b ∧ (b*r)%p=a%p ∧ (a*v)%b=1%b; let low := fun p : ℕ => (Finset.Ico 1 p).filter (fun k => min k (p-k)≤Nat.sqrt p); let amp := fun x p q t : ℕ => (∑ k ∈ low p, rootWave q (min k (p-k)) t * (∑ n ∈ window x p, Real.cos (phase p (min k (p-k)) n)) / (p : ℝ)) * Real.log p; let split := fun x : ℕ => (Finset.Ioc x ((2*x)^2+1)).filter (fun p => p.Prime ∧ p%4=1 ∧ p^100000≤(2*x)^132301); ∃ C : ℝ, 0<C ∧ ∀ x : ℕ, 4≤x → ∀ S : Finset ℕ, S⊆split x →\n  ∀ a b r v : ℕ → ℕ, (∀ p ∈ S, good p (a p) (b p) (r p) (v p)) →\n  |∑ p ∈ S, (amp x p p (r p) - amp x p (b p) (v p))| ≤\n    C * (x : ℝ)^(132301/200000 : ℝ) * (Real.log (2*(x : ℝ)))^2",
         "plain_statement": {
@@ -16710,6 +17258,50 @@
         "route_source": "levent-grh-inputs-and-scales"
       },
       {
+        "id": "L-quadratic-primes-angular-hecke-fejer-determinant-kernel",
+        "statement": "∀ (M : ℕ) (θ : ℝ), Real.sin (2*θ) ≠ 0 → ‖(∑ j ∈ Finset.range (M+1), Complex.exp (Complex.I * (4*(j:ℝ)*θ : ℝ)))‖^2 / (M+1 : ℝ) ≤ min (M+1 : ℝ) (1/((M+1 : ℝ)*(Real.sin (2*θ))^2))",
+        "plain_statement": {
+          "zh": "新路线 · Levent GRH 方法与自然推广 · 角向 Fejér 相位的行列式上界",
+          "en": "New route · Levent GRH methods and extensions · Bound the angular Fejér kernel by a determinant"
+        },
+        "brief": {
+          "zh": "对整数 $M\\ge1$，展开 $\\sum_{\\vert m\\vert\\le M}(1-\\vert m\\vert/(M+1))\\vert V_m(x)\\vert^2$ 为实际理想对加权和，核为 $F_M(4(\\theta_z-\\theta_w))$，$F_M(t)=(M+1)^{-1}\\vert\\sum_{j=0}^M e^{ijt}\\vert^2$。在原环带置 $d=\\min(\\vert\\Re z\\bar w\\vert,\\vert\\Im z\\bar w\\vert)$，由模 $\\pi/2$ 的最短角差得核 $\\ll\\min(M+1,x^4/((M+1)d^2))$（$d>0$）。$d=0$ 精确给 $M+1$。这是角谱的二阶矩。",
+          "en": "Use the geometric sum and the shortest angle modulo a quarter turn."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/近平方素数任务拆分3.md",
+        "program": "foundation",
+        "role": "lemma",
+        "parallel": true,
+        "depends_on": [],
+        "imports": [],
+        "module": "Conjectures.QuadraticPrimes.AngularHeckeFejerDeterminantKernel",
+        "file": "lean/Conjectures/QuadraticPrimes/AngularHeckeFejerDeterminantKernel.lean",
+        "track": "levent-natural-quadratic-extensions",
+        "route_source": "levent-natural-quadratic-extensions"
+      },
+      {
+        "id": "L-quadratic-primes-gaussian-annulus-determinant-fibers",
+        "statement": "∀ a b c d : ℤ, (a,b) ≠ (0,0) → let g : ℤ := Int.gcd a b; ∀ u v : ℤ, a*v-b*u=a*d-b*c ↔ ∃ t : ℤ, u=c+t*(a/g) ∧ v=d+t*(b/g)",
+        "plain_statement": {
+          "zh": "新路线 · Levent GRH 方法与自然推广 · 高斯环带中的行列式纤维",
+          "en": "New route · Levent GRH methods and extensions · Parametrize the Gaussian annulus determinant fibers"
+        },
+        "brief": {
+          "zh": "固定 A07 的 $z=(a,b)$、$g_0=\\gcd(a,b)$ 与有符号整数 $D$。解 $\\det(z,w)=D$ 需 $g_0\\mid D$，一旦有一解，全部解为 $w_0+t z/g_0$。因此环带内至多 $O(1+xg_0/\\vert z\\vert)$ 个格点。实部条件由一次单位旋转化到同一计数。保留 $D=0$ 的共线族，给 A07 的每个非零 $d$ 提供有限上界。",
+          "en": "Use the primitive vector obtained by dividing by the gcd. Two solutions differ by an integer multiple of this vector."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/近平方素数任务拆分3.md",
+        "program": "foundation",
+        "role": "lemma",
+        "parallel": true,
+        "depends_on": [],
+        "imports": [],
+        "module": "Conjectures.QuadraticPrimes.GaussianAnnulusDeterminantFibers",
+        "file": "lean/Conjectures/QuadraticPrimes/GaussianAnnulusDeterminantFibers.lean",
+        "track": "levent-natural-quadratic-extensions",
+        "route_source": "levent-natural-quadratic-extensions"
+      },
+      {
         "id": "L-quadratic-primes-levent-fixed-a-bad-roots",
         "file": "lean/PEqualNP/Outside/L_quadratic_primes_levent_fixed_a_bad_roots.lean",
         "module": "PEqualNP.Outside.L_quadratic_primes_levent_fixed_a_bad_roots",
@@ -16957,6 +17549,270 @@
         ],
         "track": "levent-natural-quadratic-extensions",
         "route_source": "levent-natural-quadratic-extensions"
+      },
+      {
+        "id": "L-quadratic-primes-binomial-imaginary-two-adic-gap",
+        "statement": "∀ (a : ℤ) (j : ℕ), a ≠ 0 → Even a → Odd j → 3 ≤ j → let d := ((⟨a,1⟩ : GaussianInt)^j).im - (-1 : ℤ)^((j-1)/2); d ≠ 0 ∧ padicValNat 2 d.natAbs = padicValNat 2 (j.choose 2) + 2 * padicValNat 2 a.natAbs",
+        "plain_statement": {
+          "zh": "新路线 · Levent GRH 方法与自然推广 · 二项展开的最低二进赋值",
+          "en": "New route · Levent GRH methods and extensions · Find the unique least two-adic valuation in the binomial expansion"
+        },
+        "brief": {
+          "zh": "对非零偶数 $a$ 与奇数 $j\\ge3$，设 $s=(-1)^{(j-1)/2}$。证明 $v_2(\\Im(a+i)^j-s)=v_2\\binom j2+2v_2(a)$，且差非零。展开 $\\Im$，首个非常数项是 $\\pm\\binom j2a^2$。对 $2\\le t\\le(j-1)/2$，用 $(2t)(2t-1)\\binom j{2t}=j(j-1)\\binom{j-2}{2t-2}$ 得 $v_2\\binom j{2t}\\ge v_2\\binom j2-v_2(t)$。$2(t-1)v_2(a)>v_2(t)$ 使其余项的赋值严格较高。",
+          "en": "Compare each higher even power of a against the first nonconstant term using the binomial coefficient identity."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/近平方素数任务拆分3.md",
+        "program": "foundation",
+        "role": "lemma",
+        "parallel": true,
+        "depends_on": [],
+        "imports": [],
+        "module": "Conjectures.QuadraticPrimes.BinomialImaginaryTwoAdicGap",
+        "file": "lean/Conjectures/QuadraticPrimes/BinomialImaginaryTwoAdicGap.lean",
+        "track": "levent-prime-value-sieve",
+        "route_source": "levent-prime-value-sieve"
+      },
+      {
+        "id": "L-quadratic-primes-disjoint-first-hit-prime-extraction",
+        "statement": "∀ (R H U E P : ℕ → ℝ) (a b ε : ℝ), 0<ε → a+b+ε<1 → (∀ x, R x ≤ H x + U x + E x + P x) → (∀ x, H x ≤ a*R x) → (∀ x, E x ≤ ε*R x) → ∀ x, U x ≤ b*R x → (1-a-b-ε)*R x ≤ P x",
+        "plain_statement": {
+          "zh": "新路线 · Levent GRH 方法与自然推广 · 两个独立筛损失的组合",
+          "en": "New route · Levent GRH methods and extensions · Combine two disjoint sieve losses"
+        },
+        "brief": {
+          "zh": "令 $U_x$ 计 $f(k)=pq,\\ 2z_1<p<q,\\ q-p>H$ 的参数。若有固定 $a,b\\ge0,\\ a+b<1$，最终 $H_x(2z_0,z_1]\\le aR_x(z_0)$，且无界的 $x$ 满足 $U_x\\le bR_x(z_0)$，则 S01、S03、S06 给真素数参数数目 $\\ge(1-a-b)c_0 x/(2\\log x)$ 沿同一列成立。先按第一素因子切去两端，再切近等因子带，将近等因子带限于 $p>2z_1$ 以保持互斥。乘以窗内的 $\\log f(k)$，接 `levent-prime-values-recurrent-mass`。",
+          "en": "Use the same scale and reserve a strictly positive margin after both losses and the edge cost."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/近平方素数任务拆分3.md",
+        "program": "foundation",
+        "role": "conditional",
+        "parallel": true,
+        "depends_on": [
+          "L-quadratic-primes-first-factor-edge-bands",
+          "L-quadratic-primes-near-equal-semiprime-count"
+        ],
+        "imports": [],
+        "module": "Conjectures.QuadraticPrimes.DisjointFirstHitPrimeExtraction",
+        "file": "lean/Conjectures/QuadraticPrimes/DisjointFirstHitPrimeExtraction.lean",
+        "track": "levent-prime-value-sieve",
+        "route_source": "levent-prime-value-sieve"
+      },
+      {
+        "id": "L-quadratic-primes-first-factor-edge-bands",
+        "statement": "∃ C : ℝ, 0<C ∧ ∃ N : ℕ, ∀ x z : ℕ, N≤x → (z=Nat.nthRoot 5 (x^2) ∨ (z^3≥4*x^2+1 ∧ (z-1)^3<4*x^2+1)) → (((Finset.Ioc (x/2) x).filter fun k => z<(4*k^2+1).minFac ∧ (4*k^2+1).minFac≤2*z).card : ℝ) ≤ C*x/(Real.log x)^2",
+        "plain_statement": {
+          "zh": "新路线 · Levent GRH 方法与自然推广 · 首次命中两端窄带的成本",
+          "en": "New route · Levent GRH methods and extensions · Bound the first hits in each edge band"
+        },
+        "brief": {
+          "zh": "用 S02 对两段 $(z_0,2z_0]$、$(z_1,2z_1]$ 的实际首次命中各证 $O(x/\\log^2 x)$。每个奇素数至多两个根，每个带内 $\\sum_{z<p\\le2z}1/p\\ll1/\\log z$。后一段只在终带的合数损失中扣一次。",
+          "en": "Sum the switched upper-sieve estimates over roots and prime reciprocals in each doubled band."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/近平方素数任务拆分3.md",
+        "program": "foundation",
+        "role": "lemma",
+        "parallel": true,
+        "depends_on": [
+          "L-quadratic-primes-switched-cofactor-small-sieve"
+        ],
+        "imports": [],
+        "module": "Conjectures.QuadraticPrimes.FirstFactorEdgeBands",
+        "file": "lean/Conjectures/QuadraticPrimes/FirstFactorEdgeBands.lean",
+        "track": "levent-prime-value-sieve",
+        "route_source": "levent-prime-value-sieve"
+      },
+      {
+        "id": "L-quadratic-primes-gaussian-conjugate-coprime-even",
+        "statement": "∀ n : ℕ, Even n → IsCoprime ((n : GaussianInt) + ⟨0,1⟩) ((n : GaussianInt) - ⟨0,1⟩)",
+        "plain_statement": {
+          "zh": "新路线 · Levent GRH 方法与自然推广 · 高斯共轭互素",
+          "en": "New route · Levent GRH methods and extensions · Coprimality of Gaussian conjugates"
+        },
+        "brief": {
+          "zh": "证明偶数 $n$ 的 $n+i,n-i$ 在 $\\mathbb Z[i]$ 互素。公共高斯素因子整除 $2i$，只能与 $1+i$ 相伴，但 $1+i\\mid a+bi$ 要求 $a,b$ 同奇偶。奇数 $n$ 另有 $v_2(n^2+1)=1$。",
+          "en": "A common divisor divides 2i. The prime above 2 divides a Gaussian integer precisely when its coordinates have the same parity."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/近平方素数任务拆分3.md",
+        "program": "foundation",
+        "role": "lemma",
+        "parallel": true,
+        "depends_on": [],
+        "imports": [],
+        "module": "Conjectures.QuadraticPrimes.GaussianConjugateCoprimeEven",
+        "file": "lean/Conjectures/QuadraticPrimes/GaussianConjugateCoprimeEven.lean",
+        "track": "levent-prime-value-sieve",
+        "route_source": "levent-prime-value-sieve"
+      },
+      {
+        "id": "L-quadratic-primes-middle-first-factor-switched-budget",
+        "statement": "∃ a : ℝ, 0≤a ∧ a<1 ∧ ∃ N : ℕ, ∀ x z : ℕ, N≤x → 4*x^2+1≤z^3 → (z-1)^3<4*x^2+1 → let F := fun k : ℕ => 4*k^2+1; let z₀ := Nat.nthRoot 5 (x^2); let H := x / (Nat.log 2 (2+x))^2; let K := Finset.Ioc (x/2) x; let R := (K.filter fun k => z₀ < (F k).minFac).card; ((K.filter fun k => 2*z₀ < (F k).minFac ∧ (F k).minFac≤z).card : ℝ) ≤ a*R",
+        "plain_statement": {
+          "zh": "新路线 · Levent GRH 方法与自然推广 · 首因子中段的损失常数",
+          "en": "New route · Levent GRH methods and extensions · Bound the middle first-factor loss"
+        },
+        "brief": {
+          "zh": "对所有充分大 $x$ 估 $H_x(2z_0,z_1]$。固定分裂素数 $p$ 和两个根，按 S02 在 $k=pt+r$ 中筛余因子，保留 $p$ 为首因子的条件。按 $p\\le\\sqrt x$ 及 $p>\\sqrt x$ 分别交主项、级和余项，并与同一 $x$ 的 $R_x(z_0)$ 比较，得可验证的常数 $a$ 及其覆盖范围。",
+          "en": "Split the switched cofactor calculation at p=√x. Report the uniform constant for this band."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/近平方素数任务拆分3.md",
+        "program": "foundation",
+        "role": "target",
+        "parallel": true,
+        "challenge_only": true,
+        "depends_on": [
+          "L-quadratic-primes-switched-cofactor-small-sieve"
+        ],
+        "imports": [],
+        "module": "Conjectures.QuadraticPrimes.MiddleFirstFactorSwitchedBudget",
+        "file": "lean/Conjectures/QuadraticPrimes/MiddleFirstFactorSwitchedBudget.lean",
+        "track": "levent-prime-value-sieve",
+        "route_source": "levent-prime-value-sieve"
+      },
+      {
+        "id": "L-quadratic-primes-near-equal-semiprime-count",
+        "statement": "letI := Classical.propDecidable; ∃ C : ℝ, 0 < C ∧ ∀ x H : ℕ, 1 ≤ H → H ≤ x → (((Finset.Ioc x (2*x)).filter fun n => Even n ∧ ∃ p q : ℕ, p.Prime ∧ q.Prime ∧ p<q ∧ n^2+1=p*q ∧ q-p≤H).card : ℝ) ≤ C*H",
+        "plain_statement": {
+          "zh": "新路线 · Levent GRH 方法与自然推广 · 近等双素因子的计数上界",
+          "en": "New route · Levent GRH methods and extensions · Bound semiprimes with nearly equal prime factors"
+        },
+        "brief": {
+          "zh": "对 $1\\le H'\\le x$ 证明真半素数中 $q-p\\le H'$ 的参数数目 $\\ll H'$。由 S04 有 $h\\le H'/2,\\ v\\ll (H')^2/x$，若有解则 $(H')^2\\ge8x$。固定 $v$ 时 $h\\ll\\sqrt{xv}$，由同余至多有 $O(\\rho(v)(1+\\sqrt{x/v}))$ 个。用 S05 得 $O((H')^2/x+H')$。取 $H'=H$，此带只花 $O(x/\\log^2 x)$。",
+          "en": "Use the conic parameter to bound v by the squared gap divided by x. Then sum over roots modulo v."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/近平方素数任务拆分3.md",
+        "program": "foundation",
+        "role": "lemma",
+        "parallel": true,
+        "depends_on": [
+          "L-quadratic-primes-semiprime-gap-conic-bijection",
+          "L-quadratic-primes-odd-quadratic-root-average"
+        ],
+        "imports": [],
+        "module": "Conjectures.QuadraticPrimes.NearEqualSemiprimeCount",
+        "file": "lean/Conjectures/QuadraticPrimes/NearEqualSemiprimeCount.lean",
+        "track": "levent-prime-value-sieve",
+        "route_source": "levent-prime-value-sieve"
+      },
+      {
+        "id": "L-quadratic-primes-odd-power-imaginary-unit",
+        "statement": "∀ n y j : ℕ, 0 < n → Even n → 3 ≤ j → Odd j → n^2+1 = y^j → ∃ a : ℤ, a ≠ 0 ∧ Even a ∧ Int.natAbs (((⟨a,1⟩ : GaussianInt)^j).im) = 1",
+        "plain_statement": {
+          "zh": "新路线 · Levent GRH 方法与自然推广 · 奇指数真幂的虚部约化",
+          "en": "New route · Levent GRH methods and extensions · Reduce odd powers to imaginary coordinate one"
+        },
+        "brief": {
+          "zh": "若偶数 $n>0$ 满足 $n^2+1=y^j,\\ j\\ge3$ 为奇数，利用 P01 和高斯整数唯一分解写 $n+i=(a+bi)^j$。四个单位上的 $j$ 次幂是置换，可吸收单位。虚部被 $b$ 整除，故 $b=\\pm1$，且 $a$ 是非零偶数。必要时共轭，得到 $\\Im(a+i)^j=\\pm1$。",
+          "en": "Use coprimality in the Gaussian integers and absorb the unit by taking its odd power root."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/近平方素数任务拆分3.md",
+        "program": "foundation",
+        "role": "lemma",
+        "parallel": true,
+        "depends_on": [
+          "L-quadratic-primes-gaussian-conjugate-coprime-even"
+        ],
+        "imports": [],
+        "module": "Conjectures.QuadraticPrimes.OddPowerImaginaryUnit",
+        "file": "lean/Conjectures/QuadraticPrimes/OddPowerImaginaryUnit.lean",
+        "track": "levent-prime-value-sieve",
+        "route_source": "levent-prime-value-sieve"
+      },
+      {
+        "id": "L-quadratic-primes-odd-quadratic-root-average",
+        "statement": "let ρ := fun v : ℕ => ((Finset.range v).filter fun h => (h^2+1)%v=0).card; ∃ C : ℝ, 0 < C ∧ ∀ V : ℕ, 1 ≤ V → (∑ v ∈ (Finset.Icc 1 V).filter Odd, (ρ v : ℝ)) ≤ C*V ∧ (∑ v ∈ (Finset.Icc 1 V).filter Odd, (ρ v : ℝ)/Real.sqrt v) ≤ C*Real.sqrt V",
+        "plain_statement": {
+          "zh": "新路线 · Levent GRH 方法与自然推广 · 奇模数上的二次根数平均",
+          "en": "New route · Levent GRH methods and extensions · Bound the average number of quadratic roots at odd moduli"
+        },
+        "brief": {
+          "zh": "对奇 $v$ 记 $\\rho(v)=\\#\\{h\\bmod v:h^2+1\\equiv0\\}$。证明 $\\rho(v)\\le r_2(v)/4$，其中 $r_2$ 计有序、有符号的两个整数平方和。用高斯整数素因子分解或二平方表示公式逐素幂核对，$\\rho(1)=1$ 单列。由半径 $\\sqrt V$ 的整格点数推 $\\sum_{v\\le V,\\ 2\\nmid v}\\rho(v)\\ll V$ 和 $\\sum\\rho(v)/\\sqrt v\\ll\\sqrt V$。",
+          "en": "Use the two-square representation formula at prime powers and count lattice points in a disk."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/近平方素数任务拆分3.md",
+        "program": "foundation",
+        "role": "lemma",
+        "parallel": true,
+        "depends_on": [],
+        "imports": [],
+        "module": "Conjectures.QuadraticPrimes.OddQuadraticRootAverage",
+        "file": "lean/Conjectures/QuadraticPrimes/OddQuadraticRootAverage.lean",
+        "track": "levent-prime-value-sieve",
+        "route_source": "levent-prime-value-sieve"
+      },
+      {
+        "id": "L-quadratic-primes-quadratic-mangoldt-exact-support",
+        "statement": "∀ n : ℕ, 0 < n → ArithmeticFunction.vonMangoldt (n^2+1) = if (n^2+1).Prime then Real.log (n^2+1) else 0",
+        "plain_statement": {
+          "zh": "新路线 · Levent GRH 方法与自然推广 · 二次 Mangoldt 权的精确支撑",
+          "en": "New route · Levent GRH methods and extensions · Identify the exact support of the quadratic Mangoldt weight"
+        },
+        "brief": {
+          "zh": "P03 的差为 4 的非零倍数，故 $\\Im(a+i)^j$ 不能等于 $1$ 或 $-1$。合并 P01–P03 和已有偶指数引理，对每个 $n\\ge1$ 证明 $\\Lambda(n^2+1)=\\mathbf1_{n^2+1\\ {\\rm prime}}\\log(n^2+1)$。特别地，原题任一非空窗口有正质量即有真素数值。交 `levent-prime-values-weight-split`、`lpf-endpoint`。",
+          "en": "Exclude even exponents by consecutive squares and odd exponents by the Gaussian binomial calculation."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/近平方素数任务拆分3.md",
+        "program": "foundation",
+        "role": "lemma",
+        "parallel": true,
+        "depends_on": [
+          "L-quadratic-primes-odd-power-imaginary-unit",
+          "L-quadratic-primes-binomial-imaginary-two-adic-gap",
+          "L-quadratic-primes-levent-prime-values-no-square"
+        ],
+        "imports": [
+          "PEqualNP.Outside.L_quadratic_primes_levent_prime_values_no_square"
+        ],
+        "module": "Conjectures.QuadraticPrimes.QuadraticMangoldtExactSupport",
+        "file": "lean/Conjectures/QuadraticPrimes/QuadraticMangoldtExactSupport.lean",
+        "track": "levent-prime-value-sieve",
+        "route_source": "levent-prime-value-sieve"
+      },
+      {
+        "id": "L-quadratic-primes-semiprime-gap-conic-bijection",
+        "statement": "∀ n p q : ℕ, Even n → p.Prime → q.Prime → p < q → n^2+1 = p*q → ∃ h v : ℕ, Even h ∧ Odd v ∧ v*(2*n+v)=h^2+1 ∧ p+h=n+v ∧ q=n+v+h ∧ 2*n ≤ h^2",
+        "plain_statement": {
+          "zh": "新路线 · Levent GRH 方法与自然推广 · 近平方半素数的间距和二次曲线参数",
+          "en": "New route · Levent GRH methods and extensions · Parametrize the gap between distinct semiprime factors"
+        },
+        "brief": {
+          "zh": "对 $x<n\\le2x$ 的偶数与 $n^2+1=pq,\\ p<q$ 均素，取 $h=(q-p)/2,\\ v=(p+q)/2-n$，证明 $h$ 偶、$v>0$ 奇且 $v(2n+v)=h^2+1$。反向由 $v\\mid h^2+1$ 恢复 $n=((h^2+1)/v-v)/2$ 和 $p=n+v-h,\\ q=n+v+h$，保留窗口与两端素性。得 $h^2\\ge2n$，故 $q-p\\ge\\sqrt{8n}$。",
+          "en": "Take the half difference and the excess of the midpoint above n. Recover both factors from the conic equation."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/近平方素数任务拆分3.md",
+        "program": "foundation",
+        "role": "lemma",
+        "parallel": true,
+        "depends_on": [],
+        "imports": [],
+        "module": "Conjectures.QuadraticPrimes.SemiprimeGapConicBijection",
+        "file": "lean/Conjectures/QuadraticPrimes/SemiprimeGapConicBijection.lean",
+        "track": "levent-prime-value-sieve",
+        "route_source": "levent-prime-value-sieve"
+      },
+      {
+        "id": "L-quadratic-primes-separated-semiprime-conic-budget",
+        "statement": "letI := Classical.propDecidable; ∃ b : ℝ, 0≤b ∧ b<1 ∧ ∀ N : ℕ, ∃ x z : ℕ, N<x ∧ 4*x^2+1≤z^3 ∧ (z-1)^3<4*x^2+1 ∧ (let F := fun k : ℕ => 4*k^2+1; let z₀ := Nat.nthRoot 5 (x^2); let H := x / (Nat.log 2 (2+x))^2; let K := Finset.Ioc (x/2) x; let R := (K.filter fun k => z₀ < (F k).minFac).card; ((K.filter fun k => ∃ p q : ℕ, p.Prime ∧ q.Prime ∧ 2*z<p ∧ p<q ∧ H<q-p ∧ F k=p*q).card : ℝ) ≤ b*R)",
+        "plain_statement": {
+          "zh": "新路线 · Levent GRH 方法与自然推广 · 远离对角的半素数损失常数",
+          "en": "New route · Levent GRH methods and extensions · Bound the separated semiprime loss"
+        },
+        "brief": {
+          "zh": "对 S07 的 $U_x$，用 S04 在 $2h>H,\\ v\\mid h^2+1$ 上只计两式 $n+v-h,\\ n+v+h$ 均素且前者 $>2z_1$ 的解。对指定 $v$ 范围交带根重数的上筛常数、互斥求和域和余项。总目标是无界整数 $x$ 上的 $U_x/R_x(z_0)\\le b$，允许只交覆盖一部分的上界。",
+          "en": "Use the conic parameter only on factors separated by more than the cutoff. The target is recurrent in x."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/近平方素数任务拆分3.md",
+        "program": "foundation",
+        "role": "target",
+        "parallel": true,
+        "challenge_only": true,
+        "depends_on": [
+          "L-quadratic-primes-semiprime-gap-conic-bijection"
+        ],
+        "imports": [],
+        "module": "Conjectures.QuadraticPrimes.SeparatedSemiprimeConicBudget",
+        "file": "lean/Conjectures/QuadraticPrimes/SeparatedSemiprimeConicBudget.lean",
+        "track": "levent-prime-value-sieve",
+        "route_source": "levent-prime-value-sieve"
       },
       {
         "id": "L-quadratic-primes-sieve-divisor-remainders",
@@ -17328,6 +18184,28 @@
         "imports": [],
         "file": "lean/Conjectures/QuadraticPrimes/SieveTerminalGaussian.lean",
         "module": "Conjectures.QuadraticPrimes.SieveTerminalGaussian",
+        "track": "levent-prime-value-sieve",
+        "route_source": "levent-prime-value-sieve"
+      },
+      {
+        "id": "L-quadratic-primes-switched-cofactor-small-sieve",
+        "statement": "∃ C : ℝ, 0<C ∧ ∃ N : ℕ, ∀ x p r : ℕ, N≤x → p.Prime → Nat.nthRoot 5 (x^2) < p → p ≤ 5 * Nat.nthRoot 3 (x^2) → r < p → (4*r^2+1)%p=0 → (((Finset.range (x+1)).filter fun t => let k:=p*t+r; x<2*k ∧ k≤x ∧ (4*k^2+1).minFac=p).card : ℝ) ≤ C*x/(p*Real.log x)",
+        "plain_statement": {
+          "zh": "新路线 · Levent GRH 方法与自然推广 · 换元后最小因子的上筛界",
+          "en": "New route · Levent GRH methods and extensions · Upper-sieve the switched cofactor"
+        },
+        "brief": {
+          "zh": "对 $z_0<p\\le2z_1$ 的分裂素数及 $0\\le r<p,\\ p\\mid f(r)$，令 $k=pt+r$。在 $x/2<k\\le x$ 中，若 $p$ 是 $f(k)$ 的最小因子，已有 `sieve-switched-cofactor` 的二次余因子没有小于 $p$ 的素因子。证明这类 $t$ 每个 $(p,r)$ 至多 $C x/(p\\log x)$。筛到 $x^{1/40}$，取 $D'=x^{1/6}$，因 $x/p\\gg x^{1/3}$ 有充足余项空间。对 $(d,p)=1$，$pt+r\\bmod d$ 可逆换元，局部根数沿用旧题，逐模余项至多根数。上下限取整。",
+          "en": "Keep the least-factor constraint when switching k=pt+r. The small sieve primes are coprime to p."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/近平方素数任务拆分3.md",
+        "program": "foundation",
+        "role": "lemma",
+        "parallel": true,
+        "depends_on": [],
+        "imports": [],
+        "module": "Conjectures.QuadraticPrimes.SwitchedCofactorSmallSieve",
+        "file": "lean/Conjectures/QuadraticPrimes/SwitchedCofactorSmallSieve.lean",
         "track": "levent-prime-value-sieve",
         "route_source": "levent-prime-value-sieve"
       },
@@ -18029,6 +18907,28 @@
         "route_source": "levent-theta-prescribed-test"
       },
       {
+        "id": "L-quadratic-primes-block-exponent-first-increment-transfer",
+        "statement": "∀ x n p : ℕ, x≤n → n≤2*x → 2^132301 < x^9 → x^13231 < p^10000 → n^132301 < p^100000",
+        "plain_statement": {
+          "zh": "新路线 · Levent GRH 方法与自然推广 · 从倍增块指数换到单点 1.32301",
+          "en": "New route · Levent GRH methods and extensions · Transfer a dyadic exponent to the pointwise exponent 1.32301"
+        },
+        "brief": {
+          "zh": "若 `dyadic-prime-divisor` 成立，取 $x>2^{132301/9}$，则 $(2x)^{1.32301}<x^{1.3231}$，同一 $p$ 可交在途的 `lpf-first-increment`。已验收 `dyadic-witness-transfer` 对 $1.323$ 使用较小门槛 $2^{13230}$。给出整幂版本，如 $x^9>2^{132301}$，供两条声明核对严格不等式。",
+          "en": "Use n ≤ 2x and x⁹ > 2¹³²³⁰¹ to absorb the factor of two in the endpoint."
+        },
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/近平方素数任务拆分3.md",
+        "program": "foundation",
+        "role": "lemma",
+        "parallel": true,
+        "depends_on": [],
+        "imports": [],
+        "module": "Conjectures.QuadraticPrimes.BlockExponentFirstIncrementTransfer",
+        "file": "lean/Conjectures/QuadraticPrimes/BlockExponentFirstIncrementTransfer.lean",
+        "track": "submit-an-unconditional-exponent",
+        "route_source": "submit-an-unconditional-exponent"
+      },
+      {
         "id": "L-quadratic-primes-lpf-linear",
         "statement": "∀ B : ℕ, ∃ n p : ℕ, B < n ∧ Nat.Prime p ∧ p ∣ n ^ 2 + 1 ∧ n ^ 1 < p ^ 1",
         "plain_statement": {
@@ -18155,6 +19055,12 @@
             "id": "L-quadratic-primes-lpf-endpoint",
             "zh": "指数 2 的终点",
             "en": "Reach exponent 2"
+          },
+          {
+            "id": "L-quadratic-primes-block-exponent-first-increment-transfer",
+            "zh": "新路线 · Levent GRH 方法与自然推广 · 从倍增块指数换到单点 1.32301",
+            "en": "New route · Levent GRH methods and extensions · Transfer a dyadic exponent to the pointwise exponent 1.32301",
+            "route_source": "submit-an-unconditional-exponent"
           },
           {
             "id": "L-quadratic-primes-lpf-linear",
@@ -19375,6 +20281,12 @@
         ],
         "tasks": [
           {
+            "id": "L-quadratic-primes-dyadic-large-root-hat-weight",
+            "zh": "新路线 · Levent GRH 方法与自然推广 · 倍增尺度的整数帽形权",
+            "en": "New route · Levent GRH methods and extensions · Count the integer scales captured by the moving window",
+            "route_source": "levent-gaussian-root-phases"
+          },
+          {
             "id": "L-quadratic-primes-gauss-band-error",
             "zh": "新路线 · Levent GRH 与自然扩张 · QP-0091 · 给两个原中段素数带统一的次线性替换预算",
             "en": "New route · Levent GRH and natural extensions · QP-0091 · Give a uniform sublinear replacement budget for either original middle prime band",
@@ -19497,6 +20409,18 @@
         ],
         "tasks": [
           {
+            "id": "L-quadratic-primes-angular-hecke-fejer-determinant-kernel",
+            "zh": "新路线 · Levent GRH 方法与自然推广 · 角向 Fejér 相位的行列式上界",
+            "en": "New route · Levent GRH methods and extensions · Bound the angular Fejér kernel by a determinant",
+            "route_source": "levent-natural-quadratic-extensions"
+          },
+          {
+            "id": "L-quadratic-primes-gaussian-annulus-determinant-fibers",
+            "zh": "新路线 · Levent GRH 方法与自然推广 · 高斯环带中的行列式纤维",
+            "en": "New route · Levent GRH methods and extensions · Parametrize the Gaussian annulus determinant fibers",
+            "route_source": "levent-natural-quadratic-extensions"
+          },
+          {
             "id": "L-quadratic-primes-levent-fixed-a-bad-roots",
             "zh": "新路线 · Levent GRH 与自然扩张 · QP-0058 · 给出坏素数在低指数层的精确根数",
             "en": "New route · Levent GRH and natural extensions · QP-0058 · Count singular roots exactly in the initial valuation layers",
@@ -19569,6 +20493,72 @@
           "对偶参数 n=2k 筛 4k²+1。累计小除数误差和模四局部因子支撑初筛。末段由真实最小素因子、余因子素性和 Möbius 符号共同决定。下界初筛与到达全素数终点之间仍缺首次命中损失的估计。"
         ],
         "tasks": [
+          {
+            "id": "L-quadratic-primes-binomial-imaginary-two-adic-gap",
+            "zh": "新路线 · Levent GRH 方法与自然推广 · 二项展开的最低二进赋值",
+            "en": "New route · Levent GRH methods and extensions · Find the unique least two-adic valuation in the binomial expansion",
+            "route_source": "levent-prime-value-sieve"
+          },
+          {
+            "id": "L-quadratic-primes-disjoint-first-hit-prime-extraction",
+            "zh": "新路线 · Levent GRH 方法与自然推广 · 两个独立筛损失的组合",
+            "en": "New route · Levent GRH methods and extensions · Combine two disjoint sieve losses",
+            "route_source": "levent-prime-value-sieve"
+          },
+          {
+            "id": "L-quadratic-primes-first-factor-edge-bands",
+            "zh": "新路线 · Levent GRH 方法与自然推广 · 首次命中两端窄带的成本",
+            "en": "New route · Levent GRH methods and extensions · Bound the first hits in each edge band",
+            "route_source": "levent-prime-value-sieve"
+          },
+          {
+            "id": "L-quadratic-primes-gaussian-conjugate-coprime-even",
+            "zh": "新路线 · Levent GRH 方法与自然推广 · 高斯共轭互素",
+            "en": "New route · Levent GRH methods and extensions · Coprimality of Gaussian conjugates",
+            "route_source": "levent-prime-value-sieve"
+          },
+          {
+            "id": "L-quadratic-primes-middle-first-factor-switched-budget",
+            "zh": "新路线 · Levent GRH 方法与自然推广 · 首因子中段的损失常数",
+            "en": "New route · Levent GRH methods and extensions · Bound the middle first-factor loss",
+            "route_source": "levent-prime-value-sieve"
+          },
+          {
+            "id": "L-quadratic-primes-near-equal-semiprime-count",
+            "zh": "新路线 · Levent GRH 方法与自然推广 · 近等双素因子的计数上界",
+            "en": "New route · Levent GRH methods and extensions · Bound semiprimes with nearly equal prime factors",
+            "route_source": "levent-prime-value-sieve"
+          },
+          {
+            "id": "L-quadratic-primes-odd-power-imaginary-unit",
+            "zh": "新路线 · Levent GRH 方法与自然推广 · 奇指数真幂的虚部约化",
+            "en": "New route · Levent GRH methods and extensions · Reduce odd powers to imaginary coordinate one",
+            "route_source": "levent-prime-value-sieve"
+          },
+          {
+            "id": "L-quadratic-primes-odd-quadratic-root-average",
+            "zh": "新路线 · Levent GRH 方法与自然推广 · 奇模数上的二次根数平均",
+            "en": "New route · Levent GRH methods and extensions · Bound the average number of quadratic roots at odd moduli",
+            "route_source": "levent-prime-value-sieve"
+          },
+          {
+            "id": "L-quadratic-primes-quadratic-mangoldt-exact-support",
+            "zh": "新路线 · Levent GRH 方法与自然推广 · 二次 Mangoldt 权的精确支撑",
+            "en": "New route · Levent GRH methods and extensions · Identify the exact support of the quadratic Mangoldt weight",
+            "route_source": "levent-prime-value-sieve"
+          },
+          {
+            "id": "L-quadratic-primes-semiprime-gap-conic-bijection",
+            "zh": "新路线 · Levent GRH 方法与自然推广 · 近平方半素数的间距和二次曲线参数",
+            "en": "New route · Levent GRH methods and extensions · Parametrize the gap between distinct semiprime factors",
+            "route_source": "levent-prime-value-sieve"
+          },
+          {
+            "id": "L-quadratic-primes-separated-semiprime-conic-budget",
+            "zh": "新路线 · Levent GRH 方法与自然推广 · 远离对角的半素数损失常数",
+            "en": "New route · Levent GRH methods and extensions · Bound the separated semiprime loss",
+            "route_source": "levent-prime-value-sieve"
+          },
           {
             "id": "L-quadratic-primes-sieve-divisor-remainders",
             "zh": "新路线 · Levent GRH 与自然扩张 · QP-0074 · 把奇平方自由除数的窗口余项累加到任意筛层 D",
@@ -19657,6 +20647,12 @@
             "id": "L-quadratic-primes-sieve-terminal-gaussian",
             "zh": "新路线 · Levent GRH 与自然扩张 · QP-0085 · 把末段大素因子切换为高斯整数的一次方程",
             "en": "New route · Levent GRH and natural extensions · QP-0085 · Switch a terminal prime factor to a linear equation over the Gaussian integers",
+            "route_source": "levent-prime-value-sieve"
+          },
+          {
+            "id": "L-quadratic-primes-switched-cofactor-small-sieve",
+            "zh": "新路线 · Levent GRH 方法与自然推广 · 换元后最小因子的上筛界",
+            "en": "New route · Levent GRH methods and extensions · Upper-sieve the switched cofactor",
             "route_source": "levent-prime-value-sieve"
           }
         ],
@@ -28120,6 +29116,82 @@
         "file": "lean/Conjectures/LogRank/CyclicSmallRows.lean",
         "track": "explore-new-columns-at-one-third-density",
         "route_source": "explore-new-columns-at-one-third-density"
+      },
+      {
+        "id": "L-log-rank-minimal-slice-protocol",
+        "statement": "∃ K : ℕ, ∀ k : ℕ, K ≤ k → 2 ≤ k → let n := 3*k+1; let layer := (Finset.univ : Finset (Fin n)).powersetCard k; let adj := fun (A B : Finset (Fin n)) (a : ℤ) => ((A ∩ B).card : ℤ) = a ∨ ((A ∩ B).card : ℤ) = a+1; let detects := fun (Y : Finset (Finset (Fin n))) => ∀ A : Finset (Fin n), 2 ≤ A.card → A.card + 2 ≤ n → ∀ a : ℤ, ∃ B ∈ Y, ¬ adj A B a; let lin := fun (w : Fin n → ℝ) (B : Finset (Fin n)) => Finset.sum B w; let uniqueOn := fun (Y : Finset (Finset (Fin n))) => ∀ (w : Fin n → ℝ) (c : ℝ), (∀ B ∈ Y, lin w B = c) → ∀ B ∈ layer, lin w B = c; ∃ Y : Finset (Finset (Fin n)), Y.Nonempty ∧ Y ⊆ layer ∧ Y.card = n ∧ detects Y ∧ uniqueOn Y ∧ ∀ (m : ℕ) (A : Fin m → Finset (Fin n)) (a : ℤ), (∀ i, ∀ B ∈ Y, adj (A i) B a) → let M : Matrix (Fin m) (↥Y) ℝ := fun i j => (((A i ∩ j.val).card : ℝ) - (a : ℝ)); ∃ send : Fin m → Fin (M.rank+1), ∃ reply : Fin (M.rank+1) → ↥Y → Bool, ∃ out : Fin m → Bool → Bool, ∀ i j, (out i (reply (send i) j) = true ↔ M i j = 1)",
+        "plain_statement": {
+          "zh": "猜想：恰用 n 列同时实现全行检测、仿射唯一性和按受限矩阵秩计费的协议",
+          "en": "Conjecture: exactly n columns suffice for detection, affine uniqueness and a rank-sized protocol"
+        },
+        "brief": {
+          "zh": "仿射维数给出 n 列下界。难点是同一组恰好 n 列同时检测所有内部行；只构造仿射基或只完成协议推导都不足够。",
+          "en": "Find a minimal affine basis that simultaneously detects every interior row. Apply the proved protocol only after both properties hold."
+        },
+        "program": "correlation",
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/1133bda2e6/lean/PEqualNP/Outside/L_log_rank_cyclic_detector_family.lean",
+        "parallel": true,
+        "depends_on": [
+          "L-log-rank-rank-sized-protocol",
+          "L-log-rank-interval-anchor",
+          "L-log-rank-cyclic-detector-family"
+        ],
+        "imports": [
+          "PEqualNP.Outside.L_log_rank_interval_anchor",
+          "PEqualNP.Outside.L_log_rank_cyclic_detector_family"
+        ],
+        "file": "lean/Conjectures/LogRank/MinimalSliceProtocol.lean",
+        "module": "Conjectures.LogRank.MinimalSliceProtocol",
+        "track": "explore-new-columns-at-one-third-density",
+        "route_source": "explore-new-columns-at-one-third-density"
+      },
+      {
+        "id": "L-log-rank-two-orbit-full-detector",
+        "statement": "∃ K : ℕ, ∀ k : ℕ, K ≤ k → 2 ≤ k → let n := 3*k+1; let adj := fun (A B : Finset (Fin n)) (a : ℤ) => ((A ∩ B).card : ℤ) = a ∨ ((A ∩ B).card : ℤ) = a+1; let detects := fun (Y : Finset (Finset (Fin n))) => ∀ A : Finset (Fin n), 2 ≤ A.card → A.card + 2 ≤ n → ∀ a : ℤ, ∃ B ∈ Y, ¬ adj A B a; let shift := fun (S : Finset (Fin n)) (t : Fin n) => S.image (fun i => i+t); let orbit := fun (S : Finset (Fin n)) => (Finset.univ : Finset (Fin n)).image (shift S); let I := (Finset.univ : Finset (Fin n)).filter (fun i => i.val < k); ∃ S : Finset (Fin n), S.card = k ∧ detects (orbit I ∪ orbit S)",
+        "plain_statement": {
+          "zh": "猜想：一个循环区间和一个种子的平移即可检测全部内部行",
+          "en": "Conjecture: an interval orbit and one seed orbit detect all interior rows"
+        },
+        "brief": {
+          "zh": "已证构造用至多 8010 个轨道。目标是两个轨道、同一批列覆盖全部行。可搜索小参数；证伪须给出任意阈值以上的障碍。",
+          "en": "Reduce 8010 orbits to two without weakening the detection quantifiers. A refutation needs arbitrarily large counterexamples."
+        },
+        "program": "correlation",
+        "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/1133bda2e6/lean/PEqualNP/Outside/L_log_rank_cyclic_detector_family.lean",
+        "parallel": true,
+        "depends_on": [
+          "L-log-rank-cyclic-detector-family",
+          "L-log-rank-cyclic-small-rows"
+        ],
+        "imports": [
+          "PEqualNP.Outside.L_log_rank_cyclic_detector_family",
+          "Conjectures.LogRank.CyclicSmallRows"
+        ],
+        "file": "lean/Conjectures/LogRank/TwoOrbitFullDetector.lean",
+        "module": "Conjectures.LogRank.TwoOrbitFullDetector",
+        "track": "explore-new-columns-at-one-third-density",
+        "route_source": "explore-new-columns-at-one-third-density"
+      },
+      {
+        "id": "L-log-rank-improved-general-rectangle-exponent",
+        "statement": "∃ C : ℝ, 0 < C ∧ ∀ (m n : ℕ) (M : Matrix (Fin m) (Fin n) ℝ), 0 < m → 0 < n → (∀ i j, M i j = 0 ∨ M i j = 1) → 1 ≤ M.rank → ∃ (A : Finset (Fin m)) (B : Finset (Fin n)) (v : ℝ), (∀ i ∈ A, ∀ j ∈ B, M i j = v) ∧ (m : ℝ) * n ≤ (A.card : ℝ) * B.card * Real.rpow 2 (C * Real.rpow (M.rank : ℝ) (49999 / 100000 : ℝ))",
+        "plain_statement": {
+          "zh": "猜想：任意正实秩布尔矩阵都有密度至少 2^(−C r^0.49999) 的单色矩形",
+          "en": "Conjecture: every positive-rank Boolean matrix has a monochromatic rectangle of density at least 2^(−C r^0.49999)"
+        },
+        "brief": {
+          "zh": "Cogentic 的指数是 0.499995。本题保持任意矩阵与统一常数，要求将指数降至 0.49999。审计偏置稳定矩阵归约中造成指数损失的步骤；减小乘法常数不足以得证。",
+          "en": "Audit the exponent losses in the biased stable matrix reduction (Theorem 3.1). Improve the exponent uniformly for all Boolean matrices; a smaller prefactor alone is insufficient."
+        },
+        "program": "correlation",
+        "source": "https://github.com/google-research/google-research/tree/master/cogentic_research_papers/logrank_conjecture",
+        "parallel": true,
+        "depends_on": [],
+        "imports": [],
+        "file": "lean/Conjectures/LogRank/ImprovedGeneralRectangleExponent.lean",
+        "module": "Conjectures.LogRank.ImprovedGeneralRectangleExponent",
+        "track": "general-monochromatic-rectangles",
+        "route_source": "general-monochromatic-rectangles"
       }
     ],
     "roadmap": [
@@ -28256,6 +29328,18 @@
             "id": "L-log-rank-cyclic-small-rows",
             "zh": "当 k≥6、n=3k+1 时，集合 S={0,…,k−2}∪{2k−3} 恰含 k 个坐标。若一行或其补集的大小为 2 或 3，则 S 的循环平移与该行的交集大小不可能全落在任意指定的两个相邻整数中。",
             "en": "For k≥6 and n=3k+1, the k-set S={0,…,k−2}∪{2k−3} has a translation orbit that detects every row of size 2 or 3 and every complement of such a row.",
+            "route_source": "explore-new-columns-at-one-third-density"
+          },
+          {
+            "id": "L-log-rank-minimal-slice-protocol",
+            "zh": "猜想：恰用 n 列同时实现全行检测、仿射唯一性和按受限矩阵秩计费的协议",
+            "en": "Conjecture: exactly n columns suffice for detection, affine uniqueness and a rank-sized protocol",
+            "route_source": "explore-new-columns-at-one-third-density"
+          },
+          {
+            "id": "L-log-rank-two-orbit-full-detector",
+            "zh": "猜想：一个循环区间和一个种子的平移即可检测全部内部行",
+            "en": "Conjecture: an interval orbit and one seed orbit detect all interior rows",
             "route_source": "explore-new-columns-at-one-third-density"
           }
         ],
@@ -29199,19 +30283,38 @@
           }
         ],
         "route_id": "construct-layer-rectangles-in-intersection-matrices"
+      },
+      {
+        "en": [
+          "Monochromatic rectangle exponent for general matrices",
+          "Seek larger monochromatic rectangles than the Cogentic real-rank bound guarantees."
+        ],
+        "zh": [
+          "一般矩阵的单色矩形指数",
+          "对标 Cogentic 的一般实秩界，寻找更大的单色矩形。"
+        ],
+        "tasks": [
+          {
+            "id": "L-log-rank-improved-general-rectangle-exponent",
+            "zh": "猜想：任意正实秩布尔矩阵都有密度至少 2^(−C r^0.49999) 的单色矩形",
+            "en": "Conjecture: every positive-rank Boolean matrix has a monochromatic rectangle of density at least 2^(−C r^0.49999)",
+            "route_source": "general-monochromatic-rectangles"
+          }
+        ],
+        "route_source": "general-monochromatic-rectangles"
       }
     ]
   },
   "joshi-abc": {
     "title": {
-      "zh": "Joshi 局部体积修复与 abc 猜想",
-      "en": "Joshi local volumes and the abc conjecture"
+      "zh": "Joshi 3.12与abc猜想",
+      "en": "Joshi 3.12 and the abc conjecture"
     },
     "question": {
-      "zh": "能否从实际 ATS 包络的有限处见证出发，得到适用于有理 Frey 族的 Szpiro 型估计，并将 abc 指数降至任意 1+ε？",
-      "en": "Can finite-place witnesses in the actual ATS hull yield a Szpiro estimate on rational Frey curves and an abc exponent of 1+ε for every ε>0?"
+      "zh": "望月新一未能供应推论3.12的Lean证明。Joshi试图供应一个证明，但按照论文字面量为假。Joshi对abc猜想的证明到底能否被修补，亦或者从一开始就是一场幻梦？",
+      "en": "Shinichi Mochizuki did not provide a Lean proof of Corollary 3.12. Joshi attempted to give a proof, but the statement as written in the paper is false. Can Joshi’s proof of the abc conjecture be repaired, or was it an illusion from the start?"
     },
-    "formula": "∀ ε > 0, ∃ Cε, ∀ coprime a,b > 0, log(a+b) ≤ (1+ε)log rad(ab(a+b)) + Cε",
+    "formula": "c < K_ε rad(abc)^(1+ε)",
     "summary": {
       "zh": "从张量 Haar 归一、29 进见证和迹下降开始，检验同一包络的上下界能否给出统一高度估计。",
       "en": "Start with tensor Haar normalization, 29-adic witnesses and trace descent, and test whether both bounds on one hull can yield a uniform height estimate."

@@ -45,6 +45,23 @@ TP-0052 与 TP-0054 等价。补零消掉回绕后，能量为正当且仅当窗
 
 TP-0052 is equivalent to TP-0054. Zero padding removes wraparound, so the energy is positive precisely when a twin pair lies in the window. For the converse, take a sufficiently large twin pair $p,p+2$ and set $X=p-1$. If $p>151$, then $50(p+2)<51X$ and both primes lie in the window. An automorphic approach needs two tests for the same arithmetic sequence and control of their comparison errors and the sign of their difference.
 
-TP-0035 是已知工具的形式化里程碑。Bombieri–Vinogradov 在 $D=\lfloor X^{1/3}floor$ 控制加权进程误差，定量素数定理给出无条件 Möbius 矩，再经绝对收敛的卷积识别硬截断极限。TP-0034 的 RH 版本不能直接作为无条件输入。TP-0026 则要在 RH 和 TP-0025 的条件下验证实际谱与双矩的比较。这两题须显式领取。TP-0001 可复用主站的有限计数 L-goldbach-power-index-count。TP-0047、0049 保留为组合路线中的引用，分别由一般形式 QP-0050、0042 特化。
+TP-0035 是已知工具的形式化里程碑。Bombieri–Vinogradov 在 $D=\lfloor X^{1/3}
+floor$ 控制加权进程误差，定量素数定理给出无条件 Möbius 矩，再经绝对收敛的卷积识别硬截断极限。TP-0034 的 RH 版本不能直接作为无条件输入。TP-0026 则要在 RH 和 TP-0025 的条件下验证实际谱与双矩的比较。这两题须显式领取。TP-0001 可复用主站的有限计数 L-goldbach-power-index-count。TP-0047、0049 保留为组合路线中的引用，分别由一般形式 QP-0050、0042 特化。
 
-TP-0035 is a formalization milestone. Bombieri–Vinogradov controls the weighted progression error at $D=\lfloor X^{1/3}floor$. The quantitative prime number theorem supplies unconditional Möbius moments. An absolutely convergent convolution then gives the cutoff limit. TP-0034 gives the version under RH. TP-0026 compares the actual spectrum with the moments under RH and TP-0025. Both tasks require explicit selection. For TP-0001, reuse the finite count L-goldbach-power-index-count. In the reduction, TP-0047 and TP-0049 are references to special cases of QP-0050 and QP-0042.
+TP-0035 is a formalization milestone. Bombieri–Vinogradov controls the weighted progression error at $D=\lfloor X^{1/3}
+floor$. The quantitative prime number theorem supplies unconditional Möbius moments. An absolutely convergent convolution then gives the cutoff limit. TP-0034 gives the version under RH. TP-0026 compares the actual spectrum with the moments under RH and TP-0025. Both tasks require explicit selection. For TP-0001, reuse the finite count L-goldbach-power-index-count. In the reduction, TP-0047 and TP-0049 are references to special cases of QP-0050 and QP-0042.
+
+## 有界素数间隔前沿 / Bounded prime gap frontier
+
+两条新目标都是待证的里程碑。分别研究能否去掉可容许三元组结论的分布假设，以及能否进一步排除距离 6。已知无穷多有界间隔只控制某个反复出现的距离，仍须用指定差二的任务证明总目标。
+
+| 任务 | 对照与推进 |
+|---|---|
+| `L-twin-primes-admissible-triple-unconditional` | 对照 [Polymath8b 2014，v4，定理 3.2(xii)](https://arxiv.org/html/1407.4897v4)，去掉 GEH 并保留所有可容许三元组。加回 GEH 即恢复原结论。取 \(\{0,2,6\}\) 将范围缩小为 2、4、6。 |
+| `L-twin-primes-gap-at-most-four` | 对照 [Polymath8b 2014，v4，定理 1.4](https://arxiv.org/html/1407.4897v4) 的 GEH 下 6。待证命题无条件且上界为 4，因此也推出该条件上界。充分大素数为奇数，任意界外找到距离至多 4 的素数对，就保证 2 或 4 至少一个无限复现。 |
+
+检索日期为 2026-11-28。对照还包括 [Stadlmann 的无条件 240](https://arxiv.org/abs/2608.31126v1) 及 [带显式输入的 PrimeGaps186 Lean 工程](https://github.com/openai/PrimeGaps186)。这些界没有把任意三元组缩到两素数，也无法排除 4 以外的间隔。文献记录中的数值改进和当前任务的证明是分开的。
+
+针对指定差二，优先保留三个瓶颈。窄窗路线使用已证的素数幂污染上界，仍需同窗的真实相关余量。长除数路线在相同立方根截点可分成中段与远尾，前者的无条件误差控制和后者带符号的正裕量需要同时成立。零点配对与 Θ 提升路线使用已经登记的转换引理，尚缺实际零点或指定平移的正性。用等价的正能量命题替换父题只改变表达方式。
+
+Both benchmarks are open. The admissible-triple result removes GEH from Polymath8b Theorem 3.2(xii), and the at-most-four task strengthens the upper bound in Theorem 1.4. A fixed gap of two remains the endpoint. The existing window, divisor and spectral branches retain their own analytic obstacles.

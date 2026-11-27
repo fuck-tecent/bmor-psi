@@ -14042,6 +14042,28 @@
       "route_source": "deuring-heilbronn-and-25b-cert"
     },
     {
+      "id": "L-goldbach-asgb-fixed-fiber-matrix-classification",
+      "statement": "∀ a b c d : ℤ, a+c=1 → b+d=1 → (a*d-b*c=1 ∨ a*d-b*c = -1) → a-b=1 ∨ a-b = -1",
+      "plain_statement": {
+        "zh": "新路线 · K01 · 分类保持固定和的整数幺模矩阵在纤维上的作用",
+        "en": "New route · K01 · Classify the slopes of sum-preserving unimodular matrices on a fixed fiber"
+      },
+      "brief": {
+        "zh": "分类保持固定和的整数幺模矩阵在纤维上的作用",
+        "en": "Classify the slopes of sum-preserving unimodular matrices on a fixed fiber"
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+      "program": "correlation",
+      "role": "lemma",
+      "parallel": true,
+      "depends_on": [],
+      "imports": [],
+      "module": "Conjectures.Goldbach.AsgbFixedFiberMatrixClassification",
+      "file": "lean/Conjectures/Goldbach/AsgbFixedFiberMatrixClassification.lean",
+      "track": "dyadic-reflection",
+      "route_source": "dyadic-reflection"
+    },
+    {
       "id": "L-goldbach-character-window-fiber-energy",
       "statement": "∀ (m : ℕ) [NeZero m] (N : ℕ) (w : ℕ → ℂ) (s : Finset (DirichletCharacter ℂ m)),\n  (∑ χ ∈ s, ‖(∑ n ∈ Finset.range (N+1), w n * star (χ (n : ZMod m))) /\n      (Real.sqrt (m.totient : ℝ) : ℂ)‖^2) ≤\n    (1 + (N/m : ℕ) : ℝ) * ∑ n ∈ Finset.range (N+1), ‖w n‖^2",
       "plain_statement": {
@@ -15531,6 +15553,28 @@
       "route_source": "farey-inverse-sieve"
     },
     {
+      "id": "L-goldbach-farey-return-digit-line",
+      "statement": "∀ n u : ℕ, 1≤u → u<n → (n-1+u)/(n-u) = (2*n-1)/(n-u)-1",
+      "plain_statement": {
+        "zh": "新路线 · H01 · 把 Farey 首返数字改写为中线分母的商",
+        "en": "New route · H01 · Rewrite the first return digit as a quotient on the central denominator line"
+      },
+      "brief": {
+        "zh": "把 Farey 首返数字改写为中线分母的商",
+        "en": "Rewrite the first return digit as a quotient on the central denominator line"
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+      "program": "correlation",
+      "role": "lemma",
+      "parallel": true,
+      "depends_on": [],
+      "imports": [],
+      "module": "Conjectures.Goldbach.FareyReturnDigitLine",
+      "file": "lean/Conjectures/Goldbach/FareyReturnDigitLine.lean",
+      "track": "farey-inverse-sieve",
+      "route_source": "farey-inverse-sieve"
+    },
+    {
       "id": "L-goldbach-farey-sieve-cutoff-ratio",
       "statement": "let I := fun n : ℕ => Finset.Icc ((n+2)/3) ((2*n)/3); let P := fun z : ℕ => (Finset.Icc 2 z).filter Nat.Prime; let M := fun z : ℕ => ∏ p ∈ P z, (1-(p:ℝ)⁻¹); let V := fun n z : ℕ => ((I n).card:ℝ)*(n.totient:ℝ)/n * ∏ p ∈ (P z).filter (fun p => ¬ p ∣ n), (1-2/(p:ℝ)); ∀ n z y : ℕ, 12 ≤ n → Even n → 2 ≤ z → z ≤ y → V n z ≤ 2*(M z/M y)^2 * V n y",
       "plain_statement": {
@@ -16201,6 +16245,28 @@
       "route_source": "finite-rfc-third"
     },
     {
+      "id": "L-goldbach-finite-post-boundary-through-524288",
+      "statement": "(fun (lo hi : ℕ) => ∀ n : ℕ, lo≤n → n<hi → 2∣n → ∃ p q : ℕ, p.Prime ∧ q.Prime ∧ p+q=n) (4*10^18+262146) (4*10^18+524290)",
+      "plain_statement": {
+        "zh": "新路线 · F02 · 回放草案中的素数对并覆盖 [4*10^18+262146, 4*10^18+524290)",
+        "en": "New route · F02 · Replay the prime pairs in the proposal for [4*10^18+262146, 4*10^18+524290)"
+      },
+      "brief": {
+        "zh": "回放草案中的素数对并覆盖 [4*10^18+262146, 4*10^18+524290)",
+        "en": "Replay the prime pairs in the proposal for [4*10^18+262146, 4*10^18+524290)"
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+      "program": "correlation",
+      "role": "lemma",
+      "parallel": true,
+      "depends_on": [],
+      "imports": [],
+      "module": "Conjectures.Goldbach.FinitePostBoundaryThrough524288",
+      "file": "lean/Conjectures/Goldbach/FinitePostBoundaryThrough524288.lean",
+      "track": "finite-rfc-third",
+      "route_source": "finite-rfc-third"
+    },
+    {
       "id": "L-goldbach-finite-rough-seventynine-constants",
       "statement": "Real.exp (19/5) < 11*Real.log 79 ∧ Real.exp 5 < 34*Real.log 79 ∧ (19495926505 : ℕ) < 11^11",
       "plain_statement": {
@@ -16416,6 +16482,402 @@
       "route_source": "finite-rfc-third"
     },
     {
+      "id": "L-goldbach-rfc11-cm-parameter-local-density",
+      "statement": "∀ n s a : ℕ, 2∣n → 1 ≤ s → 15 ≤ ((Finset.range 105).filter (fun i => let x := 2^s*(2*(a+i)+1); Nat.Coprime (x+104) 105 ∧ Nat.Coprime ((n+1+105-(x%105))%105) 105)).card",
+      "plain_statement": {
+        "zh": "新路线 · E05 · 核对每 105 个连续奇参数的双边局部筛密度",
+        "en": "New route · E05 · Verify the two-sided local density in every block of 105 odd parameters"
+      },
+      "brief": {
+        "zh": "核对每 105 个连续奇参数的双边局部筛密度",
+        "en": "Verify the two-sided local density in every block of 105 odd parameters"
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+      "program": "correlation",
+      "role": "lemma",
+      "parallel": true,
+      "depends_on": [],
+      "imports": [],
+      "module": "Conjectures.Goldbach.Rfc11CmParameterLocalDensity",
+      "file": "lean/Conjectures/Goldbach/Rfc11CmParameterLocalDensity.lean",
+      "track": "finite-rfc-third",
+      "route_source": "finite-rfc-third"
+    },
+    {
+      "id": "L-goldbach-rfc11-compatible-two-field-classes",
+      "statement": "∀ n : ℕ, 2∣n → ∃ a b : ℕ, a<28 ∧ b<28 ∧ (a+b)%28=n%28 ∧ a%4=1 ∧ (b%7=2 ∨ b%7=4) ∧ a%7≠1 ∧ Nat.Coprime a 28 ∧ Nat.Coprime b 28",
+      "plain_statement": {
+        "zh": "新路线 · T03 · 为两个二次域选择相容的模 28 单位类",
+        "en": "New route · T03 · Choose compatible unit classes modulo 28 for the two quadratic fields"
+      },
+      "brief": {
+        "zh": "为两个二次域选择相容的模 28 单位类",
+        "en": "Choose compatible unit classes modulo 28 for the two quadratic fields"
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+      "program": "correlation",
+      "role": "lemma",
+      "parallel": true,
+      "depends_on": [],
+      "imports": [],
+      "module": "Conjectures.Goldbach.Rfc11CompatibleTwoFieldClasses",
+      "file": "lean/Conjectures/Goldbach/Rfc11CompatibleTwoFieldClasses.lean",
+      "track": "finite-rfc-third",
+      "route_source": "finite-rfc-third"
+    },
+    {
+      "id": "L-goldbach-rfc11-descending-tail",
+      "statement": "let P := fun (lo hi : ℕ) => ∀ n : ℕ, lo≤n → n<hi → 2∣n → ∃ p q : ℕ, p.Prime ∧ q.Prime ∧ p+q=n; ∀ a b c : ℕ, P a b → P b c → P a c",
+      "plain_statement": {
+        "zh": "新路线 · B02 · 拼接两个相邻半开区间的覆盖",
+        "en": "New route · B02 · Join coverage on two adjacent half-open intervals"
+      },
+      "brief": {
+        "zh": "拼接两个相邻半开区间的覆盖",
+        "en": "Join coverage on two adjacent half-open intervals"
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+      "program": "correlation",
+      "role": "lemma",
+      "parallel": true,
+      "depends_on": [],
+      "imports": [],
+      "module": "Conjectures.Goldbach.Rfc11DescendingTail",
+      "file": "lean/Conjectures/Goldbach/Rfc11DescendingTail.lean",
+      "track": "finite-rfc-third",
+      "route_source": "finite-rfc-third"
+    },
+    {
+      "id": "L-goldbach-rfc11-dyadic-cm-prime-anchors",
+      "statement": "∀ j m : ℕ, 61≤j → j≤1049 → m<2^j/2 → ((m:ℝ)^(1/4 : ℝ)+1)^2 < (2:ℝ)^((j+2)/2+2 : ℕ)",
+      "plain_statement": {
+        "zh": "新路线 · E04 · 核对二进段的点阶超过 Hasse 素性阈值",
+        "en": "New route · E04 · Verify that the dyadic point order exceeds the Hasse primality threshold"
+      },
+      "brief": {
+        "zh": "核对二进段的点阶超过 Hasse 素性阈值",
+        "en": "Verify that the dyadic point order exceeds the Hasse primality threshold"
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+      "program": "correlation",
+      "role": "lemma",
+      "parallel": true,
+      "depends_on": [],
+      "imports": [],
+      "module": "Conjectures.Goldbach.Rfc11DyadicCmPrimeAnchors",
+      "file": "lean/Conjectures/Goldbach/Rfc11DyadicCmPrimeAnchors.lean",
+      "track": "finite-rfc-third",
+      "route_source": "finite-rfc-third"
+    },
+    {
+      "id": "L-goldbach-rfc11-dyadic-cover",
+      "statement": "(2:ℕ)^597 < 10^180 ∧ (10:ℕ)^180 < 2^598 ∧ (2:ℕ)^1049 < 10^316 ∧ (10:ℕ)^316 < 2^1050",
+      "plain_statement": {
+        "zh": "新路线 · B01 · 核验两处切点的二进制指数",
+        "en": "New route · B01 · Verify the dyadic exponents of both cutoffs"
+      },
+      "brief": {
+        "zh": "核验两处切点的二进制指数",
+        "en": "Verify the dyadic exponents of both cutoffs"
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+      "program": "correlation",
+      "role": "lemma",
+      "parallel": true,
+      "depends_on": [],
+      "imports": [],
+      "module": "Conjectures.Goldbach.Rfc11DyadicCover",
+      "file": "lean/Conjectures/Goldbach/Rfc11DyadicCover.lean",
+      "track": "finite-rfc-third",
+      "route_source": "finite-rfc-third"
+    },
+    {
+      "id": "L-goldbach-rfc11-dyadic-left-endpoint-witnesses",
+      "statement": "∀ j : ℕ, 62≤j → j≤597 → let n : ℕ := 2^j; ∃ p q : ℕ, p.Prime ∧ q.Prime ∧ p+q=n",
+      "plain_statement": {
+        "zh": "新路线 · V06 · 核验指数 62 至 597 的二进端点素数对",
+        "en": "New route · V06 · Certify the prime pairs at dyadic endpoints with exponents 62 through 597"
+      },
+      "brief": {
+        "zh": "核验指数 62 至 597 的二进端点素数对",
+        "en": "Certify the prime pairs at dyadic endpoints with exponents 62 through 597"
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+      "program": "correlation",
+      "role": "lemma",
+      "parallel": true,
+      "depends_on": [],
+      "imports": [],
+      "module": "Conjectures.Goldbach.Rfc11DyadicLeftEndpointWitnesses",
+      "file": "lean/Conjectures/Goldbach/Rfc11DyadicLeftEndpointWitnesses.lean",
+      "track": "finite-rfc-third",
+      "route_source": "finite-rfc-third"
+    },
+    {
+      "id": "L-goldbach-rfc11-extended-dyadic-edge-witnesses",
+      "statement": "∀ j : ℕ, 598≤j → j≤1049 → let n : ℕ := 2^j; ∃ p q : ℕ, p.Prime ∧ q.Prime ∧ p+q=n",
+      "plain_statement": {
+        "zh": "新路线 · V14 · 核验指数 598 至 1049 的二进端点素数对",
+        "en": "New route · V14 · Certify the prime pairs at dyadic endpoints with exponents 598 through 1049"
+      },
+      "brief": {
+        "zh": "核验指数 598 至 1049 的二进端点素数对",
+        "en": "Certify the prime pairs at dyadic endpoints with exponents 598 through 1049"
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+      "program": "correlation",
+      "role": "lemma",
+      "parallel": true,
+      "depends_on": [],
+      "imports": [],
+      "module": "Conjectures.Goldbach.Rfc11ExtendedDyadicEdgeWitnesses",
+      "file": "lean/Conjectures/Goldbach/Rfc11ExtendedDyadicEdgeWitnesses.lean",
+      "track": "finite-rfc-third",
+      "route_source": "finite-rfc-third"
+    },
+    {
+      "id": "L-goldbach-rfc11-primorial-757-repairs",
+      "statement": "let W := ∏ p ∈ (Finset.range 758).filter Nat.Prime, p; 6*W < 10^316 ∧ (10:ℕ)^316 < 7*W ∧ (∀ k : ℕ, 1≤k → k≤6 → let n := k*W; (∀ p≤757, p.Prime → ¬ (n-p).Prime) ∧ (∃ p q : ℕ, p.Prime ∧ q.Prime ∧ p+q=n))",
+      "plain_statement": {
+        "zh": "新路线 · V15 · 核验 757 素数阶乘的六个障碍点及其素数对",
+        "en": "New route · V15 · Verify the six obstructions for the primorial through 757 and their prime pairs"
+      },
+      "brief": {
+        "zh": "核验 757 素数阶乘的六个障碍点及其素数对",
+        "en": "Verify the six obstructions for the primorial through 757 and their prime pairs"
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+      "program": "correlation",
+      "role": "lemma",
+      "parallel": true,
+      "depends_on": [],
+      "imports": [],
+      "module": "Conjectures.Goldbach.Rfc11Primorial757Repairs",
+      "file": "lean/Conjectures/Goldbach/Rfc11Primorial757Repairs.lean",
+      "track": "finite-rfc-third",
+      "route_source": "finite-rfc-third"
+    },
+    {
+      "id": "L-goldbach-rfc11-residual-domain-glue",
+      "statement": "∀ (lo hi : ℕ) (S A V : ℕ → Prop), (∀ n, lo≤n → n<hi → 2∣n → S n ∨ A n ∨ V n) → (∀ n, S n → ∃ p q : ℕ, p.Prime ∧ q.Prime ∧ p+q=n) → (∀ n, A n → ∃ p q : ℕ, p.Prime ∧ q.Prime ∧ p+q=n) → (∀ n, V n → ∃ p q : ℕ, p.Prime ∧ q.Prime ∧ p+q=n) → (fun (lo hi : ℕ) => ∀ n : ℕ, lo≤n → n<hi → 2∣n → ∃ p q : ℕ, p.Prime ∧ q.Prime ∧ p+q=n) lo hi",
+      "plain_statement": {
+        "zh": "新路线 · B04 · 将谱、模形式和素数见证的子域合成整段覆盖",
+        "en": "New route · B04 · Combine spectral, modular-form and witness subdomains into interval coverage"
+      },
+      "brief": {
+        "zh": "将谱、模形式和素数见证的子域合成整段覆盖",
+        "en": "Combine spectral, modular-form and witness subdomains into interval coverage"
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+      "program": "correlation",
+      "role": "lemma",
+      "parallel": true,
+      "depends_on": [],
+      "imports": [],
+      "module": "Conjectures.Goldbach.Rfc11ResidualDomainGlue",
+      "file": "lean/Conjectures/Goldbach/Rfc11ResidualDomainGlue.lean",
+      "track": "finite-rfc-third",
+      "route_source": "finite-rfc-third"
+    },
+    {
+      "id": "L-goldbach-rfc11-rfc12-cutpoint-witness",
+      "statement": "Nat.Prime 2207 ∧ Nat.Prime (10^316-2207)",
+      "plain_statement": {
+        "zh": "新路线 · V16 · 核验 RFC1.1 与 RFC1.2 公共切点的两个指定加数",
+        "en": "New route · V16 · Certify both specified addends at the RFC1.1 and RFC1.2 cutpoint"
+      },
+      "brief": {
+        "zh": "核验 RFC1.1 与 RFC1.2 公共切点的两个指定加数",
+        "en": "Certify both specified addends at the RFC1.1 and RFC1.2 cutpoint"
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+      "program": "correlation",
+      "role": "lemma",
+      "parallel": true,
+      "depends_on": [],
+      "imports": [],
+      "module": "Conjectures.Goldbach.Rfc11Rfc12CutpointWitness",
+      "file": "lean/Conjectures/Goldbach/Rfc11Rfc12CutpointWitness.lean",
+      "track": "finite-rfc-third",
+      "route_source": "finite-rfc-third"
+    },
+    {
+      "id": "L-goldbach-rfc11-seam-six-repairs",
+      "statement": "(fun (lo hi : ℕ) => ∀ n : ℕ, lo≤n → n<hi → 2∣n → ∃ p q : ℕ, p.Prime ∧ q.Prime ∧ p+q=n) (10^180) (10^180+8192)",
+      "plain_statement": {
+        "zh": "新路线 · V10 · 回放草案中的素数对并覆盖 [10^180, 10^180+8192)",
+        "en": "New route · V10 · Replay the prime pairs in the proposal for [10^180, 10^180+8192)"
+      },
+      "brief": {
+        "zh": "回放草案中的素数对并覆盖 [10^180, 10^180+8192)",
+        "en": "Replay the prime pairs in the proposal for [10^180, 10^180+8192)"
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+      "program": "correlation",
+      "role": "lemma",
+      "parallel": true,
+      "depends_on": [],
+      "imports": [],
+      "module": "Conjectures.Goldbach.Rfc11SeamSixRepairs",
+      "file": "lean/Conjectures/Goldbach/Rfc11SeamSixRepairs.lean",
+      "track": "finite-rfc-third",
+      "route_source": "finite-rfc-third"
+    },
+    {
+      "id": "L-goldbach-rfc11-second-block-exception-repair",
+      "statement": "(fun (lo hi : ℕ) => ∀ n : ℕ, lo≤n → n<hi → 2∣n → ∃ p q : ℕ, p.Prime ∧ q.Prime ∧ p+q=n) (10^180-16384) (10^180-8192)",
+      "plain_statement": {
+        "zh": "新路线 · V04 · 回放草案中的素数对并覆盖 [10^180-16384, 10^180-8192)",
+        "en": "New route · V04 · Replay the prime pairs in the proposal for [10^180-16384, 10^180-8192)"
+      },
+      "brief": {
+        "zh": "回放草案中的素数对并覆盖 [10^180-16384, 10^180-8192)",
+        "en": "Replay the prime pairs in the proposal for [10^180-16384, 10^180-8192)"
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+      "program": "correlation",
+      "role": "lemma",
+      "parallel": true,
+      "depends_on": [],
+      "imports": [],
+      "module": "Conjectures.Goldbach.Rfc11SecondBlockExceptionRepair",
+      "file": "lean/Conjectures/Goldbach/Rfc11SecondBlockExceptionRepair.lean",
+      "track": "finite-rfc-third",
+      "route_source": "finite-rfc-third"
+    },
+    {
+      "id": "L-goldbach-rfc11-third-block-seventy-one-repairs",
+      "statement": "(fun (lo hi : ℕ) => ∀ n : ℕ, lo≤n → n<hi → 2∣n → ∃ p q : ℕ, p.Prime ∧ q.Prime ∧ p+q=n) (10^180-24576) (10^180-16384)",
+      "plain_statement": {
+        "zh": "新路线 · V08 · 回放草案中的素数对并覆盖 [10^180-24576, 10^180-16384)",
+        "en": "New route · V08 · Replay the prime pairs in the proposal for [10^180-24576, 10^180-16384)"
+      },
+      "brief": {
+        "zh": "回放草案中的素数对并覆盖 [10^180-24576, 10^180-16384)",
+        "en": "Replay the prime pairs in the proposal for [10^180-24576, 10^180-16384)"
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+      "program": "correlation",
+      "role": "lemma",
+      "parallel": true,
+      "depends_on": [],
+      "imports": [],
+      "module": "Conjectures.Goldbach.Rfc11ThirdBlockSeventyOneRepairs",
+      "file": "lean/Conjectures/Goldbach/Rfc11ThirdBlockSeventyOneRepairs.lean",
+      "track": "finite-rfc-third",
+      "route_source": "finite-rfc-third"
+    },
+    {
+      "id": "L-goldbach-rfc11-top-first-4096-witnesses",
+      "statement": "(fun (lo hi : ℕ) => ∀ n : ℕ, lo≤n → n<hi → 2∣n → ∃ p q : ℕ, p.Prime ∧ q.Prime ∧ p+q=n) (10^180-8192) (10^180)",
+      "plain_statement": {
+        "zh": "新路线 · V02 · 回放草案中的素数对并覆盖 [10^180-8192, 10^180)",
+        "en": "New route · V02 · Replay the prime pairs in the proposal for [10^180-8192, 10^180)"
+      },
+      "brief": {
+        "zh": "回放草案中的素数对并覆盖 [10^180-8192, 10^180)",
+        "en": "Replay the prime pairs in the proposal for [10^180-8192, 10^180)"
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+      "program": "correlation",
+      "role": "lemma",
+      "parallel": true,
+      "depends_on": [],
+      "imports": [],
+      "module": "Conjectures.Goldbach.Rfc11TopFirst4096Witnesses",
+      "file": "lean/Conjectures/Goldbach/Rfc11TopFirst4096Witnesses.lean",
+      "track": "finite-rfc-third",
+      "route_source": "finite-rfc-third"
+    },
+    {
+      "id": "L-goldbach-rfc11-top316-anchor-bank",
+      "statement": "∀ t ∈ ([25787, 23073, 28121, 30291, 29519, 51747, 29183, 30693, 46539, 27299, 55077, 35117, 58401, 48851, 29673, 44813, 22041, 52193, 40623, 35561, 59667, 54623, 31341, 41939, 42603, 49467, 57963, 12377, 33269, 18117, 18191, 42833, 46341, 38403, 48893, 1821, 8307, 14831, 15039, 60269, 71799, 73059, 66447] : List ℕ), Nat.Prime (10^316-t)",
+      "plain_statement": {
+        "zh": "新路线 · V11 · 核验新上界下方 43 个大素数锚",
+        "en": "New route · V11 · Certify the 43 large prime anchors below the new cutoff"
+      },
+      "brief": {
+        "zh": "核验新上界下方 43 个大素数锚",
+        "en": "Certify the 43 large prime anchors below the new cutoff"
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+      "program": "correlation",
+      "role": "lemma",
+      "parallel": true,
+      "depends_on": [],
+      "imports": [],
+      "module": "Conjectures.Goldbach.Rfc11Top316AnchorBank",
+      "file": "lean/Conjectures/Goldbach/Rfc11Top316AnchorBank.lean",
+      "track": "finite-rfc-third",
+      "route_source": "finite-rfc-third"
+    },
+    {
+      "id": "L-goldbach-rfc11-top316-first-bank-cover",
+      "statement": "let offsets := ([25787, 23073, 28121, 30291, 29519, 51747, 29183, 30693, 46539, 27299, 55077, 35117, 58401, 48851, 29673, 44813, 22041, 52193, 40623, 35561, 59667, 54623, 31341, 41939, 42603, 49467, 57963, 12377, 33269, 18117, 18191, 42833, 46341, 38403, 48893, 1821, 8307, 14831, 15039, 60269, 71799, 73059, 66447] : List ℕ).take 40; ∀ i : ℕ, 1 ≤ i → i ≤ 12288 → ((∃ t ∈ offsets, Nat.Prime (t-2*i)) ↔ i ∉ ([7564,7909,11134,11329,11989,12154] : List ℕ))",
+      "plain_statement": {
+        "zh": "新路线 · V12 · 计算前 40 个新锚恰好漏掉的六个下标",
+        "en": "New route · V12 · Find the exact six indices missed by the first 40 new anchors"
+      },
+      "brief": {
+        "zh": "计算前 40 个新锚恰好漏掉的六个下标",
+        "en": "Find the exact six indices missed by the first 40 new anchors"
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+      "program": "correlation",
+      "role": "lemma",
+      "parallel": true,
+      "depends_on": [],
+      "imports": [],
+      "module": "Conjectures.Goldbach.Rfc11Top316FirstBankCover",
+      "file": "lean/Conjectures/Goldbach/Rfc11Top316FirstBankCover.lean",
+      "track": "finite-rfc-third",
+      "route_source": "finite-rfc-third"
+    },
+    {
+      "id": "L-goldbach-rfc11-top316-six-repairs",
+      "statement": "(fun (lo hi : ℕ) => ∀ n : ℕ, lo≤n → n<hi → 2∣n → ∃ p q : ℕ, p.Prime ∧ q.Prime ∧ p+q=n) (10^316-24576) (10^316)",
+      "plain_statement": {
+        "zh": "新路线 · V13 · 回放草案中的素数对并覆盖 [10^316-24576, 10^316)",
+        "en": "New route · V13 · Replay the prime pairs in the proposal for [10^316-24576, 10^316)"
+      },
+      "brief": {
+        "zh": "回放草案中的素数对并覆盖 [10^316-24576, 10^316)",
+        "en": "Replay the prime pairs in the proposal for [10^316-24576, 10^316)"
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+      "program": "correlation",
+      "role": "lemma",
+      "parallel": true,
+      "depends_on": [],
+      "imports": [],
+      "module": "Conjectures.Goldbach.Rfc11Top316SixRepairs",
+      "file": "lean/Conjectures/Goldbach/Rfc11Top316SixRepairs.lean",
+      "track": "finite-rfc-third",
+      "route_source": "finite-rfc-third"
+    },
+    {
+      "id": "L-goldbach-rfc11-wheel-convolution-main",
+      "statement": "∀ n : ℕ, 2∣n → 15 ≤ ((Finset.range 210).filter (fun r => Nat.Coprime r 210 ∧ Nat.Coprime ((n+210-r)%210) 210)).card",
+      "plain_statement": {
+        "zh": "新路线 · S01 · 核对每个偶数至少有 15 个允许的模 210 反射类",
+        "en": "New route · S01 · Verify at least 15 allowed reflected classes modulo 210 for every even target"
+      },
+      "brief": {
+        "zh": "核对每个偶数至少有 15 个允许的模 210 反射类",
+        "en": "Verify at least 15 allowed reflected classes modulo 210 for every even target"
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/哥德巴赫任务拆分4.md",
+      "program": "correlation",
+      "role": "lemma",
+      "parallel": true,
+      "depends_on": [],
+      "imports": [],
+      "module": "Conjectures.Goldbach.Rfc11WheelConvolutionMain",
+      "file": "lean/Conjectures/Goldbach/Rfc11WheelConvolutionMain.lean",
+      "track": "finite-rfc-third",
+      "route_source": "finite-rfc-third"
+    },
+    {
       "id": "L-goldbach-binary-shift-fourier-fourth",
       "statement": "let T := fun (L : ℕ) (t : ℝ) => ∑ j ∈ Finset.range L, Complex.exp (((2*Real.pi*(2:ℝ)^(j+1)*t:ℝ):ℂ)*Complex.I); ∀ L : ℕ, intervalIntegral (fun t => ‖T L t‖^4) (0:ℝ) 1 MeasureTheory.volume = 2*(L:ℝ)^2-(L:ℝ)",
       "plain_statement": {
@@ -16612,6 +17074,32 @@
       "route_source": "frontier-moment-antispike"
     },
     {
+      "id": "L-goldbach-denominator-cutoff-fourth-moment-floor",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k : ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2 * Real.pi * x : ℝ) : ℂ) * Complex.I); let S := fun (n : ℕ) (t : ℝ) => Finset.sum (Finset.range (n + 1)) (fun k => (w k : ℂ) * E ((k : ℝ) * t)); let arcs := fun (n D H : ℕ) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ D ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t - (a : ℝ) / q| ≤ (H : ℝ) / ((q : ℝ) * n)}; ∃ N : ℕ, ∀ n : ℕ, N ≤ n → ∀ D H : ℕ, 0 < D → 32 * (D : ℝ) ≤ Real.sqrt n → (H : ℝ) ≤ Real.sqrt n → (n : ℝ) ^ 3 ≤ 12582912 * (D : ℝ) ^ 2 * intervalIntegral (fun t => (arcs n D H)ᶜ.indicator (fun u => ‖S n u‖ ^ 4) t) (0 : ℝ) 1 MeasureTheory.volume",
+      "plain_statement": {
+        "zh": "对充分大的每个整数 n，同时对满足 1 ≤ D、32D ≤ √n、0 ≤ H ≤ √n 的所有整数参数，删去分母至多 D 的每个既约分数 a/q 周围半径 H/(qn) 的区间后，素数对数权指数和在 [0,1] 剩余部分上的四阶矩至少为 n³/(12582912 D²)。",
+        "en": "For every sufficiently large integer n, uniformly for integers D ≥ 1 and 0 ≤ H ≤ √n with 32D ≤ √n, remove the intervals of radius H/(qn) about the reduced fractions a/q of denominator at most D. The fourth moment of the prime-log exponential sum on the rest of [0,1] is at least n³/(12582912 D²)."
+      },
+      "brief": {
+        "zh": "取 D < q ≤ 8D 的平方自由分母，其倒数和至少为 1/8。对既约剩余类上的振幅应用柯西不等式，再将缩放后的平方振幅在互不相交、避开所删弧的窗口中积分。立方根截断给出 n^(7/3) 的下界，平方根除以四次对数的截断给出 n² 乘八次对数的下界。",
+        "en": "Use squarefree denominators D < q ≤ 8D, whose reciprocal mass is at least 1/8. Apply Cauchy–Schwarz on reduced residues and integrate the rescaled squared amplitude on disjoint windows outside the mask. The cube-root cutoff gives order n^(7/3), and the square-root cutoff divided by a fourth power of a logarithm gives order n² times an eighth power of that logarithm."
+      },
+      "source": "https://doi.org/10.5281/zenodo.24550608",
+      "program": "correlation",
+      "role": "lemma",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-sqrt-arc-second-moment-floor"
+      ],
+      "imports": [
+        "Conjectures.Goldbach.SqrtArcSecondMomentFloor"
+      ],
+      "file": "lean/Conjectures/Goldbach/DenominatorCutoffFourthMomentFloor.lean",
+      "module": "Conjectures.Goldbach.DenominatorCutoffFourthMomentFloor",
+      "track": "frontier-moment-antispike",
+      "route_source": "frontier-moment-antispike"
+    },
+    {
       "id": "L-goldbach-normalized-shift-optimal-window",
       "statement": "∀ (I : Finset ℕ) (c : ℕ → ℝ) (m B : ℝ),\n      (∃ j ∈ I, c j = m) → (∀ j ∈ I, m ≤ c j) → 1 ≤ B * (I.card:ℝ) →\n      let v := fun (t : ℝ) (j : ℕ) => max (1 - t*(c j-m)) 0\n      let w := fun (t : ℝ) (j : ℕ) => v t j / (∑ k ∈ I, v t k)\n      ∃ t : ℝ, 0 ≤ t ∧ (∀ j ∈ I, 0 ≤ w t j) ∧ (∑ j ∈ I, w t j) = 1 ∧\n        (∑ j ∈ I, (w t j)^2) ≤ B ∧\n        ((∑ j ∈ I, (w t j)^2) = B ∨ ∀ j ∈ I, c j ≠ m → w t j = 0) ∧\n        (let P := I.filter (fun j => 0 < w t j)\n         let μ := (∑ j ∈ P, c j)/(P.card:ℝ)\n         P.Nonempty ∧ (∀ i ∈ P, ∀ j ∈ I, c j ≤ c i → j ∈ P) ∧\n           (∑ j ∈ I, w t j * c j) =\n             μ - Real.sqrt ((B - 1/(P.card:ℝ)) * (∑ j ∈ P, (c j-μ)^2))) ∧\n        ∀ u : ℕ → ℝ, (∀ j ∈ I, 0 ≤ u j) → (∑ j ∈ I, u j) = 1 →\n          (∑ j ∈ I, (u j)^2) ≤ B → (∑ j ∈ I, w t j * c j) ≤ ∑ j ∈ I, u j * c j",
       "plain_statement": {
@@ -16651,6 +17139,32 @@
       "imports": [],
       "file": "lean/Conjectures/Goldbach/SqrtArcSecondMomentFloor.lean",
       "module": "Conjectures.Goldbach.SqrtArcSecondMomentFloor",
+      "track": "frontier-moment-antispike",
+      "route_source": "frontier-moment-antispike"
+    },
+    {
+      "id": "L-goldbach-sqrt-shell-second-moment-floor",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (u : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (u k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let Q₁ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊; let H := fun n : ℕ => 256 * Q₁ n * Q n; let wideArcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q₁ n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (H n:ℝ)/((q:ℝ)*(n:ℝ))}; let Q₂ := fun n : ℕ => ⌊Real.sqrt (n : ℝ) / ((Nat.log 2 (n + 2) : ℝ) ^ 4)⌋₊; let sqrtArcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ Q₂ n ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t - (a : ℝ) / (q : ℝ)| ≤ ((256 * Q₂ n * Q n : ℕ) : ℝ) / ((q : ℝ) * (n : ℝ))}; ∃ c : ℝ, 0 < c ∧ ∃ N : ℕ, ∀ n : ℕ, N ≤ n → c * (n : ℝ) * Real.log (n : ℝ) ≤ intervalIntegral (fun t => (sqrtArcs n \\ wideArcs n).indicator (fun u => ‖S n w u‖ ^ 2) t) (0 : ℝ) 1 MeasureTheory.volume",
+      "plain_statement": {
+        "zh": "对所有充分大的整数 n，仅在平方根主弧中扣除立方根主弧后留下的区域内，素数对数权指数和的二阶矩已经至少为 c n log n，其中 c>0 与 n 无关。",
+        "en": "For every sufficiently large integer n, the second moment of the prime-log exponential sum on the portion of sqrtArcs outside wideArcs is at least c n log n for an absolute c > 0."
+      },
+      "brief": {
+        "zh": "取分母在 n 的三分之一次方与十二分之五次方之间的平方自由既约分数。在每个分数右边取宽 1/(6n) 的小窗。用有理数的间距避开 wideArcs，并用分数自身作为中心证明整窗包含于 sqrtArcs。对各几何分母区间的贡献求和。",
+        "en": "Use squarefree denominators between the cube-root cutoff and n^(5/12). Place a window of width 1/(6n) to the right of each reduced fraction. Rational spacing puts the windows outside wideArcs, and their own centers put them inside sqrtArcs. Sum their second-moment contributions across geometric blocks."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/3586",
+      "program": "correlation",
+      "role": "lemma",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-sqrt-arc-second-moment-floor"
+      ],
+      "imports": [
+        "Conjectures.Goldbach.SqrtArcSecondMomentFloor"
+      ],
+      "file": "lean/Conjectures/Goldbach/SqrtShellSecondMomentFloor.lean",
+      "module": "Conjectures.Goldbach.SqrtShellSecondMomentFloor",
       "track": "frontier-moment-antispike",
       "route_source": "frontier-moment-antispike"
     },
@@ -17132,6 +17646,32 @@
       "module": "Conjectures.Goldbach.TruncatedFejerArcFloor",
       "file": "lean/Conjectures/Goldbach/TruncatedFejerArcFloor.lean",
       "route_source": "major-arc-model-assembly"
+    },
+    {
+      "id": "L-goldbach-adaptive-minor-negative-tail",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let A := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ Q n ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ r q a * (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let T := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => (intervalIntegral (fun t => (A n r)ᶜ.indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume).re; ∃ C : ℝ, 0 < C ∧ ∃ N : ℕ, ∀ X ≥ N, ∃ D : Finset ℕ, (D.card:ℝ) ≤ C*(X:ℝ)^((4:ℝ)/7) ∧ ∀ n ∈ Finset.Icc X (2*X), Even n → n ∉ D → ∃ r : ℕ → ℕ → ℝ, (∀ q a, (1/2:ℝ) ≤ r q a ∧ r q a ≤ 2) ∧ -(3/4:ℝ)*(n:ℝ) ≤ T n r",
+      "plain_statement": {
+        "zh": "自适应弧宽下次弧负贡献的 4/7 尾界",
+        "en": "A four-sevenths tail for adaptive signed minor arcs"
+      },
+      "brief": {
+        "zh": "保留每个 n 的带符号 Fourier 系数；先研究一族可选的弧边界，估计所有选择都低于安全线的交集。只需找到一个好选择。已证主弧下界与同一选择合用，给出至少 n/4 的加权表示量。全体深次弧的绝对四次矩已有反例。可按 imports 引用核验引理。",
+        "en": "Estimate signed coefficients and the intersection of failures for a tractable family of boundaries. One good profile per target suffices. Combine it with the verified major floor for the same profile to obtain weight at least n/4. The blanket absolute fourth-moment route has a counterexample. Verified lemmas may be imported as listed."
+      },
+      "source": "https://arxiv.org/abs/2610.15559",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-major-numerator-dilation"
+      ],
+      "role": "lemma",
+      "imports": [
+        "Conjectures.Goldbach.MajorNumeratorDilation"
+      ],
+      "file": "lean/Conjectures/Goldbach/AdaptiveMinorNegativeTail.lean",
+      "module": "Conjectures.Goldbach.AdaptiveMinorNegativeTail",
+      "track": "minor-truncation",
+      "route_source": "minor-truncation"
     },
     {
       "id": "L-goldbach-bulk-binary-defect",
@@ -19353,6 +19893,28 @@
       "route_source": "representations"
     },
     {
+      "id": "L-goldbach-beaumont-central-local-prediction-refute",
+      "statement": "¬ (let H := fun n : ℕ => ((Finset.range (n+1)).filter (fun p => p.Prime ∧ p ≤ n ∧ (n-p).Prime ∧ n ≤ 3*p ∧ 3*p ≤ 2*n)).card; let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); let M := fun X : ℕ => (X:ℝ)/(Real.log (X:ℝ))^2; let R := fun n : ℕ => ((H n + H (n+2)):ℝ); ∀ ε : ℝ, 0 < ε → ∃ X₀ : ℕ, ∀ X ≥ X₀, ∃ b : ℕ → ℝ, (∀ n ∈ E X, M X ≤ b n) ∧ (∑ n ∈ E X, (R n-b n)^2) ≤ ε*(X:ℝ)*(M X)^2)",
+      "plain_statement": {
+        "zh": "证伪相邻偶数中央表示数的统一预测下限与均方误差条件",
+        "en": "Refute the uniform predictor floor with vanishing mean-square error for adjacent central counts"
+      },
+      "brief": {
+        "zh": "取 X≤n≤65X/64 且 n≡26 (mod 30)。两个目标各只允许三对有序既约余数。用固定模 30 的算术级数素数定理控制均值，再用柯西不等式给出对任意预测函数都成立的均方误差下界。",
+        "en": "Restrict to n ≡ 26 mod 30 in [X,65X/64]. Each target permits three ordered pairs of reduced residues. Use the prime number theorem modulo 30 to bound their average, then Cauchy–Schwarz to give a mean-square error floor uniform in the predictor."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/beaumont-central-prediction-obstruction.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "track": "representations",
+      "role": "lemma",
+      "imports": [],
+      "file": "lean/Conjectures/Goldbach/BeaumontCentralLocalPredictionRefute.lean",
+      "module": "Conjectures.Goldbach.BeaumontCentralLocalPredictionRefute",
+      "route_source": "representations"
+    },
+    {
       "id": "L-goldbach-beaumont-central-local-prediction",
       "statement": "let H := fun n : ℕ => ((Finset.range (n+1)).filter (fun p => p.Prime ∧ p ≤ n ∧ (n-p).Prime ∧ n ≤ 3*p ∧ 3*p ≤ 2*n)).card; let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); let M := fun X : ℕ => (X:ℝ)/(Real.log (X:ℝ))^2; let R := fun n : ℕ => ((H n + H (n+2)):ℝ); ∀ ε : ℝ, 0 < ε → ∃ X₀ : ℕ, ∀ X ≥ X₀, ∃ b : ℕ → ℝ, (∀ n ∈ E X, M X ≤ b n) ∧ (∑ n ∈ E X, (R n-b n)^2) ≤ ε*(X:ℝ)*(M X)^2",
       "plain_statement": {
@@ -20113,6 +20675,37 @@
       "route_source": "representations"
     },
     {
+      "id": "L-goldbach-dyn-short-restricted-power-saving",
+      "statement": "let W := fun y : ℕ => Nat.floor ((y : ℝ) ^ ((13 : ℝ) / 225)); let P := fun X : ℕ => (Finset.Icc (Nat.sqrt X) (2 * Nat.sqrt X)).filter Nat.Prime; let R := fun (X n : ℕ) => ((P X).filter (fun p => p ≤ n ∧ Nat.Prime (n-p))).card; ∃ C δ : ℝ, 0 < C ∧ 0 < δ ∧ ∃ X₀ : ℕ, ∀ X ≥ X₀, ∀ y : ℕ, X ≤ y → y + W y ≤ 2 * X → (((Finset.Icc y (y + W y)).filter (fun n => Even n ∧ R X n = 0)).card : ℝ) ≤ C * ((W y : ℝ) + 1) * (X : ℝ) ^ (-δ)",
+      "plain_statement": {
+        "zh": "短窗内平方根量级加数的漏点数有幂次节省",
+        "en": "Power-saving exceptional set with a square-root-sized summand in every short window"
+      },
+      "brief": {
+        "zh": "待证。对充分大的 X，每个完整落在 [X,2X] 的闭窗 [y,y+⌊y^(13/225)⌋] 中，不能写成 p+q 且 ⌊√X⌋≤p≤2⌊√X⌋ 的偶数至多为 C(⌊y^(13/225)⌋+1)X^(-δ) 个。p、q 都是素数。尝试为实际受限计数构造带奇异级数的正主项，并用逐窗局部均方误差和已证漏点能量引理计数。Li 定理 6 在同窗给出无加数限制的密度趋一结论。本题同时限制加数并要求幂次节省。可引用全站已核验的 Lean 模块；见 https://jenkins-hook.goldbach.tech/verified-imports.json。",
+        "en": "Open. For large X, every closed window [y,y+floor(y^(13/225))] inside [X,2X] has at most C(floor(y^(13/225))+1)X^(-δ) even integers without a prime pair p+q with floor(sqrt X) ≤ p ≤ 2 floor(sqrt X). Try a positive singular-series main term and a uniform local mean-square error to which the verified exception-energy lemma applies. Li's Theorem 6 gives density one on the same window with unrestricted summands. This target adds a summand constraint and a power saving. You may import verified Lean modules listed at https://jenkins-hook.goldbach.tech/verified-imports.json."
+      },
+      "depends_on": [
+        "L-goldbach-dyn-exception-energy",
+        "L-goldbach-dyn-block-first-mass",
+        "L-goldbach-dyn-block-collision-budget"
+      ],
+      "source": "https://arxiv.org/html/2308.04458v8#S7",
+      "program": "correlation",
+      "parallel": true,
+      "module": "Conjectures.Goldbach.DynShortRestrictedPowerSaving",
+      "file": "lean/Conjectures/Goldbach/DynShortRestrictedPowerSaving.lean",
+      "imports": [
+        "Mathlib",
+        "Conjectures.Goldbach.DynExceptionEnergy",
+        "Conjectures.Goldbach.DynBlockFirstMass",
+        "Conjectures.Goldbach.DynBlockCollisionBudget"
+      ],
+      "track": "representations",
+      "role": "target",
+      "route_source": "representations"
+    },
+    {
       "id": "L-goldbach-dyn-surplus-certificate",
       "statement": "let W := fun (A B : Finset ℕ) (n : ℕ) => ((A ×ˢ B).filter (fun t => t.1+t.2=n)).card; ∀ (m n : ℕ) (A B : Finset ℕ), n < m → (∀ a ∈ A, a < m) → (∀ b ∈ B, b < m) → min ((A.filter (fun a => n < a)).card) ((B.filter (fun b => n < b)).card) < ((A ×ˢ B).filter (fun t => (t.1+t.2)%m=n)).card → 0 < W A B n",
       "plain_statement": {
@@ -20157,6 +20750,30 @@
       "imports": [],
       "track": "representations",
       "role": "lemma",
+      "route_source": "representations"
+    },
+    {
+      "id": "L-goldbach-dyn-ultrashort-restricted-hit",
+      "statement": "let W := fun y : ℕ => Nat.floor ((y : ℝ) ^ ((26 : ℝ) / 1075)); ∃ X₀ : ℕ, ∀ X ≥ X₀, ∀ y : ℕ, X ≤ y → y + W y ≤ 2 * X → ∃ n : ℕ, y ≤ n ∧ n ≤ y + W y ∧ Even n ∧ (∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ Nat.sqrt X ≤ p ∧ p ≤ 2 * Nat.sqrt X ∧ p + q = n)",
+      "plain_statement": {
+        "zh": "每个超短窗都有一个带平方根量级素数加数的哥德巴赫数",
+        "en": "A Goldbach hit with a square-root-sized prime in every ultra-short window"
+      },
+      "brief": {
+        "zh": "待证。对充分大的 X，每个完整落在 [X,2X] 的闭窗 [y,y+⌊y^(26/1075)⌋] 中，至少一个偶数能写成两个素数之和，且其中一个素数在 [⌊√X⌋,2⌊√X⌋]。可从 Li 定理 7 的短窗存在性及其筛法输入入手，研究短区间素数指示函数与平方根带素数的加权平均，直接证明一个非负短窗权下的总表示数为正。该窗明显短于 13/225 密度题；需要排除同窗全漏，长窗矩估计无法直接定位这个窗。可引用全站已核验的 Lean 模块；见 https://jenkins-hook.goldbach.tech/verified-imports.json。",
+        "en": "Open. For large X, each closed window [y,y+floor(y^(26/1075))] inside [X,2X] contains an even sum of two primes, one in [floor(sqrt X),2 floor(sqrt X)]. Start from the sieve inputs behind Li's Theorem 7 and seek a positive weighted short-window average against primes in the square-root band. The window is shorter than the 13/225 density window. The challenge is to rule out a wholly missed window at this scale. You may import verified Lean modules listed at https://jenkins-hook.goldbach.tech/verified-imports.json."
+      },
+      "depends_on": [],
+      "source": "https://arxiv.org/html/2308.04458v8#S7",
+      "program": "correlation",
+      "parallel": true,
+      "module": "Conjectures.Goldbach.DynUltrashortRestrictedHit",
+      "file": "lean/Conjectures/Goldbach/DynUltrashortRestrictedHit.lean",
+      "imports": [
+        "Mathlib"
+      ],
+      "track": "representations",
+      "role": "target",
       "route_source": "representations"
     },
     {
@@ -20457,6 +21074,28 @@
       "module": "Conjectures.Goldbach.ReflectedDivisorExactSplit",
       "file": "lean/Conjectures/Goldbach/ReflectedDivisorExactSplit.lean",
       "route_source": "representations"
+    },
+    {
+      "id": "L-goldbach-short-window-power-exceptions",
+      "statement": "∀ ε : ℝ, 0 < ε → ∃ δ C : ℝ, 0 < δ ∧ δ < 1 ∧ 0 < C ∧ ∃ N : ℕ, ∀ X H : ℕ, N ≤ X → H ≤ X → (X:ℝ)^((7:ℝ)/120 + ε) < (H:ℝ) → ((((Finset.Icc (X-H) X).filter (fun n => 4 ≤ n ∧ Even n ∧ ∀ p ∈ Finset.range (n+1), ¬ (Nat.Prime p ∧ Nat.Prime (n-p)))).card):ℝ) ≤ C*(H:ℝ)^(1-δ)",
+      "plain_statement": {
+        "zh": "在 Grimmelt 的全部短窗尺度上获得幂次例外界",
+        "en": "Power saving throughout Grimmelt’s short-window range"
+      },
+      "brief": {
+        "zh": "针对每个窗口的真实无表示偶数集，研究其 Fourier 变换与素数卷积的相关；在非负下界模型中定位只给对数节省的误差，争取一个依赖 ε 的幂次 δ。须对所有起点一致。改变 A 或仅缩短窗长的估计均不足。可按 imports 引用核验引理。",
+        "en": "Use the transform of the actual exceptional set in each window against the prime convolution. Isolate the logarithmic losses in the nonnegative minorant and seek a power gain depending on epsilon, uniformly in the endpoint. A larger fixed logarithmic saving or shorter windows alone do not suffice. Verified lemmas may be used according to task imports."
+      },
+      "source": "https://arxiv.org/pdf/1910.05187v2",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "role": "lemma",
+      "file": "lean/Conjectures/Goldbach/ShortWindowPowerExceptions.lean",
+      "module": "Conjectures.Goldbach.ShortWindowPowerExceptions",
+      "track": "representations",
+      "route_source": "representations",
+      "imports": []
     },
     {
       "id": "L-goldbach-switching-sieve-edge-integrals",

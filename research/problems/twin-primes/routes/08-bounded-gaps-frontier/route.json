@@ -1,0 +1,11 @@
+{
+  "id": "08-bounded-gaps-frontier",
+  "title": {
+    "zh": "有界素数间隔前沿",
+    "en": "Bounded prime gap frontier"
+  },
+  "description": {
+    "zh": "缩小孪生素数与已知有界间隔之间的差距。推进任意可容许三元组的无条件结论，或把无穷复现间隔压到 2、4。固定差二仍由总目标验证。",
+    "en": "Narrow the gap between bounded prime gaps and the twin-prime target. Seek unconditional admissible triples or reduce infinite recurrence to gaps 2 and 4. The endpoint still requires gap 2."
+  }
+}

@@ -20,7 +20,7 @@ These tasks separate transitivity, synchronization, and arithmetic recovery. The
 - `L-goldbach-beaumont-perturbed-clock-gap` — 半单位误差预算下整数标签唯一 / Recover the unique integer label with half-unit error margins
 - `L-goldbach-beaumont-central-gap-density` — 相邻两个偶数都缺中央表示的起点密度趋零 / Vanishing density of adjacent central misses
 - `L-goldbach-beaumont-central-imbalance-budget` — 相邻靶区共享的表示重数下界 / Lower-bound multiplicity shared by adjacent targets
-- `L-goldbach-beaumont-central-local-prediction` — 猜想：相邻中央命中的局部主项具有低均方误差 / Conjecture: low mean-square error for adjacent central arrivals
+- `L-goldbach-beaumont-central-local-prediction` — 猜想：相邻中央命中的局部主项具有低均方误差 / Conjecture: low mean-square error for adjacent central arrivals · [模 30 的预测下限障碍 / Modulo-30 obstruction](beaumont-central-prediction-obstruction.md)
 - `L-goldbach-beaumont-central-prediction-transfer` — 用已证能量引理把局部预测转成双漏密度上界 / Transfer a local prediction to a double-miss bound
 - `L-goldbach-beaumont-one-sided-hole-cluster` — 猜想：平方根长度短窗中的中央漏点不会聚集 / Conjecture: central misses do not cluster in square-root intervals
 - `L-goldbach-beaumont-alternate-normal-shift` — 猜想：正比例的连续三靶都具有中央表示 / Conjecture: a positive proportion of adjacent triples all have central hits

@@ -1,0 +1,20 @@
+{
+  "id": "L-quadratic-primes-odd-power-imaginary-unit",
+  "statement": "∀ n y j : ℕ, 0 < n → Even n → 3 ≤ j → Odd j → n^2+1 = y^j → ∃ a : ℤ, a ≠ 0 ∧ Even a ∧ Int.natAbs (((⟨a,1⟩ : GaussianInt)^j).im) = 1",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 方法与自然推广 · 奇指数真幂的虚部约化",
+    "en": "New route · Levent GRH methods and extensions · Reduce odd powers to imaginary coordinate one"
+  },
+  "brief": {
+    "zh": "若偶数 $n>0$ 满足 $n^2+1=y^j,\\ j\\ge3$ 为奇数，利用 P01 和高斯整数唯一分解写 $n+i=(a+bi)^j$。四个单位上的 $j$ 次幂是置换，可吸收单位。虚部被 $b$ 整除，故 $b=\\pm1$，且 $a$ 是非零偶数。必要时共轭，得到 $\\Im(a+i)^j=\\pm1$。",
+    "en": "Use coprimality in the Gaussian integers and absorb the unit by taking its odd power root."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/近平方素数任务拆分3.md",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-quadratic-primes-gaussian-conjugate-coprime-even"
+  ],
+  "imports": []
+}

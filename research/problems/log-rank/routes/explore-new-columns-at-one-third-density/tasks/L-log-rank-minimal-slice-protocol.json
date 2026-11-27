@@ -1,0 +1,24 @@
+{
+  "id": "L-log-rank-minimal-slice-protocol",
+  "statement": "∃ K : ℕ, ∀ k : ℕ, K ≤ k → 2 ≤ k → let n := 3*k+1; let layer := (Finset.univ : Finset (Fin n)).powersetCard k; let adj := fun (A B : Finset (Fin n)) (a : ℤ) => ((A ∩ B).card : ℤ) = a ∨ ((A ∩ B).card : ℤ) = a+1; let detects := fun (Y : Finset (Finset (Fin n))) => ∀ A : Finset (Fin n), 2 ≤ A.card → A.card + 2 ≤ n → ∀ a : ℤ, ∃ B ∈ Y, ¬ adj A B a; let lin := fun (w : Fin n → ℝ) (B : Finset (Fin n)) => Finset.sum B w; let uniqueOn := fun (Y : Finset (Finset (Fin n))) => ∀ (w : Fin n → ℝ) (c : ℝ), (∀ B ∈ Y, lin w B = c) → ∀ B ∈ layer, lin w B = c; ∃ Y : Finset (Finset (Fin n)), Y.Nonempty ∧ Y ⊆ layer ∧ Y.card = n ∧ detects Y ∧ uniqueOn Y ∧ ∀ (m : ℕ) (A : Fin m → Finset (Fin n)) (a : ℤ), (∀ i, ∀ B ∈ Y, adj (A i) B a) → let M : Matrix (Fin m) (↥Y) ℝ := fun i j => (((A i ∩ j.val).card : ℝ) - (a : ℝ)); ∃ send : Fin m → Fin (M.rank+1), ∃ reply : Fin (M.rank+1) → ↥Y → Bool, ∃ out : Fin m → Bool → Bool, ∀ i j, (out i (reply (send i) j) = true ↔ M i j = 1)",
+  "plain_statement": {
+    "zh": "猜想：恰用 n 列同时实现全行检测、仿射唯一性和按受限矩阵秩计费的协议",
+    "en": "Conjecture: exactly n columns suffice for detection, affine uniqueness and a rank-sized protocol"
+  },
+  "brief": {
+    "zh": "仿射维数给出 n 列下界。难点是同一组恰好 n 列同时检测所有内部行；只构造仿射基或只完成协议推导都不足够。",
+    "en": "Find a minimal affine basis that simultaneously detects every interior row. Apply the proved protocol only after both properties hold."
+  },
+  "program": "correlation",
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/1133bda2e6/lean/PEqualNP/Outside/L_log_rank_cyclic_detector_family.lean",
+  "parallel": true,
+  "depends_on": [
+    "L-log-rank-rank-sized-protocol",
+    "L-log-rank-interval-anchor",
+    "L-log-rank-cyclic-detector-family"
+  ],
+  "imports": [
+    "PEqualNP.Outside.L_log_rank_interval_anchor",
+    "PEqualNP.Outside.L_log_rank_cyclic_detector_family"
+  ]
+}

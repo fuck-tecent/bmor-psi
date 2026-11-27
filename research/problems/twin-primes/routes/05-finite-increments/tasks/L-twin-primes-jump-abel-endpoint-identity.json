@@ -1,0 +1,18 @@
+{
+  "id": "L-twin-primes-jump-abel-endpoint-identity",
+  "statement": "∀ N : ℕ, 2≤N → (∑ t ∈ Finset.Ico 2 N, (∑ n ∈ Finset.range (t-1), ArithmeticFunction.vonMangoldt n * ArithmeticFunction.vonMangoldt (n+2))/((t:ℝ)*(t+1))) = ∑ n ∈ Finset.range (N-1), ArithmeticFunction.vonMangoldt n * ArithmeticFunction.vonMangoldt (n+2) * ((n+2:ℝ)⁻¹-(N:ℝ)⁻¹)",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 方法与自然推广 · 差二跳跃的 Abel 端点权",
+    "en": "New route · Levent GRH methods and extensions · Identify the Abel endpoint weight for gap two"
+  },
+  "brief": {
+    "zh": "对每个整数 $N\\ge2$，令 $\\Delta_t=F_t(3)-2F_t(2)+F_t(1)$，证明 $\\tfrac12\\sum_{t=2}^{N-1}\\Delta_t/(t(t+1))=\\sum_{n+2\\le N}\\Lambda(n)\\Lambda(n+2)(1/(n+2)-1/N)$。使用 `second-difference` 后先按 $n$ 求和，$n+2=N$ 处系数恰为零。",
+    "en": "Expand the nonnegative finite prefix and sum the reciprocal differences by telescoping."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/孪生素数任务拆分3.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

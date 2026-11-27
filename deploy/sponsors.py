@@ -142,45 +142,48 @@ def coinitiator_lockup(path, lang, prefix):
         except sqlite3.Error:
             pass
     co_name = "知乎科学" if zh else "Zhihu Science"
+    initiator_role = "发起人" if zh else "Initiator"
+    co_role = "联合发起：" if zh else "Co-initiator:"
     co_content = (
         f'<img class="coinitiator-logo" src="{prefix}sponsors/logo/{logo_id}.png" alt="{co_name}" loading="eager">'
         if logo_id is not None else f'<strong>{co_name}</strong>'
     )
     return (
         f'<div class="colophon-credits">'
+        f'<span class="colophon-party"><span class="colophon-role">{initiator_role}</span>'
         f'<a class="colophon-person" href="{INITIATOR_URL}" target="_blank" rel="noopener noreferrer">'
         f'<span class="author-avatar" aria-hidden="true">L<img src="{escape(avatar_url)}" alt="" loading="eager" referrerpolicy="no-referrer"></span>'
-        f'<strong>@lifesize</strong></a>'
-        f'<span class="colophon-x" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M2.5 2.5l9 9M11.5 2.5l-9 9"/></svg></span>'
+        f'<strong>@lifesize</strong></a></span>'
+        f'<span class="colophon-sep" aria-hidden="true"></span>'
+        f'<span class="colophon-party colophon-party-co"><span class="colophon-role">{co_role}</span>'
         f'<a class="colophon-org" href="{escape(co_url)}" target="_blank" rel="noopener noreferrer ugc nofollow">'
-        f'{co_content}</a>'
+        f'{co_content}</a></span>'
         f'</div>'
     )
 
 
 def author_colophon(path, lang, prefix, *, goldbach=True):
-    zh = lang == "zh"
-    origin_html = ""
-    if goldbach:
-        if zh:
-            origin_html = (
-                '<p class="colophon-origin">由知乎答主 lifesize 在知乎 AI4S 讨论社群「知乎 研 Club」中发起。知乎科学持续支持研究者连接、公开讨论与阶段成果传播。</p>'
-                f'<p class="colophon-links">'
-                f'<a href="{AI_WORKS_URL}" target="_blank" rel="noopener noreferrer">知乎 AI Works 入口 <span aria-hidden="true">↗</span></a>'
-                f'<span aria-hidden="true">·</span>'
-                f'<a href="{ZHIHU_DISCUSS_URL}" target="_blank" rel="noopener noreferrer">参与知乎公开讨论 <span aria-hidden="true">↗</span></a>'
-                f'</p>'
-            )
-        else:
-            origin_html = (
-                '<p class="colophon-origin">Initiated by Zhihu creator lifesize in the Zhihu AI4S community “Zhihu Yan Club”. Zhihu Science supports connecting researchers, open discussion, and sharing milestones.</p>'
-                f'<p class="colophon-links">'
-                f'<a href="{AI_WORKS_URL}" target="_blank" rel="noopener noreferrer">Zhihu AI Works <span aria-hidden="true">↗</span></a>'
-                f'<span aria-hidden="true">·</span>'
-                f'<a href="{ZHIHU_DISCUSS_URL}" target="_blank" rel="noopener noreferrer">Join open discussion on Zhihu <span aria-hidden="true">↗</span></a>'
-                f'</p>'
-            )
-    return f'<div class="hero-colophon">{coinitiator_lockup(path, lang, prefix)}{origin_html}</div>'
+    return f'<div class="hero-colophon">{coinitiator_lockup(path, lang, prefix)}</div>'
+
+
+def hero_origin_note(lang, *, goldbach=True):
+    if not goldbach:
+        return ""
+    if lang == "zh":
+        return (
+            '<div class="hero-origin">'
+            '<p>由 @lifesize 发起 · 知乎科学联合推动，知乎答主 lifesize 在知乎 AI4S 讨论社群「知乎 研 Club」中发起本次活动。</p>'
+            f'<p>知乎科学持续支持研究者连接、公开讨论与阶段成果传播。'
+            f'<a href="{AI_WORKS_URL}" target="_blank" rel="noopener noreferrer">知乎 AI Works 入口 <span aria-hidden="true">↗</span></a></p>'
+            '</div>'
+        )
+    return (
+        '<div class="hero-origin">'
+        '<p>Initiated by @lifesize and co-promoted with Zhihu Science; Zhihu creator lifesize launched this effort in the Zhihu AI4S community “Zhihu Yan Club”.</p>'
+        f'<p>Zhihu Science supports connecting researchers, open discussion, and sharing milestones. '
+        f'<a href="{AI_WORKS_URL}" target="_blank" rel="noopener noreferrer">Zhihu AI Works <span aria-hidden="true">↗</span></a></p>'
+        '</div>'
+    )
 
 
 def footer_credit(path, lang, prefix):

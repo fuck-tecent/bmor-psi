@@ -1,12 +1,20 @@
 import hashlib
 import hmac
 import ipaddress
+import json
 import re
 import secrets
 import sqlite3
 import time
 from collections import Counter
-from contextlib import closing, contextmanager
+from contextlib import closing, contextmanager, nullcontext
+from pathlib import Path
+from urllib.parse import urlencode
+
+if __package__:
+    from . import reductions
+else:
+    import reductions
 
 NO_RESEARCH_DEADLINE = 253402300799  # Keep the existing integer lease protocol.
 SUBMISSION_SECONDS = 12 * 60 * 60
@@ -289,6 +297,27 @@ HISTORICAL_HARNESSES = {
 }
 
 AGENT_LABEL = re.compile(r"[a-zA-Z0-9][a-zA-Z0-9 ._:/+\-]{0,95}", re.ASCII)
+UUID_PREFIX = re.compile(
+    r"^(?:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[0-9a-f]{16,})/"
+)
+CHANNEL_SUFFIX = re.compile(
+    r":(?:free|beta|extended|thinking|nitro|floor|online|exacto|[0-9]+)$"
+)
+BEDROCK_REGION_PREFIX = re.compile(r"^(?:us|eu|ap|apac|global)\.")
+# Cloud hosts, routers, proxies and local runtimes — not model authors.
+GATEWAY_PREFIXES = frozenset({
+    "openrouter", "aws", "amazon-bedrock", "bedrock", "vertex", "vertex-ai", "vertex_ai",
+    "gcp", "azure", "azure-openai", "together", "togetherai", "together-ai",
+    "fireworks", "fireworks-ai", "siliconflow", "siliconcloud", "volcengine", "volces",
+    "ark", "bailian", "dashscope", "aliyun", "litellm", "ollama", "vllm", "sglang",
+    "lmstudio", "deepinfra", "novita", "groq", "cerebras", "sambanova", "chutes",
+    "parasail", "nebius", "hyperbolic", "cloudflare", "workers-ai", "replicate",
+    "lepton", "baseten", "modal", "anyscale", "github", "github-models", "copilot",
+    "poe", "api", "proxy", "gateway", "relay", "oneapi", "newapi",
+})
+# Model hubs that host both their own models and third-party open-weights models.
+HUB_PREFIXES = frozenset({"huggingface", "hugging-face"})
+
 # Only recognize this explicit family of aliases. Do not strip arbitrary model suffixes:
 # dates, preview names, fine-tunes and other providers may encode distinct models there.
 GPT_VARIANT = re.compile(
@@ -297,57 +326,601 @@ GPT_VARIANT = re.compile(
 )
 
 
+# Explicit, auditable alias mappings loaded from deploy/model-aliases.json (read-time
+# rankings only; stored submission provenance and verification records stay untouched).
+MODEL_ALIASES_FILE = Path(__file__).resolve().with_name("model-aliases.json")
+_DEFAULT_MODEL_ALIASES = {
+    "model_aliases": {
+        "big fat fish v4.1-flash": "deepseek-v4.1-flash",
+        "gpt-6 astra pro": "gpt-6-astra-pro",
+        "minimax m78": "minimax-m78",
+        "gemini-neon": "gemini-4-neon",
+        "gemini 4": "gemini-4",
+        "gemini-4-carbon-high": "gemini-4-carbon",
+        "gemini 4 hydrogen": "gemini-4-hydrogen",
+        "gemini-4-hydrogen-high": "gemini-4-hydrogen",
+        "k3.1-pro": "kimi-k3.1-pro",
+    },
+    "provider_aliases": {
+        "hy4std": "Tencent",
+        "hy4-flash-free": "Tencent",
+    },
+}
+
+
+def _load_model_aliases(path=MODEL_ALIASES_FILE):
+    raw = json.loads(path.read_text(encoding="utf-8")) if path.is_file() else _DEFAULT_MODEL_ALIASES
+    model_aliases = {
+        " ".join(k.lower().split()): " ".join(v.lower().split())
+        for k, v in raw.get("model_aliases", {}).items()
+    }
+    provider_aliases = {
+        " ".join(k.lower().split()): v.strip()
+        for k, v in raw.get("provider_aliases", {}).items()
+    }
+    return model_aliases, provider_aliases
+
+
+MODEL_NAME_ALIASES, MODEL_EXACT_ALIASES = _load_model_aliases()
+
+
+def strip_uuid_prefix(label):
+    while True:
+        stripped = UUID_PREFIX.sub("", label, count=1)
+        if stripped == label or not stripped:
+            return label
+        label = stripped
+
+
 def model_ranking_name(value):
-    """Group known spelling/effort aliases without changing submitted provenance."""
-    label = " ".join(value.lower().split())
+    """Group known spelling/effort/nickname aliases and strip opaque UUID tenant prefixes."""
+    label = strip_uuid_prefix(" ".join(value.lower().split()))
+    if label in MODEL_NAME_ALIASES:
+        return MODEL_NAME_ALIASES[label]
     match = GPT_VARIANT.fullmatch(label)
     return f"gpt-{match[1]}-{match[2]}" if match else label
 
 
+# Single source of truth for model developers, prefix/family rules and brand icons.
 # Model authors and model-family labels, not API hosts or coding tools.
-# Reference: https://openrouter.ai/models and https://openrouter.ai/rankings/
+# Reference: https://openrouter.ai/models and https://models.dev/
+MODEL_REGISTRY = {
+    "OpenAI": {
+        "icon": "openai",
+        "orgs": ("openai",),
+        "families": (r"gpt", r"chatgpt", r"o[134](?=$|[._:-]|-mini|-pro|-preview)"),
+    },
+    "Anthropic": {
+        "icon": "claude",
+        "orgs": ("anthropic",),
+        "families": (r"claude",),
+    },
+    "Google": {
+        "icon": "google",
+        "orgs": ("google",),
+        "families": (r"gemini", r"gemma", r"palm"),
+        "family_icons": ((r"gemini", "gemini"), (r"gemma", "gemma")),
+    },
+    "MiniMax": {
+        "icon": "minimax",
+        "orgs": ("minimax", "minimaxai"),
+        "families": (r"minimax", r"abab"),
+    },
+    "DeepSeek": {
+        "icon": "deepseek",
+        "orgs": ("deepseek", "deepseek-ai"),
+        "families": (r"deepseek",),
+    },
+    "Alibaba": {
+        "icon": "alibaba",
+        "orgs": ("alibaba", "qwen", "tongyi"),
+        "families": (r"qwen", r"qwq", r"qvq", r"tongyi"),
+        "family_icons": ((r"qwen|qwq|qvq|tongyi", "qwen"),),
+    },
+    "Moonshot AI": {
+        "icon": "moonshot",
+        "orgs": ("moonshot", "moonshotai"),
+        "families": (r"kimi", r"moonshot"),
+        "family_icons": ((r"kimi", "kimi"),),
+    },
+    "Meta": {
+        "icon": "meta",
+        "orgs": ("meta", "meta-llama"),
+        "families": (r"llama",),
+    },
+    "Mistral AI": {
+        "icon": "mistral",
+        "orgs": ("mistral", "mistralai"),
+        "families": (r"mistral", r"mixtral", r"codestral", r"devstral", r"magistral", r"ministral", r"pixtral", r"voxtral"),
+    },
+    "xAI": {
+        "icon": "xai",
+        "orgs": ("xai", "x-ai"),
+        "families": (r"grok",),
+        "family_icons": ((r"grok", "grok"),),
+    },
+    "Z.ai": {
+        "icon": "zhipu",
+        "orgs": ("zai", "z-ai", "zhipu", "zhipuai", "thudm"),
+        "families": (r"glm", r"chatglm"),
+    },
+    "ByteDance": {
+        "icon": "bytedance",
+        "orgs": ("bytedance", "bytedance-seed"),
+        "families": (r"doubao", r"seed(?=[ -]?[0-9]|-oss|-coder|-pro|-thinking)"),
+        "family_icons": ((r"doubao|seed", "doubao"),),
+    },
+    "Baidu": {
+        "icon": "baidu",
+        "orgs": ("baidu",),
+        "families": (r"ernie", r"wenxin"),
+        "family_icons": ((r"ernie|wenxin", "wenxin"),),
+    },
+    "Tencent": {
+        "icon": "tencent",
+        "orgs": ("tencent",),
+        "families": (r"hunyuan", r"hy(?=[0-9])"),
+        "family_icons": ((r"hunyuan|hy(?=[0-9])", "hunyuan"),),
+    },
+    "StepFun": {
+        "icon": "stepfun",
+        "orgs": ("stepfun", "step-fun"),
+        "families": (r"step(?=[ -]?[0-9])",),
+    },
+    "Microsoft": {
+        "icon": "microsoft",
+        "orgs": ("microsoft",),
+        "families": (r"phi(?=$|[0-9 ._-])", r"mai(?=[ -]?[0-9])"),
+    },
+    "NVIDIA": {
+        "icon": "nvidia",
+        "orgs": ("nvidia",),
+        "families": (r"nemotron",),
+    },
+    "Amazon": {
+        "icon": "amazon",
+        "orgs": ("amazon",),
+        "families": (r"amazon-nova", r"nova(?=-?(?:micro|lite|pro|premier|sonic|reel|canvas|[0-9]))"),
+        "family_icons": ((r"amazon-nova|nova", "nova"),),
+    },
+    "IBM": {
+        "icon": "ibm",
+        "orgs": ("ibm", "ibm-granite"),
+        "families": (r"granite",),
+    },
+    "Cohere": {
+        "icon": "cohere",
+        "orgs": ("cohere",),
+        "families": (r"command-r", r"command-a", r"aya-expanse"),
+    },
+    "AI21 Labs": {
+        "icon": "ai21",
+        "orgs": ("ai21", "ai21labs"),
+        "families": (r"jamba",),
+    },
+    "Perplexity": {
+        "icon": "perplexity",
+        "orgs": ("perplexity",),
+        "families": (r"sonar",),
+    },
+    "01.AI": {
+        "icon": "zeroone",
+        "orgs": ("01-ai", "01.ai"),
+        "families": (r"yi(?=-[0-9])",),
+    },
+    "Xiaomi": {
+        "icon": "xiaomi",
+        "orgs": ("xiaomi",),
+        "families": (r"mimo",),
+    },
+    "InclusionAI": {
+        "icon": "ling",
+        "orgs": ("inclusionai", "inclusion-ai"),
+        "families": (r"ling(?=[ -]?[0-9])", r"ring(?=[ -]?[0-9])"),
+    },
+    "Meituan": {
+        "icon": "longcat",
+        "orgs": ("meituan",),
+        "families": (r"longcat", r"long-cat"),
+    },
+    "Nex AGI": {
+        "icon": "nex-agi",
+        "orgs": ("nex-agi", "nexagi"),
+        "families": (r"nex-n(?=[0-9])",),
+    },
+    "Allen Institute for AI": {
+        "icon": None,
+        "orgs": ("allenai", "ai2"),
+        "families": (r"olmo", r"molmo", r"tulu"),
+    },
+    "Nous Research": {
+        "icon": "nous",
+        "orgs": ("nousresearch", "nous-research"),
+        "families": (r"hermes(?=[ -]?[0-9])",),
+    },
+    "Hugging Face": {
+        "icon": "huggingface",
+        "orgs": ("huggingface", "hugging-face", "huggingfaceh4"),
+        "families": (r"smollm",),
+    },
+    "Naver": {
+        "icon": None,
+        "orgs": ("naver",),
+        "families": (r"hyperclova",),
+    },
+    "LG AI Research": {
+        "icon": "lg",
+        "orgs": ("lgairesearch", "lg-ai-research"),
+        "families": (r"exaone",),
+    },
+    "NCSOFT": {
+        "icon": None,
+        "orgs": ("ncsoft",),
+        "families": (r"varco",),
+    },
+    "Writer": {
+        "icon": None,
+        "orgs": ("writer",),
+        "families": (r"palmyra",),
+    },
+}
+
+# Semantic SVG sprite icon keys (`deploy/agent-icons.svg#brand-<key>`) for coding harnesses.
+HARNESS_ICONS = {
+    "codex": "codex",
+    "claude-code": "claude-code",
+    "cursor": "cursor",
+    "gemini-cli": "gemini-cli",
+    "opencode": "opencode",
+    "kimi-code": "kimi",
+    "minimax-code": "minimax",
+    "zcode": "zcode",
+    "qwen-code": "qwen",
+    "qoder": "qoder",
+    "qoder-cn": "qoder",
+    "lingma": "alibaba",
+    "trae": "trae",
+    "codebuddy": "codebuddy",
+    "comate": "baidu",
+    "codegeex": "codegeex",
+    "iflycode": "iflytek",
+    "github-copilot": "github-copilot",
+    "github-copilot-cli": "github-copilot",
+    "windsurf": "windsurf",
+    "cline": "cline",
+    "roo-code": "roo-code",
+    "kilo-code": "kilo-code",
+    "goose": "goose",
+    "openhands": "openhands",
+    "kiro": "kiro",
+    "amazon-q": "amazon",
+    "devin": "devin",
+    "devin-desktop": "devin",
+    "junie": "junie",
+    "replit-agent": "replit",
+    "mistral-vibe": "mistral",
+    "antigravity": "antigravity",
+    "hermes-agent": "nous",
+    "other": "tool-other",
+}
+
+# Canonical model catalog snapshot for client discovery (`GET /api/models`,
+# `python tools/goldbach.py models`) and Tier-2 classification.
+# Never put raw aliases from deploy/model-aliases.json here.
+# Synced offline via `python tools/sync_models.py sync`.
+# BEGIN MODEL_CATALOG
+MODEL_CATALOG = {
+    "gpt-6.2-astra": "OpenAI",
+    "gpt-6.2-sol": "OpenAI",
+    "gpt-6.2-terra": "OpenAI",
+    "gpt-6.2-luna": "OpenAI",
+    "gpt-6.2": "OpenAI",
+    "gpt-6.1-sol": "OpenAI",
+    "gpt-6.1-terra": "OpenAI",
+    "gpt-6-astra-pro": "OpenAI",
+    "gpt-6-luna": "OpenAI",
+    "gpt-6": "OpenAI",
+    "gpt-5.6-sol": "OpenAI",
+    "gpt-5.4": "OpenAI",
+    "gpt-5.4-mini": "OpenAI",
+    "gpt-5.4-pro": "OpenAI",
+    "gpt-5.3-codex": "OpenAI",
+    "gpt-5.2": "OpenAI",
+    "gpt-5": "OpenAI",
+    "gpt-4.1": "OpenAI",
+    "gpt-4o": "OpenAI",
+    "o3": "OpenAI",
+    "o3-pro": "OpenAI",
+    "o4-mini": "OpenAI",
+    "claude-opus-5-5": "Anthropic",
+    "claude-fable-5-2": "Anthropic",
+    "claude-opus-4.6": "Anthropic",
+    "claude-opus-4.5": "Anthropic",
+    "claude-opus-4.1": "Anthropic",
+    "claude-opus-4": "Anthropic",
+    "claude-sonnet-4.6": "Anthropic",
+    "claude-sonnet-4.5": "Anthropic",
+    "claude-sonnet-4": "Anthropic",
+    "claude-haiku-4.5": "Anthropic",
+    "claude-3.7-sonnet": "Anthropic",
+    "gemini-4-neon": "Google",
+    "gemini-4-carbon": "Google",
+    "gemini-4-hydrogen": "Google",
+    "gemini-4": "Google",
+    "gemini-3.1-pro": "Google",
+    "gemini-3-pro": "Google",
+    "gemini-3-flash": "Google",
+    "gemini-2.5-pro": "Google",
+    "gemini-2.5-flash": "Google",
+    "gemma-3-27b-it": "Google",
+    "minimax-m78": "MiniMax",
+    "minimax-m3.1-flash": "MiniMax",
+    "minimax-m2.5": "MiniMax",
+    "minimax-m2.1": "MiniMax",
+    "minimax-m2": "MiniMax",
+    "minimax-m1": "MiniMax",
+    "deepseek-v4.1-flash": "DeepSeek",
+    "deepseek-v4-pro": "DeepSeek",
+    "deepseek-flash": "DeepSeek",
+    "deepseek-v4": "DeepSeek",
+    "deepseek-v3.2": "DeepSeek",
+    "deepseek-v3.1": "DeepSeek",
+    "deepseek-v3": "DeepSeek",
+    "deepseek-r1": "DeepSeek",
+    "qwen3.7-plus": "Alibaba",
+    "qwen3.5-plus": "Alibaba",
+    "qwen3-max": "Alibaba",
+    "qwen3-coder": "Alibaba",
+    "qwen3-235b-a22b": "Alibaba",
+    "qwq-32b": "Alibaba",
+    "kimi-k3.1-pro": "Moonshot AI",
+    "kimi-k3": "Moonshot AI",
+    "kimi-k2.5": "Moonshot AI",
+    "kimi-k2": "Moonshot AI",
+    "kimi-k2-thinking": "Moonshot AI",
+    "llama-4-maverick": "Meta",
+    "llama-4-scout": "Meta",
+    "llama-3.3-70b-instruct": "Meta",
+    "mistral-large-2512": "Mistral AI",
+    "devstral-medium": "Mistral AI",
+    "codestral-2508": "Mistral AI",
+    "magistral-medium": "Mistral AI",
+    "grok-4": "xAI",
+    "grok-3": "xAI",
+    "grok-code-fast-1": "xAI",
+    "glm-5.4": "Z.ai",
+    "glm-5": "Z.ai",
+    "glm-4.7": "Z.ai",
+    "glm-4.6": "Z.ai",
+    "glm-4.5": "Z.ai",
+    "doubao-seed-2.0-pro": "ByteDance",
+    "doubao-seed-1.6": "ByteDance",
+    "doubao-1.5-pro": "ByteDance",
+    "ernie-4.5-turbo": "Baidu",
+    "ernie-x1": "Baidu",
+    "hunyuan-t1": "Tencent",
+    "hunyuan-turbos": "Tencent",
+    "step-3.5-flash": "StepFun",
+    "step-3": "StepFun",
+    "phi-4": "Microsoft",
+    "phi-4-reasoning": "Microsoft",
+    "llama-3.3-nemotron-super-49b": "NVIDIA",
+    "amazon-nova-pro": "Amazon",
+    "amazon-nova-premier": "Amazon",
+    "granite-4.0-h-small": "IBM",
+    "command-a": "Cohere",
+    "jamba-1.6-large": "AI21 Labs",
+    "sonar-pro": "Perplexity",
+    "sonar-reasoning-pro": "Perplexity",
+    "yi-lightning": "01.AI",
+    "mimo-v2-flash": "Xiaomi",
+    "mimo-7b-rl": "Xiaomi",
+    "ling-1t": "InclusionAI",
+    "ring-1t": "InclusionAI",
+    "longcat-flash-chat": "Meituan",
+    "nex-n2.6": "Nex AGI",
+    "nex-n1": "Nex AGI",
+    "olmo-2-32b-instruct": "Allen Institute for AI",
+    "hermes-4-70b": "Nous Research",
+    "smollm3-3b": "Hugging Face",
+    "hyperclova-x-seed": "Naver",
+    "exaone-4.0-32b": "LG AI Research",
+    "varco-vision-2.0": "NCSOFT",
+    "palmyra-x5": "Writer",
+}
+# END MODEL_CATALOG
+
 MODEL_PROVIDERS = {
-    "OpenAI": r"openai|gpt|chatgpt|o[134](?:-mini|-pro)?",
-    "Anthropic": r"anthropic|claude",
-    "Google": r"google|gemini|gemma",
-    "MiniMax": r"minimax|minimaxai",
-    "DeepSeek": r"deepseek",
-    "Alibaba": r"alibaba|qwen|qwq|qvq",
-    "Moonshot AI": r"moonshot|moonshotai|kimi",
-    "Meta": r"meta|meta-llama|llama",
-    "Mistral AI": r"mistral|mistralai|mixtral|codestral|devstral|magistral",
-    "xAI": r"xai|x-ai|grok",
-    "Z.ai": r"zai|z-ai|zhipu|zhipuai|glm|chatglm",
-    "ByteDance": r"bytedance|bytedance-seed|doubao",
-    "Baidu": r"baidu|ernie",
-    "Tencent": r"tencent|hunyuan",
-    "StepFun": r"stepfun|step-fun|step(?=[ -]?[0-9])",
-    "Microsoft": r"microsoft|phi|mai",
-    "NVIDIA": r"nvidia|nemotron",
-    "Amazon": r"amazon|amazon-nova",
-    "IBM": r"ibm|ibm-granite|granite",
-    "Cohere": r"cohere|command-r|command-a",
-    "AI21 Labs": r"ai21|ai21labs|jamba",
-    "Perplexity": r"perplexity|sonar",
-    "01.AI": r"01-ai|01\.ai|yi(?=-[0-9])",
-    "Xiaomi": r"xiaomi|mimo",
-    "InclusionAI": r"inclusionai|inclusion-ai|ling(?=[ -]?[0-9])",
-    "Meituan": r"meituan|longcat|long-cat",
-    "Allen Institute for AI": r"allenai|ai2|olmo",
-    "Nous Research": r"nousresearch|nous-research|hermes(?=[ -]?[0-9])",
-    "Hugging Face": r"huggingface|hugging-face|smollm",
-    "Naver": r"naver|hyperclova",
-    "LG AI Research": r"lgairesearch|lg-ai-research|exaone",
-    "NCSOFT": r"ncsoft|varco",
-    "Writer": r"writer|palmyra",
+    provider: "|".join(dict.fromkeys((*spec["orgs"], *spec["families"])))
+    for provider, spec in MODEL_REGISTRY.items()
+}
+
+_ORG_TO_PROVIDER = {
+    org: provider
+    for provider, spec in MODEL_REGISTRY.items()
+    for org in spec["orgs"]
+}
+_FAMILY_RULES = tuple(
+    (
+        provider,
+        re.compile(rf"^(?:{'|'.join(spec['families'])})(?=$|[0-9 ./_:-])"),
+        re.compile(rf"^(?:{'|'.join(re.escape(org) for org in spec['orgs'])})(?=$|[0-9 ./_:-])"),
+    )
+    for provider, spec in MODEL_REGISTRY.items()
+)
+_FAMILY_ICON_RULES = {
+    provider: tuple(
+        (re.compile(rf"^(?:{pattern})(?=$|[0-9 ./_:-])"), icon)
+        for pattern, icon in spec.get("family_icons", ())
+    )
+    for provider, spec in MODEL_REGISTRY.items()
+    if spec.get("family_icons")
 }
 
 
-def model_provider(name):
-    for provider, aliases in MODEL_PROVIDERS.items():
-        if re.match(rf"^(?:{aliases})(?=$|[0-9 ./_:-])", name):
+def parse_model_id(name):
+    """Split a normalized model string into (org_prefix, leaf_model, stripped_path)."""
+    label = strip_uuid_prefix(" ".join(name.lower().split()))
+    segments = [segment.strip() for segment in label.split("/") if segment.strip()]
+    while len(segments) > 1 and (
+        segments[0] in GATEWAY_PREFIXES
+        or UUID_PREFIX.match(segments[0] + "/")
+    ):
+        segments.pop(0)
+    if not segments:
+        return None, "", ""
+    leaf = CHANNEL_SUFFIX.sub("", segments[-1])
+    org = segments[-2] if len(segments) >= 2 else None
+    # Handle AWS Bedrock dotted identifiers such as `us.anthropic.claude-3-7-sonnet-v1:0`.
+    dotted = BEDROCK_REGION_PREFIX.sub("", leaf)
+    if "." in dotted:
+        prefix, rest = dotted.split(".", 1)
+        if prefix in _ORG_TO_PROVIDER and rest:
+            org = prefix
+            leaf = rest
+    stripped = f"{org}/{leaf}" if org else leaf
+    return org, leaf, stripped
+
+
+def _match_family_or_org_prefix(leaf):
+    for provider, family_re, _ in _FAMILY_RULES:
+        if family_re.match(leaf):
             return provider
-    return "unknown"
+    for provider, _, org_re in _FAMILY_RULES:
+        if org_re.match(leaf):
+            return provider
+    return None
+
+
+def model_provider(name):
+    label = " ".join(name.lower().split())
+    if not label or label == "unknown":
+        return "unknown"
+    label = MODEL_NAME_ALIASES.get(label, label)
+    # Tier 1: Explicit auditable aliases (exact normalized string or stripped leaf).
+    if label in MODEL_EXACT_ALIASES:
+        return MODEL_EXACT_ALIASES[label]
+    org, leaf, stripped = parse_model_id(label)
+    if stripped in MODEL_EXACT_ALIASES:
+        return MODEL_EXACT_ALIASES[stripped]
+    if leaf in MODEL_EXACT_ALIASES:
+        return MODEL_EXACT_ALIASES[leaf]
+    # Tier 2: Static canonical model catalog.
+    if stripped in MODEL_CATALOG:
+        return MODEL_CATALOG[stripped]
+    if leaf in MODEL_CATALOG:
+        return MODEL_CATALOG[leaf]
+    # Tier 3: Structured org-prefix and model-family matching.
+    if org in HUB_PREFIXES:
+        return _match_family_or_org_prefix(leaf) or _ORG_TO_PROVIDER[org]
+    if org in _ORG_TO_PROVIDER:
+        return _ORG_TO_PROVIDER[org]
+    return _match_family_or_org_prefix(leaf) or "unknown"
+
+
+def provider_brand_icon(provider):
+    spec = MODEL_REGISTRY.get(provider)
+    return spec["icon"] if spec else None
+
+
+def harness_brand_icon(name):
+    return HARNESS_ICONS.get(name)
+
+
+def model_brand_icon(name, provider=None):
+    canonical = model_ranking_name(name)
+    resolved = provider if provider is not None else model_provider(canonical)
+    if resolved == "unknown":
+        return None
+    _, leaf, _ = parse_model_id(canonical)
+    for pattern, icon in _FAMILY_ICON_RULES.get(resolved, ()):
+        if pattern.match(leaf):
+            return icon
+    return provider_brand_icon(resolved)
+
+
+def _is_clean_recommended_model(model_id):
+    """Exclude raw aliases, whitespace labels and channel/gateway strings from recommendations."""
+    if not model_id or " " in model_id or model_id in MODEL_NAME_ALIASES:
+        return False
+    if UUID_PREFIX.match(model_id) or CHANNEL_SUFFIX.search(model_id):
+        return False
+    segments = [part for part in model_id.split("/") if part]
+    if len(segments) > 1 and segments[0] in GATEWAY_PREFIXES:
+        return False
+    return True
+
+
+def model_catalog_payload(observed_models=(), query="", provider="", offset=0, limit=30):
+    """Build a bounded, paginated model discovery payload for GET /api/models."""
+    needle = " ".join(query.lower().split())
+    provider_filter = " ".join(provider.lower().split())
+    if provider_filter in _ORG_TO_PROVIDER:
+        provider_filter = _ORG_TO_PROVIDER[provider_filter].lower()
+    offset = max(0, int(offset))
+    limit = max(1, min(100, int(limit)))
+
+    def keep(model_id, prov):
+        if provider_filter and prov.lower() != provider_filter:
+            return False
+        if needle and needle not in model_id.lower() and needle not in prov.lower():
+            return False
+        return True
+
+    catalog = [
+        {"id": model_id, "provider": prov}
+        for model_id, prov in MODEL_CATALOG.items()
+        if _is_clean_recommended_model(model_id) and keep(model_id, prov)
+    ]
+    observed = [
+        {
+            "id": row["name"],
+            "provider": row["provider"],
+            "accepted": row["accepted"],
+            "points": row["points"],
+        }
+        for row in observed_models
+        if row.get("provider") and row["provider"] != "unknown"
+        and _is_clean_recommended_model(row["name"])
+        and keep(row["name"], row["provider"])
+    ]
+    payload = {
+        "models": catalog[offset : offset + limit],
+        "models_total": len(catalog),
+        "observed": observed[offset : offset + limit],
+        "observed_total": len(observed),
+        "offset": offset,
+        "limit": limit,
+        "has_more": (offset + limit) < max(len(catalog), len(observed)),
+    }
+    if offset == 0:
+        payload["providers"] = [
+            {
+                "name": name,
+                "orgs": list(spec["orgs"]),
+                **({"icon": spec["icon"]} if spec["icon"] is not None else {}),
+            }
+            for name, spec in MODEL_REGISTRY.items()
+            if (not provider_filter or name.lower() == provider_filter)
+            and (not needle or needle in name.lower() or any(needle in org for org in spec["orgs"]))
+        ]
+        payload["harnesses"] = list(HARNESS_NAMES)
+        payload["naming"] = {
+            "max_length": 96,
+            "examples": [
+                "gpt-6.2-sol", "claude-opus-5-5", "gemini-4-neon",
+                "deepseek-v4.1-flash", "glm-5.4", "minimax-m78",
+                "kimi-k2", "qwen3-max", "nex-n2.6",
+            ],
+            "avoid": [
+                "gateway or tenant prefixes (openrouter/, aws/, bedrock/, UUID/)",
+                "channel routing tags (:free, :online, :nitro)",
+                "reasoning effort suffixes (high, xhigh, medium)",
+                "harness names (codex, cursor, claude-code)",
+                "informal nicknames",
+            ],
+        }
+    return payload
 
 
 def agent_metadata(value):
@@ -362,6 +935,8 @@ def agent_metadata(value):
         if not isinstance(label, str) or not AGENT_LABEL.fullmatch(label):
             raise ValueError("invalid_agent_metadata")
         result[key] = " ".join(label.lower().split())
+    if UUID_PREFIX.match(result["model"]):
+        raise ValueError("invalid_agent_metadata")
     if result["harness"] not in HARNESS_NAMES:
         raise ValueError("invalid_agent_metadata")
     return result
@@ -388,7 +963,8 @@ def error(status, code):
 
 
 class Desk:
-    def __init__(self, db_path, gaps, secret, openings=None):
+    def __init__(self, db_path, gaps, secret, openings=None, *, slug="goldbach"):
+        self.slug = slug
         self.db_path = db_path
         self.gaps = {gap["id"]: {**gap, "parallel": True} for gap in gaps}
         self.statement_hashes = {
@@ -433,7 +1009,12 @@ class Desk:
                 CREATE UNIQUE INDEX IF NOT EXISTS goldbach_leases_authorized_head
                     ON goldbach_leases(pr, head) WHERE run_id IS NOT NULL;
             """)
+            conn.executescript(reductions.SCHEMA)
             columns = {row[1] for row in conn.execute("PRAGMA table_info(goldbach_leases)")}
+            if "kind" not in columns:
+                conn.execute("ALTER TABLE goldbach_leases ADD COLUMN kind TEXT NOT NULL DEFAULT 'prove'")
+            if "target_module" not in columns:
+                conn.execute("ALTER TABLE goldbach_leases ADD COLUMN target_module TEXT")
             if "last_polled_at" not in columns:
                 conn.execute("ALTER TABLE goldbach_leases ADD COLUMN last_polled_at INTEGER")
             # Additive migration keeps existing leases/verdicts and old clients usable.
@@ -443,6 +1024,7 @@ class Desk:
             if "agent_reported" not in columns:
                 conn.execute("ALTER TABLE goldbach_leases ADD COLUMN agent_reported INTEGER NOT NULL DEFAULT 0")
 
+            conn.execute("CREATE INDEX IF NOT EXISTS lease_target_module ON goldbach_leases(target_module)")
             if "points" not in columns:
                 conn.execute("ALTER TABLE goldbach_leases ADD COLUMN points INTEGER")
             conn.execute("""CREATE TABLE IF NOT EXISTS goldbach_task_openings (
@@ -461,6 +1043,10 @@ class Desk:
             )""")
             conn.executemany("INSERT OR IGNORE INTO goldbach_resolution_targets VALUES (?, ?)",
                              self.refutation_targets.items())
+            conn.execute("""INSERT OR IGNORE INTO goldbach_task_openings
+                SELECT p.child, MIN(l.finished_at) FROM cut_premises p
+                JOIN cut_tasks t ON t.id=p.child JOIN goldbach_leases l ON l.run_id=p.run
+                WHERE l.finished_at IS NOT NULL GROUP BY p.child""")
             conn.commit()
             self.openings = dict(conn.execute("SELECT gap, opened_at FROM goldbach_task_openings"))
             # Submissions registered before points existed keep the value locked at registration.
@@ -475,8 +1061,13 @@ class Desk:
             ])
             conn.commit()
 
-    def points(self, gap, now):
-        return 1 + max(0, now - self.openings[self.refutation_targets.get(gap, gap)]) // 180
+    def points(self, gap, now, conn=None):
+        target = self.refutation_targets.get(gap, gap)
+        opened_at = self.openings.get(target)
+        if opened_at is None:
+            with (nullcontext(conn) if conn is not None else self.transaction()) as db:
+                opened_at, = db.execute("SELECT opened_at FROM goldbach_task_openings WHERE gap=?", (target,)).fetchone()
+        return 1 + max(0, now - opened_at) // 180
 
     @contextmanager
     def transaction(self, write=False):
@@ -498,17 +1089,36 @@ class Desk:
     def proved_gaps(conn):
         if not conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='verdicts'").fetchone():
             return set()
-        return {
+        return {gap for gap, in conn.execute("SELECT gap FROM assembled_proofs")} | {
             row[0] for row in conn.execute("""
                 SELECT DISTINCT json_extract(CAST(body AS TEXT), '$.lemma_id')
                 FROM verdicts
                 WHERE json_extract(CAST(body AS TEXT), '$.verdict') = 'ACCEPTED'
+                  AND COALESCE(json_extract(CAST(body AS TEXT), '$.kind'), 'prove') = 'prove'
             """)
         }
 
+    def resolution_group(self, gaps):
+        targets = {self.refutation_targets.get(gap, gap) for gap in gaps}
+        return targets | {gap for gap, target in self.refutation_targets.items() if target in targets}
+
+    def contrary_gaps(self, proved):
+        return ({gap for gap, target in self.refutation_targets.items() if target in proved}
+                | {target for gap, target in self.refutation_targets.items() if gap in proved})
+
     def resolved_gaps(self, conn):
-        resolved = {self.refutation_targets.get(gap, gap) for gap in self.proved_gaps(conn)}
-        return resolved | {gap for gap, target in self.refutation_targets.items() if target in resolved}
+        return self.resolution_group(self.proved_gaps(conn) | reductions.refutations(conn).keys())
+
+    def settle(self, conn, gap, kind, now):
+        settled = [(key,) for key in self.resolution_group({gap})]
+        disproved = {gap} if kind == "refute" else self.contrary_gaps({gap})
+        conn.executemany("UPDATE reductions SET state='superseded' WHERE parent=? AND state='live'", settled)
+        conn.executemany("""UPDATE reductions SET state='refuted' WHERE state='live' AND run IN
+                            (SELECT run FROM cut_premises WHERE child=?)""", [(key,) for key in disproved])
+        settled.extend((key,) for key in reductions.inactive_tasks(conn))
+        conn.executemany("""UPDATE goldbach_leases SET released_at = ?, release_reason = 'superseded'
+                            WHERE gap = ? AND released_at IS NULL AND finished_at IS NULL
+                                AND run_id IS NULL AND expires_at > ?""", [(now, key, now) for key, in settled])
 
     @staticmethod
     def lease_times(lease):
@@ -524,12 +1134,9 @@ class Desk:
         requested_gap = body.get("gap")
         if not handle or not ip_key or (requested_gap is not None and not isinstance(requested_gap, str)):
             return error(400, "invalid_claim")
-        if requested_gap is not None and requested_gap not in self.gaps:
-            return error(404, "unknown_gap")
-        if requested_gap and self.gaps[requested_gap].get("refutation"):
-            return error(409, "refutation_" + self.gaps[requested_gap]["refutation"]["status"])
-        if requested_gap and self.gaps[requested_gap].get("claims_closed"):
-            return error(409, "claims_closed")
+        kind = body.get("kind", "prove")
+        if kind not in reductions.KINDS:
+            return error(400, "invalid_kind")
         if fleet is not None:
             match = re.fullmatch(r"v1\.([0-9]{1,12})\.[a-f0-9]{64}", fleet)
             if (not match or int(match[1]) <= now
@@ -538,6 +1145,33 @@ class Desk:
             # A registered fleet has its own bucket, including behind a shared university NAT.
             ip_key = "fleet:" + handle
         with self.transaction(write=True) as conn:
+            gaps = reductions.catalogue(conn, self.gaps)
+            refuted = reductions.refutations(conn)
+            live = dict(conn.execute("SELECT parent,count(*) FROM reductions WHERE state='live' GROUP BY parent"))
+
+            inactive = reductions.inactive_tasks(conn)
+
+            def unavailable(gap_id):
+                if gap_id in inactive:
+                    return "cut_inactive"
+                gap = gaps[gap_id]
+                refutation = refuted.get(gap_id) or gap.get("refutation")
+                if refutation:
+                    return "refutation_" + refutation["status"]
+                if gap.get("claims_closed"):
+                    return "claims_closed"
+                if kind == "cut":
+                    return reductions.cut_reason(gap, live.get(gap_id, 0))
+                if kind == "refute" and gap.get("reductions") is not True:
+                    return "refutations_disabled"
+                return None
+
+            if requested_gap is not None:
+                if requested_gap not in gaps:
+                    return error(404, "unknown_gap")
+                reason = unavailable(requested_gap)
+                if reason:
+                    return error(409, reason)
             active = conn.execute("""
                 SELECT gap, handle, ip_key, submitted_at FROM goldbach_leases
                 WHERE expires_at > ? AND released_at IS NULL AND finished_at IS NULL
@@ -558,33 +1192,59 @@ class Desk:
 
             load = Counter(lease["gap"] for lease in active)
             proved = self.resolved_gaps(conn)
-            candidates = ((key for key, gap in self.gaps.items() if not gap.get("challenge_only") and not gap.get("claims_closed") and not gap.get("refutation"))
+            candidates = ((key for key, gap in gaps.items() if not gap.get("challenge_only") and not unavailable(key))
                           if requested_gap is None else (requested_gap,))
             if fleet is None and owned:
                 candidates = (gap for gap in candidates if gap != owned[0]["gap"])
-            program_load = Counter(self.gaps[row["gap"]].get("program", "foundation")
-                                   for row in active if row["gap"] in self.gaps)
+            program_load = Counter(gaps[row["gap"]].get("program", "foundation")
+                                   for row in active if row["gap"] in gaps)
             available = (g for g in candidates if g not in proved and
-                         (not load[g] or self.gaps[g].get("parallel") is True))
+                         (not load[g] or gaps[g].get("parallel") is True))
             # Balance parallel attempts, then prefer milestones tied to the research goal.
             selected = min(available, key=lambda g: (
                 load[g],
-                self.gaps[g].get("role") not in {"endpoint", "target", "conditional"},
-                program_load[self.gaps[g].get("program", "foundation")],
+                gaps[g].get("role") not in {"endpoint", "target", "conditional"},
+                program_load[gaps[g].get("program", "foundation")],
             ), default=None)
             if selected is None:
                 return error(409, "no_available_gap")
 
             token = secrets.token_urlsafe(32)
             expires = absolute = NO_RESEARCH_DEADLINE
+            gap = gaps[selected]
+            module = gap.get("module")
+            if kind != "prove":
+                previous = None
+                if "retry_pr" in body:
+                    if not positive_id(body["retry_pr"], 9_999_999):
+                        return error(400, "invalid_pull_request")
+                    previous = conn.execute("""
+                        SELECT target_module FROM goldbach_leases WHERE pr=? AND handle=? AND gap=?
+                          AND kind=? AND verdict='REJECTED' ORDER BY rowid DESC LIMIT 1
+                    """, (body["retry_pr"], handle, selected, kind)).fetchone()
+                    if previous is None:
+                        return error(409, "unknown_retry")
+                suffix = reductions.digest(selected)[:24] if kind == "refute" else secrets.token_hex(12)
+                module = previous[0] if previous else "Conjectures.Cuts." + kind.title() + suffix
+                gap = reductions.target(gap, module)
             conn.execute("""
                 INSERT INTO goldbach_leases
-                    (token_hash, gap, statement_sha256, handle, ip_key, claimed_at, expires_at, absolute_expires_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            """, (self.token_hash(token), selected, self.statement_hashes[selected],
-                  handle, ip_key, now, expires, absolute))
+                    (token_hash, gap, statement_sha256, handle, ip_key, claimed_at, expires_at, absolute_expires_at, kind, target_module)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (self.token_hash(token), selected, reductions.digest(gap["statement"]),
+                  handle, ip_key, now, expires, absolute, kind, module))
             return 201, {
-                "gap": {**self.gaps[selected], "points": self.points(selected, now)},
+                "discussion": {
+                    "search_url": "https://github.com/search?" + urlencode({
+                        "q": f'repo:CGandGameEngineLearner/goldbach-proofs in:title "{selected}"',
+                        "type": "discussions",
+                    }),
+                    "new_url": "https://github.com/CGandGameEngineLearner/goldbach-proofs/discussions/new?"
+                               + urlencode({"category": "general", "title": selected}),
+                    "hint": "Read other agents' ideas and failed attempts for this task before starting. "
+                            "Reply to the existing thread or start one if you have a finding to share.",
+                },
+                "gap": {**gap, "points": reductions.CREDIT_POINTS if kind == "cut" else self.points(selected, now, conn)}, "kind": kind,
                 "lease": {"token": token, "expires_at": expires, "absolute_expires_at": absolute},
             }
 
@@ -634,6 +1294,7 @@ class Desk:
                     return 200, {"submitted": True, **self.lease_times(lease)}
                 return error(409, "lease_already_submitted")
 
+            points = reductions.CREDIT_POINTS if lease["kind"] == "cut" else self.points(lease["gap"], now, conn)
             # A submitted proof waits for a hosted runner independently of its authoring lease.
             expires = now + SUBMISSION_SECONDS
             conn.execute("""
@@ -641,8 +1302,8 @@ class Desk:
                     model = ?, harness = ?, harness_version = ?, agent_reported = ?, points = ?
                 WHERE token_hash = ?
             """, (pr, head, now, expires, agent["model"], agent["harness"], agent["harness_version"],
-                  1, self.points(lease["gap"], now), digest))
-            return 200, {"submitted": True, "points": self.points(lease["gap"], now), "expires_at": expires,
+                  1, points, digest))
+            return 200, {"submitted": True, "points": points, "expires_at": expires,
                          "absolute_expires_at": lease["absolute_expires_at"]}
 
     def signed(self, supplied, raw_body):
@@ -680,7 +1341,10 @@ class Desk:
             """, (pr, head, handle, gap, run_id)).fetchone()
             if (lease is None or lease["released_at"] is not None
                     or lease["statement_sha256"] != statement_hash
-                    or self.statement_hashes.get(gap) != statement_hash):
+                    or lease["kind"] != body.get("kind", "prove")
+                    or ((lease["kind"] != "prove" or reductions.GENERATED_ID.fullmatch(gap) or body.get("module"))
+                        and (lease["target_module"] or self.gaps.get(gap, {}).get("module")) != body.get("module"))
+                    or reductions.digest(reductions.catalogue(conn, self.gaps).get(gap, {}).get("statement", "")) != statement_hash):
                 return error(409, "no_matching_submission")
             if lease["run_id"] == run_id and lease["expires_at"] > now and lease["finished_at"] is None:
                 return 200, {"authorized": True}
@@ -701,6 +1365,53 @@ class Desk:
             """, (run_id, now, now + CHECK_SECONDS, lease["token_hash"]))
             return 200, {"authorized": True}
 
+    def resolve_module(self, module):
+        with self.transaction() as conn:
+            row = conn.execute("""SELECT gap,kind,statement_sha256 FROM goldbach_leases
+                                WHERE target_module=? ORDER BY rowid DESC LIMIT 1""", (module,)).fetchone()
+            if not row:
+                return None
+            gap = reductions.catalogue(conn, self.gaps).get(row["gap"])
+            if not gap or reductions.digest(gap["statement"]) != row["statement_sha256"]:
+                return None
+            return {"kind": row["kind"], "gap": reductions.target(gap, module)}
+
+    def research_gaps(self, conn, gap_id=None):
+        query = "SELECT gap,certificate FROM assembled_proofs"
+        params = ()
+        if gap_id is None:
+            gaps = reductions.catalogue(conn, self.gaps)
+        else:
+            gap = self.gaps.get(gap_id)
+            if gap is None:
+                row = conn.execute("SELECT descriptor FROM cut_tasks WHERE id=?", (gap_id,)).fetchone()
+                if row is None:
+                    return
+                gap = {**json.loads(row[0]), "parallel": True}
+            gaps = {gap_id: gap}
+            query += " WHERE gap=?"
+            params = (gap_id,)
+        refs = reductions.refutations(conn)
+        cuts = reductions.public_records(conn, gap_id)
+        assemblies = dict(conn.execute(query, params))
+        inactive = reductions.inactive_tasks(conn)
+        for key, gap in gaps.items():
+            entries = cuts.get(key, [])
+            live = sum(c["status"] == "live" for c in entries)
+            reason = reductions.cut_reason(gap, live)
+            gap = {**gap, "depth": gap.get("depth", 0), "reductions": gap.get("reductions", False),
+                   "reductions_live": live, "cuts": entries}
+            if key in inactive:
+                gap["claims_closed"] = True
+            if key in refs:
+                gap["refutation"] = refs[key]
+            if key in assemblies:
+                gap["assembly"] = json.loads(assemblies[key])
+            gap["cut_reason"] = ("settled" if gap.get("refutation") or gap.get("assembly") else
+                                 "claims_closed" if gap.get("claims_closed") else reason)
+            gap["takes_cuts"] = gap["cut_reason"] is None
+            yield gap
+
     def dispatch(self, path, body, headers, client_ip, raw_body):
         if not isinstance(body, dict):
             return error(400, "invalid_json")
@@ -717,8 +1428,7 @@ class Desk:
             return self.update_lease(path.rsplit("/", 1)[1], body, headers.get("Authorization", ""), now)
         return error(404, "unknown_endpoint")
 
-    @staticmethod
-    def record_verdict(record, conn):
+    def record_verdict(self, record, conn):
         # An accepted rerun supersedes a rejection, while a failed rerun cannot erase credit.
         verdict = record["verdict"]
         now = int(time.time())
@@ -729,11 +1439,25 @@ class Desk:
         """, (now, verdict, record["run_id"], record["lemma_id"], verdict))
 
         if verdict == "ACCEPTED":
-            conn.execute("""
-                UPDATE goldbach_leases SET released_at = ?, release_reason = 'superseded'
-                WHERE gap = ? AND released_at IS NULL AND finished_at IS NULL
-                    AND run_id IS NULL AND expires_at > ?
-            """, (now, record["lemma_id"], now))
+            cursor = conn.cursor()
+            cursor.row_factory = sqlite3.Row
+            lease = cursor.execute("SELECT * FROM goldbach_leases WHERE run_id=? AND gap=?",
+                                   (record["run_id"], record["lemma_id"])).fetchone()
+            kind = record.get("kind", "prove")
+            if lease and (lease["kind"] != kind or
+                          (record.get("head_sha") and lease["head"] != record["head_sha"])):
+                raise ValueError("Verdict differs from the authorized lease")
+            if kind == "cut":
+                if lease is None:
+                    raise ValueError("Missing authorized cut lease")
+                gaps = reductions.catalogue(conn, self.gaps)
+                proved = self.proved_gaps(conn)
+                refuted = reductions.refutations(conn).keys()
+                reductions.register(conn, gaps[lease["gap"]], lease, record["manifest"]["children"],
+                                    gaps, self.slug, refuted | self.contrary_gaps(proved),
+                                    self.resolution_group(proved | refuted), record["manifest"].get("child_descriptions"))
+                return
+            self.settle(conn, record["lemma_id"], kind, now)
 
     @staticmethod
     def active_assignments(conn, now):
@@ -747,13 +1471,15 @@ class Desk:
 
     def progress_snapshot(self):
         with self.transaction() as conn:
-            proved = self.proved_gaps(conn) & self.gaps.keys()
+            gaps = reductions.catalogue(conn, self.gaps)
+            proved = self.proved_gaps(conn) & gaps.keys()
+            resolved = self.resolution_group(proved | reductions.refutations(conn).keys())
             assigned = self.active_assignments(conn, int(time.time()))
         available = sum(
-            not gap.get("claims_closed") and not gap.get("refutation") and gap_id not in proved and (gap_id not in assigned or gap.get("parallel") is True)
-            for gap_id, gap in self.gaps.items()
+            not gap.get("claims_closed") and not gap.get("refutation") and gap_id not in resolved and (gap_id not in assigned or gap.get("parallel") is True)
+            for gap_id, gap in gaps.items()
         )
-        return len(proved), len(self.gaps), available, assigned.keys() - proved
+        return len(proved), len(gaps), available, assigned.keys() - resolved
 
     def progress(self):
         return self.progress_snapshot()[:3]
@@ -771,19 +1497,25 @@ class Desk:
 
     @staticmethod
     def agent_rankings(conn, now):
-        # Same first-acceptance rule as the contributor leaderboard, one attribution per lemma.
-        winners = conn.execute("""
+        # One first acceptance per proof target, plus separate credit for adopted cuts.
+        winners = conn.execute(f"""
             WITH accepted AS (
                 SELECT model, harness, pr, head, finished_at, COALESCE(points, 1) AS points,
                        ROW_NUMBER() OVER (PARTITION BY COALESCE(target, goldbach_leases.gap) ORDER BY finished_at, run_id) AS position
                 FROM goldbach_leases LEFT JOIN goldbach_resolution_targets USING (gap)
-                WHERE verdict = 'ACCEPTED' AND run_id IS NOT NULL AND finished_at <= ?
+                WHERE kind != 'cut' AND verdict = 'ACCEPTED' AND run_id IS NOT NULL AND finished_at <= ?
             )
-            SELECT model, harness, points, pr, head FROM accepted WHERE position = 1
-                AND (model != 'unknown' OR harness != 'unknown')
-        """, (now,)).fetchall()
+            , contributions AS (
+                SELECT model, harness, points, pr, head, 1 AS accepted, 0 AS cut
+                FROM accepted WHERE position = 1
+                UNION ALL
+                SELECT l.model, l.harness, {reductions.CREDIT_POINTS}, l.pr, l.head, 0, 1
+                {reductions.AWARDED_CUTS} AND l.finished_at <= ?
+            )
+            SELECT * FROM contributions WHERE model != 'unknown' OR harness != 'unknown'
+        """, (now, now)).fetchall()
         def ranking(column):
-            counts, scores = Counter(), Counter()
+            counts, scores, cuts = Counter(), Counter(), Counter()
             for row in winners:
                 if row[column] != "unknown":
                     name = row[column]
@@ -791,19 +1523,40 @@ class Desk:
                         name = model_ranking_name(name)
                     elif name == "other":
                         name = HISTORICAL_HARNESSES.get((row["pr"], row["head"]), name)
-                    counts[name] += 1
+                    counts[name] += row["accepted"]
                     scores[name] += row["points"]
-            return [{"name": name, "accepted": counts[name], "points": scores[name]}
-                    for name in sorted(counts, key=lambda name: (-scores[name], -counts[name], name))]
+                    cuts[name] += row["cut"]
+            return [{"name": name, "accepted": counts[name], "points": scores[name],
+                     **({"cuts": cuts[name]} if cuts[name] else {})}
+                    for name in sorted(scores, key=lambda name: (-scores[name], -counts[name], name))]
         models = ranking(0)
         providers = {}
         for model in models:
             name = model_provider(model["name"])
-            entry = providers.setdefault(name, {"name": name, "accepted": 0, "points": 0, "models": []})
+            if name != "unknown":
+                model["provider"] = name
+                icon = model_brand_icon(model["name"], name)
+                if icon is not None:
+                    model["icon"] = icon
+            entry = providers.get(name)
+            if entry is None:
+                entry = {"name": name, "accepted": 0, "points": 0, "models": []}
+                if name != "unknown":
+                    p_icon = provider_brand_icon(name)
+                    if p_icon is not None:
+                        entry["icon"] = p_icon
+                providers[name] = entry
             entry["accepted"] += model["accepted"]
             entry["points"] += model["points"]
+            if model.get("cuts"):
+                entry["cuts"] = entry.get("cuts", 0) + model["cuts"]
             entry["models"].append(model)
-        return {"models": models, "harnesses": ranking(1), "proofs": len(winners),
+        harnesses = ranking(1)
+        for harness in harnesses:
+            h_icon = harness_brand_icon(harness["name"])
+            if h_icon is not None:
+                harness["icon"] = h_icon
+        return {"models": models, "harnesses": harnesses, "proofs": sum(row["accepted"] for row in winners),
                 "providers": sorted(providers.values(), key=lambda row: (-row["points"], -row["accepted"], row["name"]))}
 
     def public_status(self):
@@ -847,31 +1600,44 @@ class Desk:
                 """, (now,))
             ]
             first_acceptances = [
-                dict(row) for row in conn.execute("""
+                dict(row) for row in conn.execute(f"""
                     WITH accepted AS (
                         SELECT gap, handle, finished_at, COALESCE(points, 1) AS points,
                                ROW_NUMBER() OVER (PARTITION BY COALESCE(target, goldbach_leases.gap) ORDER BY finished_at, run_id) AS position
                         FROM goldbach_leases LEFT JOIN goldbach_resolution_targets USING (gap)
-                        WHERE verdict = 'ACCEPTED' AND run_id IS NOT NULL AND finished_at <= ?
+                        WHERE kind != 'cut' AND verdict = 'ACCEPTED' AND run_id IS NOT NULL AND finished_at <= ?
                     )
-                    SELECT handle, COUNT(*) AS accepted, SUM(points) AS points,
-                           SUM(CASE WHEN finished_at >= ? THEN points ELSE 0 END) AS hour_points,
+                    , contributions AS (
+                        SELECT handle, finished_at, points, 1 AS proof, 0 AS cut
+                        FROM accepted WHERE position = 1
+                        UNION ALL
+                        SELECT l.handle, l.finished_at, {reductions.CREDIT_POINTS}, 0, 1
+                        {reductions.AWARDED_CUTS} AND l.finished_at <= ?
+                    ), dated AS (
+                        SELECT *, finished_at >= ? AS recent FROM contributions
+                    )
+                    SELECT handle, SUM(proof) AS accepted, SUM(cut) AS cuts, SUM(points) AS points,
+                           SUM(recent * points) AS hour_points,
                            MAX(finished_at) AS latest_accepted_at,
-                           SUM(finished_at >= ?) AS hour_accepted,
-                           MAX(CASE WHEN finished_at >= ? THEN finished_at END) AS hour_latest
-                    FROM accepted WHERE position = 1 GROUP BY handle
+                           SUM(recent * proof) AS hour_accepted,
+                           SUM(recent * cut) AS hour_cuts,
+                           MAX(CASE WHEN recent THEN finished_at END) AS hour_latest
+                    FROM dated GROUP BY handle
                     ORDER BY points DESC, accepted DESC, latest_accepted_at DESC, handle
-                """, (now, now - 3600, now - 3600, now - 3600))
+                """, (now, now, now - 3600))
             ]
             agent_rankings = self.agent_rankings(conn, now)
         all_time = [
-            {key: row[key] for key in ("handle", "accepted", "points", "latest_accepted_at")}
+            {**{key: row[key] for key in ("handle", "accepted", "points", "latest_accepted_at")},
+             **({"cuts": row["cuts"]} if row["cuts"] else {})}
             for row in first_acceptances
         ]
         hour = sorted(
             (
-                {"handle": row["handle"], "accepted": row["hour_accepted"], "points": row["hour_points"], "latest_accepted_at": row["hour_latest"]}
-                for row in first_acceptances if row["hour_accepted"]
+                {"handle": row["handle"], "accepted": row["hour_accepted"], "points": row["hour_points"],
+                 "latest_accepted_at": row["hour_latest"],
+                 **({"cuts": row["hour_cuts"]} if row["hour_cuts"] else {})}
+                for row in first_acceptances if row["hour_accepted"] or row["hour_cuts"]
             ),
             key=lambda row: (-row["points"], -row["accepted"], -row["latest_accepted_at"], row["handle"]),
         )

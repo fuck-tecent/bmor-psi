@@ -1,0 +1,18 @@
+{
+  "id": "L-quadratic-primes-gaussian-annulus-determinant-fibers",
+  "statement": "∀ a b c d : ℤ, (a,b) ≠ (0,0) → let g : ℤ := Int.gcd a b; ∀ u v : ℤ, a*v-b*u=a*d-b*c ↔ ∃ t : ℤ, u=c+t*(a/g) ∧ v=d+t*(b/g)",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 方法与自然推广 · 高斯环带中的行列式纤维",
+    "en": "New route · Levent GRH methods and extensions · Parametrize the Gaussian annulus determinant fibers"
+  },
+  "brief": {
+    "zh": "固定 A07 的 $z=(a,b)$、$g_0=\\gcd(a,b)$ 与有符号整数 $D$。解 $\\det(z,w)=D$ 需 $g_0\\mid D$，一旦有一解，全部解为 $w_0+t z/g_0$。因此环带内至多 $O(1+xg_0/\\vert z\\vert)$ 个格点。实部条件由一次单位旋转化到同一计数。保留 $D=0$ 的共线族，给 A07 的每个非零 $d$ 提供有限上界。",
+    "en": "Use the primitive vector obtained by dividing by the gcd. Two solutions differ by an integer multiple of this vector."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/checkpoint/近平方素数任务拆分3.md",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}
