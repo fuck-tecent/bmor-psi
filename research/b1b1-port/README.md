@@ -133,3 +133,54 @@ and unweighted waves, which is exactly the shape the imported machinery handles.
 
 * `atoms.lean` — compiles, no `sorry`.
 * next: the `Λ = μ * log` re-expansion of `atomWave` into unweighted waves.
+
+## Milestone 2 (`b1b1_port.lean`): the exact b1-b1 far/near decomposition
+
+The file now contains (all verified, no `sorry`):
+
+```lean
+wwave c u l r t      -- weighted progression ∑_{h ∈ (l,r]} c h · e(u h t)
+woffWave c b u l r   -- the grid-neighbourhood complement of wwave
+continuous_wwave
+wwave_at_cell_center -- q ∣ g ⟹ wwave c g l r (t + a/q) = wwave c g l r t
+integral_cell_wwave
+centered_deep_wwave_integral  -- weighted centred annulus integral = Ramanujan sum
+split_shifted_wwave           -- weighted far/near split
+```
+
+i.e. the two structural lemmas of the verified `b1-b4` module are re-proved for
+arbitrary progression weights.  Their only arithmetic input is
+`q ∣ g → e(g h a/q) = 1`, which is weight-independent.
+
+Then:
+
+```lean
+plainPolynomial_tau1   -- S_{τ₁} = ∑_{a ∈ (U,B₁]} c(a) · wwave Λ a U (n/a)
+deepIntegral_eq_task   -- the port's Jdeep equals the task integrand
+deepIntegral_split     -- Jdeep = ∑_{a ∈ (U,B₁]} c(a) · (farPart n a + nearPart n a)
+```
+
+with
+
+```text
+farPart n a  = ∫_{wideArcsᶜ} S_{τ₁} · offWave(Λ, a, U, n/a)
+nearPart n a = ∑_{q | a, q > R} ∑_{m ≤ n} τ₁(m) · c_q(m - n) ·
+                 ∫_{window q} e((m-n)t) · wwave Λ a U (n/a)
+```
+
+**No new parameter arithmetic is needed**: `M := maximumStep n = cutoffU n * cutoffB n`
+satisfies every hypothesis of `split_shifted_wwave`, because
+`cutoffB n ≤ maximumStep n`, `cutoffR n ≤ cutoffB n` and
+`cutoffR n · n · radius (maximumStep n) ≤ cutoffH n` are exactly
+`cutoffs_ordered` and `cutoffR_covered` from the verified module, and the atom
+steps are `a ≤ lowCut n ≤ cutoffB n ≤ maximumStep n`.
+
+### Remaining two estimates
+
+* **far**: needs the weighted analogue of `offWave_mass_le_weighted`, replacing
+  `∫ |wave|² = r - l` by `∫ |wwave Λ|² = ∑_{h} Λ(h)²`.  Scale:
+  `√n · maximumStep · W ≈ n^(43/48+o(1)) = o(n)`.
+* **near**: must be bounded below `n^(43/48)`.  The crude bound
+  (absolute values, `|c_q| ≤ q`, `|window| ≤ 2·radius M`) gives only
+  `≈ n^(5/4+o(1))`, so the `progressionAverage` / `windowKernel` smoothing must
+  be redone in weighted form.  This is the remaining substantial piece.
