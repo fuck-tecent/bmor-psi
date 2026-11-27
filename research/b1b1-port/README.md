@@ -2318,3 +2318,66 @@ cofactor range — item 3, which is the analytic input.
 
 Dossier: 2578 lines (imports `L_goldbach_bulk_density_one`), 121 verified declarations (90 theorems, 22 defs, 9 lemmas),
 no `sorry`.
+
+## Milestone 40: Cauchy–Schwarz for the deep-minor pair integral
+
+Both residual estimates of the `τ₃` reduction reduce to one inequality: the deep-minor
+bilinear integral is bounded by the product of the two `L²` masses.  Verified:
+
+```lean
+theorem norm_phase (x : ℝ) : ‖phase x‖ = 1
+
+/-- Cauchy–Schwarz for a product integral on a set inside `(0,1]`. -/
+theorem norm_setIntegral_mul_le_sqrt {E : Set ℝ} (hE : MeasurableSet E)
+    (hEsub : E ⊆ Set.Ioc (0:ℝ) 1) {f g : ℝ → ℂ} (Cf Cg : ℝ)
+    (hf : Continuous f) (hg : Continuous g)
+    (hfb : ∀ t, ‖f t‖ ≤ Cf) (hgb : ∀ t, ‖g t‖ ≤ Cg) :
+  ‖∫ t in E, f t * g t‖
+    ≤ √(∫ t in E, ‖f t‖²) * √(∫ t in E, ‖g t‖²)
+
+/-- **Cross term**: `|Jdeep(u,v)| ≤ ‖S_u‖₂ ‖S_v‖₂`. -/
+theorem norm_deepCross_le_sqrt {E} (hE) (hEsub) (n) (u v) (Cu Cv) (hu) (hv) :
+  ‖∫ t in E, S_u t * S_v t * phase (-(n:ℝ)*t)‖
+    ≤ √(∫ t in E, ‖S_u t‖²) * √(∫ t in E, ‖S_v t‖²)
+
+/-- **Self term**: `|Jdeep(u,u)| ≤ ‖S_u‖₂²`. -/
+theorem norm_deepSelf_le {E} (hE) (hEsub) (n) (u) (Cu) (hu) :
+  ‖∫ t in E, S_u t * S_u t * phase (-(n:ℝ)*t)‖ ≤ ∫ t in E, ‖S_u t‖²
+```
+
+Combined with the support lemma of M39 (`le_mul_of_cofactor_le`), the `τ₃` residual is
+handled as follows: the residual (`a ≤ n^(2/5)` or `m/a ≤ n^(2/5)`) is supported on
+`m ≤ B₃·n^(2/5) = n^(13/15)`, so
+
+```text
+‖S_res‖₂² = ∑_{m ≤ n^(13/15)} |τ_res(m)|² = n^(13/15+o(1)) = o(n)
+‖S_res‖₂  = n^(13/30+o(1))
+```
+
+and then
+
+```text
+|Jdeep(res,res)| ≤ ‖S_res‖₂²                    = o(n)
+|Jdeep(main,res)| ≤ ‖S_τ₃‖₂ ‖S_res‖₂ = n^(14/15+o(1)) = o(n)
+```
+
+so `Jdeep(τ₃,τ₃) = Jdeep(main,main) + o(n)`.  **This is the reduction of outcome B** in the
+outcome table; it is a reduction, not the task.
+
+Landmines recorded:
+
+* In this file `μ` is the Möbius arithmetic function (via
+  `open scoped ArithmeticFunction.Moebius`), so `(μ := …)` cannot be used as a named
+  argument — `integral_mul_norm_le_Lp_mul_Lq μ` parses `μ` as the Möbius function.
+  Workaround: state the `MemLp` hypotheses with `ENNReal.ofReal 2` so the measure is
+  inferred, and pass no `μ`.
+* `Real.rpow_natCast`/`Real.rpow_two`: `integral_mul_norm_le_Lp_mul_Lq` produces
+  `x ^ (2 : ℝ)` (real power), while the natural statement uses `x ^ 2`.  `Real.rpow_two`
+  is the rewrite; `simp only [Real.rpow_natCast]` makes no progress on the literal.
+* `(μ := …)` aside, `∫ t in E, ‖g t‖ ^ 2` prints beta-reduced but `rw` inside
+  `Filter.Eventually.of_forall (fun t => ·)` sees `(fun t => …) t`; use
+  `simp only [hnorm t]` rather than `rw`.
+* `Jdeep`'s integrand is `(S_u * S_v) * phase`, while the general lemma yields
+  `S_u * (S_v * phase)`; the bridge is one `integral_congr_ae` with `simp only [mul_assoc]`.
+
+Dossier: 2578 → 2684 lines, 121 → 126 verified declarations, no `sorry`.

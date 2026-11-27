@@ -2575,4 +2575,106 @@ theorem typeIIBlock_norm_le_general (θ : ℝ) (a : ℤ) (q : ℕ) (hq : 0 < q)
     (by exact_mod_cast hN) (by exact_mod_cast hq) (by norm_num)
     (by exact_mod_cast hU) (by exact_mod_cast hV) hb
 
+/-! ### Milestone 40: Cauchy–Schwarz for the deep-minor pair integral
+
+Both residual estimates of the `τ₃` reduction need the same inequality: the deep-minor
+*bilinear* integral is bounded by the product of the two `L²` masses,
+
+```text
+|Jdeep(u,v)| ≤ ‖S_u‖₂ · ‖S_v‖₂ ,      |Jdeep(u,u)| ≤ ‖S_u‖₂² .
+```
+
+This is what lets a residual coefficient supported on a short range `m ≤ n^(13/15)`
+be discarded: its `L²` mass is `o(n)`. -/
+
+/-- The complex exponential of a real has norm one. -/
+theorem norm_phase (x : ℝ) : ‖phase x‖ = 1 := by
+  unfold phase
+  rw [Complex.norm_exp]
+  simp [Complex.mul_re, Complex.mul_im]
+
+/-- **Cauchy–Schwarz for the integral of a product**, on a set inside `(0,1]` and with
+globally bounded factors. -/
+theorem norm_setIntegral_mul_le_sqrt {E : Set ℝ} (hE : MeasurableSet E)
+    (hEsub : E ⊆ Set.Ioc (0:ℝ) 1)
+    {f g : ℝ → ℂ} (Cf Cg : ℝ) (hf : Continuous f) (hg : Continuous g)
+    (hfb : ∀ t, ‖f t‖ ≤ Cf) (hgb : ∀ t, ‖g t‖ ≤ Cg) :
+    ‖∫ t in E, f t * g t‖
+      ≤ Real.sqrt (∫ t in E, ‖f t‖ ^ 2) * Real.sqrt (∫ t in E, ‖g t‖ ^ 2) := by
+  have hIoc : volume (Set.Ioc (0:ℝ) 1) < ⊤ := by
+    rw [Real.volume_Ioc]
+    simp
+  have hfin : volume E < ⊤ := (measure_mono hEsub).trans_lt hIoc
+  have hfin' : (volume.restrict E) Set.univ < ⊤ := by
+    rw [Measure.restrict_apply_univ]
+    exact hfin
+  haveI : IsFiniteMeasure (volume.restrict E) := ⟨hfin'⟩
+  have hfM : MemLp f (ENNReal.ofReal 2) (volume.restrict E) := by
+    simpa using MemLp.of_bound hf.aestronglyMeasurable Cf
+      (Filter.Eventually.of_forall hfb)
+  have hgM : MemLp g (ENNReal.ofReal 2) (volume.restrict E) := by
+    simpa using MemLp.of_bound hg.aestronglyMeasurable Cg
+      (Filter.Eventually.of_forall hgb)
+  have hpq : (2:ℝ).HolderConjugate 2 :=
+    { inv_add_inv_eq_inv := by norm_num, left_pos := by norm_num, right_pos := by norm_num }
+  have h := integral_mul_norm_le_Lp_mul_Lq (f := f) (g := g) (p := 2) (q := 2) hpq hfM hgM
+  calc ‖∫ t in E, f t * g t‖
+      ≤ ∫ t in E, ‖f t * g t‖ := norm_integral_le_integral_norm _
+    _ = ∫ t in E, ‖f t‖ * ‖g t‖ := by simp only [norm_mul]
+    _ ≤ Real.sqrt (∫ t in E, ‖f t‖ ^ 2) * Real.sqrt (∫ t in E, ‖g t‖ ^ 2) := by
+        refine h.trans (le_of_eq ?_)
+        simp only [Real.rpow_two]
+        rw [Real.sqrt_eq_rpow, Real.sqrt_eq_rpow]
+
+/-- **Cross term.**  `|Jdeep(u,v)| ≤ ‖S_u‖₂ ‖S_v‖₂`. -/
+theorem norm_deepCross_le_sqrt {E : Set ℝ} (hE : MeasurableSet E)
+    (hEsub : E ⊆ Set.Ioc (0:ℝ) 1) (n : ℕ) (u v : ℕ → ℂ) (Cu Cv : ℝ)
+    (hu : ∀ t, ‖plainPolynomial n u t‖ ≤ Cu)
+    (hv : ∀ t, ‖plainPolynomial n v t‖ ≤ Cv) :
+    ‖∫ t in E, plainPolynomial n u t * plainPolynomial n v t * phase (-(n:ℝ)*t)‖
+      ≤ Real.sqrt (∫ t in E, ‖plainPolynomial n u t‖ ^ 2)
+        * Real.sqrt (∫ t in E, ‖plainPolynomial n v t‖ ^ 2) := by
+  have hnorm : ∀ t : ℝ,
+      ‖plainPolynomial n v t * phase (-(n:ℝ)*t)‖ = ‖plainPolynomial n v t‖ := by
+    intro t
+    rw [norm_mul, norm_phase (x := -(n:ℝ)*t), mul_one]
+  have hgb : ∀ t : ℝ, ‖plainPolynomial n v t * phase (-(n:ℝ)*t)‖ ≤ Cv := by
+    intro t
+    rw [hnorm t]
+    exact hv t
+  have h := norm_setIntegral_mul_le_sqrt (E := E)
+    (f := plainPolynomial n u)
+    (g := fun t : ℝ => plainPolynomial n v t * phase (-(n:ℝ)*t)) hE hEsub Cu Cv
+    (by unfold plainPolynomial phase; fun_prop)
+    ((by unfold plainPolynomial phase; fun_prop : Continuous (plainPolynomial n v)).mul
+      (by unfold phase; fun_prop))
+    hu hgb
+  have hint : (∫ t in E, ‖plainPolynomial n v t * phase (-(n:ℝ)*t)‖ ^ 2)
+      = ∫ t in E, ‖plainPolynomial n v t‖ ^ 2 :=
+    MeasureTheory.integral_congr_ae
+      (Filter.Eventually.of_forall (fun t => by simp only [hnorm t]))
+  rw [hint] at h
+  have hassoc : (∫ t in E, plainPolynomial n u t
+        * (plainPolynomial n v t * phase (-(n:ℝ)*t)))
+      = ∫ t in E, plainPolynomial n u t * plainPolynomial n v t * phase (-(n:ℝ)*t) :=
+    MeasureTheory.integral_congr_ae
+      (Filter.Eventually.of_forall (fun t => by simp only [mul_assoc]))
+  rw [hassoc] at h
+  exact h
+
+/-- **Self term.**  `|Jdeep(u,u)| ≤ ‖S_u‖₂²`. -/
+theorem norm_deepSelf_le {E : Set ℝ} (hE : MeasurableSet E)
+    (hEsub : E ⊆ Set.Ioc (0:ℝ) 1) (n : ℕ) (u : ℕ → ℂ) (Cu : ℝ)
+    (hu : ∀ t, ‖plainPolynomial n u t‖ ≤ Cu) :
+    ‖∫ t in E, plainPolynomial n u t * plainPolynomial n u t * phase (-(n:ℝ)*t)‖
+      ≤ ∫ t in E, ‖plainPolynomial n u t‖ ^ 2 := by
+  have hA : 0 ≤ ∫ t in E, ‖plainPolynomial n u t‖ ^ 2 := by positivity
+  have h := norm_deepCross_le_sqrt hE hEsub n u u Cu Cu hu hu
+  calc ‖∫ t in E, plainPolynomial n u t * plainPolynomial n u t * phase (-(n:ℝ)*t)‖
+      ≤ Real.sqrt (∫ t in E, ‖plainPolynomial n u t‖ ^ 2)
+          * Real.sqrt (∫ t in E, ‖plainPolynomial n u t‖ ^ 2) := h
+    _ = Real.sqrt ((∫ t in E, ‖plainPolynomial n u t‖ ^ 2) ^ 2) := by
+        rw [← Real.sqrt_mul hA]; ring_nf
+    _ = ∫ t in E, ‖plainPolynomial n u t‖ ^ 2 := Real.sqrt_sq hA
+
 end B1B1Port
