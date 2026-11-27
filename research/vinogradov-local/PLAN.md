@@ -306,3 +306,12 @@ is the capped reciprocal sum estimate.
 Type-I term uniformly by `2UQ log n + 2n log n (1+log n)` whenever
 `Q ≥ 16U`.  This covers the minor arcs in that regime.  The third term
 still needs a separate small-`Q` argument.
+
+## Third-term threshold and large-Q boundary
+
+`norm_third_inner_le_of_product_le` supplies the threshold inner bound.
+`typeIMajorArcs_Icc_subset_of_large_Q` proves that `Q ≥ 16 U²` makes the
+major arcs cover `[0,1]`, hence the minor arcs empty, and
+`norm_expSum_vaughan_typeI_le_uniform_of_large_Q` gives the global Type-I
+bound in that regime.  The open piece is the small-`Q` third-term
+truncation at `M ≈ 1/(16 q |β|)`.

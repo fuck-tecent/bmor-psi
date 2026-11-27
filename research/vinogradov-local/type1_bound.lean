@@ -1124,6 +1124,49 @@ lemma norm_expSum_low_mu_lowLambda_zeta_le_recip (n U : ℕ) (t : ℝ) :
   exact hstep.trans hext
 
 
+/-- Third-term inner sum below a product threshold `M`: if `de ≤ M`,
+`q ∤ de`, and `|β| ≤ 1/(16 q M)`, the geometric sum is at most `2q`. -/
+lemma norm_third_inner_le_of_product_le (n q M a d e : ℕ) (β : ℝ)
+    (hq : 0 < q) (hcop : Nat.Coprime a q)
+    (hde1 : 1 ≤ d * e) (hdeM : d * e ≤ M)
+    (hndvd : ¬ q ∣ d * e)
+    (hβ : |β| ≤ 1 / (16 * (q:ℝ) * (M:ℝ))) :
+    ‖∑ m ∈ Finset.Icc 1 (n / (d * e)),
+        E (((d * e * m : ℕ) : ℝ) * ((a:ℝ)/(q:ℝ) + β))‖ ≤ 2 * (q:ℝ) := by
+  classical
+  have hqR : (0:ℝ) < (q:ℝ) := by exact_mod_cast hq
+  have hM1 : 1 ≤ M := le_trans hde1 hdeM
+  have hsine := abs_sin_pi_mul_majorArc_ge_pointwise q M a (d * e) β
+    hq hcop hM1 hde1 hdeM hndvd hβ
+  have hspos : (0:ℝ) <
+      |Real.sin (Real.pi * (((d * e : ℕ) : ℝ) * ((a:ℝ)/(q:ℝ) + β)))| :=
+    lt_of_lt_of_le (by positivity : (0:ℝ) < 1/(q:ℝ)) hsine
+  have hsin_ne : Real.sin (Real.pi * (((d * e : ℕ) : ℝ) * ((a:ℝ)/(q:ℝ) + β))) ≠ 0 :=
+    abs_pos.mp hspos
+  have harg : ∀ m : ℕ, ((d * e * m : ℕ) : ℝ) * ((a:ℝ)/(q:ℝ) + β) =
+      (m : ℝ) * (((d * e : ℕ) : ℝ) * ((a:ℝ)/(q:ℝ) + β)) := by
+    intro m
+    push_cast
+    ring
+  simp_rw [harg]
+  refine (norm_geometric_sum_Icc_le_two (n / (d * e))
+    (((d * e : ℕ) : ℝ) * ((a:ℝ)/(q:ℝ) + β)) hsin_ne).trans ?_
+  have hs' : (1:ℝ) ≤
+      |Real.sin (Real.pi * (((d * e : ℕ) : ℝ) * ((a:ℝ)/(q:ℝ) + β)))| * (q:ℝ) :=
+    (div_le_iff₀ hqR).mp hsine
+  have hunit : (1:ℝ) /
+      |Real.sin (Real.pi * (((d * e : ℕ) : ℝ) * ((a:ℝ)/(q:ℝ) + β)))| ≤ (q:ℝ) := by
+    rw [div_le_iff₀ hspos]
+    simpa [mul_comm] using hs'
+  calc
+    (2:ℝ) /
+        |Real.sin (Real.pi * (((d * e : ℕ) : ℝ) * ((a:ℝ)/(q:ℝ) + β)))|
+        = 2 * (1 /
+            |Real.sin (Real.pi * (((d * e : ℕ) : ℝ) * ((a:ℝ)/(q:ℝ) + β)))|) := by
+      rw [div_eq_mul_one_div]
+    _ ≤ 2 * (q:ℝ) := mul_le_mul_of_nonneg_left hunit (by norm_num)
+
+
 /- Milestone: on a major arc with `q > U^2`, the entire Type-I part of the
 Vaughan decomposition is bounded by `6 U^2 q log n`.  Only the Type-II
 bilinear term is left. -/

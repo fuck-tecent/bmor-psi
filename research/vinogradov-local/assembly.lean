@@ -184,6 +184,50 @@ lemma norm_expSum_low_mu_mul_log_le_uniform_of_large_Q (n U Q : ℕ) (α : ℝ)
     nlinarith [hnum, hqR]
   linarith
 
+/-- When `Q ≥ 16 U²`, the Type-I major arcs cover `[0,1]`. -/
+lemma typeIMajorArcs_Icc_subset_of_large_Q (U Q : ℕ) (hU1 : 1 ≤ U)
+    (hQpos : 0 < Q) (hQ : 16 * (U * U) ≤ Q) :
+    Set.Icc (0:ℝ) 1 ⊆ typeIMajorArcs U Q := by
+  intro α hα
+  obtain ⟨a, q, hq1, hqQ, ha, hcop, hdist⟩ :=
+    exists_farey_approx α hα.1 hα.2 Q hQpos
+  refine ⟨q, a, hq1, hqQ, ha, hcop, ?_⟩
+  have hqR : (0:ℝ) < (q:ℝ) := by exact_mod_cast (by omega : 0 < q)
+  have hUpos : (0:ℝ) < (U:ℝ) := by exact_mod_cast (by omega : 0 < U)
+  have hQcast : (16:ℝ) * ((U * U : ℕ) : ℝ) ≤ (Q:ℝ) := by exact_mod_cast hQ
+  have hden : (q:ℝ) * ((16:ℝ) * ((U * U : ℕ) : ℝ)) ≤ (q:ℝ) * (Q:ℝ) :=
+    mul_le_mul_of_nonneg_left hQcast hqR.le
+  have hstep : 1 / ((q:ℝ) * (Q:ℝ)) ≤
+      1 / (16 * (q:ℝ) * ((U * U : ℕ) : ℝ)) := by
+    apply one_div_le_one_div_of_le (by positivity)
+    calc
+      (16:ℝ) * (q:ℝ) * ((U * U : ℕ) : ℝ) =
+          (q:ℝ) * ((16:ℝ) * ((U * U : ℕ) : ℝ)) := by ring
+      _ ≤ (q:ℝ) * (Q:ℝ) := hden
+  exact hdist.trans hstep
+
+/-- When `Q ≥ 16 U²`, the Type-I minor arcs are empty inside `[0,1]`. -/
+lemma typeIMinorArcs_inter_Icc_eq_empty_of_large_Q (U Q : ℕ) (hU1 : 1 ≤ U)
+    (hQpos : 0 < Q) (hQ : 16 * (U * U) ≤ Q) :
+    typeIMinorArcs U Q ∩ Set.Icc (0:ℝ) 1 = ∅ := by
+  ext α
+  simp only [Set.mem_inter_iff, Set.mem_empty_iff_false, iff_false, not_and]
+  intro hmin hIcc
+  exact hmin (typeIMajorArcs_Icc_subset_of_large_Q U Q hU1 hQpos hQ hIcc)
+
+/-- Global Type-I bound when `Q ≥ 16 U²`; the minor arcs are empty, so the
+uniform major-arc estimate covers every `α ∈ [0,1]`. -/
+lemma norm_expSum_vaughan_typeI_le_uniform_of_large_Q (n U Q : ℕ) (α : ℝ)
+    (hn : 1 ≤ n) (hUn : U ≤ n) (hU1 : 1 ≤ U)
+    (hQpos : 0 < Q) (hQ : 16 * (U * U) ≤ Q)
+    (hα0 : 0 ≤ α) (hα1 : α ≤ 1) :
+    ‖expSum n Λ α - expSum n (high U (μ : ArithmeticFunction ℝ) *
+      (ζ : ArithmeticFunction ℝ) * high U (Λ : ArithmeticFunction ℝ)) α‖ ≤
+      6 * ((U:ℝ) * (U:ℝ)) * (Q:ℝ) * Real.log (n:ℝ) +
+        6 * (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) :=
+  norm_expSum_vaughan_typeI_le_on_majorArc_uniform n U Q α hn hUn hU1
+    (typeIMajorArcs_Icc_subset_of_large_Q U Q hU1 hQpos hQ ⟨hα0, hα1⟩)
+
 end
 
 end PEqualNP.Outside.Vaughan

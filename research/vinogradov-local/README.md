@@ -796,3 +796,18 @@ norm_expSum_low_mu_mul_log_le_uniform_of_large_Q :
 This is a genuine minor-arc Type-I estimate in the regime `Q ≥ 16U`.
 The third term needs `Q ≥ 16U²` for the analogous argument (which makes
 the minor arcs empty), so its small-`Q` treatment remains open.
+
+### Third-term threshold and the large-`Q` boundary
+
+- `norm_third_inner_le_of_product_le`: for `de ≤ M`, `q ∤ de` and
+  `|β| ≤ 1/(16 q M)`, the third-term inner geometric sum is at most `2q`.
+  This is the threshold version needed for the small-`Q` truncation.
+- `typeIMajorArcs_Icc_subset_of_large_Q`: if `Q ≥ 16 U²`, the Type-I
+  major arcs cover all of `[0,1]`.
+- `typeIMinorArcs_inter_Icc_eq_empty_of_large_Q`: consequently the Type-I
+  minor arcs are empty in `[0,1]` in that regime.
+- `norm_expSum_vaughan_typeI_le_uniform_of_large_Q`: for `Q ≥ 16 U²` the
+  uniform Type-I major-arc bound holds for every `α ∈ [0,1]`.
+
+The remaining small-`Q` third-term estimate is the truncation of the
+`(d,e)` sum at `M ≈ 1/(16 q |β|)`; the inner threshold bound is ready.
