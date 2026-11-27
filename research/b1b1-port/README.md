@@ -2553,4 +2553,4 @@ the same signed main-term problem.
 所以 b1-b1 仍然不可达。
 ```
 
-Dossier on this branch: 2884 lines, no `sorry`.
+Dossier on this branch: 2875 lines, no `sorry`.
