@@ -1269,3 +1269,99 @@ index-set equality).
 ### Dossier
 
 27 verified milestones, 1811 lines, no `sorry`, branch `research/b1b1-arcsplit`.
+
+## Handover: the next four fixes (all mechanical)
+
+The three theorems attempted last round — `sum_range_one_rhs`,
+`integral_wideSet_phase_eq_sinc_range`, `arcKernel_eq_sinc` — failed only on
+tactic plumbing.  The exact fixes:
+
+### 1. `hsplit` needs `1 ≤ cutoffB n` and a linear `omega`
+
+```lean
+-- add to the theorem's hypotheses:
+(hQ : 1 ≤ cutoffB n)
+
+-- and prove:
+have hsplit : Finset.Icc 1 (cutoffB n) = insert 1 (Finset.Icc 2 (cutoffB n)) := by
+  clear hn hρ0 hρ1          -- (cutoffB n)^2 in hn is non-linear: omega gives up
+  ext q
+  simp only [Finset.mem_Icc, Finset.mem_insert]
+  omega
+```
+
+`hsplit` is *false* without `hQ` (when `cutoffB n = 0`, the left side is empty and
+the right side is `{1}`).
+
+### 2. Same `clear` in `hfilter`
+
+```lean
+have hfilter : ∀ q : ℕ, 2 ≤ q →
+    (Finset.range (q+1)).filter (fun a => Nat.Coprime a q)
+      = (Finset.range q).filter (fun a => Nat.Coprime a q) := by
+  intro q hq
+  clear hn hρ0 hρ1
+  have hins : Finset.range (q+1) = insert q (Finset.range q) := by
+    ext a; simp only [Finset.mem_range, Finset.mem_insert]; omega
+  rw [hins, Finset.filter_insert, if_neg]
+  intro hcop
+  have := (Nat.coprime_self q).mp hcop      -- needs the explicit `q`
+  omega
+```
+
+### 3. Split `Icc 1 Q₁` only once
+
+```lean
+rw [integral_wideSet_eq_sum n hn _ hcont, hsplit, Finset.sum_insert hnot1]
+```
+
+(`rw [hsplit]` already rewrites *both* occurrences; the second `sum_insert` fails
+with "pattern not found".)
+
+### 4. Drop the trailing `ring` in `arcKernel_eq_sinc`
+
+```lean
+unfold arcKernel
+rw [integral_compl_indicator_phase_eq n m hm]
+rw [integral_wideSet_phase_eq_sinc_range n m hm hn hQ hρ0 hρ1 hint]
+-- no `ring` needed
+```
+
+### What this yields
+
+```lean
+arcKernel_eq_sinc (n) (m) (hm : m ≠ 0) (hn) (hQ) (hρ0) (hρ1) (hint) :
+  arcKernel n m
+    = - ∑ q ∈ Icc 1 (cutoffB n), ∑ a ∈ (range q).filter (Coprime · q),
+          e(m a/q) · sin (2π m H/(q n))/(π m)
+```
+
+and substituting into `deepIntegral_eq_quadruple_sum` completes the `τ₁` version of
+`spatial_exact_split`:
+
+```text
+Jdeep n = - ∑_{a,a',j,k} c(a)c(a')Λ(j)Λ(k) ·
+             ∑_{q,a₀} e(m a₀/q) sin(2π m H/(q n))/(π m) ,     m = a j + a' k - n
+```
+
+After that:
+
+5. aggregate the `q`-sum with the now-available verified large sieve
+   `L_goldbach_finite_large_sieve` (merge upstream `513184b2` first, or copy from
+   `~/github.com/fuck-tencent/goldback-artifacts/finite-large-sieve/`),
+   giving the local densities `1/φ(q)² → (∑_a c(a) …)²`;
+6. port the archimedean tail (`spatial_macro_sinc_tail`).
+
+### Environment notes
+
+* compile with `cd ~/github.com/fuck-tencent/goldback-work/lean && lake env lean
+  ../../goldback-vinogradov/research/b1b1-port/b1b1_port.lean`
+* the file sets `set_option maxHeartbeats 4000000` because `lake env lean <path>`
+  does **not** apply the project's `leanOptions`;
+* `IntervalIntegrable.sum`'s conclusion is `∑ i ∈ s, f i` (a function), which is
+  only definitionally the goal's `fun t => ∑ i ∈ s, f i t`; use
+  `intervalIntegrable_finset_sum'` (already in the file) or
+  `convert … using 1; ext x; simp only [Finset.sum_apply]`;
+* `Indicators` vs `setIntegral`: `integral_arcSet_indicator_phase_of_inside` and
+  `integral_arcSet_one_zero/one` show the working pattern
+  (`intervalIntegral.integral_of_le` → `setIntegral_indicator` → set identity).
