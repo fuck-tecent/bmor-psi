@@ -16,7 +16,7 @@ jenkins:
         name: goldbach-isolated-site
         labelString: goldbach-isolated-site
         remoteFS: /workspace
-        numExecutors: 4
+        numExecutors: 12
         mode: EXCLUSIVE
         launcher:
           inbound: {}

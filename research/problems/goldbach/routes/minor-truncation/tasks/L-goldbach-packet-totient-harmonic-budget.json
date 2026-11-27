@@ -1,0 +1,19 @@
+{
+  "id": "L-goldbach-packet-totient-harmonic-budget",
+  "statement": "∀ X : ℕ, (∑ q ∈ Finset.Icc 1 X, (q : ℝ) / (q.totient : ℝ)^2) ≤ Real.exp (Real.pi^2) * (1 + Real.log (X : ℝ))",
+  "plain_statement": {
+    "zh": "控制共振分母权重 q/φ(q)² 的累积量，对所有截断点给出显式对数上界。",
+    "en": "Bound the cumulative resonance weight q/φ(q)² logarithmically with an explicit constant at every cutoff."
+  },
+  "brief": {
+    "zh": "利用欧拉乘积将 (q/φ(q))² 逐因子放大为 1+6/p，按素因子子集展开。子集乘积 D 的倍数对调和和的贡献至多为 Hₓ/D，因此剩余乘积被 exp(6Σₚ1/p²) 控制。与单分母的共振分子比例界相乘，得到长周期奇因子分母族的加权总量。常数取便于核验的非最优值。",
+    "en": "Majorize each Euler factor of (q/φ(q))² by 1+6/p and expand over subsets of prime factors. Multiples of the subset product D carry at most Hₓ/D harmonic mass. The resulting product is bounded by exp(6Σₚ1/p²). Multiplication by a per-denominator resonance fraction bounds the weighted long-factor population; the explicit constant is not optimized."
+  },
+  "source": "https://www.movan.tech/goldbach/?lang=en&lemma=L-goldbach-packet-remaining-center-count",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "minor-truncation",
+  "role": "lemma"
+}

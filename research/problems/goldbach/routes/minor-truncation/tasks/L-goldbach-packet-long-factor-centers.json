@@ -1,0 +1,23 @@
+{
+  "id": "L-goldbach-packet-long-factor-centers",
+  "statement": "∀ (q d H m : ℕ) (u : ℝ), 1 < q → 0 < m → 0 < u → Odd d → d ∣ q → (∀ h : ℕ, 1 ≤ h → h ≤ H → ¬ d ∣ 2 ^ h - 1) → let K := fun t : ℝ => (∑ j ∈ Finset.range m, Real.cos (2 * Real.pi * (2 : ℝ)^(j+1) * t)) / (m : ℝ); (m : ℝ) * u^2 * (((Finset.range (q+1)).filter (fun a => Nat.Coprime a q ∧ u < K ((a:ℝ)/(q:ℝ)))).card : ℝ) ≤ (q : ℝ) * (((m-1)/(H+1) + 1 : ℕ) : ℝ)",
+  "plain_statement": {
+    "zh": "含长周期奇因子的分母上，定量限制倍增余弦平均的共振分子数。",
+    "en": "Bound resonant numerators for the doubling cosine average at any denominator with a long-period odd factor."
+  },
+  "brief": {
+    "zh": "设 d 是 q 的奇因子，1 到 H 步内没有 2 的幂回到 1 模 d。相同频率余数在每个 H+1 长的指标块里至多出现一次。调用已核验的轨道二阶矩得到共振分子所占比例至多为 ⌈m/(H+1)⌉/(m u²)，其中 u 为正阈值。这同时适用于符合条件的偶分母。父题仍需欧拉函数加权求和及处理没有此类因子的偶分母。",
+    "en": "If an odd divisor d of q has no return of 2 to 1 modulo d in steps 1 through H, a frequency residue occurs at most once per block of H+1 indices. Apply the verified orbit second moment to bound the resonant share of the q grid positions by ⌈m/(H+1)⌉/(m u²) for any positive threshold u. This includes qualifying even denominators. The parent also needs a totient-weighted sum and treatment of even denominators without such a factor."
+  },
+  "source": "https://www.movan.tech/goldbach/?lang=en&lemma=L-goldbach-packet-remaining-center-count",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-packet-binary-orbit-second-moment"
+  ],
+  "imports": [
+    "Conjectures.Goldbach.PacketBinaryOrbitSecondMoment"
+  ],
+  "track": "minor-truncation",
+  "role": "lemma"
+}

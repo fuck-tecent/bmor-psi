@@ -2,11 +2,14 @@
 
 import json
 import os
+import hashlib
+import re
 import subprocess
 from pathlib import Path
 
 from github_revision import REPO, SHA, StaleDelivery, pull_request
 from proof_blob import proof_blob
+from verdict_manifest import PROOF_MODULE, module_path
 
 
 def grh_enabled():
@@ -19,6 +22,26 @@ def check_grh_imports(modules):
         for module in modules
     ):
         raise ValueError("GRH imports are temporarily unavailable for proof submissions")
+
+
+def allow_verified_imports(base, work):
+    index = base / "verified-imports.json"
+    if not index.exists():
+        return
+    verified = json.loads(index.read_bytes())
+    permissions = work / "imports.json"
+    allowed = set(json.loads(permissions.read_bytes()))
+    # Select only requested modules. The guard still parses and validates the full file.
+    for match in re.finditer(rb"^import ([A-Za-z0-9_.]+)[ \t]*\r?$",
+                             (work / "proof.lean").read_bytes(), re.MULTILINE):
+        name = match[1].decode("ascii")
+        if name in allowed or not PROOF_MODULE.fullmatch(name) or name not in verified:
+            continue
+        source = base / "lean" / module_path(name)
+        if source.is_symlink() or hashlib.sha256(source.read_bytes()).hexdigest() != verified[name]:
+            raise ValueError(f"Verified import source differs from the accepted proof: {name}")
+        allowed.add(name)
+    permissions.write_text(json.dumps(sorted(allowed)), encoding="utf-8")
 
 
 def prepare(app, number, expected_head, base, work):
@@ -66,6 +89,7 @@ def prepare(app, number, expected_head, base, work):
     size = int((work / "pr.size").read_text())
     guard("gap-of-file", "/input/gaps.json", file, "/input")
     (work / "proof.lean").write_bytes(proof_blob(app, blob, size))
+    allow_verified_imports(base, work)
     guard("imports", "/input/proof.lean", "/input/imports.json", "/input/build-imports.json")
     check_grh_imports(json.loads((work / "build-imports.json").read_text(encoding="utf-8")))
     guard("closure", "/base", "/input/build-imports.json", file, "/input")

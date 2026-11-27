@@ -182,13 +182,25 @@ def snapshot_for(store, base, revision):
 
 def publish_source(store, base, revision, path, content):
     previous = base / path
-    if previous.is_file() and previous.read_bytes() == content:
+    module = path.removeprefix("lean/").removesuffix(".lean").replace("/", ".")
+    if not PROOF_MODULE.fullmatch(module) or path != "lean/" + module_path(module):
+        raise ValueError("Invalid verified module path")
+    registry = base / "verified-imports.json"
+    verified = json.loads(registry.read_bytes()) if registry.exists() else {}
+    digest = hashlib.sha256(content).hexdigest()
+    exists = previous.is_file() and not previous.is_symlink() and previous.read_bytes() == content
+    if exists and verified.get(module) == digest:
         return
-    if previous.exists():
+    if previous.exists() and not exists:
         raise ValueError("Refusing to overwrite an existing trusted proof")
     with snapshot_for(store, base, revision) as snapshot:
-        (snapshot / path).parent.mkdir(parents=True, exist_ok=True)
-        (snapshot / path).write_bytes(content)
+        if not exists:
+            (snapshot / path).parent.mkdir(parents=True, exist_ok=True)
+            (snapshot / path).write_bytes(content)
+        verified[module] = digest
+        index = snapshot / "verified-imports.json"
+        index.unlink(missing_ok=True)
+        index.write_text(json.dumps(verified, sort_keys=True, indent=2) + "\n", encoding="ascii")
         # The copied files are hard-linked. Replace any marker before writing.
         marker = snapshot / "PROOF_MERGE_REVISION"
         marker.unlink(missing_ok=True)

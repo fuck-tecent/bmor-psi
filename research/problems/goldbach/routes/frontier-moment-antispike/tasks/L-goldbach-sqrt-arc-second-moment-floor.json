@@ -1,0 +1,17 @@
+{
+  "id": "L-goldbach-sqrt-arc-second-moment-floor",
+  "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (u : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (u k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let Q₂ := fun n : ℕ => ⌊Real.sqrt (n : ℝ) / ((Nat.log 2 (n + 2) : ℝ) ^ 4)⌋₊; let sqrtArcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ Q₂ n ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t - (a : ℝ) / (q : ℝ)| ≤ ((256 * Q₂ n * Q n : ℕ) : ℝ) / ((q : ℝ) * (n : ℝ))}; ∃ c : ℝ, 0 < c ∧ ∃ N : ℕ, ∀ n : ℕ, N ≤ n → c * (n : ℝ) * Real.log (Real.log (n : ℝ)) ≤ intervalIntegral (fun t => (sqrtArcs n)ᶜ.indicator (fun u => ‖S n w u‖ ^ 2) t) (0 : ℝ) 1 MeasureTheory.volume",
+  "plain_statement": {
+    "zh": "对所有充分大的整数 n，在分母上限为 ⌊√n/⌊log₂(n+2)⌋⁴⌋ 的宽主弧之外，素数对数权指数和的二阶矩至少为 c n log log n，其中 c 是与 n 无关的正常数。",
+    "en": "For every sufficiently large integer n, the integral of the prime-log exponential sum’s squared modulus outside the wide arcs with denominator cutoff ⌊√n/⌊log₂(n+2)⌋⁴⌋ is at least c n log log n for an absolute constant c > 0."
+  },
+  "brief": {
+    "zh": "见 research/checkpoint/deep-arc-second-moment.md 的第二个结论。按已发表的 sqrtArcs 宽度取互不相交的既约分数小窗。分母从平方根截断累加至 √n/4，保留约 log log n 个等比区间，每个区间贡献常数倍 n。该下界刻画对有符号积分先取绝对值时的损失。",
+    "en": "Use the second cutoff in research/checkpoint/deep-arc-second-moment.md. Place disjoint windows at reduced fractions outside sqrtArcs. From the cutoff to √n/4 there are on the order of log log n geometric denominator blocks; squarefree denominators contribute a constant multiple of n per block. This measures the loss from taking absolute values before estimating the signed coefficient."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/873de591f4849fe55dcee83f7a6bf45370623a6d/research/checkpoint/deep-arc-second-moment.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "imports": []
+}

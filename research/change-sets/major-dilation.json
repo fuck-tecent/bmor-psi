@@ -1,0 +1,158 @@
+{
+  "version": 1,
+  "problem": "goldbach",
+  "request_id": "major-dilation-frontier",
+  "base_revision": "f3abbf2fcc36b7aee6e66c5ef387fae1603da22a",
+  "parent": {
+    "id": "L-goldbach-bulk-signed-floor",
+    "statement_sha256": "5cac9d374fe0214eb2fa65bcc0541c9b2dcf3f5f6ad52c7e9f5af0b41e39d37d"
+  },
+  "motivation": {
+    "zh": "研究主弧边界改变对有符号积分的影响，作为高段次弧估计的探索；仍需控制互补区域。",
+    "en": "Explore how moving arc boundaries redistributes signed mass. The complementary bulk estimate remains open."
+  },
+  "tasks": [
+    {
+      "id": "L-goldbach-major-denominator-dilation",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let A := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ Q n ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ r q a * (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let M := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => (intervalIntegral (fun t => (A n r).indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume).re; ∃ N : ℕ, ∀ n ≥ N, Even n → ∀ r : ℕ → ℝ, (∀ q, (1/2:ℝ) ≤ r q ∧ r q ≤ 2) → (n:ℝ) ≤ M n (fun q _ => r q)",
+      "plain_statement": {
+        "zh": "逐分母调宽后仍有 n 主弧下界",
+        "en": "A uniform n floor under denominator-dependent dilation"
+      },
+      "brief": {
+        "zh": "每个分母独立选择半倍至两倍半径，同分母各分子共用。尝试先合并 Ramanujan 系数，再估计失去单调性的分母权。 可引用 MajorFixed144；反例请领取配对证伪题。",
+        "en": "Keep a common radius per denominator, between half and twice its original value. Sum Ramanujan coefficients first and control the loss of monotonicity. Import MajorFixed144 if useful; use the paired task for a refutation."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/3120",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-major-fixed-144"
+      ],
+      "route": "minor-truncation",
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-major-denominator-dilation-refute",
+      "statement": "¬ (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let A := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ Q n ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ r q a * (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let M := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => (intervalIntegral (fun t => (A n r).indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume).re; ∃ N : ℕ, ∀ n ≥ N, Even n → ∀ r : ℕ → ℝ, (∀ q, (1/2:ℝ) ≤ r q ∧ r q ≤ 2) → (n:ℝ) ≤ M n (fun q _ => r q))",
+      "plain_statement": {
+        "zh": "证伪：逐分母调宽后仍有 n 主弧下界",
+        "en": "Refute: A uniform n floor under denominator-dependent dilation"
+      },
+      "brief": {
+        "zh": "每个分母独立选择半倍至两倍半径，同分母各分子共用。尝试先合并 Ramanujan 系数，再估计失去单调性的分母权。 请证明冻结命题的完整否定；单个小规模算例不足。",
+        "en": "Keep a common radius per denominator, between half and twice its original value. Sum Ramanujan coefficients first and control the loss of monotonicity. Prove the full negation, beyond a single finite example."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/3120",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-major-fixed-144"
+      ],
+      "route": "minor-truncation",
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-major-numerator-dilation",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let A := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ Q n ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ r q a * (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let M := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => (intervalIntegral (fun t => (A n r).indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume).re; ∃ N : ℕ, ∀ n ≥ N, Even n → ∀ r : ℕ → ℕ → ℝ, (∀ q a, (1/2:ℝ) ≤ r q a ∧ r q a ≤ 2) → (n:ℝ) ≤ M n r",
+      "plain_statement": {
+        "zh": "逐个既约分数调宽后仍有 n 主弧下界",
+        "en": "A uniform n floor under independent arc dilation"
+      },
+      "brief": {
+        "zh": "允许每个 a/q 在半倍至两倍之间独立选半径。尝试按相位选择弧宽以削弱正贡献，尤其检验 q 接近 Q 的区间。 可引用 MajorFixed144；反例请领取配对证伪题。",
+        "en": "Choose each reduced fraction’s width independently. Try adversarial phase-dependent radii, especially for denominators comparable to Q. Import MajorFixed144 if useful; use the paired task for a refutation."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/3120",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-major-fixed-144"
+      ],
+      "route": "minor-truncation",
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-major-numerator-dilation-refute",
+      "statement": "¬ (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let A := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ Q n ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ r q a * (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let M := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => (intervalIntegral (fun t => (A n r).indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume).re; ∃ N : ℕ, ∀ n ≥ N, Even n → ∀ r : ℕ → ℕ → ℝ, (∀ q a, (1/2:ℝ) ≤ r q a ∧ r q a ≤ 2) → (n:ℝ) ≤ M n r)",
+      "plain_statement": {
+        "zh": "证伪：逐个既约分数调宽后仍有 n 主弧下界",
+        "en": "Refute: A uniform n floor under independent arc dilation"
+      },
+      "brief": {
+        "zh": "允许每个 a/q 在半倍至两倍之间独立选半径。尝试按相位选择弧宽以削弱正贡献，尤其检验 q 接近 Q 的区间。 请证明冻结命题的完整否定；单个小规模算例不足。",
+        "en": "Choose each reduced fraction’s width independently. Try adversarial phase-dependent radii, especially for denominators comparable to Q. Prove the full negation, beyond a single finite example."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/3120",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-major-fixed-144"
+      ],
+      "route": "minor-truncation",
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-major-dilation-oscillation",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let A := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ Q n ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ r q a * (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let M := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => (intervalIntegral (fun t => (A n r).indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume).re; ∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ n ≥ N, Even n → ∀ r : ℕ → ℕ → ℝ, (∀ q a, (1/2:ℝ) ≤ r q a ∧ r q a ≤ 2) → |M n r - M n (fun _ _ => 1)| ≤ ε*(n:ℝ)",
+      "plain_statement": {
+        "zh": "独立调宽能否只改变 o(n) 的主弧实部？",
+        "en": "Uniform sublinear oscillation under independent arc dilation"
+      },
+      "brief": {
+        "zh": "比较最坏调宽与原弧的有符号边界积分。证伪需固定正比例并在任意大偶数上选出造成该偏差的弧宽。 可引用 MajorFixed144；反例请领取配对证伪题。",
+        "en": "Estimate the signed boundary integrals against the unchanged arcs. To refute, exhibit a fixed positive proportional deviation on arbitrarily large even targets. Import MajorFixed144 if useful; use the paired task for a refutation."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/3120",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-major-fixed-144"
+      ],
+      "route": "minor-truncation",
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-major-dilation-oscillation-refute",
+      "statement": "¬ (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let A := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ Q n ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ r q a * (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let M := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => (intervalIntegral (fun t => (A n r).indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume).re; ∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ n ≥ N, Even n → ∀ r : ℕ → ℕ → ℝ, (∀ q a, (1/2:ℝ) ≤ r q a ∧ r q a ≤ 2) → |M n r - M n (fun _ _ => 1)| ≤ ε*(n:ℝ))",
+      "plain_statement": {
+        "zh": "证伪：独立调宽能否只改变 o(n) 的主弧实部？",
+        "en": "Refute: Uniform sublinear oscillation under independent arc dilation"
+      },
+      "brief": {
+        "zh": "比较最坏调宽与原弧的有符号边界积分。证伪需固定正比例并在任意大偶数上选出造成该偏差的弧宽。 请证明冻结命题的完整否定；单个小规模算例不足。",
+        "en": "Estimate the signed boundary integrals against the unchanged arcs. To refute, exhibit a fixed positive proportional deviation on arbitrarily large even targets. Prove the full negation, beyond a single finite example."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/3120",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-major-fixed-144"
+      ],
+      "route": "minor-truncation",
+      "assumptions": []
+    }
+  ],
+  "links": [
+    {
+      "kind": "exploration",
+      "inputs": [
+        "L-goldbach-major-denominator-dilation",
+        "L-goldbach-major-denominator-dilation-refute",
+        "L-goldbach-major-numerator-dilation",
+        "L-goldbach-major-numerator-dilation-refute",
+        "L-goldbach-major-dilation-oscillation",
+        "L-goldbach-major-dilation-oscillation-refute"
+      ],
+      "output": "L-goldbach-bulk-signed-floor",
+      "explanation": {
+        "zh": "研究主弧边界改变对有符号积分的影响，作为高段次弧估计的探索；仍需控制互补区域。",
+        "en": "Explore how moving arc boundaries redistributes signed mass. The complementary bulk estimate remains open."
+      }
+    }
+  ],
+  "route_note": {
+    "zh": "研究主弧边界改变对有符号积分的影响，作为高段次弧估计的探索；仍需控制互补区域。",
+    "en": "Explore how moving arc boundaries redistributes signed mass. The complementary bulk estimate remains open."
+  }
+}

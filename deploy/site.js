@@ -50,8 +50,8 @@ const strings = {
     copyLemma: '复制这条引理的参与提示词',
     occupied: '这条引理当前正在处理。',
     alreadyVerified: '这条引理已通过权威验证。',
-    lemmaPrompt: gap => '读取 ' + guideUrl + '，按指南用 ' + claimCommand + ' ' + gap.id + ' 领取并验证这一条引理。以领取结果的 gap.imports 为准。'
-      + (gap.imports?.length ? '本题允许导入 ' + gap.imports.join('、') + '。' : '')
+    lemmaPrompt: gap => '读取 ' + guideUrl + '，按指南用 ' + claimCommand + ' ' + gap.id + ' 领取并验证这一条引理。可跨猜想导入全站已验证社区模块，完整清单见领取指南。'
+      + (gap.imports?.length ? '本题推荐  ' + gap.imports.join('、') + '。' : '')
       + '可查阅网上资料，把相关方法形式化到指定的 Lean 文件，并在 PR 中注明来源。如果无法领取这条引理，请说明原因，不要改领其他题。'
   },
   en: {
@@ -89,8 +89,8 @@ const strings = {
     copyLemma: 'Copy this lemma’s join prompt',
     occupied: 'This lemma is currently in progress.',
     alreadyVerified: 'The authoritative verifier has accepted this lemma.',
-    lemmaPrompt: gap => 'Read ' + guideUrl + ' and follow it to claim and verify exactly ' + gap.id + ' with ' + claimCommand + ' ' + gap.id + '. Follow gap.imports from your claim. '
-      + (gap.imports?.length ? 'Allowed imports for this task include ' + gap.imports.join(', ') + '. ' : '')
+    lemmaPrompt: gap => 'Read ' + guideUrl + ' and follow it to claim and verify exactly ' + gap.id + ' with ' + claimCommand + ' ' + gap.id + '. Verified community modules are available across conjectures (see the guide). '
+      + (gap.imports?.length ? 'Suggested imports include ' + gap.imports.join(', ') + '. ' : '')
       + 'You may research methods online. Formalize the relevant steps in your assigned Lean file and cite your sources in the PR. If that lemma is unavailable, report why and do not choose another.'
   }
 }[lang];
@@ -201,10 +201,10 @@ function gapStatus(gap) {
   }
   if (gap.resolved && !gap.proved) return { label: lang === 'zh' ? '已解决' : 'Resolved', kind: 'verified', style: 'accepted' };
   if (gap.proved) return { label: strings.proved, kind: 'verified', style: 'accepted' };
+  if (gap.claims_closed) return { label: closedClaimLabel(), kind: 'closed', style: '' };
   if (assigned(gap)) {
     return { label: strings.assignments[assignments[gap.id]], kind: 'occupied', style: 'in-progress' };
   }
-  if (gap.claims_closed) return { label: closedClaimLabel(), kind: 'closed', style: '' };
   return { label: strings.open, kind: 'available', style: '' };
 }
 
@@ -573,6 +573,8 @@ const harnessLabels = {
   "gemini-cli": "Gemini CLI",
   "opencode": "OpenCode",
   "kimi-code": "Kimi Code",
+  "minimax-code": "MiniMax Code",
+  "zcode": "ZCode",
   "qwen-code": "Qwen Code",
   "qoder": "Qoder",
   "qoder-cn": "Qoder CN",
@@ -677,16 +679,67 @@ function renderAgentRankingRow(entry, index) {
   return item;
 }
 
+let agentDimension = 'providers';
+let selectedModel = '';
+
 function renderAgentColumns(container, limit = Infinity) {
-  container.replaceChildren(...['models', 'harnesses'].map(dimension => {
-    const column = element('section', undefined, 'agent-ranking-column');
-    const title = dimension === 'models' ? (lang === 'zh' ? '模型' : 'Models') : (lang === 'zh' ? 'Harness 工具' : 'Harness tools');
-    const list = element('ol', undefined, 'ranking-list');
-    list.setAttribute('aria-label', title);
-    fillRankings(list, (agentRankingsData?.[dimension] || []).slice(0, limit), 'agents');
-    column.append(element('h3', title), list);
-    return column;
-  }));
+  const labels = lang === 'zh'
+    ? {providers: '模型厂商', models: '具体模型', harnesses: 'Harness 工具'}
+    : {providers: 'Model providers', models: 'Models', harnesses: 'Harness tools'};
+  const controls = element('div', undefined, 'agent-ranking-views');
+  const modes = element('div', undefined, 'rankings-modes');
+  modes.setAttribute('role', 'group');
+  modes.setAttribute('aria-label', lang === 'zh' ? '榜单分类' : 'Leaderboard categories');
+  controls.append(modes);
+  const list = element('ol', undefined, 'ranking-list');
+  const dimension = agentDimension;
+  const rows = agentRankingsData?.[dimension] || [];
+  for (const [key, label] of Object.entries(labels)) {
+    const button = element('button', label);
+    button.type = 'button';
+    button.dataset.agentDimension = key;
+    button.setAttribute('aria-pressed', String(key === agentDimension));
+    button.onclick = () => {
+      agentDimension = key;
+      renderRankingMode();
+      container.querySelector('[data-agent-dimension="' + key + '"]')?.focus();
+    };
+    modes.append(button);
+  }
+  list.setAttribute('aria-label', labels[agentDimension]);
+  container.replaceChildren(controls);
+  if (dimension === 'models') {
+    const filter = element('select');
+    filter.setAttribute('aria-label', lang === 'zh' ? '选择模型' : 'Select model');
+    filter.append(new Option(lang === 'zh' ? '全部模型' : 'All models', ''));
+    for (const row of rows) filter.append(new Option(agentName(row.name), row.name));
+    filter.value = rows.some(row => row.name === selectedModel) ? selectedModel : '';
+    filter.onchange = () => {
+      selectedModel = filter.value;
+      renderRankingMode();
+      container.querySelector('select')?.focus();
+    };
+    controls.append(filter);
+  }
+  const index = dimension === 'models' && selectedModel
+    ? rows.findIndex(row => row.name === selectedModel) : -1;
+  if (index >= 0) list.append(renderAgentRankingRow(rows[index], index));
+  else fillRankings(list, dimension === 'harnesses' ? rows : rows.slice(0, limit), 'agents');
+  if (agentDimension === 'providers') {
+    rows.slice(0, limit).forEach((provider, i) => {
+      const item = list.children[i];
+      if (provider.name === 'unknown') {
+        item.querySelector('.agent-brand-name span:last-child').textContent =
+          lang === 'zh' ? '未识别厂商' : 'Unidentified provider';
+      }
+      const details = element('details', undefined, 'provider-models');
+      const models = element('ol', undefined, 'ranking-list');
+      fillRankings(models, provider.models, 'agents');
+      details.append(element('summary', lang === 'zh' ? '查看旗下模型' : 'Show contributing models'), models);
+      item.append(details);
+    });
+  }
+  container.append(list);
 }
 
 function renderFullRankings() {
@@ -710,7 +763,7 @@ function fillRankings(list, data, mode) {
 function renderRankingMode() {
   if (!rankingsData) return;
   const agents = rankingMode === 'agents';
-  const rows = agents ? (agentRankingsData?.models || []) : rankingsData[rankingMode];
+  const rows = agents ? (agentRankingsData?.[agentDimension] || []) : rankingsData[rankingMode];
   const columns = document.getElementById('agent-ranking-columns');
   columns.hidden = !agents;
   rankingsList.hidden = agents;
@@ -721,7 +774,7 @@ function renderRankingMode() {
   rankingsAll.textContent = agents ? (lang === 'zh' ? '查看完整榜单 ↗' : 'See full leaderboard ↗') :
     (lang === 'zh' ? '查看全部贡献者 ↗' : 'See all contributors ↗');
   document.getElementById('rankings-dialog-title').textContent = agents
-    ? (lang === 'zh' ? '模型与 Harness 贡献榜' : 'Model and harness contributions')
+    ? (lang === 'zh' ? '厂商、模型与 Harness 贡献榜' : 'Provider, model and harness contributions')
     : (lang === 'zh' ? '全部已核验贡献者' : 'All verified contributors');
   document.getElementById('rankings-summary').textContent = agents
     ? (lang === 'zh' ? '按本研究台累计首次核验积分排列。旧规则下首次通过的题每道计 1 分。' : 'Ranked by points from first accepted proofs on this research desk. Each first acceptance under the old rules counts for one point.')
@@ -1051,7 +1104,7 @@ function dist(id,seen=new Set()){if(distance.has(id))return distance.get(id);if(
 function closure(id,next){let set=new Set(),stack=[id];while(stack.length){let x=stack.pop();if(set.has(x))continue;set.add(x);for(const v of next(x))stack.push(v)}return set}
 let focus=null,hover=null,onlyChain=false,compact=true,horizontal=false,directionChosen=false,field=null,globalFilter='all',savedScrollY=0,currentTrack=null,observer=null,pendingGap=null,expanded=null,localFilter='all',localSearch='',indexMode=false;
 const directionKey='goldbach-map-direction',wideDirection=()=>window.innerWidth>=2400;try{const saved=localStorage.getItem(directionKey);if(saved==='horizontal'||saved==='vertical'){horizontal=saved==='horizontal';directionChosen=true}}catch{}if(!directionChosen)horizontal=wideDirection();function syncDirection(){root?.querySelectorAll('[data-direction]').forEach(x=>x.classList.toggle('active',(x.dataset.direction==='horizontal')===horizontal))}syncDirection();
-function status(g){if(g.refutation)return 'progress';if(g.proved)return 'verified';if(assigned(g))return 'progress';if(g.claims_closed)return 'closed';return g.role==='target'?'target':'available'}
+function status(g){if(g.refutation)return 'progress';if(g.proved)return 'verified';if(g.claims_closed)return 'closed';if(assigned(g))return 'progress';return g.role==='target'?'target':'available'}
 function statusText(g){if(status(g)==='closed')return closedClaimLabel();if(g.refutation){const v=g.refutation.status==='verified';return lang==='zh'?(v?'已证伪':'反证待核验'):(v?'Refuted':'Refutation under review')}return ({verified:lang==='zh'?'已核查':'Verified',progress:lang==='zh'?'处理中':'In progress',target:lang==='zh'?'待突破':'Open target',available:lang==='zh'?'可领取':'Available'})[status(g)]}
 function stateOK(g,v){return v==='all'||(v==='open'&&status(g)!=='verified')||(v==='target'&&g.role==='target'&&status(g)!=='verified')}
 function counts(gs){let verified=gs.filter(g=>status(g)==='verified').length;return {verified,progress:gs.filter(g=>status(g)==='progress').length,available:gs.filter(g=>status(g)==='available').length,target:gs.filter(g=>status(g)==='target').length,pct:gs.length?100*verified/gs.length:0}}
@@ -1274,7 +1327,7 @@ function initSponsorMarquee() {
   originals.forEach(prepCard);
 
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const BASE_SPEED = 24; // px/s gentle drift
+  const BASE_SPEED = 20; // px/s gentle drift
   let rafId = 0;
   let lastFrame = 0;
   let lastWidth = 0;
@@ -1558,6 +1611,9 @@ function initSponsorMarquee() {
   }
 }
 
+for (const img of document.querySelectorAll('.author-avatar img')) {
+  img.addEventListener('error', () => img.remove());
+}
 initSponsorMarquee();
 loadStatus();
 window.setInterval(loadStatus, 120000);

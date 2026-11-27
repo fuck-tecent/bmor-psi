@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "problem": "goldbach",
+  "base_revision": "4a4a8119ac944e5368b4e2c682ce73c132a53eaf",
+  "request_id": "dyn-local-block-moments",
+  "parent": {
+    "id": "L-goldbach-dyn-thin-window-exceptions",
+    "statement_sha256": "69bf5b1a2c7e920e428914a70c9f369333c306f5df9921f66220ce06d950a520"
+  },
+  "motivation": {
+    "zh": "把平方根素数步长的覆盖定位到每个长度约 X^(3/4) 的子窗。两矩合用可在每窗得到正比例富终点；漏点密度趋零仍需下尾估计。",
+    "en": "Localize square-root prime steps to every block of length about X^(3/4). Together the moments give positive rich-target density in each block; vanishing miss density still needs lower-tail control."
+  },
+  "tasks": [
+    {
+      "id": "L-goldbach-dyn-block-first-mass",
+      "statement": "let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); let P := fun X : ℕ => (Finset.Icc (Nat.sqrt X) (2*Nat.sqrt X)).filter Nat.Prime; let H := fun (X n : ℕ) => ((P X).filter (fun p => p ≤ n ∧ Nat.Prime (n-p))).card; let W := fun X : ℕ => Nat.sqrt X * Nat.sqrt (Nat.sqrt X); let B := fun (X y : ℕ) => (E X).filter (fun n => y ≤ n ∧ n < y + W X); let M := fun X : ℕ => Real.sqrt (X:ℝ) / (Real.log (X:ℝ))^2; ∃ c : ℝ, 0 < c ∧ ∃ X₀ : ℕ, ∀ X ≥ X₀, ∀ y : ℕ, X ≤ y → y + W X ≤ 2*X → c*(W X:ℝ)*M X ≤ ∑ n ∈ B X y, (H X n:ℝ)",
+      "plain_statement": {
+        "zh": "每个四分之三次幂短窗中的素数路径总量下界",
+        "en": "Lower-bound prime arrivals in every three-quarter-power block"
+      },
+      "brief": {
+        "zh": "把大素数限制在短窗中段，使每个允许的小素数与其相加仍在窗内。关键是对所有起点一致的短区间素数计数下界；全区间的一阶矩不能直接限制到子窗。 可按任务 imports 引用已证引理。",
+        "en": "Place the large prime inside the middle of the block so every allowed small step stays inside. Establish a short-interval prime lower bound uniform in the block origin; global mass alone gives no local lower bound. Verified lemmas are available through task imports."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-dyn-interior-box"
+      ],
+      "route": "representations",
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-dyn-block-collision-budget",
+      "statement": "let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); let P := fun X : ℕ => (Finset.Icc (Nat.sqrt X) (2*Nat.sqrt X)).filter Nat.Prime; let H := fun (X n : ℕ) => ((P X).filter (fun p => p ≤ n ∧ Nat.Prime (n-p))).card; let W := fun X : ℕ => Nat.sqrt X * Nat.sqrt (Nat.sqrt X); let B := fun (X y : ℕ) => (E X).filter (fun n => y ≤ n ∧ n < y + W X); let M := fun X : ℕ => Real.sqrt (X:ℝ) / (Real.log (X:ℝ))^2; ∃ C : ℝ, 0 < C ∧ ∃ X₀ : ℕ, ∀ X ≥ X₀, ∀ y : ℕ, X ≤ y → y + W X ≤ 2*X → (∑ n ∈ B X y, (H X n:ℝ)^2) ≤ C*(W X:ℝ)*(M X)^2",
+      "plain_statement": {
+        "zh": "每个四分之三次幂短窗中的共同终点碰撞预算",
+        "en": "Bound common-endpoint collisions in every three-quarter-power block"
+      },
+      "brief": {
+        "zh": "展开平方并分开对角项。把两个平移素数的筛估计限制在长度 W 的移动区间，控制与起点无关的余项，再平均位移奇异因子。直接限制已证全区间上界会损失 X/W。 可按任务 imports 引用已证引理。",
+        "en": "Separate diagonal and off-diagonal pairs. Localize the shifted-prime sieve to length W with a remainder uniform in the origin, then average the shift factors. Restricting the global bound loses X/W. Verified lemmas are available through task imports."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-dyn-shift-factor-mean"
+      ],
+      "route": "representations",
+      "assumptions": []
+    }
+  ],
+  "links": [
+    {
+      "kind": "exploration",
+      "inputs": [
+        "L-goldbach-dyn-block-first-mass",
+        "L-goldbach-dyn-block-collision-budget"
+      ],
+      "output": "L-goldbach-dyn-thin-window-exceptions",
+      "explanation": {
+        "zh": "把平方根素数步长的覆盖定位到每个长度约 X^(3/4) 的子窗。两矩合用可在每窗得到正比例富终点；漏点密度趋零仍需下尾估计。",
+        "en": "Localize square-root prime steps to every block of length about X^(3/4). Together the moments give positive rich-target density in each block; vanishing miss density still needs lower-tail control."
+      }
+    }
+  ],
+  "route_note": {
+    "zh": "把平方根素数步长的覆盖定位到每个长度约 X^(3/4) 的子窗。两矩合用可在每窗得到正比例富终点；漏点密度趋零仍需下尾估计。",
+    "en": "Localize square-root prime steps to every block of length about X^(3/4). Together the moments give positive rich-target density in each block; vanishing miss density still needs lower-tail control."
+  }
+}

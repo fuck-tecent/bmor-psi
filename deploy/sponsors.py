@@ -108,6 +108,85 @@ def logo_png(raw):
         return out.getvalue()
 
 
+INITIATOR_URL = "https://www.zhihu.com/people/cg-22-2"
+INITIATOR_AVATAR_FALLBACK = "https://avatars.githubusercontent.com/u/103875245?v=4&s=64"
+ZHIHU_SCIENCE_URL = "https://www.zhihu.com/org/zhi-hu-ke-xue"
+AI_WORKS_URL = "https://www.zhihu.com/project/detail/210995"
+ZHIHU_DISCUSS_URL = "https://www.zhihu.com/question/2108591052059665116"
+
+
+def coinitiator_lockup(path, lang, prefix):
+    zh = lang == "zh"
+    logo_id = None
+    co_url = ZHIHU_SCIENCE_URL
+    avatar_url = INITIATOR_AVATAR_FALLBACK
+    if path:
+        try:
+            with closing(sqlite3.connect(path)) as db:
+                row = db.execute(
+                    f"SELECT id, website FROM sponsor_logos WHERE state='approved' AND name='知乎科学' "
+                    f"ORDER BY {DISPLAY_ORDER} LIMIT 1"
+                ).fetchone()
+                if row:
+                    logo_id, website = row
+                    if website:
+                        co_url = website
+                if db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='links'").fetchone():
+                    linked = db.execute(
+                        "SELECT avatar_url FROM links WHERE (profile_url=? OR lower(handle)='cgandgameenginelearner') "
+                        "AND avatar_url != '' LIMIT 1",
+                        (INITIATOR_URL,),
+                    ).fetchone()
+                    if linked and linked[0]:
+                        avatar_url = linked[0]
+        except sqlite3.Error:
+            pass
+    co_name = "知乎科学" if zh else "Zhihu Science"
+    co_content = (
+        f'<img class="coinitiator-logo" src="{prefix}sponsors/logo/{logo_id}.png" alt="{co_name}" loading="eager">'
+        if logo_id is not None else f'<strong>{co_name}</strong>'
+    )
+    return (
+        f'<div class="colophon-credits">'
+        f'<a class="colophon-person" href="{INITIATOR_URL}" target="_blank" rel="noopener noreferrer">'
+        f'<span class="author-avatar" aria-hidden="true">L<img src="{escape(avatar_url)}" alt="" loading="eager" referrerpolicy="no-referrer"></span>'
+        f'<strong>@lifesize</strong></a>'
+        f'<span class="colophon-x" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M2.5 2.5l9 9M11.5 2.5l-9 9"/></svg></span>'
+        f'<a class="colophon-org" href="{escape(co_url)}" target="_blank" rel="noopener noreferrer ugc nofollow">'
+        f'{co_content}</a>'
+        f'</div>'
+    )
+
+
+def author_colophon(path, lang, prefix, *, goldbach=True):
+    zh = lang == "zh"
+    origin_html = ""
+    if goldbach:
+        if zh:
+            origin_html = (
+                '<p class="colophon-origin">由知乎答主 lifesize 在知乎 AI4S 讨论社群「知乎 研 Club」中发起。知乎科学持续支持研究者连接、公开讨论与阶段成果传播。</p>'
+                f'<p class="colophon-links">'
+                f'<a href="{AI_WORKS_URL}" target="_blank" rel="noopener noreferrer">知乎 AI Works 入口 <span aria-hidden="true">↗</span></a>'
+                f'<span aria-hidden="true">·</span>'
+                f'<a href="{ZHIHU_DISCUSS_URL}" target="_blank" rel="noopener noreferrer">参与知乎公开讨论 <span aria-hidden="true">↗</span></a>'
+                f'</p>'
+            )
+        else:
+            origin_html = (
+                '<p class="colophon-origin">Initiated by Zhihu creator lifesize in the Zhihu AI4S community “Zhihu Yan Club”. Zhihu Science supports connecting researchers, open discussion, and sharing milestones.</p>'
+                f'<p class="colophon-links">'
+                f'<a href="{AI_WORKS_URL}" target="_blank" rel="noopener noreferrer">Zhihu AI Works <span aria-hidden="true">↗</span></a>'
+                f'<span aria-hidden="true">·</span>'
+                f'<a href="{ZHIHU_DISCUSS_URL}" target="_blank" rel="noopener noreferrer">Join open discussion on Zhihu <span aria-hidden="true">↗</span></a>'
+                f'</p>'
+            )
+    return f'<div class="hero-colophon">{coinitiator_lockup(path, lang, prefix)}{origin_html}</div>'
+
+
+def footer_credit(path, lang, prefix):
+    return f'<div class="footer-credit-line">{coinitiator_lockup(path, lang, prefix)}</div>'
+
+
 def wall(path, lang, prefix):
     with closing(sqlite3.connect(path)) as db:
         rows = db.execute(f"SELECT id,name,website FROM sponsor_logos WHERE state='approved' ORDER BY {DISPLAY_ORDER}").fetchall()
@@ -121,9 +200,9 @@ def wall(path, lang, prefix):
         cards.append(f'<figure>{image}<figcaption>{escape(name)}</figcaption></figure>')
     zh = lang == "zh"
     grid = f'<div class="sponsor-grid">{"".join(cards)}</div>' if cards else ""
-    return (f'<section class="shell sponsor-wall"><div class="sponsor-heading"><h2>{"赞助单位" if zh else "Sponsors"}</h2>'
+    return (f'<section class="shell sponsor-wall" id="supporting-orgs"><div class="sponsor-heading"><h2>{"支持机构" if zh else "Supporting organizations"}</h2>'
             f'<a class="text-link" href="{ORIGIN}{DESK}?lang={lang}">'
-            + ("申请成为赞助单位" if zh else "Submit an organization logo") + f' ↗</a></div>{grid}</section>')
+            + ("申请成为支持机构" if zh else "Submit an organization logo") + f' ↗</a></div>{grid}</section>')
 
 
 def public_logo(path, ident):

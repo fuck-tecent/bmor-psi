@@ -59,6 +59,9 @@ def render_source(source):
 
 
 def render_card(card):
+    comparison = card.get("comparison")
+    if not isinstance(comparison, str) or not comparison.strip():
+        raise ValueError(f"Missing prior-work comparison for {card['title']!r}: fill in comparison.")
     links = "".join(map(render_source, card["sources"]))
     return f"""
     <article>
@@ -66,6 +69,7 @@ def render_card(card):
       <h2>{escape(card["title"])}</h2>
       <p>{escape(card["body"])}</p>
       <p class="scope">{escape(card["scope"])}</p>
+      <div class="comparison"><strong>与前人相比</strong><p>{escape(comparison)}</p></div>
       <ul class="sources">{links}</ul>
     </article>"""
 

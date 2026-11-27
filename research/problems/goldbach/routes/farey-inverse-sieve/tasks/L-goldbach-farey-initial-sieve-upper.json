@@ -1,0 +1,27 @@
+{
+  "id": "L-goldbach-farey-initial-sieve-upper",
+  "statement": "let I := fun n : ℕ => Finset.Icc ((n+2)/3) ((2*n)/3); let P := fun z : ℕ => (Finset.Icc 2 z).filter Nat.Prime; let V := fun n z : ℕ => ((I n).card:ℝ)*(n.totient:ℝ)/n * ∏ p ∈ (P z).filter (fun p => ¬ p ∣ n), (1-2/(p:ℝ)); let S := fun n z : ℕ => ((I n).filter (fun u => u.Coprime n ∧ z < (u*(n-u)).minFac)).card; let Z₀ := fun n U : ℕ => ⌊(n:ℝ)^((1:ℝ)/(U:ℝ))⌋₊; let Z₂ := Nat.sqrt; ∃ U₀ : ℕ, 8 ≤ U₀ ∧ ∀ U : ℕ, U₀ ≤ U → ∃ N₀ : ℕ, 64 ≤ N₀ ∧ ∀ n : ℕ, N₀ ≤ n → Even n → (S n (Z₀ n U):ℝ) ≤ V n (Z₀ n U) + V n (Z₂ n)/8",
+  "plain_statement": {
+    "zh": "Farey 初始筛的上界对应物：小 cutoff 的幸存数不超过主项加终端误差八分之一。",
+    "en": "Upper-bound counterpart of the initial Farey sieve: survivors at the small cutoff are at most the main term plus one eighth of the terminal error."
+  },
+  "brief": {
+    "zh": "Farey 初始筛的上界对应物：小 cutoff 的幸存数不超过主项加终端误差八分之一。",
+    "en": "Upper-bound counterpart of the initial Farey sieve: survivors at the small cutoff are at most the main term plus one eighth of the terminal error."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/farey-inverse-sieve/README.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-farey-initial-sieve-lower"
+  ],
+  "imports": [
+    "Conjectures.Goldbach.FareyInitialSieveLower"
+  ],
+  "challenge_only": false,
+  "file": "lean/Conjectures/Goldbach/FareyInitialSieveUpper.lean",
+  "module": "Conjectures.Goldbach.FareyInitialSieveUpper",
+  "track": "farey-inverse-sieve",
+  "route_source": "farey-inverse-sieve"
+}

@@ -1,0 +1,25 @@
+{
+  "id": "L-goldbach-dyn-block-collision-budget",
+  "statement": "let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); let P := fun X : ℕ => (Finset.Icc (Nat.sqrt X) (2*Nat.sqrt X)).filter Nat.Prime; let H := fun (X n : ℕ) => ((P X).filter (fun p => p ≤ n ∧ Nat.Prime (n-p))).card; let W := fun X : ℕ => Nat.sqrt X * Nat.sqrt (Nat.sqrt X); let B := fun (X y : ℕ) => (E X).filter (fun n => y ≤ n ∧ n < y + W X); let M := fun X : ℕ => Real.sqrt (X:ℝ) / (Real.log (X:ℝ))^2; ∃ C : ℝ, 0 < C ∧ ∃ X₀ : ℕ, ∀ X ≥ X₀, ∀ y : ℕ, X ≤ y → y + W X ≤ 2*X → (∑ n ∈ B X y, (H X n:ℝ)^2) ≤ C*(W X:ℝ)*(M X)^2",
+  "plain_statement": {
+    "zh": "每个四分之三次幂短窗中的共同终点碰撞预算",
+    "en": "Bound common-endpoint collisions in every three-quarter-power block"
+  },
+  "brief": {
+    "zh": "展开平方并分开对角项。把两个平移素数的筛估计限制在长度 W 的移动区间，控制与起点无关的余项，再平均位移奇异因子。直接限制已证全区间上界会损失 X/W。 可按任务 imports 引用已证引理。",
+    "en": "Separate diagonal and off-diagonal pairs. Localize the shifted-prime sieve to length W with a remainder uniform in the origin, then average the shift factors. Restricting the global bound loses X/W. Verified lemmas are available through task imports."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-dyn-shift-factor-mean"
+  ],
+  "module": "Conjectures.Goldbach.DynBlockCollisionBudget",
+  "file": "lean/Conjectures/Goldbach/DynBlockCollisionBudget.lean",
+  "imports": [
+    "Conjectures.Goldbach.DynShiftFactorMean"
+  ],
+  "track": "representations",
+  "role": "lemma"
+}

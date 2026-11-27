@@ -9,7 +9,7 @@ from contextlib import closing
 from pathlib import Path
 from unittest.mock import patch
 
-from deploy.desk import Desk, LEASE_SECONDS, MAX_RESEARCH_SECONDS
+from deploy.desk import Desk, NO_RESEARCH_DEADLINE
 
 GAPS = [
     {"id": f"L-goldbach-{i:03}", "statement": f"True {-i}"}
@@ -135,19 +135,21 @@ class DeskTests(unittest.TestCase):
             outcomes = list(workers.map(claim, range(1, 17)))
         self.assertEqual(outcomes, [201] * 16)
 
-    def test_expiry_and_release(self):
+    def test_research_claim_survives_a_week_without_heartbeat(self):
         token = self.claim()
-        with self.desk.transaction(write=True) as conn:
-            conn.execute("UPDATE goldbach_leases SET expires_at = ?", (START + MAX_RESEARCH_SECONDS,))
-        almost_absolute = START + MAX_RESEARCH_SECONDS - 120
-        status, data = self.request("beat", {}, token=token, now=almost_absolute)
-        self.assertEqual(status, 200)
-        self.assertEqual(data["expires_at"], START + MAX_RESEARCH_SECONDS)
-        self.assertEqual(self.request("beat", {}, token=token, now=START + MAX_RESEARCH_SECONDS)[0], 410)
-        self.assertEqual(self.status(START + MAX_RESEARCH_SECONDS)["activities"][0]["kind"], "expired")
-        replacement = self.claim("Bob", now=START + MAX_RESEARCH_SECONDS)
-        self.assertEqual(self.request("release", {}, token=replacement, now=START + MAX_RESEARCH_SECONDS)[0], 200)
-        self.assertEqual(self.status(START + MAX_RESEARCH_SECONDS)["active"], 0)
+        later = START + 7 * 86400
+        self.assertEqual(self.status(later)["active"], 1)
+        code, lease = self.request("beat", {}, token=token, now=later)
+        self.assertEqual(code, 200)
+        self.assertEqual(lease["expires_at"], NO_RESEARCH_DEADLINE)
+        self.assertEqual(self.request("release", {}, token=token, now=later)[0], 200)
+        self.assertEqual(self.status(later)["active"], 0)
+
+    def test_automatic_claim_prefers_a_route_milestone(self):
+        self.desk.gaps[GAPS[1]["id"]]["role"] = "endpoint"
+        code, result = self.request("claim", {"handle": "alice"})
+        self.assertEqual(code, 201)
+        self.assertEqual(result["gap"]["id"], GAPS[1]["id"])
 
     def test_only_a_matching_signed_workflow_can_authorize(self):
         token = self.claim()

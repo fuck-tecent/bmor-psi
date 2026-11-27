@@ -1,4 +1,8 @@
 jenkins-hook.goldbach.tech {
+    handle /verified-imports.json {
+        root * /var/lib/goldbach-public-imports
+        file_server
+    }
     @webhook {
         method POST
         path /github/webhook

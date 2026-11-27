@@ -24,7 +24,7 @@ systemctl enable --now goldbach-catalogue.timer
 
 自动合并服务从 Jenkins 的正式 ACCEPTED 记录和已送达裁决中读取候选，使用 GitHub App 的 Contents 写权限精确匹配 PR head 后 squash 合并。该服务把已核验的 Lean 源文件加入下一份受信快照，原子切换 `/opt/goldbach-ci/proof-bases/current`，然后重试下一批。初始化时把已核对的受信基线放入该目录，再将 current 指向它，设置 Jenkins 的 `GOLDBACH_TRUSTED_BASE` 解析该链接。维护者发布新任务目录时暂停合并服务，更新同一个链接，使用的基线须包含已出版的证明。保留旧快照直至所有引用该快照的任务退出。通过 `goldbach-ci-proof-merge.timer` 控制自动合并，日志写入对应 systemd 服务。新增导入权限仍由研究目录维护者在任务的 `imports` 字段里配置。
 
-合并工作器在证明进入受信基线后，检查目录中尚未登记的直接依赖。只有源码与 GitHub main 完全一致的模块才可以登记。工作器使用目录生成器更新 `imports`，按批次创建待审核的目录 PR，需要 GitHub App 的 Contents 和 Pull requests 写权限。已有待审核 PR 时等待合并，再处理积累的依赖。目录核验与发布后，参与者才能看到新增的导入权限。
+合并工作器在证明进入受信基线后，检查目录中尚未登记的直接依赖。只有源码与 GitHub main 完全一致的模块才可以登记。工作器使用目录生成器更新 `imports`，按批次创建待审核的目录 PR，需要 GitHub App 的 Contents 和 Pull requests 写权限。已有待审核 PR 时等待合并，再处理积累的依赖。目录发布后会显示新增推荐。全题库共享引用权限由 Jenkins 受信快照的 verified-imports.json 管理，新证明与索引随同一快照原子发布。历史回填使用 seed_verified_imports.py，对齐正式任务台裁决、主分支 Git blob 与快照源码。运行 seed 前暂停合并定时器并等待当前工作器退出。
 
 Jenkins 在 `/var/cache/goldbach-lean-deps` 复用社区依赖的 `.olean`。缓存键包含固定工具链、Mathlib 锁文件、受信依赖的构建产物、模块源码和其传递依赖。并行任务使用同一缓存键时只编译一次。提交的证明每次独立编译并进行 Lean 内核核验。
 

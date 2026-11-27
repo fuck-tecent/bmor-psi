@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "problem": "goldbach",
+  "base_revision": "63f9f88d49c589c7b8458139f434f70aacf11f16",
+  "request_id": "grimmelt-log-endpoint",
+  "parent": {
+    "id": "L-goldbach-binary-pointwise-positivity",
+    "statement_sha256": "e14f2af0ceebde21345816fb72044035c2eff2be922b02234078a77003be19b1"
+  },
+  "motivation": {
+    "zh": "研究任意短窗中仍无素数对表示的偶数，目标是把固定正幂损失换成依赖 A 的对数损失。",
+    "en": "Count genuine binary Goldbach exceptions in every short interval, replacing a fixed power loss by a logarithmic loss depending on A."
+  },
+  "tasks": [
+    {
+      "id": "L-goldbach-grimmelt-log-endpoint",
+      "statement": "∀ A : ℝ, 0 < A → ∃ B C : ℝ, 0 < B ∧ 0 < C ∧ ∃ X₀ : ℕ, ∀ X H : ℕ, X₀ ≤ X → H ≤ X → (X:ℝ)^((7:ℝ)/120) * (Real.log (X:ℝ))^B ≤ (H:ℝ) → ((((Finset.Icc (X-H) X).filter (fun n => 4 ≤ n ∧ Even n ∧ ∀ p ∈ Finset.range (n+1), ¬ (Nat.Prime p ∧ Nat.Prime (n-p)))).card):ℝ) ≤ C*(H:ℝ)/(Real.log (X:ℝ))^A",
+      "plain_statement": {
+        "zh": "待证：把 Grimmelt 短窗例外集定理的幂次余量降为对数余量",
+        "en": "Conjecture: a polylogarithmic endpoint loss in Grimmelt’s short-interval exception bound"
+      },
+      "brief": {
+        "zh": "取任意 A>0，找与窗口起点无关的 B、C 和阈值。在原文引理 5.1 分别追踪 Y 与 H 尺度的两次幂损失，并检验非负模型的误差是否仍可吸收。固定 ε 定理中隐常数和阈值依赖 ε，直接令 ε 随 X 变动无效。结论控制每窗的真正漏点，仍允许孤立例外。可按任务 imports 复用已证引理。",
+        "en": "For each A>0 seek B,C and a threshold uniform in the window. Track the two power losses at Y and H in Lemma 5.1 and the error budget of the nonnegative model. A fixed-epsilon theorem does not justify taking epsilon to depend on X. The conclusion bounds genuine missed even targets in every window and allows isolated misses. Verified lemmas may be used according to task imports."
+      },
+      "source": "https://arxiv.org/pdf/1910.05187v2",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "route": "representations",
+      "assumptions": []
+    }
+  ],
+  "links": [
+    {
+      "kind": "exploration",
+      "inputs": [
+        "L-goldbach-grimmelt-log-endpoint"
+      ],
+      "output": "L-goldbach-binary-pointwise-positivity",
+      "explanation": {
+        "zh": "正权素数卷积为零恰好等于没有表示。此界限制每个端点窗内父题可失败的偶数数目，逐点正性仍然开放。",
+        "en": "A zero of the nonnegative log-prime convolution at an even target is exactly a missed representation. This bounds the number of parent failures locally; pointwise positivity remains open."
+      }
+    }
+  ],
+  "route_note": {
+    "zh": "研究任意短窗中仍无素数对表示的偶数，目标是把固定正幂损失换成依赖 A 的对数损失。",
+    "en": "Count genuine binary Goldbach exceptions in every short interval, replacing a fixed power loss by a logarithmic loss depending on A."
+  }
+}

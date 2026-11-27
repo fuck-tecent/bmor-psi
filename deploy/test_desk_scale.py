@@ -103,7 +103,7 @@ class DeskScaleTest(unittest.TestCase):
             self.assertNotIn("manifest", latest)
             self.assertEqual(latest["lemma_id"], gap["id"])
             self.assertEqual(status["results"][0]["agent"], {**agent, "source": "self_reported"})
-            self.assertEqual(status["desk"]["agent_rankings"], {
+            self.assertEqual({k: v for k, v in status["desk"]["agent_rankings"].items() if k != "providers"}, {
                 "models": [{"name": "model-test-v1", "accepted": 1, "points": 1}],
                 "harnesses": [{"name": "codex", "accepted": 1, "points": 1}], "proofs": 1})
             self.assertEqual(status["desk"]["rankings"]["proofs"], 1)

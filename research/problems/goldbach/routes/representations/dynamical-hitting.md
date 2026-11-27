@@ -32,3 +32,12 @@ For even endpoints in [X,2X], H counts first primes p in [⌊√X⌋,2⌊√X⌋
 - `L-goldbach-dyn-deletion-loss` — 删除大步长后有多少富终点会完全失去路径 / Bound rich endpoints destroyed by deleting long steps
 - `L-goldbach-dyn-robust-arrivals` — 探索猜想：删去一批大素数步长后仍有正比例命中 / Conjecture: positive coverage survives adversarial long-step deletions
 - `L-goldbach-dyn-exception-energy` — 用局部预测的均方误差约束漏点数 / Charge each missed endpoint to local prediction error
+
+## 短窗覆盖 / Local coverage
+
+把平方根素数步长的覆盖定位到每个长度约 X^(3/4) 的子窗。两矩合用可在每窗得到正比例富终点；漏点密度趋零仍需下尾估计。
+
+Localize square-root prime steps to every block of length about X^(3/4). Together the moments give positive rich-target density in each block; vanishing miss density still needs lower-tail control.
+
+- `L-goldbach-dyn-block-first-mass` — 每个四分之三次幂短窗中的素数路径总量下界 / Lower-bound prime arrivals in every three-quarter-power block
+- `L-goldbach-dyn-block-collision-budget` — 每个四分之三次幂短窗中的共同终点碰撞预算 / Bound common-endpoint collisions in every three-quarter-power block

@@ -44,7 +44,7 @@
       if (!response.ok) throw new Error('Presence unavailable');
       render(await response.json());
     } catch {
-      render(null);
+      // Keep the last snapshot until a heartbeat succeeds.
     } finally {
       clearTimeout(timeout);
       pending = false;

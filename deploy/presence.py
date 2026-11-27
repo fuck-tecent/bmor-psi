@@ -18,7 +18,7 @@ class SitePresence:
         self.agent_count = None
         self.refresh_at = 0
 
-    def snapshot(self, visitor=None):
+    def visitor_count(self, visitor=None):
         with self.lock:
             now = time.monotonic()
             while self.visitors and next(iter(self.visitors.values())) <= now - self.window:
@@ -28,7 +28,10 @@ class SitePresence:
                 self.visitors.move_to_end(visitor)
                 if len(self.visitors) > self.capacity:
                     self.visitors.popitem(last=False)
-            visitors = len(self.visitors)
+            return len(self.visitors)
+
+    def snapshot(self, visitor=None):
+        visitors = self.visitor_count(visitor)
 
         # One small read per desk per ten seconds, shared by all visitors.
         with self.agent_lock:

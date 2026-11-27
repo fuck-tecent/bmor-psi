@@ -18,5 +18,8 @@
   ],
   "role": "target",
   "parallel": true,
-  "challenge_only": true
+  "challenge_only": true,
+  "imports": [
+    "Conjectures.Goldbach.ExceptionFourSeventhsCountingBridge"
+  ]
 }

@@ -14682,10 +14682,12 @@
       "role": "target",
       "parallel": true,
       "challenge_only": true,
+      "imports": [
+        "Conjectures.Goldbach.ExceptionFourSeventhsCountingBridge"
+      ],
       "file": "lean/Conjectures/Goldbach/ExceptionFourSeventhsUnconditional.lean",
       "module": "Conjectures.Goldbach.ExceptionFourSeventhsUnconditional",
-      "route_source": "exceptional-set-four-sevenths",
-      "imports": []
+      "route_source": "exceptional-set-four-sevenths"
     },
     {
       "id": "L-goldbach-binary-shift-central-hit",
@@ -15199,6 +15201,61 @@
       "route_source": "farey-inverse-sieve"
     },
     {
+      "id": "L-goldbach-farey-first-hit-middle-lower",
+      "statement": "let I := fun n : ℕ => Finset.Icc ((n+2)/3) ((2*n)/3); let P := fun z : ℕ => (Finset.Icc 2 z).filter Nat.Prime; let V := fun n z : ℕ => ((I n).card:ℝ)*(n.totient:ℝ)/n * ∏ p ∈ (P z).filter (fun p => ¬ p ∣ n), (1-2/(p:ℝ)); let S := fun n z : ℕ => ((I n).filter (fun u => u.Coprime n ∧ z < (u*(n-u)).minFac)).card; let Z₁ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊; let Z₂ := Nat.sqrt; ∃ N₀ : ℕ, 64 ≤ N₀ ∧ ∀ n : ℕ, N₀ ≤ n → Even n → V n (Z₁ n) - V n (Z₂ n)/8 ≤ (S n (Z₁ n):ℝ)",
+      "plain_statement": {
+        "zh": "中段首次命中的下界筛：z1=n^(1/3) 处幸存数不少于主项减终端误差八分之一（HD6 的 parity/level barrier）。",
+        "en": "Lower-bound sieve for middle first hits: survivors at z1=n^(1/3) are at least the main term minus one eighth of the terminal error (the HD6 parity/level barrier)."
+      },
+      "brief": {
+        "zh": "中段首次命中的下界筛：z1=n^(1/3) 处幸存数不少于主项减终端误差八分之一（HD6 的 parity/level barrier）。",
+        "en": "Lower-bound sieve for middle first hits: survivors at z1=n^(1/3) are at least the main term minus one eighth of the terminal error (the HD6 parity/level barrier)."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/farey-inverse-sieve/README.md",
+      "program": "correlation",
+      "role": "target",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-farey-initial-sieve-lower"
+      ],
+      "imports": [
+        "Conjectures.Goldbach.FareyInitialSieveLower"
+      ],
+      "challenge_only": true,
+      "file": "lean/Conjectures/Goldbach/FareyFirstHitMiddleLower.lean",
+      "module": "Conjectures.Goldbach.FareyFirstHitMiddleLower",
+      "track": "farey-inverse-sieve",
+      "route_source": "farey-inverse-sieve"
+    },
+    {
+      "id": "L-goldbach-farey-first-hit-middle-reduction",
+      "statement": "let I := fun n : ℕ => Finset.Icc ((n+2)/3) ((2*n)/3); let P := fun z : ℕ => (Finset.Icc 2 z).filter Nat.Prime; let V := fun n z : ℕ => ((I n).card:ℝ)*(n.totient:ℝ)/n * ∏ p ∈ (P z).filter (fun p => ¬ p ∣ n), (1-2/(p:ℝ)); let S := fun n z : ℕ => ((I n).filter (fun u => u.Coprime n ∧ z < (u*(n-u)).minFac)).card; let Z₀ := fun n U : ℕ => ⌊(n:ℝ)^((1:ℝ)/(U:ℝ))⌋₊; let Z₁ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊; let Z₂ := Nat.sqrt; (∃ N₁ : ℕ, 64 ≤ N₁ ∧ ∀ n : ℕ, N₁ ≤ n → Even n → V n (Z₁ n) - V n n.sqrt / 8 ≤ (S n (Z₁ n):ℝ)) → (∃ U₁ : ℕ, 8 ≤ U₁ ∧ ∀ U : ℕ, U₁ ≤ U → ∃ N₀ : ℕ, 64 ≤ N₀ ∧ ∀ n : ℕ, N₀ ≤ n → Even n → let L := ((I n).filter (fun u => u.Coprime n ∧ Z₀ n U < (u*(n-u)).minFac ∧ (u*(n-u)).minFac ≤ Z₁ n)).card; (L:ℝ) ≤ V n (Z₀ n U) - V n (Z₁ n) + V n (Z₂ n)/4)",
+      "plain_statement": {
+        "zh": "归约：给定中段下界筛，结合小 cutoff 上界与两筛差即得冻结的中段目标。",
+        "en": "Reduction: the middle lower-bound sieve together with the small-cutoff upper bound and the sift difference implies the frozen middle target."
+      },
+      "brief": {
+        "zh": "归约：给定中段下界筛，结合小 cutoff 上界与两筛差即得冻结的中段目标。",
+        "en": "Reduction: the middle lower-bound sieve together with the small-cutoff upper bound and the sift difference implies the frozen middle target."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/farey-inverse-sieve/README.md",
+      "program": "correlation",
+      "role": "conditional",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-farey-initial-sieve-upper",
+        "L-goldbach-farey-first-hit-middle-lower"
+      ],
+      "imports": [
+        "Conjectures.Goldbach.FareyInitialSieveLower"
+      ],
+      "challenge_only": false,
+      "file": "lean/Conjectures/Goldbach/FareyFirstHitMiddleReduction.lean",
+      "module": "Conjectures.Goldbach.FareyFirstHitMiddleReduction",
+      "track": "farey-inverse-sieve",
+      "route_source": "farey-inverse-sieve"
+    },
+    {
       "id": "L-goldbach-farey-first-hit-middle",
       "statement": "let I := fun n : ℕ => Finset.Icc ((n+2)/3) ((2*n)/3); let P := fun z : ℕ => (Finset.Icc 2 z).filter Nat.Prime; let V := fun n z : ℕ => ((I n).card:ℝ)*(n.totient:ℝ)/n * ∏ p ∈ (P z).filter (fun p => ¬ p ∣ n), (1-2/(p:ℝ)); let Z₀ := fun n U : ℕ => ⌊(n:ℝ)^((1:ℝ)/(U:ℝ))⌋₊; let Z₁ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊; let Z₂ := Nat.sqrt; ∃ U₁ : ℕ, 8 ≤ U₁ ∧ ∀ U : ℕ, U₁ ≤ U → ∃ N₀ : ℕ, 64 ≤ N₀ ∧ ∀ n : ℕ, N₀ ≤ n → Even n → let L := ((I n).filter (fun u => u.Coprime n ∧ Z₀ n U < (u*(n-u)).minFac ∧ (u*(n-u)).minFac ≤ Z₁ n)).card; (L:ℝ) ≤ V n (Z₀ n U) - V n (Z₁ n) + V n (Z₂ n)/4",
       "plain_statement": {
@@ -15348,6 +15405,33 @@
       "challenge_only": true,
       "file": "lean/Conjectures/Goldbach/FareyInitialSieveLower.lean",
       "module": "Conjectures.Goldbach.FareyInitialSieveLower",
+      "track": "farey-inverse-sieve",
+      "route_source": "farey-inverse-sieve"
+    },
+    {
+      "id": "L-goldbach-farey-initial-sieve-upper",
+      "statement": "let I := fun n : ℕ => Finset.Icc ((n+2)/3) ((2*n)/3); let P := fun z : ℕ => (Finset.Icc 2 z).filter Nat.Prime; let V := fun n z : ℕ => ((I n).card:ℝ)*(n.totient:ℝ)/n * ∏ p ∈ (P z).filter (fun p => ¬ p ∣ n), (1-2/(p:ℝ)); let S := fun n z : ℕ => ((I n).filter (fun u => u.Coprime n ∧ z < (u*(n-u)).minFac)).card; let Z₀ := fun n U : ℕ => ⌊(n:ℝ)^((1:ℝ)/(U:ℝ))⌋₊; let Z₂ := Nat.sqrt; ∃ U₀ : ℕ, 8 ≤ U₀ ∧ ∀ U : ℕ, U₀ ≤ U → ∃ N₀ : ℕ, 64 ≤ N₀ ∧ ∀ n : ℕ, N₀ ≤ n → Even n → (S n (Z₀ n U):ℝ) ≤ V n (Z₀ n U) + V n (Z₂ n)/8",
+      "plain_statement": {
+        "zh": "Farey 初始筛的上界对应物：小 cutoff 的幸存数不超过主项加终端误差八分之一。",
+        "en": "Upper-bound counterpart of the initial Farey sieve: survivors at the small cutoff are at most the main term plus one eighth of the terminal error."
+      },
+      "brief": {
+        "zh": "Farey 初始筛的上界对应物：小 cutoff 的幸存数不超过主项加终端误差八分之一。",
+        "en": "Upper-bound counterpart of the initial Farey sieve: survivors at the small cutoff are at most the main term plus one eighth of the terminal error."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/farey-inverse-sieve/README.md",
+      "program": "correlation",
+      "role": "lemma",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-farey-initial-sieve-lower"
+      ],
+      "imports": [
+        "Conjectures.Goldbach.FareyInitialSieveLower"
+      ],
+      "challenge_only": false,
+      "file": "lean/Conjectures/Goldbach/FareyInitialSieveUpper.lean",
+      "module": "Conjectures.Goldbach.FareyInitialSieveUpper",
       "track": "farey-inverse-sieve",
       "route_source": "farey-inverse-sieve"
     },
@@ -16550,6 +16634,27 @@
       "route_source": "frontier-moment-antispike"
     },
     {
+      "id": "L-goldbach-sqrt-arc-second-moment-floor",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (u : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (u k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let Q₂ := fun n : ℕ => ⌊Real.sqrt (n : ℝ) / ((Nat.log 2 (n + 2) : ℝ) ^ 4)⌋₊; let sqrtArcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ Q₂ n ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t - (a : ℝ) / (q : ℝ)| ≤ ((256 * Q₂ n * Q n : ℕ) : ℝ) / ((q : ℝ) * (n : ℝ))}; ∃ c : ℝ, 0 < c ∧ ∃ N : ℕ, ∀ n : ℕ, N ≤ n → c * (n : ℝ) * Real.log (Real.log (n : ℝ)) ≤ intervalIntegral (fun t => (sqrtArcs n)ᶜ.indicator (fun u => ‖S n w u‖ ^ 2) t) (0 : ℝ) 1 MeasureTheory.volume",
+      "plain_statement": {
+        "zh": "对所有充分大的整数 n，在分母上限为 ⌊√n/⌊log₂(n+2)⌋⁴⌋ 的宽主弧之外，素数对数权指数和的二阶矩至少为 c n log log n，其中 c 是与 n 无关的正常数。",
+        "en": "For every sufficiently large integer n, the integral of the prime-log exponential sum’s squared modulus outside the wide arcs with denominator cutoff ⌊√n/⌊log₂(n+2)⌋⁴⌋ is at least c n log log n for an absolute constant c > 0."
+      },
+      "brief": {
+        "zh": "见 research/checkpoint/deep-arc-second-moment.md 的第二个结论。按已发表的 sqrtArcs 宽度取互不相交的既约分数小窗。分母从平方根截断累加至 √n/4，保留约 log log n 个等比区间，每个区间贡献常数倍 n。该下界刻画对有符号积分先取绝对值时的损失。",
+        "en": "Use the second cutoff in research/checkpoint/deep-arc-second-moment.md. Place disjoint windows at reduced fractions outside sqrtArcs. From the cutoff to √n/4 there are on the order of log log n geometric denominator blocks; squarefree denominators contribute a constant multiple of n per block. This measures the loss from taking absolute values before estimating the signed coefficient."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/873de591f4849fe55dcee83f7a6bf45370623a6d/research/checkpoint/deep-arc-second-moment.md",
+      "program": "correlation",
+      "role": "lemma",
+      "parallel": true,
+      "imports": [],
+      "file": "lean/Conjectures/Goldbach/SqrtArcSecondMomentFloor.lean",
+      "module": "Conjectures.Goldbach.SqrtArcSecondMomentFloor",
+      "track": "frontier-moment-antispike",
+      "route_source": "frontier-moment-antispike"
+    },
+    {
       "id": "L-goldbach-three-quarters-exceptional-dirichlet-windows",
       "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0\nlet E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I)\nlet S := fun (n : ℕ) (u : ℕ→ℝ) (t : ℝ) => ∑ k ∈ Finset.range (n+1), (u k:ℂ)*E ((k:ℝ)*t)\n(∀ n : ℕ, 0<n → ∀ η : ℝ, ∀ A : Finset (ℕ×ℕ),\n  (∀ p ∈ A, 0<p.1 ∧ (p.1:ℝ)≤Real.sqrt n ∧ p.2.Coprime p.1 ∧\n    ∃ t ∈ Set.Icc (0:ℝ) 1, |t-(p.2:ℝ)/p.1|≤1/((p.1:ℝ)*Real.sqrt n) ∧ (n:ℝ)^(3/4+η)≤‖S n w t‖) →\n  (A.card:ℝ) ≤ 7*(1+4*Real.pi)*Real.log 4*(n:ℝ)^(1/2-2*η)*Real.log n) ∧\n(∀ η : ℝ, 0<η → ∃ N : ℕ, ∀ n : ℕ, N≤n →\n  ∃ bad : Finset ℕ, (bad.card:ℝ) ≤ (n:ℝ)^(1/2-η) ∧\n    ∀ q : ℕ, 0<q → (q:ℝ)≤Real.sqrt n → q ∉ bad → ∀ a : ℕ, a≤q → a.Coprime q →\n    ∀ t ∈ Set.Icc (0:ℝ) 1, |t-(a:ℝ)/q|≤1/((q:ℝ)*Real.sqrt n) → ‖S n w t‖ < (n:ℝ)^(3/4+η))",
       "plain_statement": {
@@ -17429,6 +17534,110 @@
       "route_source": "minor-truncation"
     },
     {
+      "id": "L-goldbach-major-denominator-dilation-refute",
+      "statement": "¬ (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let A := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ Q n ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ r q a * (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let M := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => (intervalIntegral (fun t => (A n r).indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume).re; ∃ N : ℕ, ∀ n ≥ N, Even n → ∀ r : ℕ → ℝ, (∀ q, (1/2:ℝ) ≤ r q ∧ r q ≤ 2) → (n:ℝ) ≤ M n (fun q _ => r q))",
+      "plain_statement": {
+        "zh": "证伪：逐分母调宽后仍有 n 主弧下界",
+        "en": "Refute: A uniform n floor under denominator-dependent dilation"
+      },
+      "brief": {
+        "zh": "每个分母独立选择半倍至两倍半径，同分母各分子共用。尝试先合并 Ramanujan 系数，再估计失去单调性的分母权。 请证明冻结命题的完整否定；单个小规模算例不足。",
+        "en": "Keep a common radius per denominator, between half and twice its original value. Sum Ramanujan coefficients first and control the loss of monotonicity. Prove the full negation, beyond a single finite example."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/3120",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-major-fixed-144"
+      ],
+      "role": "lemma",
+      "track": "minor-truncation",
+      "imports": [
+        "Conjectures.Goldbach.MajorFixed144"
+      ],
+      "file": "lean/Conjectures/Goldbach/MajorDenominatorDilationRefute.lean",
+      "module": "Conjectures.Goldbach.MajorDenominatorDilationRefute",
+      "route_source": "minor-truncation"
+    },
+    {
+      "id": "L-goldbach-major-denominator-dilation",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let A := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ Q n ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ r q a * (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let M := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => (intervalIntegral (fun t => (A n r).indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume).re; ∃ N : ℕ, ∀ n ≥ N, Even n → ∀ r : ℕ → ℝ, (∀ q, (1/2:ℝ) ≤ r q ∧ r q ≤ 2) → (n:ℝ) ≤ M n (fun q _ => r q)",
+      "plain_statement": {
+        "zh": "逐分母调宽后仍有 n 主弧下界",
+        "en": "A uniform n floor under denominator-dependent dilation"
+      },
+      "brief": {
+        "zh": "每个分母独立选择半倍至两倍半径，同分母各分子共用。尝试先合并 Ramanujan 系数，再估计失去单调性的分母权。 可引用 MajorFixed144；反例请领取配对证伪题。",
+        "en": "Keep a common radius per denominator, between half and twice its original value. Sum Ramanujan coefficients first and control the loss of monotonicity. Import MajorFixed144 if useful; use the paired task for a refutation."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/3120",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-major-fixed-144"
+      ],
+      "role": "lemma",
+      "track": "minor-truncation",
+      "imports": [
+        "Conjectures.Goldbach.MajorFixed144"
+      ],
+      "file": "lean/Conjectures/Goldbach/MajorDenominatorDilation.lean",
+      "module": "Conjectures.Goldbach.MajorDenominatorDilation",
+      "route_source": "minor-truncation"
+    },
+    {
+      "id": "L-goldbach-major-dilation-oscillation-refute",
+      "statement": "¬ (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let A := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ Q n ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ r q a * (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let M := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => (intervalIntegral (fun t => (A n r).indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume).re; ∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ n ≥ N, Even n → ∀ r : ℕ → ℕ → ℝ, (∀ q a, (1/2:ℝ) ≤ r q a ∧ r q a ≤ 2) → |M n r - M n (fun _ _ => 1)| ≤ ε*(n:ℝ))",
+      "plain_statement": {
+        "zh": "证伪：独立调宽能否只改变 o(n) 的主弧实部？",
+        "en": "Refute: Uniform sublinear oscillation under independent arc dilation"
+      },
+      "brief": {
+        "zh": "比较最坏调宽与原弧的有符号边界积分。证伪需固定正比例并在任意大偶数上选出造成该偏差的弧宽。 请证明冻结命题的完整否定；单个小规模算例不足。",
+        "en": "Estimate the signed boundary integrals against the unchanged arcs. To refute, exhibit a fixed positive proportional deviation on arbitrarily large even targets. Prove the full negation, beyond a single finite example."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/3120",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-major-fixed-144"
+      ],
+      "role": "lemma",
+      "track": "minor-truncation",
+      "imports": [
+        "Conjectures.Goldbach.MajorFixed144"
+      ],
+      "file": "lean/Conjectures/Goldbach/MajorDilationOscillationRefute.lean",
+      "module": "Conjectures.Goldbach.MajorDilationOscillationRefute",
+      "route_source": "minor-truncation"
+    },
+    {
+      "id": "L-goldbach-major-dilation-oscillation",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let A := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ Q n ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ r q a * (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let M := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => (intervalIntegral (fun t => (A n r).indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume).re; ∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ n ≥ N, Even n → ∀ r : ℕ → ℕ → ℝ, (∀ q a, (1/2:ℝ) ≤ r q a ∧ r q a ≤ 2) → |M n r - M n (fun _ _ => 1)| ≤ ε*(n:ℝ)",
+      "plain_statement": {
+        "zh": "独立调宽能否只改变 o(n) 的主弧实部？",
+        "en": "Uniform sublinear oscillation under independent arc dilation"
+      },
+      "brief": {
+        "zh": "比较最坏调宽与原弧的有符号边界积分。证伪需固定正比例并在任意大偶数上选出造成该偏差的弧宽。 可引用 MajorFixed144；反例请领取配对证伪题。",
+        "en": "Estimate the signed boundary integrals against the unchanged arcs. To refute, exhibit a fixed positive proportional deviation on arbitrarily large even targets. Import MajorFixed144 if useful; use the paired task for a refutation."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/3120",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-major-fixed-144"
+      ],
+      "role": "lemma",
+      "track": "minor-truncation",
+      "imports": [
+        "Conjectures.Goldbach.MajorFixed144"
+      ],
+      "file": "lean/Conjectures/Goldbach/MajorDilationOscillation.lean",
+      "module": "Conjectures.Goldbach.MajorDilationOscillation",
+      "route_source": "minor-truncation"
+    },
+    {
       "id": "L-goldbach-major-fixed-144",
       "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let major := fun n : ℕ => intervalIntegral (fun t => (arcs n).indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → (n:ℝ)/144 ≤ (major n).re",
       "plain_statement": {
@@ -17448,6 +17657,58 @@
       "role": "lemma",
       "module": "Conjectures.Goldbach.MajorFixed144",
       "file": "lean/Conjectures/Goldbach/MajorFixed144.lean",
+      "route_source": "minor-truncation"
+    },
+    {
+      "id": "L-goldbach-major-numerator-dilation-refute",
+      "statement": "¬ (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let A := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ Q n ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ r q a * (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let M := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => (intervalIntegral (fun t => (A n r).indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume).re; ∃ N : ℕ, ∀ n ≥ N, Even n → ∀ r : ℕ → ℕ → ℝ, (∀ q a, (1/2:ℝ) ≤ r q a ∧ r q a ≤ 2) → (n:ℝ) ≤ M n r)",
+      "plain_statement": {
+        "zh": "证伪：逐个既约分数调宽后仍有 n 主弧下界",
+        "en": "Refute: A uniform n floor under independent arc dilation"
+      },
+      "brief": {
+        "zh": "允许每个 a/q 在半倍至两倍之间独立选半径。尝试按相位选择弧宽以削弱正贡献，尤其检验 q 接近 Q 的区间。 请证明冻结命题的完整否定；单个小规模算例不足。",
+        "en": "Choose each reduced fraction’s width independently. Try adversarial phase-dependent radii, especially for denominators comparable to Q. Prove the full negation, beyond a single finite example."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/3120",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-major-fixed-144"
+      ],
+      "role": "lemma",
+      "track": "minor-truncation",
+      "imports": [
+        "Conjectures.Goldbach.MajorFixed144"
+      ],
+      "file": "lean/Conjectures/Goldbach/MajorNumeratorDilationRefute.lean",
+      "module": "Conjectures.Goldbach.MajorNumeratorDilationRefute",
+      "route_source": "minor-truncation"
+    },
+    {
+      "id": "L-goldbach-major-numerator-dilation",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let A := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ Q n ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ r q a * (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let M := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => (intervalIntegral (fun t => (A n r).indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume).re; ∃ N : ℕ, ∀ n ≥ N, Even n → ∀ r : ℕ → ℕ → ℝ, (∀ q a, (1/2:ℝ) ≤ r q a ∧ r q a ≤ 2) → (n:ℝ) ≤ M n r",
+      "plain_statement": {
+        "zh": "逐个既约分数调宽后仍有 n 主弧下界",
+        "en": "A uniform n floor under independent arc dilation"
+      },
+      "brief": {
+        "zh": "允许每个 a/q 在半倍至两倍之间独立选半径。尝试按相位选择弧宽以削弱正贡献，尤其检验 q 接近 Q 的区间。 可引用 MajorFixed144；反例请领取配对证伪题。",
+        "en": "Choose each reduced fraction’s width independently. Try adversarial phase-dependent radii, especially for denominators comparable to Q. Import MajorFixed144 if useful; use the paired task for a refutation."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/3120",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-major-fixed-144"
+      ],
+      "role": "lemma",
+      "track": "minor-truncation",
+      "imports": [
+        "Conjectures.Goldbach.MajorFixed144"
+      ],
+      "file": "lean/Conjectures/Goldbach/MajorNumeratorDilation.lean",
+      "module": "Conjectures.Goldbach.MajorNumeratorDilation",
       "route_source": "minor-truncation"
     },
     {
@@ -17913,6 +18174,32 @@
       "role": "lemma",
       "module": "Conjectures.Goldbach.PacketLagEnergyIdentity",
       "file": "lean/Conjectures/Goldbach/PacketLagEnergyIdentity.lean",
+      "route_source": "minor-truncation"
+    },
+    {
+      "id": "L-goldbach-packet-long-factor-centers",
+      "statement": "∀ (q d H m : ℕ) (u : ℝ), 1 < q → 0 < m → 0 < u → Odd d → d ∣ q → (∀ h : ℕ, 1 ≤ h → h ≤ H → ¬ d ∣ 2 ^ h - 1) → let K := fun t : ℝ => (∑ j ∈ Finset.range m, Real.cos (2 * Real.pi * (2 : ℝ)^(j+1) * t)) / (m : ℝ); (m : ℝ) * u^2 * (((Finset.range (q+1)).filter (fun a => Nat.Coprime a q ∧ u < K ((a:ℝ)/(q:ℝ)))).card : ℝ) ≤ (q : ℝ) * (((m-1)/(H+1) + 1 : ℕ) : ℝ)",
+      "plain_statement": {
+        "zh": "含长周期奇因子的分母上，定量限制倍增余弦平均的共振分子数。",
+        "en": "Bound resonant numerators for the doubling cosine average at any denominator with a long-period odd factor."
+      },
+      "brief": {
+        "zh": "设 d 是 q 的奇因子，1 到 H 步内没有 2 的幂回到 1 模 d。相同频率余数在每个 H+1 长的指标块里至多出现一次。调用已核验的轨道二阶矩得到共振分子所占比例至多为 ⌈m/(H+1)⌉/(m u²)，其中 u 为正阈值。这同时适用于符合条件的偶分母。父题仍需欧拉函数加权求和及处理没有此类因子的偶分母。",
+        "en": "If an odd divisor d of q has no return of 2 to 1 modulo d in steps 1 through H, a frequency residue occurs at most once per block of H+1 indices. Apply the verified orbit second moment to bound the resonant share of the q grid positions by ⌈m/(H+1)⌉/(m u²) for any positive threshold u. This includes qualifying even denominators. The parent also needs a totient-weighted sum and treatment of even denominators without such a factor."
+      },
+      "source": "https://www.movan.tech/goldbach/?lang=en&lemma=L-goldbach-packet-remaining-center-count",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-packet-binary-orbit-second-moment"
+      ],
+      "imports": [
+        "Conjectures.Goldbach.PacketBinaryOrbitSecondMoment"
+      ],
+      "track": "minor-truncation",
+      "role": "lemma",
+      "file": "lean/Conjectures/Goldbach/PacketLongFactorCenters.lean",
+      "module": "Conjectures.Goldbach.PacketLongFactorCenters",
       "route_source": "minor-truncation"
     },
     {
@@ -18554,6 +18841,28 @@
       "route_source": "minor-truncation"
     },
     {
+      "id": "L-goldbach-packet-totient-harmonic-budget",
+      "statement": "∀ X : ℕ, (∑ q ∈ Finset.Icc 1 X, (q : ℝ) / (q.totient : ℝ)^2) ≤ Real.exp (Real.pi^2) * (1 + Real.log (X : ℝ))",
+      "plain_statement": {
+        "zh": "控制共振分母权重 q/φ(q)² 的累积量，对所有截断点给出显式对数上界。",
+        "en": "Bound the cumulative resonance weight q/φ(q)² logarithmically with an explicit constant at every cutoff."
+      },
+      "brief": {
+        "zh": "利用欧拉乘积将 (q/φ(q))² 逐因子放大为 1+6/p，按素因子子集展开。子集乘积 D 的倍数对调和和的贡献至多为 Hₓ/D，因此剩余乘积被 exp(6Σₚ1/p²) 控制。与单分母的共振分子比例界相乘，得到长周期奇因子分母族的加权总量。常数取便于核验的非最优值。",
+        "en": "Majorize each Euler factor of (q/φ(q))² by 1+6/p and expand over subsets of prime factors. Multiples of the subset product D carry at most Hₓ/D harmonic mass. The resulting product is bounded by exp(6Σₚ1/p²). Multiplication by a per-denominator resonance fraction bounds the weighted long-factor population; the explicit constant is not optimized."
+      },
+      "source": "https://www.movan.tech/goldbach/?lang=en&lemma=L-goldbach-packet-remaining-center-count",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "imports": [],
+      "track": "minor-truncation",
+      "role": "lemma",
+      "file": "lean/Conjectures/Goldbach/PacketTotientHarmonicBudget.lean",
+      "module": "Conjectures.Goldbach.PacketTotientHarmonicBudget",
+      "route_source": "minor-truncation"
+    },
+    {
       "id": "L-goldbach-packet-upper-tail-half",
       "statement": "let T := fun (m : ℕ) (t : ℝ) => ∑ j ∈ Finset.range m, Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t); ∀ m : ℕ, 0 < m → intervalIntegral (fun t => if (m:ℝ)/2 < T m t then (1:ℝ) else 0) (0:ℝ) 1 MeasureTheory.volume ≤ Real.exp (-(m:ℝ)/8)",
       "plain_statement": {
@@ -18995,8 +19304,8 @@
       "track": "representations",
       "role": "lemma",
       "imports": [],
-      "module": "Conjectures.Goldbach.BeaumontAlternateNormalShift",
       "file": "lean/Conjectures/Goldbach/BeaumontAlternateNormalShift.lean",
+      "module": "Conjectures.Goldbach.BeaumontAlternateNormalShift",
       "route_source": "representations"
     },
     {
@@ -19061,8 +19370,8 @@
       "track": "representations",
       "role": "lemma",
       "imports": [],
-      "module": "Conjectures.Goldbach.BeaumontCentralLocalPrediction",
       "file": "lean/Conjectures/Goldbach/BeaumontCentralLocalPrediction.lean",
+      "module": "Conjectures.Goldbach.BeaumontCentralLocalPrediction",
       "route_source": "representations"
     },
     {
@@ -19088,8 +19397,8 @@
       "imports": [
         "Conjectures.Goldbach.DynExceptionEnergy"
       ],
-      "module": "Conjectures.Goldbach.BeaumontCentralPredictionTransfer",
       "file": "lean/Conjectures/Goldbach/BeaumontCentralPredictionTransfer.lean",
+      "module": "Conjectures.Goldbach.BeaumontCentralPredictionTransfer",
       "route_source": "representations"
     },
     {
@@ -19220,8 +19529,8 @@
       "track": "representations",
       "role": "lemma",
       "imports": [],
-      "module": "Conjectures.Goldbach.BeaumontOneSidedHoleCluster",
       "file": "lean/Conjectures/Goldbach/BeaumontOneSidedHoleCluster.lean",
+      "module": "Conjectures.Goldbach.BeaumontOneSidedHoleCluster",
       "route_source": "representations"
     },
     {
@@ -19330,8 +19639,8 @@
       "track": "representations",
       "role": "lemma",
       "imports": [],
-      "module": "Conjectures.Goldbach.BeaumontScaledDeletionSurvival",
       "file": "lean/Conjectures/Goldbach/BeaumontScaledDeletionSurvival.lean",
+      "module": "Conjectures.Goldbach.BeaumontScaledDeletionSurvival",
       "route_source": "representations"
     },
     {
@@ -19375,6 +19684,58 @@
       "role": "lemma",
       "module": "Conjectures.Goldbach.CellLpDualCertificate",
       "file": "lean/Conjectures/Goldbach/CellLpDualCertificate.lean",
+      "route_source": "representations"
+    },
+    {
+      "id": "L-goldbach-dyn-block-collision-budget",
+      "statement": "let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); let P := fun X : ℕ => (Finset.Icc (Nat.sqrt X) (2*Nat.sqrt X)).filter Nat.Prime; let H := fun (X n : ℕ) => ((P X).filter (fun p => p ≤ n ∧ Nat.Prime (n-p))).card; let W := fun X : ℕ => Nat.sqrt X * Nat.sqrt (Nat.sqrt X); let B := fun (X y : ℕ) => (E X).filter (fun n => y ≤ n ∧ n < y + W X); let M := fun X : ℕ => Real.sqrt (X:ℝ) / (Real.log (X:ℝ))^2; ∃ C : ℝ, 0 < C ∧ ∃ X₀ : ℕ, ∀ X ≥ X₀, ∀ y : ℕ, X ≤ y → y + W X ≤ 2*X → (∑ n ∈ B X y, (H X n:ℝ)^2) ≤ C*(W X:ℝ)*(M X)^2",
+      "plain_statement": {
+        "zh": "每个四分之三次幂短窗中的共同终点碰撞预算",
+        "en": "Bound common-endpoint collisions in every three-quarter-power block"
+      },
+      "brief": {
+        "zh": "展开平方并分开对角项。把两个平移素数的筛估计限制在长度 W 的移动区间，控制与起点无关的余项，再平均位移奇异因子。直接限制已证全区间上界会损失 X/W。 可按任务 imports 引用已证引理。",
+        "en": "Separate diagonal and off-diagonal pairs. Localize the shifted-prime sieve to length W with a remainder uniform in the origin, then average the shift factors. Restricting the global bound loses X/W. Verified lemmas are available through task imports."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-dyn-shift-factor-mean"
+      ],
+      "module": "Conjectures.Goldbach.DynBlockCollisionBudget",
+      "file": "lean/Conjectures/Goldbach/DynBlockCollisionBudget.lean",
+      "imports": [
+        "Conjectures.Goldbach.DynShiftFactorMean"
+      ],
+      "track": "representations",
+      "role": "lemma",
+      "route_source": "representations"
+    },
+    {
+      "id": "L-goldbach-dyn-block-first-mass",
+      "statement": "let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); let P := fun X : ℕ => (Finset.Icc (Nat.sqrt X) (2*Nat.sqrt X)).filter Nat.Prime; let H := fun (X n : ℕ) => ((P X).filter (fun p => p ≤ n ∧ Nat.Prime (n-p))).card; let W := fun X : ℕ => Nat.sqrt X * Nat.sqrt (Nat.sqrt X); let B := fun (X y : ℕ) => (E X).filter (fun n => y ≤ n ∧ n < y + W X); let M := fun X : ℕ => Real.sqrt (X:ℝ) / (Real.log (X:ℝ))^2; ∃ c : ℝ, 0 < c ∧ ∃ X₀ : ℕ, ∀ X ≥ X₀, ∀ y : ℕ, X ≤ y → y + W X ≤ 2*X → c*(W X:ℝ)*M X ≤ ∑ n ∈ B X y, (H X n:ℝ)",
+      "plain_statement": {
+        "zh": "每个四分之三次幂短窗中的素数路径总量下界",
+        "en": "Lower-bound prime arrivals in every three-quarter-power block"
+      },
+      "brief": {
+        "zh": "把大素数限制在短窗中段，使每个允许的小素数与其相加仍在窗内。关键是对所有起点一致的短区间素数计数下界；全区间的一阶矩不能直接限制到子窗。 可按任务 imports 引用已证引理。",
+        "en": "Place the large prime inside the middle of the block so every allowed small step stays inside. Establish a short-interval prime lower bound uniform in the block origin; global mass alone gives no local lower bound. Verified lemmas are available through task imports."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-dyn-interior-box"
+      ],
+      "module": "Conjectures.Goldbach.DynBlockFirstMass",
+      "file": "lean/Conjectures/Goldbach/DynBlockFirstMass.lean",
+      "imports": [
+        "Conjectures.Goldbach.DynInteriorBox"
+      ],
+      "track": "representations",
+      "role": "lemma",
       "route_source": "representations"
     },
     {
@@ -20026,6 +20387,28 @@
       "track": "representations",
       "role": "conditional",
       "route_source": "representations"
+    },
+    {
+      "id": "L-goldbach-grimmelt-log-endpoint",
+      "statement": "∀ A : ℝ, 0 < A → ∃ B C : ℝ, 0 < B ∧ 0 < C ∧ ∃ X₀ : ℕ, ∀ X H : ℕ, X₀ ≤ X → H ≤ X → (X:ℝ)^((7:ℝ)/120) * (Real.log (X:ℝ))^B ≤ (H:ℝ) → ((((Finset.Icc (X-H) X).filter (fun n => 4 ≤ n ∧ Even n ∧ ∀ p ∈ Finset.range (n+1), ¬ (Nat.Prime p ∧ Nat.Prime (n-p)))).card):ℝ) ≤ C*(H:ℝ)/(Real.log (X:ℝ))^A",
+      "plain_statement": {
+        "zh": "待证：把 Grimmelt 短窗例外集定理的幂次余量降为对数余量",
+        "en": "Conjecture: a polylogarithmic endpoint loss in Grimmelt’s short-interval exception bound"
+      },
+      "brief": {
+        "zh": "取任意 A>0，找与窗口起点无关的 B、C 和阈值。在原文引理 5.1 分别追踪 Y 与 H 尺度的两次幂损失，并检验非负模型的误差是否仍可吸收。固定 ε 定理中隐常数和阈值依赖 ε，直接令 ε 随 X 变动无效。结论控制每窗的真正漏点，仍允许孤立例外。可按任务 imports 复用已证引理。",
+        "en": "For each A>0 seek B,C and a threshold uniform in the window. Track the two power losses at Y and H in Lemma 5.1 and the error budget of the nonnegative model. A fixed-epsilon theorem does not justify taking epsilon to depend on X. The conclusion bounds genuine missed even targets in every window and allows isolated misses. Verified lemmas may be used according to task imports."
+      },
+      "source": "https://arxiv.org/pdf/1910.05187v2",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "role": "lemma",
+      "file": "lean/Conjectures/Goldbach/GrimmeltLogEndpoint.lean",
+      "module": "Conjectures.Goldbach.GrimmeltLogEndpoint",
+      "track": "representations",
+      "route_source": "representations",
+      "imports": []
     },
     {
       "id": "L-goldbach-prime-mod-four-partition",
@@ -21129,7 +21512,8 @@
       "parallel": true,
       "challenge_only": true,
       "imports": [
-        "PEqualNP.Outside.L_goldbach_frontier_skirt_polylog_moduli"
+        "PEqualNP.Outside.L_goldbach_frontier_skirt_polylog_moduli",
+        "Conjectures.Goldbach.WideSignedRemainderBridge"
       ],
       "file": "lean/Conjectures/Goldbach/WideSignedUnconditional.lean",
       "module": "Conjectures.Goldbach.WideSignedUnconditional",

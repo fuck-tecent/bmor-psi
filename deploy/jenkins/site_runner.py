@@ -20,7 +20,7 @@ from verify_proof import verify
 ROOT = Path("/opt/goldbach-ci")
 TRUSTED_BASE = Path(os.environ.get("GOLDBACH_TRUSTED_BASE", ROOT / "lean-replay"))
 SOCKET = Path("/run/goldbach-ci-site/runner.sock")
-MAX_PARALLEL_CHECKS = 4
+MAX_PARALLEL_CHECKS = 12
 PROOF_GITHUB = GitHubApp("/etc/goldbach-ci/github-app.pem", request_interval=0.25)
 
 

@@ -30602,7 +30602,9 @@
         "depends_on": [
           "L-joshi-abc-height-bridge"
         ],
-        "imports": [],
+        "imports": [
+          "Conjectures.JoshiAbc.HeightBridge"
+        ],
         "challenge_only": true,
         "track": "07-global-heights",
         "module": "Conjectures.JoshiAbc.Endpoint",
@@ -30749,7 +30751,9 @@
         "depends_on": [
           "L-joshi-abc-frey-hull-transfer"
         ],
-        "imports": [],
+        "imports": [
+          "Conjectures.JoshiAbc.FreyHullTransfer"
+        ],
         "challenge_only": true,
         "track": "07-global-heights",
         "module": "Conjectures.JoshiAbc.UniformFreyUpper",

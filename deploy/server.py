@@ -15,7 +15,7 @@ from functools import lru_cache
 from html import escape
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from threading import BoundedSemaphore, Lock
+from threading import BoundedSemaphore, Lock, Thread
 from urllib.parse import parse_qs, urlsplit
 
 from desk import Desk, QUEUE_BATCH
@@ -101,6 +101,31 @@ with closing(sqlite3.connect(PAGE_VIEWS_DB)) as conn, conn:
     conn.execute("CREATE TABLE IF NOT EXISTS page_views (source TEXT PRIMARY KEY, total INTEGER NOT NULL)")
     conn.execute("INSERT OR IGNORE INTO page_views VALUES ('live', 0)")
 
+def read_presence_counts(visitor=None):
+    counts = PRESENCE.snapshot(visitor)
+    try:
+        with closing(sqlite3.connect(PAGE_VIEWS_DB)) as conn:
+            counts["page_views"] = conn.execute("SELECT sum(total) FROM page_views").fetchone()[0]
+            counts["unique_ips"] = conn.execute("SELECT count(*) FROM visitor_ips").fetchone()[0]
+    except sqlite3.Error:
+        counts["page_views"] = counts["unique_ips"] = None
+    return counts
+
+
+# Cache the initial HTML counts so page rendering does not wait for SQLite.
+PRESENCE_COUNTS = read_presence_counts()
+
+
+def refresh_presence_counts():
+    global PRESENCE_COUNTS
+    while True:
+        time.sleep(10)
+        PRESENCE_COUNTS = read_presence_counts()
+
+
+Thread(target=refresh_presence_counts, name="presence-counts", daemon=True).start()
+
+
 ASSETS = {
     "/agent-icons.png": "image/png",
     "/core-team-signup.png": "image/png",
@@ -116,6 +141,21 @@ ASSETS = {
     "/join.txt": "text/plain",
     "/join-zh.txt": "text/plain",
 }
+
+def asset_version(name):
+    path = ROOT / name
+    return hashlib.sha256(path.read_bytes()).hexdigest()[:8] if path.exists() else ""
+
+
+ASSET_VERSIONS = {name: asset_version(name) for name in ("site.css", "site.js")}
+
+
+def version_assets(page, prefix=""):
+    for name, version in ASSET_VERSIONS.items():
+        if version:
+            page = page.replace(f'"{prefix}{name}"', f'"{prefix}{name}?v={version}"', 1)
+    return page
+
 
 @lru_cache(maxsize=16)
 def compressed_asset(content):
@@ -162,6 +202,11 @@ def core_team_copy(lang):
 
 def presence_widget(lang, prefix, *, variant="inline"):
     zh = lang == "zh"
+    counts = {**PRESENCE_COUNTS, "visitors": PRESENCE.visitor_count()}
+    def number(key):
+        value = counts[key]
+        return f"{value:,}" if isinstance(value, int) else "—"
+
     visitors = "在线访客" if zh else "Visitors"
     agents = "在研 Agent" if zh else "Agents"
     views = "累计浏览" if zh else "Views"
@@ -176,12 +221,12 @@ def presence_widget(lang, prefix, *, variant="inline"):
               "Each active, unsubmitted research lease counts as one agent seat. Updates every 30 seconds.")
     title_html = f'<strong class="presence-heading">{heading}</strong>' if variant == "footer" else ""
     return (
-        f'<details class="presence-widget presence-{variant}" data-endpoint="{prefix}api/presence" hidden>'
+        f'<details class="presence-widget presence-{variant}" data-endpoint="{prefix}api/presence">'
         f'<summary>{title_html}<span class="presence-items">'
-        f'<span><i aria-hidden="true"></i>{visitors} <b data-count="visitors">—</b></span>'
-        f'<span>{agents} <b data-count="agents">—</b></span>'
-        f'<span>{views} <b data-count="page_views">—</b></span>'
-        f'<span>{ips} <b data-count="unique_ips">—</b></span>'
+        f'<span><i aria-hidden="true"></i>{visitors} <b data-count="visitors">{number("visitors")}</b></span>'
+        f'<span>{agents} <b data-count="agents">{number("agents")}</b></span>'
+        f'<span>{views} <b data-count="page_views">{number("page_views")}</b></span>'
+        f'<span>{ips} <b data-count="unique_ips">{number("unique_ips")}</b></span>'
         f'</span></summary><p>{detail}</p></details>'
     )
 
@@ -190,6 +235,7 @@ def hero_community_card(lang, prefix):
     zh = lang == "zh"
     disc = discussion_copy(lang)
     core = core_team_copy(lang)
+    stats = f'<div class="desk-rail-stats">{presence_widget(lang, prefix, variant="footer")}</div>'
     items = []
     if disc:
         items.append(
@@ -212,8 +258,8 @@ def hero_community_card(lang, prefix):
         f'<div class="community-qr core-qr"><img loading="lazy" src="{prefix}core-team-signup.png" width="176" height="176" alt="{core["caption"]}"></div>'
         f'</div></details>'
     )
-    label = "社区交流与中心组报名" if zh else "Community discussion and core team signup"
-    return f'<aside class="hero-community desk-rail" aria-label="{label}">{"".join(items)}</aside>'
+    label = "研究台统计与社区交流" if zh else "Research desk stats and community"
+    return f'<aside class="hero-community desk-rail" aria-label="{label}">{stats}<div class="desk-rail-items">{"".join(items)}</div></aside>'
 
 
 def site_dock(lang, prefix, *, inline=False):
@@ -556,11 +602,12 @@ def problem_page(page, slug, lang):
                   page, count=1, flags=re.S)
     url = PUBLIC_SITE + "problems/" + slug + "/join" + ("-zh" if zh else "") + ".txt"
     prompt = (f"阅读 {url}，按说明领取一条任务，提交 Lean 证明并跟踪核验。"
-              "可导入 gap.imports 列出的社区引理，也可查阅网上资料，把相关方法形式化到指定的 Lean 文件，并在 PR 中注明来源。" if zh else
+              "可跨猜想导入全站已验证社区模块，详见领取指南，也可查阅网上资料，把相关方法形式化到指定的 Lean 文件，并在 PR 中注明来源。" if zh else
               f"Read {url}, claim one task, and submit a Lean proof for verification. "
-              "You may import community lemmas listed in gap.imports and research methods online. "
+              "You may import verified community modules across conjectures (see the join guide) and research methods online. "
               "Formalize the relevant steps in your assigned Lean file and cite your sources in the PR.")
     page = re.sub(r'(<p id="agent-prompt"[^>]*>).*?(</p>)', lambda m: m[1] + escape(prompt) + m[2], page)
+    page = re.sub(r'<a\b[^>]*\bdata-goldbach-only\b[^>]*>.*?</a>', "", page, flags=re.S)
     return page
 
 
@@ -852,13 +899,7 @@ class Handler(BaseHTTPRequestHandler):
         return DESK, path, "goldbach"
 
     def reply_presence(self, visitor=None):
-        counts = PRESENCE.snapshot(visitor)
-        try:
-            with closing(sqlite3.connect(PAGE_VIEWS_DB)) as conn:
-                counts["page_views"] = conn.execute("SELECT sum(total) FROM page_views").fetchone()[0]
-                counts["unique_ips"] = conn.execute("SELECT count(*) FROM visitor_ips").fetchone()[0]
-        except sqlite3.Error:
-            counts["page_views"] = counts["unique_ips"] = None
+        counts = read_presence_counts(visitor)
         return self.reply(200, json.dumps(counts).encode())
 
     def do_GET(self):
@@ -1062,15 +1103,22 @@ class Handler(BaseHTTPRequestHandler):
         else:
             page = goldbach_roadmap_page(page, lang)
         prefix = "" if slug == "goldbach" else "../../"
+        page = version_assets(page, prefix)
         page = page.replace("<!-- account -->", ZHIHU.account_link(self.headers, lang), 1)
         page = page.replace("<!-- presence strip -->", presence_widget(lang, prefix, variant="inline"), 1)
         page = page.replace("<!-- hero community -->", hero_community_card(lang, prefix), 1)
-        hero = '<section class="hero" aria-labelledby="page-title">'
-        page = page.replace(hero, sponsors.wall(ZHIHU.db, lang, prefix) + hero, 1)
+        page = page.replace("<!-- hero colophon -->",
+                            sponsors.author_colophon(ZHIHU.db, lang, prefix, goldbach=(slug == "goldbach")), 1)
+        page = page.replace("<!-- footer credit -->", sponsors.footer_credit(ZHIHU.db, lang, prefix), 1)
         if "<!-- site dock -->" in page:
             page = page.replace("<!-- site dock -->", site_dock(lang, prefix, inline=True), 1)
         else:
             page = page.replace("</main>", "</main>" + site_dock(lang, prefix), 1)
+        supporting = sponsors.wall(ZHIHU.db, lang, prefix)
+        if "<!-- sponsor wall -->" in page:
+            page = page.replace("<!-- sponsor wall -->", supporting, 1)
+        else:
+            page = page.replace("</main>", supporting + "</main>", 1)
         self.reply(200, page.encode(), "text/html", lang)
 
     do_HEAD = do_GET

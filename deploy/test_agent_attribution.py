@@ -8,13 +8,24 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from deploy.desk import Desk, HARNESS_NAMES, agent_metadata, model_ranking_name
+from deploy.desk import Desk, HARNESS_NAMES, agent_metadata, model_provider, model_ranking_name
 from deploy import test_desk as desk_tests
 from deploy.test_desk import GAPS, START
 from tools import goldbach
 
 
 class AttributionTests(unittest.TestCase):
+    def test_model_provider_recognizes_author_and_family_aliases(self):
+        for name, provider in {
+            "gpt-6.2-sol": "OpenAI", "moonshotai/kimi-k3": "Moonshot AI",
+            "qwen3.7-plus": "Alibaba", "step-3.5-flash": "StepFun",
+            "glm5": "Z.ai", "nvidia/nemotron": "NVIDIA", "xiaomi/mimo": "Xiaomi",
+            "inclusionai/ling": "InclusionAI", "aws/claude": "unknown",
+            "codex": "unknown", "custom-model": "unknown",
+        }.items():
+            with self.subTest(name=name):
+                self.assertEqual(model_provider(name), provider)
+
     def setUp(self):
         self.helper = desk_tests.DeskTests()
         self.helper.setUp()
@@ -39,6 +50,26 @@ class AttributionTests(unittest.TestCase):
         token = self.helper.claim()
         self.assertEqual(self.submit(token, {'harness': 'made-up'})[0], 400)
         self.assertEqual(self.submit(token, self.agent)[0], 200)
+
+    def test_historical_harness_alias_requires_matching_pr_and_head(self):
+        head = "a" * 40
+        rows = [(101, head, "other"), (101, "b" * 40, "other"), (102, head, "other")]
+        with self.desk.transaction(write=True) as conn:
+            for run, (pr, revision, harness) in enumerate(rows, 1):
+                conn.execute("""
+                    INSERT INTO goldbach_leases
+                      (token_hash, gap, statement_sha256, handle, ip_key, claimed_at, expires_at,
+                       absolute_expires_at, pr, head, run_id, finished_at, verdict, model, harness, points)
+                    VALUES (?, ?, 'hash', 'alice', 'network', 0, 0, 0, ?, ?, ?, ?, 'ACCEPTED', 'model-a', ?, 5)
+                """, (str(run), GAPS[run - 1]["id"], pr, revision, run, START + run, harness))
+            with patch("deploy.desk.HISTORICAL_HARNESSES", {(101, head): "minimax-code"}):
+                ranking = self.desk.agent_rankings(conn, START + 10)
+            self.assertEqual(ranking["harnesses"], [
+                {"name": "other", "accepted": 2, "points": 10},
+                {"name": "minimax-code", "accepted": 1, "points": 5},
+            ])
+            self.assertEqual(ranking["models"], [{"name": "model-a", "accepted": 3, "points": 15}])
+            self.assertEqual(conn.execute("SELECT DISTINCT harness FROM goldbach_leases").fetchone()[0], "other")
 
     def test_harness_catalogue_matches_cli_display_and_guides(self):
         root = Path(__file__).resolve().parents[1]
@@ -145,14 +176,14 @@ class AttributionTests(unittest.TestCase):
         self.assertEqual([r['agent']['model'] for r in records], ['model-a-2026', 'model-b', 'unknown'])
         self.assertEqual(records[0]['agent']['source'], 'self_reported')
         ranks = self.helper.status(now=START+40)['agent_rankings']
-        self.assertEqual(ranks, {'models': [{'name': 'model-b', 'accepted': 1, 'points': 1}], 'harnesses': [{'name': 'codex', 'accepted': 1, 'points': 1}], 'proofs': 1})
+        self.assertEqual({k: v for k, v in ranks.items() if k != 'providers'}, {'models': [{'name': 'model-b', 'accepted': 1, 'points': 1}], 'harnesses': [{'name': 'codex', 'accepted': 1, 'points': 1}], 'proofs': 1})
 
     def test_first_acceptance_unknown_history_and_separate_models(self):
         with self.desk.transaction(write=True) as conn:
             for run, gap, model, harness, verdict in [
-                (1, 'first', 'model-a', 'codex', 'ACCEPTED'),
+                (1, 'first', 'gpt-6', 'codex', 'ACCEPTED'),
                 (2, 'first', 'model-b', 'cursor', 'ACCEPTED'),
-                (3, 'second', 'model-a-v2', 'codex', 'ACCEPTED'),
+                (3, 'second', 'gpt-6.2-sol', 'codex', 'ACCEPTED'),
                 (4, 'third', 'unknown', 'unknown', 'ACCEPTED'),
                 (6, 'fifth', 'model-c', 'unknown', 'ACCEPTED'),
                 (7, 'sixth', 'unknown', 'cursor', 'ACCEPTED'),
@@ -164,7 +195,11 @@ class AttributionTests(unittest.TestCase):
         ranks = status['agent_rankings']
         self.assertEqual(ranks['proofs'], 4)
         self.assertEqual(status['rankings']['proofs'], 5)
-        self.assertEqual(ranks['models'], [{'name': x, 'accepted': 1, 'points': 1} for x in ['model-a', 'model-a-v2', 'model-c']])
+        self.assertEqual(ranks['models'], [{'name': x, 'accepted': 1, 'points': 1} for x in ['gpt-6', 'gpt-6.2-sol', 'model-c']])
+        self.assertEqual(ranks['providers'], [
+            {'name': 'OpenAI', 'accepted': 2, 'points': 2, 'models': ranks['models'][:2]},
+            {'name': 'unknown', 'accepted': 1, 'points': 1, 'models': ranks['models'][2:]},
+        ])
         self.assertEqual(ranks['harnesses'], [{'name': 'codex', 'accepted': 2, 'points': 2}, {'name': 'cursor', 'accepted': 1, 'points': 1}])
         self.assertNotIn('ip_key', json.dumps(status))
         self.assertNotIn('token_hash', json.dumps(status))

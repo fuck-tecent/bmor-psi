@@ -5,6 +5,9 @@ Wants=network-online.target
 Requires=goldbach-ci-webhook.service
 
 [Service]
+StateDirectory=goldbach-public-imports
+StateDirectoryMode=0755
+ExecStartPost=/bin/sh -ec 'if test -f /opt/goldbach-ci/proof-bases/current/verified-imports.json; then install -m 0644 /opt/goldbach-ci/proof-bases/current/verified-imports.json /var/lib/goldbach-public-imports/index.tmp && mv /var/lib/goldbach-public-imports/index.tmp /var/lib/goldbach-public-imports/verified-imports.json; fi'
 Type=oneshot
 LoadCredential=github-app.pem:/etc/goldbach-ci/github-app.pem
 EnvironmentFile=/etc/goldbach-ci/production-release.env

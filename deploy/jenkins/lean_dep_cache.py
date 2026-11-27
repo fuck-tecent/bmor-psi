@@ -39,6 +39,12 @@ def compile_cached(cache, module, cache_key, artifact, build):
     import fcntl
 
     stored = cache / (cache_key + ".olean")
+    # Entries are published atomically and never modified. Warm readers can run
+    # concurrently, while the lock below serializes builds of the same key.
+    if stored.is_file():
+        shutil.copyfile(stored, artifact)
+        logging.info("Lean dependency cache hit: %s", module)
+        return
     with (cache / (cache_key + ".lock")).open("a+b") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         if stored.is_file():

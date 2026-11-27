@@ -8,7 +8,7 @@ from pathlib import Path
 from lean_dep_cache import compile_cached, context as cache_context, key as cache_key
 from verdict_manifest import MODULE, PROOF_MODULE, build_manifest, module_path
 
-PROOF_CPUS = 8
+PROOF_CPUS = 4
 IMAGE = "docker.m.daocloud.io/jenkins/jenkins@sha256:4d85f6cf5a8939647921564952d12a5a761f32a3bc520c2f4e5c3cafa7ea660f"
 
 

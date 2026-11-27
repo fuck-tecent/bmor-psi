@@ -1,0 +1,23 @@
+{
+  "id": "L-goldbach-major-dilation-oscillation",
+  "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let A := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ Q n ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ r q a * (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let M := fun (n : ℕ) (r : ℕ → ℕ → ℝ) => (intervalIntegral (fun t => (A n r).indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume).re; ∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ n ≥ N, Even n → ∀ r : ℕ → ℕ → ℝ, (∀ q a, (1/2:ℝ) ≤ r q a ∧ r q a ≤ 2) → |M n r - M n (fun _ _ => 1)| ≤ ε*(n:ℝ)",
+  "plain_statement": {
+    "zh": "独立调宽能否只改变 o(n) 的主弧实部？",
+    "en": "Uniform sublinear oscillation under independent arc dilation"
+  },
+  "brief": {
+    "zh": "比较最坏调宽与原弧的有符号边界积分。证伪需固定正比例并在任意大偶数上选出造成该偏差的弧宽。 可引用 MajorFixed144；反例请领取配对证伪题。",
+    "en": "Estimate the signed boundary integrals against the unchanged arcs. To refute, exhibit a fixed positive proportional deviation on arbitrarily large even targets. Import MajorFixed144 if useful; use the paired task for a refutation."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/3120",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-major-fixed-144"
+  ],
+  "role": "lemma",
+  "track": "minor-truncation",
+  "imports": [
+    "Conjectures.Goldbach.MajorFixed144"
+  ]
+}
