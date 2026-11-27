@@ -642,6 +642,106 @@ theorem wwave_mangoldt_sub_total_norm_le (u l r : ℕ) (t : ℝ) :
         refine Finset.sum_congr rfl fun h _ => ?_
         ring
 
+/-! ### Archimedean decay: the window transform of a single mode
+
+The near-side annulus integral is `∫_{window q} phase (k t) · wwave`, and its
+basic input is the decay of the transform of one mode,
+
+```text
+‖∫_{|x| ≤ ρ} e(k t) dt‖ ≤ 1/(π |k|) ,        (k ≠ 0)
+```
+
+so that an annulus (a difference of two balls) costs `2/(π|k|)`.
+-/
+
+/-- Oscillation bound for the Fourier integral over an interval. -/
+theorem norm_integral_phase_osc (k : ℤ) (hk : k ≠ 0) {A B : ℝ} :
+    ‖∫ t in A..B, phase ((k:ℝ)*t)‖ ≤ 1/(Real.pi * |(k:ℝ)|) := by
+  have hkR : (k:ℝ) ≠ 0 := by exact_mod_cast hk
+  have hc : ((2*Real.pi*Complex.I) * (k:ℂ)) ≠ 0 := by
+    apply mul_ne_zero
+    · exact mul_ne_zero (by norm_num) Complex.I_ne_zero
+    · exact_mod_cast hk
+  have hcongr : ∀ t : ℝ,
+      phase ((k:ℝ)*t) = Complex.exp (((2*Real.pi*Complex.I) * (k:ℂ)) * (t:ℂ)) := by
+    intro t
+    unfold phase
+    congr 1
+    push_cast
+    ring
+  simp_rw [hcongr]
+  rw [integral_exp_mul_complex hc, norm_div]
+  have hnum : ‖Complex.exp (((2*Real.pi*Complex.I) * (k:ℂ)) * (B:ℂ)) -
+      Complex.exp (((2*Real.pi*Complex.I) * (k:ℂ)) * (A:ℂ))‖ ≤ 2 := by
+    have hnorm : ∀ x : ℝ, ‖Complex.exp (((2*Real.pi*Complex.I) * (k:ℂ)) * (x:ℂ))‖ = 1 := by
+      intro x
+      rw [Complex.norm_exp]
+      have : (((2*Real.pi*Complex.I) * (k:ℂ)) * (x:ℂ)).re = 0 := by
+        simp [Complex.mul_re, Complex.mul_im, Complex.ofReal_re, Complex.ofReal_im]
+      rw [this, Real.exp_zero]
+    calc ‖Complex.exp (((2*Real.pi*Complex.I) * (k:ℂ)) * (B:ℂ)) -
+          Complex.exp (((2*Real.pi*Complex.I) * (k:ℂ)) * (A:ℂ))‖
+        ≤ ‖Complex.exp (((2*Real.pi*Complex.I) * (k:ℂ)) * (B:ℂ))‖ +
+          ‖Complex.exp (((2*Real.pi*Complex.I) * (k:ℂ)) * (A:ℂ))‖ := norm_sub_le _ _
+      _ = 1 + 1 := by rw [hnorm B, hnorm A]
+      _ = 2 := by norm_num
+  have hden : ‖((2*Real.pi*Complex.I) * (k:ℂ))‖ = 2*Real.pi*|(k:ℝ)| := by
+    rw [norm_mul, norm_mul]
+    have h1 : ‖(2 * (Real.pi:ℂ))‖ = 2*Real.pi := by
+      rw [show (2 * (Real.pi:ℂ)) = ((2*Real.pi : ℝ) : ℂ) by push_cast; ring,
+        Complex.norm_real, Real.norm_eq_abs, abs_of_nonneg (by positivity)]
+    have h2 : ‖(k:ℂ)‖ = |(k:ℝ)| := by
+      rw [show (k:ℂ) = ((k:ℝ):ℂ) by push_cast; ring, Complex.norm_real, Real.norm_eq_abs]
+    rw [h1, h2, Complex.norm_I, mul_one]
+  rw [hden]
+  have hdenpos : (0:ℝ) < 2*Real.pi*|(k:ℝ)| := by positivity
+  rw [div_le_iff₀ hdenpos]
+  have hval : (1/(Real.pi * |(k:ℝ)|)) * (2*Real.pi*|(k:ℝ)|) = 2 := by
+    field_simp
+  rw [hval]
+  exact hnum
+
+/-- The closed ball `{|x| ≤ ρ}` is an interval. -/
+theorem integral_ball_eq {ρ : ℝ} (hρ : 0 ≤ ρ) (f : ℝ → ℂ) :
+    (∫ t in {x : ℝ | |x| ≤ ρ}, f t) = ∫ t in (-ρ)..ρ, f t := by
+  have hset : {x : ℝ | |x| ≤ ρ} = Set.Icc (-ρ) ρ := by
+    ext x
+    rw [Set.mem_setOf_eq, Set.mem_Icc, abs_le]
+  rw [hset, integral_Icc_eq_integral_Ioc,
+    intervalIntegral.integral_of_le (a := -ρ) (b := ρ) (by linarith)]
+
+/-- Archimedean decay of the ball transform. -/
+theorem norm_integral_ball_phase_le (k : ℤ) (hk : k ≠ 0) {ρ : ℝ} (hρ : 0 ≤ ρ) :
+    ‖∫ t in {x : ℝ | |x| ≤ ρ}, phase ((k:ℝ)*t)‖ ≤ 1/(Real.pi * |(k:ℝ)|) := by
+  rw [integral_ball_eq hρ]
+  exact norm_integral_phase_osc k hk
+
+/-- An annulus (difference of two concentric balls) costs twice the ball decay. -/
+theorem norm_integral_annulus_phase_le (k : ℤ) (hk : k ≠ 0) {ρ inner : ℝ}
+    (h0 : 0 ≤ inner) (hρ : inner ≤ ρ) :
+    ‖∫ t in ({x : ℝ | |x| ≤ ρ} \ {x : ℝ | |x| ≤ inner}), phase ((k:ℝ)*t)‖
+      ≤ 2/(Real.pi * |(k:ℝ)|) := by
+  have hsub : {x : ℝ | |x| ≤ inner} ⊆ {x : ℝ | |x| ≤ ρ} := by
+    intro x hx
+    exact le_trans hx hρ
+  have hmeas : MeasurableSet {x : ℝ | |x| ≤ inner} := by
+    exact measurableSet_le continuous_abs.measurable measurable_const
+  have hsubIcc : {x : ℝ | |x| ≤ ρ} ⊆ Set.Icc (-ρ) ρ := by
+    intro x hx
+    rw [Set.mem_setOf_eq] at hx
+    exact Set.mem_Icc.mpr ⟨by linarith [neg_abs_le x, hx], by linarith [le_abs_self x, hx]⟩
+  have hint : IntegrableOn (fun t : ℝ => phase ((k:ℝ)*t)) {x : ℝ | |x| ≤ ρ} := by
+    have hc : Continuous fun t : ℝ => phase ((k:ℝ)*t) := by unfold phase; fun_prop
+    exact (hc.integrableOn_Icc (a := -ρ) (b := ρ)).mono_set hsubIcc
+  rw [MeasureTheory.setIntegral_sdiff hmeas hint hsub]
+  refine (norm_sub_le _ _).trans ?_
+  have h2 := norm_integral_ball_phase_le k hk h0
+  have hρ0 : (0:ℝ) ≤ ρ := le_trans h0 hρ
+  have h1' := norm_integral_ball_phase_le k hk hρ0
+  have hden : (0:ℝ) < Real.pi * |(k:ℝ)| := by positivity
+  have hval : 1/(Real.pi * |(k:ℝ)|) + 1/(Real.pi * |(k:ℝ)|) = 2/(Real.pi * |(k:ℝ)|) := by ring
+  linarith [h1', h2]
+
 /-- The `Λ` case of weighted Parseval. -/
 theorem integral_wwave_mangoldt_norm_sq (u l r : ℕ) (hu : 0 < u) :
     (∫ t in (0:ℝ)..1,

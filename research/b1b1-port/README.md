@@ -498,3 +498,55 @@ machinery is exactly what handles the annulus.
 | near core: `wwave = ∑ Λ h + O(2π|t|∑ h Λ h)` | ✅ |
 | near annulus: window-kernel analysis | open (machinery exists in `b3-b4`, needs weighted port) |
 | weighted `L²` off-grid (`awayBound` analogue) | open (needs second-moment/large-sieve input) |
+
+## Milestone 9: archimedean decay of the window transform
+
+Verified this round:
+
+```lean
+norm_integral_phase_osc (k : ℤ) (hk : k ≠ 0) {A B : ℝ} :
+  ‖∫_{A}^{B} phase (k t) dt‖ ≤ 1 / (π |k|)
+
+integral_ball_eq {ρ} (hρ : 0 ≤ ρ) (f) :
+  ∫_{|x| ≤ ρ} f x dx = ∫_{-ρ}^{ρ} f x dx
+
+norm_integral_ball_phase_le (k) (hk) (hρ : 0 ≤ ρ) :
+  ‖∫_{|x| ≤ ρ} phase (k t) dt‖ ≤ 1 / (π |k|)
+
+norm_integral_annulus_phase_le (k) (hk) (0 ≤ inner ≤ ρ) :
+  ‖∫_{inner ≤ |x| ≤ ρ} phase (k t) dt‖ ≤ 2 / (π |k|)
+```
+
+The last one is the shape of the `window` (`= ball (radius M) \ ball inner`),
+and it is the basic archimedean input of the near side.
+
+### Consequence for the near side
+
+Summing over the weighted progression gives the honest window bound
+
+```text
+|∫_{window q} phase (k t) · wwave Λ a U N t dt|
+  ≤ ∑_{h ∈ (U, N]} Λ h · 2/(π |k + a h|) .
+```
+
+So a single window costs at least `≈ 1/|k|`, and summing over `h` gives
+`≈ log²/a`.  Hence the near side cannot be closed by the window transform alone:
+it must exploit the cancellation in the `m`-sum
+
+```text
+∑_m τ₁(m) · c_q(m - n)
+```
+
+which is exactly the Ramanujan / primitive-character large sieve step of the
+verified `b1-b4` / `b3-b4` proofs.
+
+### Programme status
+
+| ingredient | status |
+|---|---|
+| atom expansion, exact far/near split | ✅ |
+| Fourier orthogonality, weighted Parseval | ✅ |
+| near core `wwave = ∑ Λ h + O(2π\|t\|∑ h Λ h)` | ✅ |
+| archimedean window decay (ball/annulus) | ✅ |
+| near annulus: weighted character large sieve | open (machinery exists in `b3-b4`) |
+| weighted `L²` off-grid (`awayBound` analogue) | open (second-moment input) |
