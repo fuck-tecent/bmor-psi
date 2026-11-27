@@ -1089,3 +1089,45 @@ and hence, by `integral_compl_indicator_phase_eq`,
 ```text
 ∫_{(wideSet n)ᶜ} e(m t) dt = - ∑_{q,a} e(m a/q) sin(2π m H/(q n))/(π m)   (m ≠ 0).
 ```
+
+## Milestone 23: interior arcs and the interior sinc sum
+
+```lean
+integral_arcSet_clipped_eq_sinc (n q a) (m) (hm : m ≠ 0)
+    (hleft : 0 < a/q - H/(qn)) (hright : a/q + H/(qn) < 1) :
+  ∫_{0}^{1} 1_{arcSet n q a} e(m t) dt
+    = e(m a/q) · sin(2π m H/(q n))/(π m)
+
+sum_arcSet_phase_interior (n) (m) (hm) (hint : ∀ q ∈ Icc 2 Q₁, ∀ a, interior) :
+  ∑_{q ∈ Icc 2 Q₁} ∑_{a} ∫_{0}^{1} 1_{arcSet n q a} e(m t)
+    = ∑_{q ∈ Icc 2 Q₁} ∑_{a} e(m a/q) sin(2π m H/(q n))/(π m)
+```
+
+Together with `sum_arcSet_one` (the `q = 1` contribution), every per-index piece
+of the sinc collection is now verified.  The only thing left is the pure
+bookkeeping:
+
+* split `Icc 1 (cutoffB n) = {1} ∪ Icc 2 (cutoffB n)`;
+* note `(range (q+1)).filter (Coprime · q) = (range q).filter (Coprime · q)` for
+  `q ≥ 2` (since `¬ Coprime q q`);
+* discharge the interior hypotheses from `1 ≤ a ≤ q-1` and `H < n`.
+
+### Assessment at this point
+
+The dossier (23 verified milestones, 1726 lines, no `sorry`) contains every
+structural ingredient of the `τ₁` circle-method computation:
+
+| layer | verified content |
+|---|---|
+| definitions | `τ₁`, `wideArcs`, `tauCoeff`, `diagonalSum`, `primeSum`, `primeWave`, `primePowerCorrection` |
+| atom/prime structure | `plainPolynomial_tau1`, `prime/major-arc split`, dilation bridge, weighted quadruple expansion |
+| weighted analysis | `wwave`, `woffWave`, split lemmas, weighted Parseval |
+| Fourier/archimedean | orthogonal modes, ball/annulus decay, sinc factor |
+| arcs | disjointness, integral split, per-arc sinc, clipping, boundary, interior |
+| global reductions | `deepIntegral_split`, `Jdeep = D - W`, complement split |
+| sizes | `|τ₁(m)| ≤ T log m`, `∫‖S‖² ≤ T² n log²` |
+| numerics | `D = Θ(n loglog²)`, off-grid carries ~3/4 of `L²` |
+| negative | far/near cannot reach `o(n)` |
+
+Remaining: the assembly of the sinc collection, then the `τ₁` `exact_split`, then
+the ports of `lowmod_model_match` and `macro_sinc_tail`.

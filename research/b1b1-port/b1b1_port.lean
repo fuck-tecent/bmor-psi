@@ -1695,4 +1695,32 @@ theorem sum_arcSet_one (n : ℕ) (m : ℤ) (hm : m ≠ 0)
   rw [hsin]
   exact integral_phase_symmetric m hm ((cutoffH n : ℝ)/(n:ℝ))
 
+/-- **Interior arcs contribute their sinc term.** -/
+theorem integral_arcSet_clipped_eq_sinc (n q a : ℕ) (m : ℤ) (hm : m ≠ 0)
+    (hleft : 0 < (a:ℝ)/(q:ℝ) - (cutoffH n:ℝ)/((q:ℝ)*(n:ℝ)))
+    (hright : (a:ℝ)/(q:ℝ) + (cutoffH n:ℝ)/((q:ℝ)*(n:ℝ)) < 1) :
+    (∫ t in (0:ℝ)..1, (arcSet n q a).indicator (fun y => phase ((m:ℝ)*y)) t)
+      = phase ((m:ℝ)*((a:ℝ)/(q:ℝ))) *
+          (((Real.sin (2*Real.pi*(m:ℝ)*((cutoffH n:ℝ)/((q:ℝ)*(n:ℝ)))) : ℝ) : ℂ) /
+            ((Real.pi*(m:ℝ) : ℝ) : ℂ)) := by
+  rw [integral_arcSet_indicator_phase_of_inside n q a m hleft hright,
+    integral_arcSet_phase n q a m hm]
+
+/-- The sinc sum over the *interior* arcs (`q ≥ 2`). -/
+theorem sum_arcSet_phase_interior (n : ℕ) (m : ℤ) (hm : m ≠ 0)
+    (hint : ∀ q ∈ Finset.Icc 2 (cutoffB n),
+      ∀ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q),
+        0 < (a:ℝ)/(q:ℝ) - (cutoffH n:ℝ)/((q:ℝ)*(n:ℝ)) ∧
+          (a:ℝ)/(q:ℝ) + (cutoffH n:ℝ)/((q:ℝ)*(n:ℝ)) < 1) :
+    (∑ q ∈ Finset.Icc 2 (cutoffB n),
+        ∑ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q),
+          ∫ t in (0:ℝ)..1, (arcSet n q a).indicator (fun y => phase ((m:ℝ)*y)) t)
+      = ∑ q ∈ Finset.Icc 2 (cutoffB n),
+          ∑ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q),
+            phase ((m:ℝ)*((a:ℝ)/(q:ℝ))) *
+              (((Real.sin (2*Real.pi*(m:ℝ)*((cutoffH n:ℝ)/((q:ℝ)*(n:ℝ)))) : ℝ) : ℂ) /
+                ((Real.pi*(m:ℝ) : ℝ) : ℂ)) := by
+  refine Finset.sum_congr rfl fun q hq => Finset.sum_congr rfl fun a ha => ?_
+  exact integral_arcSet_clipped_eq_sinc n q a m hm (hint q hq a ha).1 (hint q hq a ha).2
+
 end B1B1Port
