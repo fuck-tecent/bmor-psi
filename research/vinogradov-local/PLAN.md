@@ -236,3 +236,15 @@ The small-`q` multiples of `q` are handled trivially; the integer
 coefficient sum uses `∑_{e|k} Λ(e) = log k` to avoid divisor-counting
 losses.  Remaining Type-I work is optimization for the eventual
 major/minor-arc assembly, not coverage.
+
+## Type-II non-resonant kernel closed
+
+`typeIIKernel` and `norm_typeIIKernel_le` now give the actual `2q` kernel
+bound, so `typeII_nonresonant_dispersion_energy_le` is unconditional
+(with the explicit `2q (L log n)^2` form).  The dispersion energy is split
+into non-resonant + resonant parts:
+`typeII_dispersion_split_nonresonant` and
+`typeII_energy_le_nonresonant_add_resonant`.
+
+Remaining Type-II gap: the resonant `q | (l1-l2)` off-diagonal correlation.
+The diagonal part is bounded by `diagonal_dispersion_part_le`.

@@ -2114,6 +2114,151 @@ lemma typeII_nonresonant_energy_le (s : Finset ℕ) (q : ℕ) (c : ℕ → ℂ)
   exact norm_filtered_double_sum_le s c G (2 * (q:ℝ)) (by positivity)
     (fun x y => typeIINonresonant q x y) hG
 
+/-- The actual dispersion kernel: the geometric sum over `d` at frequency
+`(l1 - l2) * t`. -/
+noncomputable def typeIIKernel (n U : ℕ) (t : ℝ) (l1 l2 : ℕ) : ℂ :=
+  ∑ d ∈ Finset.Icc (U + 1) (min (n / (U + 1)) (n / max l1 l2)),
+    E (((d : ℝ) * ((l1 : ℝ) - (l2 : ℝ))) * t)
+
+/-- Pointwise kernel bound on non-resonant pairs. -/
+lemma norm_typeIIKernel_le (n U q a : ℕ) (β : ℝ) (l1 l2 : ℕ)
+    (hq : 0 < q) (hcop : Nat.Coprime a q)
+    (hl1 : l1 ∈ Finset.Icc 1 (n / (U + 1)))
+    (hl2 : l2 ∈ Finset.Icc 1 (n / (U + 1)))
+    (hnon : typeIINonresonant q l1 l2)
+    (hβ : |β| ≤ 1 / (16 * (q:ℝ) * ((n / (U + 1) : ℕ) : ℝ))) :
+    ‖typeIIKernel n U ((a:ℝ)/(q:ℝ) + β) l1 l2‖ ≤ 2 * (q:ℝ) := by
+  classical
+  let L := n / (U + 1)
+  have hL1 : 1 ≤ L := by
+    have h1 := (Finset.mem_Icc.mp hl1).1
+    have h2 := (Finset.mem_Icc.mp hl1).2
+    omega
+  have hne : l1 ≠ l2 := by
+    intro h
+    apply hnon
+    rw [h]
+    simp
+  rcases le_or_gt l2 l1 with hle | hlt
+  · let h := l1 - l2
+    have hh1 : 1 ≤ h := by omega
+    have hhL : h ≤ L := by
+      have h2 := (Finset.mem_Icc.mp hl1).2
+      omega
+    have hndvd : ¬ q ∣ h := by
+      intro hdvd
+      apply hnon
+      have hcast : ((h : ℕ) : ℤ) = (l1 : ℤ) - (l2 : ℤ) := Nat.cast_sub hle
+      rw [← hcast]
+      exact_mod_cast hdvd
+    have hsin := abs_sin_pi_mul_majorArc_ge_pointwise q L a h β hq hcop hL1 hh1 hhL hndvd hβ
+    have hphase : ((l1 : ℝ) - (l2 : ℝ)) = (h : ℝ) := (Nat.cast_sub hle).symm
+    have hsin' : (1:ℝ)/(q:ℝ) ≤
+        |Real.sin (Real.pi * (((l1:ℝ) - (l2:ℝ)) * ((a:ℝ)/(q:ℝ) + β)))| := by
+      rw [hphase]
+      exact hsin
+    have hbound := norm_geometric_Icc_shift_le (U + 1)
+      (min (n / (U + 1)) (n / max l1 l2))
+      (((l1:ℝ) - (l2:ℝ)) * ((a:ℝ)/(q:ℝ) + β)) q hq hsin'
+    simpa [typeIIKernel, L, mul_assoc] using hbound
+  · let h := l2 - l1
+    have hh1 : 1 ≤ h := by omega
+    have hhL : h ≤ L := by
+      have h2 := (Finset.mem_Icc.mp hl2).2
+      omega
+    have hndvd : ¬ q ∣ h := by
+      intro hdvd
+      apply hnon
+      have hcast : ((h : ℕ) : ℤ) = (l2 : ℤ) - (l1 : ℤ) := Nat.cast_sub hlt.le
+      have hneg : (l1 : ℤ) - (l2 : ℤ) = -((h : ℕ) : ℤ) := by
+        rw [hcast]; ring
+      rw [hneg]
+      exact dvd_neg.mpr (by exact_mod_cast hdvd)
+    have hsin := abs_sin_pi_mul_majorArc_ge_pointwise q L a h β hq hcop hL1 hh1 hhL hndvd hβ
+    have hphase : ((l1 : ℝ) - (l2 : ℝ)) = -((h : ℝ)) := by
+      have hcast : ((h : ℕ) : ℝ) = (l2 : ℝ) - (l1 : ℝ) := Nat.cast_sub hlt.le
+      rw [hcast]; ring
+    have hsin' : (1:ℝ)/(q:ℝ) ≤
+        |Real.sin (Real.pi * (((l1:ℝ) - (l2:ℝ)) * ((a:ℝ)/(q:ℝ) + β)))| := by
+      rw [hphase]
+      rw [show -((h : ℝ)) * ((a:ℝ)/(q:ℝ) + β) =
+        -((h : ℝ) * ((a:ℝ)/(q:ℝ) + β)) by ring]
+      rw [show Real.pi * (-((h : ℝ) * ((a:ℝ)/(q:ℝ) + β))) =
+        -(Real.pi * ((h : ℝ) * ((a:ℝ)/(q:ℝ) + β))) by ring]
+      rw [Real.sin_neg, abs_neg]
+      exact hsin
+    have hbound := norm_geometric_Icc_shift_le (U + 1)
+      (min (n / (U + 1)) (n / max l1 l2))
+      (((l1:ℝ) - (l2:ℝ)) * ((a:ℝ)/(q:ℝ) + β)) q hq hsin'
+    simpa [typeIIKernel, L, mul_assoc] using hbound
+
+/-- Non-resonant part of the actual dispersion energy. -/
+lemma typeII_nonresonant_dispersion_energy_le (n U q a : ℕ) (β : ℝ)
+    (hq : 0 < q) (hcop : Nat.Coprime a q)
+    [DecidableRel (typeIINonresonant q)]
+    (hβ : |β| ≤ 1 / (16 * (q:ℝ) * ((n / (U + 1) : ℕ) : ℝ))) :
+    ‖∑ l1 ∈ Finset.Icc 1 (n / (U + 1)),
+        ∑ l2 ∈ (Finset.Icc 1 (n / (U + 1))).filter
+          (fun l2 => typeIINonresonant q l1 l2),
+          typeIICoeff U l1 * star (typeIICoeff U l2) *
+            typeIIKernel n U ((a:ℝ)/(q:ℝ) + β) l1 l2‖ ≤
+      2 * (q:ℝ) *
+        (∑ l ∈ Finset.Icc 1 (n / (U + 1)), ‖typeIICoeff U l‖) ^ 2 := by
+  classical
+  let L := n / (U + 1)
+  let s : Finset ℕ := Finset.Icc 1 L
+  have hG : ∀ x ∈ s, ∀ y ∈ s, typeIINonresonant q x y →
+      ‖typeIIKernel n U ((a:ℝ)/(q:ℝ) + β) x y‖ ≤ 2 * (q:ℝ) := by
+    intro x hx y hy hxy
+    exact norm_typeIIKernel_le n U q a β x y hq hcop hx hy hxy hβ
+  have h := typeII_nonresonant_energy_le s q (typeIICoeff U)
+    (typeIIKernel n U ((a:ℝ)/(q:ℝ) + β)) hG
+  simpa [s, L, pow_two, mul_assoc] using h
+
+/-- Explicit logarithmic form of the non-resonant energy bound. -/
+lemma typeII_nonresonant_dispersion_energy_le_log (n U q a : ℕ) (β : ℝ)
+    (hq : 0 < q) (hcop : Nat.Coprime a q)
+    [DecidableRel (typeIINonresonant q)]
+    (hβ : |β| ≤ 1 / (16 * (q:ℝ) * ((n / (U + 1) : ℕ) : ℝ))) :
+    ‖∑ l1 ∈ Finset.Icc 1 (n / (U + 1)),
+        ∑ l2 ∈ (Finset.Icc 1 (n / (U + 1))).filter
+          (fun l2 => typeIINonresonant q l1 l2),
+          typeIICoeff U l1 * star (typeIICoeff U l2) *
+            typeIIKernel n U ((a:ℝ)/(q:ℝ) + β) l1 l2‖ ≤
+      2 * (q:ℝ) * (((n / (U + 1) : ℕ) : ℝ) * Real.log (n:ℝ)) ^ 2 := by
+  classical
+  refine (typeII_nonresonant_dispersion_energy_le n U q a β hq hcop hβ).trans ?_
+  let L := n / (U + 1)
+  have hlog : 0 ≤ Real.log (n : ℝ) := Real.log_natCast_nonneg n
+  have hL0 : 0 ≤ ((L : ℕ) : ℝ) := by positivity
+  have hsum : ∑ l ∈ Finset.Icc 1 L, ‖typeIICoeff U l‖ ≤
+      ((L : ℕ) : ℝ) * Real.log (n : ℝ) := by
+    calc
+      ∑ l ∈ Finset.Icc 1 L, ‖typeIICoeff U l‖
+          ≤ ∑ _l ∈ Finset.Icc 1 L, Real.log (n : ℝ) := by
+        apply Finset.sum_le_sum
+        intro l hl
+        have hlL : l ≤ L := (Finset.mem_Icc.mp hl).2
+        have hln : l ≤ n := le_trans hlL (by dsimp [L]; exact Nat.div_le_self n (U + 1))
+        exact norm_typeIICoeff_le n U l hln
+      _ = ((L : ℕ) : ℝ) * Real.log (n : ℝ) := by
+        rw [Finset.sum_const, Nat.card_Icc, nsmul_eq_mul]
+        norm_num
+  have hS : 0 ≤ ∑ l ∈ Finset.Icc 1 L, ‖typeIICoeff U l‖ :=
+    Finset.sum_nonneg (fun _ _ => norm_nonneg _)
+  have hsq : (∑ l ∈ Finset.Icc 1 L, ‖typeIICoeff U l‖) ^ 2 ≤
+      (((L : ℕ) : ℝ) * Real.log (n : ℝ)) ^ 2 :=
+    pow_le_pow_left₀ hS hsum 2
+  calc
+    2 * (q:ℝ) * (∑ l ∈ Finset.Icc 1 (n / (U + 1)), ‖typeIICoeff U l‖) ^ 2
+        = 2 * (q:ℝ) * (∑ l ∈ Finset.Icc 1 L, ‖typeIICoeff U l‖) ^ 2 := by
+          simp only [L]
+    _ ≤ 2 * (q:ℝ) * (((L : ℕ) : ℝ) * Real.log (n : ℝ)) ^ 2 := by
+          apply mul_le_mul_of_nonneg_left hsq
+          positivity
+    _ = 2 * (q:ℝ) * (((n / (U + 1) : ℕ) : ℝ) * Real.log (n : ℝ)) ^ 2 := by
+          simp only [L]
+
 /-- Dispersion/phase expansion of the Type-II energy: the squared sum becomes
 a double sum in `l1,l2` with an inner geometric sum in `d`. -/
 theorem typeII_energy_dispersion (n U : ℕ) (t : ℝ) :
@@ -2125,6 +2270,57 @@ theorem typeII_energy_dispersion (n U : ℕ) (t : ℝ) :
             E (((d : ℝ) * ((l1 : ℝ) - (l2 : ℝ))) * t) := by
   simpa only [typeIIFourier] using
     dispersion_identity n (U + 1) (by omega) (typeIICoeff U) t
+
+/-- Split the dispersion energy into its non-resonant and resonant parts. -/
+lemma typeII_dispersion_split_nonresonant (n U q : ℕ) (t : ℝ)
+    [DecidableRel (typeIINonresonant q)] :
+    ((∑ d ∈ Finset.Icc (U + 1) (n / (U + 1)),
+        ‖typeIIFourier n U t d‖ ^ 2 : ℝ) : ℂ) =
+      (∑ l1 ∈ Finset.Icc 1 (n / (U + 1)),
+        ∑ l2 ∈ (Finset.Icc 1 (n / (U + 1))).filter
+          (fun l2 => typeIINonresonant q l1 l2),
+          typeIICoeff U l1 * star (typeIICoeff U l2) *
+            typeIIKernel n U t l1 l2)
+      + (∑ l1 ∈ Finset.Icc 1 (n / (U + 1)),
+        ∑ l2 ∈ (Finset.Icc 1 (n / (U + 1))).filter
+          (fun l2 => ¬ typeIINonresonant q l1 l2),
+          typeIICoeff U l1 * star (typeIICoeff U l2) *
+            typeIIKernel n U t l1 l2) := by
+  classical
+  rw [typeII_energy_dispersion]
+  simp only [typeIIKernel]
+  rw [← Finset.sum_add_distrib]
+  apply Finset.sum_congr rfl
+  intro l1 _
+  rw [← Finset.sum_filter_add_sum_filter_not
+    (s := Finset.Icc 1 (n / (U + 1)))
+    (p := fun l2 => typeIINonresonant q l1 l2)]
+
+/-- The full Type-II dispersion energy is the unconditional non-resonant
+bound plus the resonant remainder. -/
+lemma typeII_energy_le_nonresonant_add_resonant (n U q a : ℕ) (β : ℝ)
+    (hq : 0 < q) (hcop : Nat.Coprime a q)
+    [DecidableRel (typeIINonresonant q)]
+    (hβ : |β| ≤ 1 / (16 * (q:ℝ) * ((n / (U + 1) : ℕ) : ℝ))) :
+    ‖((∑ d ∈ Finset.Icc (U + 1) (n / (U + 1)),
+        ‖typeIIFourier n U ((a:ℝ)/(q:ℝ) + β) d‖ ^ 2 : ℝ) : ℂ)‖ ≤
+      2 * (q:ℝ) * (∑ l ∈ Finset.Icc 1 (n / (U + 1)), ‖typeIICoeff U l‖) ^ 2
+      + ‖∑ l1 ∈ Finset.Icc 1 (n / (U + 1)),
+          ∑ l2 ∈ (Finset.Icc 1 (n / (U + 1))).filter
+            (fun l2 => ¬ typeIINonresonant q l1 l2),
+            typeIICoeff U l1 * star (typeIICoeff U l2) *
+              typeIIKernel n U ((a:ℝ)/(q:ℝ) + β) l1 l2‖ := by
+  classical
+  let t : ℝ := (a:ℝ)/(q:ℝ) + β
+  rw [show ((∑ d ∈ Finset.Icc (U + 1) (n / (U + 1)),
+        ‖typeIIFourier n U ((a:ℝ)/(q:ℝ) + β) d‖ ^ 2 : ℝ) : ℂ) =
+      ((∑ d ∈ Finset.Icc (U + 1) (n / (U + 1)),
+        ‖typeIIFourier n U t d‖ ^ 2 : ℝ) : ℂ) by simp only [t]]
+  rw [typeII_dispersion_split_nonresonant n U q t]
+  refine (norm_add_le _ _).trans ?_
+  exact add_le_add_left (by
+    simpa only [t] using
+      (typeII_nonresonant_dispersion_energy_le n U q a β hq hcop hβ)) _
 
 lemma typeIIInner_eq_typeIIFourier (n U d : ℕ) (hd : 0 < d) (t : ℝ) :
     typeIIInner n U t d = typeIIFourier n U t d := by

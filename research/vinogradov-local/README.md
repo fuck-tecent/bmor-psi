@@ -624,3 +624,41 @@ All assume `1 <= U <= n`, `gcd(a,q) = 1`, and `|β| <= 1/(16 q U^2)`.  Thus
 the Type-I major-arc estimate no longer needs `U^2 < q`; the previous
 `norm_expSum_vaughan_typeI_le_majorArc` is retained as the sharper
 large-`q` form.
+
+### Unconditional non-resonant Type-II kernel
+
+The actual dispersion kernel is now defined and bounded pointwise:
+
+```lean
+typeIIKernel n U t l1 l2 =
+  ∑ d ∈ Icc (U+1) (min (n/(U+1)) (n/max l1 l2)),
+    E ((d * (l1-l2)) * t)
+
+norm_typeIIKernel_le :
+  q ∤ (l1-l2), |β| ≤ 1/(16 q L), L = n/(U+1)
+    ⇒ ‖typeIIKernel n U (a/q+β) l1 l2‖ ≤ 2q
+```
+
+This removes the `hG` hypothesis from `typeII_nonresonant_energy_le`:
+the non-resonant off-diagonal is now unconditional.
+
+Results:
+
+```lean
+typeII_nonresonant_dispersion_energy_le :
+  ‖non-resonant part of the dispersion energy‖
+    ≤ 2q (∑_{l≤L} ‖c_U(l)‖)^2
+
+typeII_nonresonant_dispersion_energy_le_log :
+  ... ≤ 2q (L log n)^2
+
+typeII_dispersion_split_nonresonant :
+  energy = non-resonant part + resonant part
+
+typeII_energy_le_nonresonant_add_resonant :
+  ‖energy‖ ≤ 2q (∑‖c_U‖)^2 + ‖resonant part‖
+```
+
+The remaining Type-II gap is exactly the **resonant** part `q | (l1-l2)`
+(the diagonal subpart is already bounded by `diagonal_dispersion_part_le`;
+the resonant off-diagonal correlation is still open).
