@@ -1012,3 +1012,45 @@ hence
 ```text
 ∫_{(wideSet n)ᶜ} e(m t) dt = - ∑_{q,a} e(m a/q) sin(2π m H/(q n))/(π m)     (m ≠ 0).
 ```
+
+## Milestone 21: the complement split
+
+```lean
+integral_compl_indicator_phase (n) (m) :
+  ∫_{0}^{1} 1_{Aᶜ} e(m t) dt = ∫_{0}^{1} e(m t) dt - ∫_{0}^{1} 1_A e(m t) dt
+
+integral_compl_indicator_phase_eq (n) (m) (hm : m ≠ 0) :
+  ∫_{0}^{1} 1_{Aᶜ} e(m t) dt = - ∫_{0}^{1} 1_A e(m t) dt
+```
+
+Together with `integral_wideSet_eq_sum`, `integral_arcSet_phase`,
+`integral_arcSet_indicator_phase_of_inside` and `integral_boundary_arcs`, every
+ingredient of the sinc collection is now in place; only the case split
+`q = 1` vs `q ≥ 2` remains to be written out.
+
+## Full dossier at this point (21 verified milestones)
+
+| # | content |
+|---|---|
+| 1 | deep-minor definitions, `Target` |
+| 2-4 | weighted far/near split (`wwave`, `centered_deep_wwave_integral`, `split_shifted_wwave`) |
+| 5 | `deepIntegral_split` (exact, atom by atom) |
+| 6-7 | Fourier orthogonality, weighted Parseval |
+| 8-9 | archimedean decay (ball/annulus), near-core error term |
+| 10 | `Jdeep = D - W` |
+| 11 | numerics: `D = Θ(n loglog²)`, off-grid carries ~3/4 of the `L²` mass |
+| 12 | coefficient sizes `|τ₁(m)| ≤ T log m`, `∫‖S‖² ≤ T² n log²` |
+| 13-14 | prime/major-arc split, dilation bridge `S_{τ₁} = ∑_a c(a) S_w(a·)` |
+| 15 | `primeSum = S n w` interface |
+| 16 | weighted phase-quadruple expansion |
+| 17 | archimedean sinc factor `∫_{|x|≤ρ} e(m x) = sin(2πmρ)/(πm)` |
+| 18 | wide-arc disjointness / integral split, per-arc sinc |
+| 19 | clipping lemma, sinc sum over the arc family |
+| 20 | boundary arcs combine by periodicity |
+| 21 | complement split `∫_{Aᶜ} = [m=0] - ∫_A` |
+
+Remaining (all porting, with verified templates):
+* finish the `q = 1` case split of the sinc collection;
+* multiply into `plainPolynomial_sq_dilated_expand` (the `τ₁` `exact_split`);
+* port `lowmod_model_match` (local densities `1/φ(q)² → (∑_a c(a)…)²`);
+* port `macro_sinc_tail`.

@@ -1596,4 +1596,39 @@ theorem integral_boundary_arcs (m : ℤ) (ρ : ℝ) :
     intervalIntegral.integral_add_adjacent_intervals (hcont.intervalIntegrable _ _)
       (hcont.intervalIntegrable _ _)]
 
+/-- Splitting the circle at the wide arcs: `∫_{Aᶜ} = ∫₀¹ - ∫_A`. -/
+theorem integral_compl_indicator_phase (n : ℕ) (m : ℤ) :
+    (∫ t in (0:ℝ)..1, (wideSet n)ᶜ.indicator (fun y => phase ((m:ℝ)*y)) t)
+      = (∫ t in (0:ℝ)..1, phase ((m:ℝ)*t))
+        - ∫ t in (0:ℝ)..1, (wideSet n).indicator (fun y => phase ((m:ℝ)*y)) t := by
+  have hcont : Continuous fun t : ℝ => phase ((m:ℝ)*t) := by unfold phase; fun_prop
+  have hmeas : MeasurableSet (wideSet n) := wide_measurable n (cutoffB n) (cutoffH n)
+  have hA : IntervalIntegrable ((wideSet n).indicator (fun y => phase ((m:ℝ)*y)))
+      MeasureTheory.volume 0 1 := indicator_intervalIntegrable hcont hmeas
+  have hAc : IntervalIntegrable ((wideSet n)ᶜ.indicator (fun y => phase ((m:ℝ)*y)))
+      MeasureTheory.volume 0 1 := indicator_intervalIntegrable hcont hmeas.compl
+  have hpt : ∀ t : ℝ, phase ((m:ℝ)*t)
+      = (wideSet n).indicator (fun y => phase ((m:ℝ)*y)) t
+        + (wideSet n)ᶜ.indicator (fun y => phase ((m:ℝ)*y)) t := by
+    intro t
+    by_cases ht : t ∈ wideSet n
+    · rw [Set.indicator_of_mem ht, Set.indicator_of_notMem (by simpa using ht)]
+      simp
+    · rw [Set.indicator_of_notMem ht, Set.indicator_of_mem (by simpa using ht)]
+      simp
+  have hsplit : (∫ t in (0:ℝ)..1, phase ((m:ℝ)*t))
+      = (∫ t in (0:ℝ)..1, (wideSet n).indicator (fun y => phase ((m:ℝ)*y)) t)
+        + ∫ t in (0:ℝ)..1, (wideSet n)ᶜ.indicator (fun y => phase ((m:ℝ)*y)) t := by
+    rw [← intervalIntegral.integral_add hA hAc]
+    exact intervalIntegral.integral_congr fun t _ => hpt t
+  rw [hsplit]
+  ring
+
+/-- For nonzero frequency the full circle contributes nothing, so the complement
+integral is minus the wide-arc integral. -/
+theorem integral_compl_indicator_phase_eq (n : ℕ) (m : ℤ) (hm : m ≠ 0) :
+    (∫ t in (0:ℝ)..1, (wideSet n)ᶜ.indicator (fun y => phase ((m:ℝ)*y)) t)
+      = - ∫ t in (0:ℝ)..1, (wideSet n).indicator (fun y => phase ((m:ℝ)*y)) t := by
+  rw [integral_compl_indicator_phase, integral_phase_int, if_neg hm, zero_sub]
+
 end B1B1Port
