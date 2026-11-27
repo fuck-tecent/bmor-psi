@@ -37,3 +37,18 @@ cd ~/github.com/fuck-tencent/goldback-work/lean && lake env lean <file>
    `vinogradov-local`.
 2. Collapse `m1 = a r`, `m2 = b s` via the proved bilinear expansion to reach
    the `τ₁` coefficient form.
+
+## Milestone 2: kernel decomposition
+
+`kernel.lean`: the deep-minor kernel is the full-circle integral minus the
+wide-arc integral,
+
+```lean
+∫_{wideArcsᶜ} E(h t) dt = ∫_0^1 E(h t) dt − ∫_{wideArcs} E(h t) dt,
+```
+
+proved from the pointwise decomposition `f = s.indicator f + sᶜ.indicator f`
+(explicit interval-integrability hypotheses).
+
+Next: evaluate `∫_0^1 E(h t) dt` (it is `1` for `h = 0`, `0` otherwise) and
+expand the wide-arc integral into the arc sum over `q ≤ Q₁`, `a ≤ q`.
