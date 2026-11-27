@@ -310,3 +310,16 @@ So the Ramanujan sum is now
   c_q(h) = ∑_{d|q} μ(d) · [E(h/(q/d)) = 1] · (q/d),
 
 and by `divcrit` the condition `E(h/(q/d)) = 1` is `(q/d) | h`.
+
+## Milestone 20: Ramanujan sum closed form
+
+`dvdsum.lean` now proves
+
+```lean
+ramanujan_eq (h : ℤ) (hq : 0 < q) :
+  ∑_{a<q, (a,q)=1} E(h a/q)
+    = ∑_{d|q} μ(d) · [ (q/d) | h ] · (q/d).
+```
+
+Combines `sum_coprime_eq_sum_mu`, `sum_filter_dvd_phase`, and
+`E_div_eq_one_iff`.  This is the classical Ramanujan sum `c_q(h)`.

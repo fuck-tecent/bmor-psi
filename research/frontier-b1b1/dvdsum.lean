@@ -180,4 +180,21 @@ lemma sum_filter_dvd_phase (h : ℤ) (q d : ℕ) (hq : 0 < q) (hd : 0 < d) (hdq 
   simpa [mul_div_assoc] using geom_sum_E h (q/d) hq'pos
 
 
+/-- Ramanujan sum in closed form with the divisibility condition. -/
+lemma ramanujan_eq (h : ℤ) (q : ℕ) (hq : 0 < q) :
+    (∑ a ∈ (Finset.range q).filter (fun a => Nat.Coprime a q),
+        E ((h:ℝ)*(a:ℝ)/(q:ℝ)))
+      = ∑ d ∈ q.divisors, ((ArithmeticFunction.moebius d : ℤ) : ℂ) *
+          (if (q / d : ℕ) ∣ h then ((q / d : ℕ) : ℂ) else 0) := by
+  rw [Finset.sum_filter]
+  rw [sum_coprime_eq_sum_mu q hq (fun a => E ((h:ℝ)*(a:ℝ)/(q:ℝ)))]
+  apply Finset.sum_congr rfl
+  intro d hd
+  have hdvd : d ∣ q := (Nat.mem_divisors.mp hd).1
+  have hdpos : 0 < d := Nat.pos_of_dvd_of_pos hdvd hq
+  have hq'pos : 0 < q / d := Nat.div_pos (Nat.le_of_dvd hq hdvd) hdpos
+  rw [← Finset.sum_filter]
+  rw [sum_filter_dvd_phase h q d hq hdpos hdvd]
+  rw [E_div_eq_one_iff h (q/d) hq'pos]
+
 end B1B1
