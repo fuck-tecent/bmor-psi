@@ -765,3 +765,44 @@ which are stated for `S n w` with `w = ` prime indicator.
 The remaining step is the major-arc model application — a substantial but
 *standard* computation, with the prime-indicator version already verified in the
 catalogue.
+
+## Milestone 14: the dilation bridge is complete
+
+```lean
+def primeSum (N : ℕ) (θ : ℝ) : ℂ :=
+  ∑_{k ≤ N} (if k prime then log k else 0) · e(k θ)
+
+primeWave_eq_dilated (a U N) (hU : U ≤ N) :
+  primeWave a U N t = primeSum N (a·t) - primeSum U (a·t)
+
+plainPolynomial_tauCoeff_dilated (n) (hUa : ∀ a, U < a ≤ B₁ → U ≤ n/a) :
+  S_{τ₁}(t)
+    = ∑_{a ∈ (U,B₁]} c(a) · primeSum (n/a) (a·t)
+    - ∑_{a ∈ (U,B₁]} c(a) · primeSum U (a·t)
+    + ∑_{a ∈ (U,B₁]} c(a) · primePowerCorrection a U (n/a) t
+```
+
+`primeSum N` is *exactly* the object of the verified major-arc model
+(`L_goldbach_frontier_medcore_bv_band` writes `S n w t = ∑_{k ≤ n} w(k) e(k t)`
+with `w(k) = if k prime then log k else 0`).  So `S_{τ₁}` is now expressed as
+
+```text
+S_{τ₁}(t)  =  ∑_a c(a) S_{n/a} w (a t)   -   (short truncation)   +   (prime powers)
+```
+
+and the model can be applied term by term.
+
+### Concrete remaining steps
+
+1. **Model on each dilated arc.** On `t = a₀/q + β` with `q ∈ (n^(1/10), n^(1/3)]`,
+   `a t` sits near `a a₀ / q`, whose reduced denominator is `q / gcd(a,q)`.
+   Since `a ≤ B₁ = n^(1/4)` and `q > n^(1/10)`, the product `q·a` can exceed `Q₁`,
+   so the fibre split over `gcd(a,q)` is needed.
+2. **Expand the square** and use the verified `bandRamanujan` / `K n` formulas.
+3. **Match against `D`** (the full-circle term) to get `o(n)`.
+
+Steps 1-3 are a large but standard major-arc computation.  The verified pieces are:
+`L_goldbach_frontier_medcore_bv_band` (band model for `S n w`),
+`L_goldbach_frontier_spatial_lowmod_model_match` (small moduli),
+`L_goldbach_frontier_spatial_macro_sinc_tail` (archimedean tail),
+`bandRamanujan`, `K n` formulas.

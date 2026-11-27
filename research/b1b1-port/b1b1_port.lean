@@ -1064,4 +1064,59 @@ theorem plainPolynomial_tauCoeff_prime_split (n : ℕ) (t : ℝ) :
   simp_rw [atomWave_eq_primeWave_add_correction, mul_add]
   rw [Finset.sum_add_distrib]
 
+/-- The prime-indicator exponential sum up to `N`, evaluated at `θ`. -/
+def primeSum (N : ℕ) (θ : ℝ) : ℂ :=
+  ∑ k ∈ Finset.range (N+1), (if Nat.Prime k then (Real.log (k:ℝ) : ℂ) else 0) * phase ((k:ℝ)*θ)
+
+/-- **Dilation**: the prime part of an atom is the prime sum up to `n/a` evaluated
+at the dilated point `a·t`, minus the short `k ≤ U` truncation. -/
+theorem primeWave_eq_dilated (a U N : ℕ) (t : ℝ) (hU : U ≤ N) :
+    primeWave a U N t = primeSum N ((a:ℝ)*t) - primeSum U ((a:ℝ)*t) := by
+  classical
+  set W : ℕ → ℂ := fun k => (if Nat.Prime k then (Real.log (k:ℝ) : ℂ) else 0) *
+    phase ((k:ℝ) * ((a:ℝ)*t)) with hW
+  have hprimeWave : primeWave a U N t
+      = ∑ k ∈ (Finset.range (N+1)).filter (fun k => U < k), W k := by
+    unfold primeWave
+    refine Finset.sum_congr ?_ (fun k _ => ?_)
+    · ext k
+      simp only [Finset.mem_Icc, Finset.mem_range, Finset.mem_filter]
+      omega
+    · simp only [hW]
+      congr 2
+      push_cast
+      ring
+  have hsplit := Finset.sum_filter_add_sum_filter_not (Finset.range (N+1)) (fun k => U < k) W
+  have hnot : (Finset.range (N+1)).filter (fun k => ¬ U < k) = Finset.range (U+1) := by
+    ext k
+    simp only [Finset.mem_filter, Finset.mem_range]
+    omega
+  rw [hnot] at hsplit
+  rw [hprimeWave]
+  unfold primeSum
+  rw [← hsplit]
+  ring
+
+/-- **The full dilation bridge for `S_{τ₁}`.** -/
+theorem plainPolynomial_tauCoeff_dilated (n : ℕ) (t : ℝ)
+    (hUa : ∀ a, cutoffU n + 1 ≤ a → a ≤ lowCut n → cutoffU n ≤ n / a) :
+    plainPolynomial n (tauCoeff n) t
+      = (∑ a ∈ Finset.Icc (cutoffU n + 1) (lowCut n),
+          (lowMoebiusWeight (cutoffU n) a : ℂ) * primeSum (n / a) ((a:ℝ)*t))
+        - (∑ a ∈ Finset.Icc (cutoffU n + 1) (lowCut n),
+          (lowMoebiusWeight (cutoffU n) a : ℂ) * primeSum (cutoffU n) ((a:ℝ)*t))
+        + ∑ a ∈ Finset.Icc (cutoffU n + 1) (lowCut n),
+          (lowMoebiusWeight (cutoffU n) a : ℂ) *
+            primePowerCorrection a (cutoffU n) (n / a) t := by
+  rw [plainPolynomial_tauCoeff_prime_split]
+  have h1 : ∀ a ∈ Finset.Icc (cutoffU n + 1) (lowCut n),
+      (lowMoebiusWeight (cutoffU n) a : ℂ) * primeWave a (cutoffU n) (n / a) t
+        = (lowMoebiusWeight (cutoffU n) a : ℂ) * primeSum (n / a) ((a:ℝ)*t)
+          - (lowMoebiusWeight (cutoffU n) a : ℂ) * primeSum (cutoffU n) ((a:ℝ)*t) := by
+    intro a ha
+    obtain ⟨h1, h2⟩ := Finset.mem_Icc.mp ha
+    rw [primeWave_eq_dilated a (cutoffU n) (n / a) t (hUa a h1 h2)]
+    ring
+  rw [Finset.sum_congr rfl h1, Finset.sum_sub_distrib]
+
 end B1B1Port
