@@ -1534,4 +1534,38 @@ theorem integral_arcSet_phase (n q a : ℕ) (m : ℤ) (hm : m ≠ 0) :
   congr 1
   exact integral_phase_symmetric m hm ρ
 
+/-- For an arc strictly inside `(0,1)`, the clipped indicator integral is the full
+arc integral. -/
+theorem integral_arcSet_indicator_phase_of_inside (n q a : ℕ) (m : ℤ)
+    (hleft : 0 < (a:ℝ)/(q:ℝ) - (cutoffH n:ℝ)/((q:ℝ)*(n:ℝ)))
+    (hright : (a:ℝ)/(q:ℝ) + (cutoffH n:ℝ)/((q:ℝ)*(n:ℝ)) < 1) :
+    (∫ t in (0:ℝ)..1, (arcSet n q a).indicator (fun y => phase ((m:ℝ)*y)) t)
+      = ∫ t in arcSet n q a, phase ((m:ℝ)*t) := by
+  have hsub : arcSet n q a ⊆ Set.Ioc (0:ℝ) 1 := by
+    intro t ht
+    rw [arcSet_eq_Icc] at ht
+    obtain ⟨h1, h2⟩ := ht
+    exact ⟨by linarith, by linarith⟩
+  have hmeas : MeasurableSet (arcSet n q a) := arcSet_measurable n q a
+  have hsupp : ∀ x ∉ Set.Ioc (0:ℝ) 1,
+      (arcSet n q a).indicator (fun y => phase ((m:ℝ)*y)) x = 0 := by
+    intro x hx
+    exact Set.indicator_of_notMem (fun hc => hx (hsub hc)) (fun y => phase ((m:ℝ)*y))
+  rw [intervalIntegral.integral_of_le zero_le_one,
+    MeasureTheory.setIntegral_eq_integral_of_forall_compl_eq_zero hsupp,
+    MeasureTheory.integral_indicator hmeas]
+
+/-- The sinc sum over the arc family (the `sincKernel` sum). -/
+theorem sum_arcSet_phase (n : ℕ) (m : ℤ) (hm : m ≠ 0) :
+    (∑ q ∈ Finset.Icc 1 (cutoffB n),
+        ∑ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q),
+          ∫ t in arcSet n q a, phase ((m:ℝ)*t))
+      = ∑ q ∈ Finset.Icc 1 (cutoffB n),
+          ∑ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q),
+            phase ((m:ℝ)*((a:ℝ)/(q:ℝ))) *
+              (((Real.sin (2*Real.pi*(m:ℝ)*((cutoffH n:ℝ)/((q:ℝ)*(n:ℝ)))) : ℝ) : ℂ) /
+                ((Real.pi*(m:ℝ) : ℝ) : ℂ)) := by
+  refine Finset.sum_congr rfl fun q _ => Finset.sum_congr rfl fun a _ => ?_
+  exact integral_arcSet_phase n q a m hm
+
 end B1B1Port

@@ -948,3 +948,38 @@ accounting for that (and using `arcs_disjoint`),
 ```
 
 which is the `τ₁`-version of `spatial_exact_split`'s sinc collection.
+
+## Milestone 19: clipping lemma and the sinc sum
+
+```lean
+integral_arcSet_indicator_phase_of_inside (n q a) (m)
+    (hleft : 0 < a/q - H/(qn)) (hright : a/q + H/(qn) < 1) :
+  ∫_{0}^{1} 1_{arcSet n q a} e(m t) dt = ∫_{arcSet n q a} e(m t) dt
+
+sum_arcSet_phase (n) (m) (hm : m ≠ 0) :
+  ∑_{q ≤ cutoffB n} ∑_{a, (a,q)=1} ∫_{arcSet n q a} e(m t)
+    = ∑_{q} ∑_{a} e(m a/q) · sin (2π m H/(q n)) / (π m)
+```
+
+The first says a strictly interior arc is not clipped by `[0,1]`; the second is the
+`sincKernel` sum in closed form.
+
+### Remaining for the complete sinc collection
+
+Only the two boundary arcs `(q,a) = (1,0)` and `(1,1)` remain.  By `1`-periodicity
+of `e(m·)`, their clipped contributions combine to exactly
+`∫_{-ρ_1}^{ρ_1} e(m t) dt = sin(2π m H/n)/(π m)`, i.e. the *same* sinc term.  So
+after that one lemma,
+
+```text
+∫_{0}^{1} 1_{wideSet n} e(m t) dt
+  = ∑_{q ≤ cutoffB n} ∑_{a, (a,q)=1} e(m a/q) · sin(2π m H/(q n))/(π m)
+```
+
+and hence (using `∫_{0}^{1} e(m t) dt = [m=0]` for `m ≠ 0`)
+
+```text
+∫_{(wideSet n)ᶜ} e(m t) dt = - ∑_{q,a} e(m a/q) sin(2π m H/(q n))/(π m) .
+```
+
+That is the `τ₁`-analogue of `spatial_exact_split`'s sinc collection.
