@@ -2146,4 +2146,62 @@ Content: `D` is the `q = ∞` local count, and the `q`-th term of the `sincSum` 
 the finite-modulus local count.  This closes the bookkeeping of the "local density"
 picture; the estimate that would use it is the one shown impossible in M34/M36.
 
-Dossier: 2336 → 2414 lines, no `sorry`, 36 verified milestones.
+Dossier: 2336 → 2409 lines, no `sorry`, 36 verified milestones.
+
+## Milestone 38: the τ₃ "Vaughan-covered sub-region" is not reachable by instantiation
+
+§36.5 proposed discharging the sub-region `a > n^(2/5) ∧ m/a > n^(2/5)` of `τ₃` with
+`optimized_typeII_bound`.  Reading the interface shows this is **not** an instantiation.
+
+### 38.1 Good news: the two cutoffs are separate
+
+```lean
+theorem norm_typeII_le_dyadic_log_budget (N U V : ℕ) (w : ℕ → ℂ) (B : ℝ)
+    (hB0 : 0 ≤ B)
+    (hB : ∀ j < Nat.log 2 N + 1, ‖typeIIBlock N U V j w‖ ≤ B) :
+    ‖weightedSum (Ioc 0 N) w (typeIICoefficient U * longPart V Λ)‖
+      ≤ (1 + Real.log N / Real.log 2) * B
+```
+
+So the Möbius cutoff `U` and the cofactor cutoff `V` are independent, and
+`typeII_eq_hyperbola (N U V w)` / `typeII_eq_sum_dyadic_blocks` are stated for general
+`U, V`.  For `τ₃` the natural pair would be `U = ⌊n^(1/16)⌋` (its Möbius truncation) and
+`V = ⌊n^(2/5)⌋` (the cofactor floor).
+
+### 38.2 Bad news: the block estimate is only proved at `U = V = N^(2/5)`
+
+The single hypothesis `hB` is what carries all the analysis, and the only proved
+supplier is
+
+```lean
+theorem optimized_typeIIBlock_bound (θ a q …) (N j …) :
+    ‖typeIIBlock N (optimizedCutoff N) (optimizedCutoff N) j (phase …)‖ ≤ …
+```
+
+i.e. `U = V = ⌊N^(2/5)⌋`, with no `U, V` parameters at all.  Moreover
+`typeIIBlock N U V j` is indexed by `VaughanDyadic.shell U N j`, so a *smaller* `U`
+makes the block strictly larger and the bound strictly weaker.  Running the engine at
+`U = ⌊n^(1/3)⌋` (τ₃'s divisor floor) or at `U = ⌊n^(1/16)⌋` requires **re-proving the
+block-level Type-II estimate below `N^(2/5)`** — which is exactly "push Vaughan into the
+gap", the same missing analysis as §35.4 / §36.3.
+
+So the τ₃ sub-band reduction is not a bounded piece of formalisation; it is blocked at
+the same place as b1-b1 itself.  The only part that *is* small is the purely
+combinatorial band-split (`Finset.sum_filter` / `filter_filter`), i.e. definition
+unfolding, which the platform's task rules explicitly refuse to count as a task.
+
+### 38.3 Consequence
+
+Nothing in the open cells of the Type-II matrix is reachable from the verified toolset.
+The dossier is closed here:
+
+```text
+b1b1_port.lean  2409 lines, 36 verified milestones, no sorry
+README.md       M1-M38
+```
+
+The durable value is: (i) the exact reduction chain `Jdeep = D − W` down to local
+coordinates, in four independent normal forms (M29-M33); (ii) the local-count identity
+(M37); (iii) quantified impossibilities for every method class available (M11, M34,
+M36, M38); (iv) the position of b1-b1 as cell `h11` of the ten-cell `matrix_bridge`
+(M35).
