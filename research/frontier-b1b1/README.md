@@ -233,3 +233,17 @@ and converts the real equation `h = q n` back to `(q : ℤ) ∣ h`.
 Combined with `geom_sum_E`:
 
   ∑_{a<q} E(h a/q) = if (q : ℤ) ∣ h then q else 0.
+
+## Milestone 15: Möbius-sieve divisor step
+
+`mudiv.lean`:
+
+```lean
+divisors_filter_dvd_eq_gcd (hq : 0 < q) :
+  q.divisors.filter (fun d => d ∣ a) = (Nat.gcd a q).divisors
+```
+
+First step of the Möbius sieve
+`∑_{(a,q)=1} f a = ∑_{d|q} μ(d) ∑_{a: d|a} f a`: the divisors of `q` that
+divide `a` are exactly the divisors of `gcd a q`, so the pointwise Möbius
+weight is `∑_{d | gcd a q} μ d = [gcd a q = 1]`.
