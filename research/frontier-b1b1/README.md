@@ -167,3 +167,21 @@ So for `n > 2H` each denominator `q` contributes at most one arc through `t`.
 Together with `overlap_denominator_bound`, the multiplicity of `wideArcs` at a
 point is controlled by: at most one small-`q` arc (`q q' ≥ n/(2H)`) and at most
 `1 + Q₁/√(n/(2H)) = O(1 + log² n)` large-`q` ones.
+
+## Milestone 11: wide arcs are disjoint for large n
+
+`disjoint.lean`:
+
+```lean
+radius_sum_lt (hn : 512 Q₁² Q < n) (q,q' ≤ Q₁) : H (q + q') < n
+
+wideArcs_pieces_disjoint (hn : 512 Q₁² Q < n) (hq,hq' > 0) (q,q' ≤ Q₁)
+  (hne : a/q ≠ a'/q') :
+  Disjoint {t | |t - a/q| ≤ H/(q n)} {t | |t - a'/q'| ≤ H/(q' n)}
+```
+
+Key correction to the earlier note: the radii `H/(q n) = 256 Q₁ Q/(q n)` are
+much *smaller* than the Farey spacing `1/(qq') ≥ 1/Q₁²`, since
+`512 Q₁² Q < n` eventually (Q₁³ ≈ n, Q = log⁴ n).  Hence the wide arcs are
+**pairwise disjoint**, and the deep-minor integral over `wideArcs` is exactly
+the *sum* of the arc integrals — no bounded-overlap loss.
