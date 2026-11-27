@@ -1673,3 +1673,113 @@ archimedean interval.
 ### Dossier
 
 33 verified milestones, 2336 lines, no `sorry`, branch `research/b1b1-arcsplit`.
+
+---
+
+## Cross-cell note: which matrix cells the `b1-b4` template can reach
+
+*Strategy note (no Lean content). Live-board check, catalogue revision `970850fd`:
+999 published / 939 accepted / 60 open.*
+
+The whole `b1-b4` / `b4-b4` engine pivots on one number, `maximumStep`
+(`L_goldbach_frontier_type2_b1_b4.lean`):
+
+```lean
+def wave (u l r : ℕ) (t : ℝ) : ℂ := ∑ h ∈ Ioc l r, phase ((u*h:ℕ)*t)   -- unweighted
+def highAtoms (n) := Icc 1 (cutoffU n) ×ˢ Ioc (cutoffU n) (cutoffB n)   -- (d, cofactor)
+def atomStep (atom) := atom.1 * atom.2                                  -- d · (m/a)
+def atomWeight (atom) := (-(μ atom.1 : ℂ)) * (Λ atom.2 : ℂ)             -- Λ on the cofactor
+def maximumStep (n) := cutoffU n * cutoffB n                            -- n^(19/48)
+```
+
+`wave` is **unweighted**, so the `Λ`-weighted factor must sit in the atom.
+`upperBandWeight` attaches `Λ` to the *cofactor* `r = m/a`, hence the atom step is
+`d·(m/a)` and the far-field (`offWave`/Young) budget is
+
+```text
+‖F‖₂ ‖G‖₂  ≲  √n · maximumStep · W ,      W = sup_u ∑_{step = u} |weight| ≤ n^o(1) ,
+```
+
+i.e. `√n` times the largest atom step. The template therefore works exactly when
+the **cofactor** is at most `n^(1/3)`:
+
+```text
+√n · n^(1/16) · n^(1/3)  =  n^(43/48)  =  o(n) .
+```
+
+`τ₄` is the only band with a bounded cofactor (`a > n^(2/3) ⟹ m/a < n^(1/3)`).
+Cell by cell, with `U = n^(1/16)`, `C` = cofactor cap of the expanded side and
+`M = U·C`:
+
+| cell | expanded side | `C` | `M` | far budget `√n·M` | board |
+|---|---|---|---|---|---|
+| b1-b4 | τ₄ | `n^(1/3)` | `n^(19/48)` | `n^(43/48)` | ACCEPTED |
+| b2-b4 | τ₄ | `n^(1/3)` | `n^(19/48)` | `n^(43/48)` | ACCEPTED |
+| b3-b4 | τ₄ | `n^(1/3)` | `n^(19/48)` | `n^(43/48)` | ACCEPTED |
+| b4-b4 | τ₄ | `n^(1/3)` | `n^(19/48)` | `n^(43/48)` | ACCEPTED |
+| b1-b1 | τ₁ | `n^(15/16)` | `n` | `n^(3/2)` | **open (this task)** |
+| b1-b2 | τ₁ / τ₂ | `n^(15/16)` / `n^(3/4)` | `n` / `n^(13/16)` | `n^(3/2)` / `n^(21/16)` | open, claimed |
+| b1-b3 | τ₁ / τ₃ | `n^(15/16)` / `n^(2/3)` | `n` / `n^(35/48)` | `n^(3/2)` / `n^(59/48)` | open, claimed |
+| b2-b2 | τ₂ | `n^(3/4)` | `n^(13/16)` | `n^(21/16)` | **open** |
+| b2-b3 | τ₂ / τ₃ | `n^(3/4)` / `n^(2/3)` | `n^(13/16)` / `n^(35/48)` | `n^(21/16)` / `n^(59/48)` | **open** |
+| b3-b3-parity | τ₃ | `n^(2/3)` | `n^(35/48)` | `n^(59/48)` | **open** |
+
+**The four accepted cells are exactly the four with cofactor `≤ n^(1/3)`.** Every
+open cell misses the far budget by a positive power of `n`, on *both* sides, so
+moving from b1-b1 to b2-b2 / b2-b3 buys nothing: the long-cofactor mechanism is
+what is missing, not the choice of band. This is the parameter-arithmetic form of
+the Milestone 11 finding (`τ₁`'s waves are not concentrated on the grid).
+
+Also worth recording for the claim bookkeeping: on revision `970850fd` the
+remaining open cells of this track are b1-b1, b1-b2, b1-b3, b2-b2, b2-b3,
+b3-b3-parity; `desk.assignments` shows b1-b2 and b1-b3 as `working` under other
+handles, so they are not claimable.
+
+### What a port would still need: `low_band_progressions`
+
+`upperBandWeight` has a strict `lower < a` but **no upper bound on `a`**, while the
+catalogue's `τ_k` also requires `a ≤ B_k`. The low-band atom expansion is therefore
+a separate identity (a `bandWeight` with the extra `a ≤ B`):
+
+```lean
+/-- Low-band atom expansion: `Λ` on the cofactor, `μ` on the short divisor.
+The `k` range is the point: `a = d·k ≤ B`. -/
+theorem low_band_progressions (limit cutoff lower B : ℕ) (hB : B ≤ limit) :
+  ∑ m ∈ range (limit+1),
+      (∑ a ∈ m.divisors.filter (fun a => lower < a ∧ a ≤ B ∧ cutoff < m / a),
+          (∑ d ∈ a.divisors.filter (fun d => cutoff < d), w d) * c (m / a)) * phase m
+    = ∑ b ∈ Ioc cutoff (limit / lower), ∑ d ∈ Icc 1 cutoff,
+        (-w d) * c b *
+          ∑ k ∈ Ioc (lower / d) (min (limit / (d * b)) (B / d)), phase (d * b * k)
+```
+
+The Möbius cancellation `∑_{d|a} w d = 0` for `a > 1` trades the large divisors
+`d > cutoff` for the small ones `d ≤ cutoff` at the cost of a sign. Instantiations:
+`(lower, B, cutoff) = (U, B₁, U)` for τ₁, `(B₁, B₂, U)` for τ₂, `(B₂, B₃, U)` for τ₃.
+
+This lemma is *necessary* for any port, but it does **not** remove the obstruction
+above: it constrains `a = d·k`, not the cofactor `m/a`.
+
+### Independent check: the frequency-side budget is also too large
+
+The alternative `K(h)` route (`Jdeep = ∑_h d(h) K(h)`, dispersion in the frequency
+variable) cannot close by Cauchy–Schwarz either. With
+`d(h) = ∑_{m+m'=n+h} τ₁(m) τ₁(m')`:
+
+```text
+∑_h |d(h)|²  =  ∫₀¹ |S_{τ₁}|⁴  ≥  (∫₀¹ |S_{τ₁}|²)²  =  (∑_m |τ₁(m)|²)² .
+```
+
+The `a = a'` diagonal contributes
+`∑_a |c(a)|² ∑_{p ≤ n/a} Λ(p)² ≈ n log n · ∑_{a ∈ (U,B₁]} |c(a)|²/a`. For prime
+`a ∈ (U,B₁]` one has `c(a) = −1`, and `∑_{U<p≤B₁} 1/p ≈ log 4` is a positive
+constant, so `∑_m |τ₁(m)|² ≈ n log n · Θ(1)` and
+
+```text
+‖d‖₂ ‖K‖₂  ≥  (∑_m |τ₁(m)|²) · |K(0)|  ≈  n log n  >  n ,
+```
+
+because `K(0) = 1 − |wideArcs| ≥ 1/2`. So the method's own error budget exceeds
+`εn` no matter how sharp the Ramanujan or kernel bounds are made; the signed
+cancellation `D − W` has to be used in the space domain (Milestones 10–11), not in
+the frequency domain.
