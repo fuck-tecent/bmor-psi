@@ -67,3 +67,18 @@ Proof via Mathlib's `integral_exp_mul_complex`
 plus `Complex.exp_int_mul_two_pi_mul_I`.
 
 Hence `K_n(h) = [h = 0] − ∫_{wideArcs} E(h t) dt`.
+
+## Milestone 4: interval Fourier bounds
+
+`osc.lean`:
+
+```lean
+norm_integral_E_le_length (h : ℤ) (hAB : A ≤ B) :
+  ‖∫_{A}^{B} E(h t) dt‖ ≤ B - A
+
+norm_integral_E_le_osc (h : ℤ) (hh : h ≠ 0) :
+  ‖∫_{A}^{B} E(h t) dt‖ ≤ 1 / (π |h|)
+```
+
+So every arc integral is `≤ min(length, 1/(π|h|))`, exactly the input for the
+non-resonant bound (`integral_exp_mul_complex` + `‖exp (i·)‖ = 1`).
