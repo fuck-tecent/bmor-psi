@@ -2677,4 +2677,164 @@ theorem norm_deepSelf_le {E : Set ℝ} (hE : MeasurableSet E)
         rw [← Real.sqrt_mul hA]; ring_nf
     _ = ∫ t in E, ‖plainPolynomial n u t‖ ^ 2 := Real.sqrt_sq hA
 
+/-! ### Milestone 41: the cofactor peeling for `τ₁`, with correct exponents
+
+**Correction.**  `B₃ · n^(2/5) = n^(2/3 + 2/5) = n^(16/15)`, *not* `n^(13/15)`.
+Since `16/15 > 1`, the support bound used in M36.5 / M40 for `τ₃` is **vacuous**, and
+the conclusions drawn there (`‖S_res‖₂² = o(n)`, `Jdeep(τ₃,τ₃) = Jdeep(main,main) + o(n)`)
+are **not established**.
+
+The support trick does work for `τ₁` and `τ₂`, because their divisor upper bounds are
+small:
+
+| cell | `H_i` | support `H_i · V` with `V = n^(2/5)` | short? |
+|---|---|---|---|
+| τ₁ | `n^(1/4)` | `n^(13/20)` | yes |
+| τ₂ | `n^(1/3)` | `n^(11/15)` | yes |
+| τ₃ | `n^(2/3)` | `n^(16/15)` | no |
+| τ₄ | `n^(15/16)` | `n^(107/80)` | no |
+
+Below is the peeling for `τ₁`: split the cofactor at an arbitrary threshold `V`, show the
+low part is supported on `m ≤ B₁ · V`, and bound its `L²` mass by an explicit quantity. -/
+
+/-- `τ₁` with the cofactor restricted to `m / a ≤ V`. -/
+def lowBandCoefficientBot (n V : ℕ) : ℕ → ℝ :=
+  fun m => ∑ a ∈ (Nat.divisors m).filter
+      (fun a => cutoffU n < a ∧ a ≤ lowCut n ∧ cutoffU n < m / a ∧ m / a ≤ V),
+    lowMoebiusWeight (cutoffU n) a * ArithmeticFunction.vonMangoldt (m / a)
+
+/-- `τ₁` with the cofactor restricted to `V < m / a`. -/
+def lowBandCoefficientTop (n V : ℕ) : ℕ → ℝ :=
+  fun m => ∑ a ∈ (Nat.divisors m).filter
+      (fun a => cutoffU n < a ∧ a ≤ lowCut n ∧ cutoffU n < m / a ∧ V < m / a),
+    lowMoebiusWeight (cutoffU n) a * ArithmeticFunction.vonMangoldt (m / a)
+
+/-- **Exact cofactor split.** -/
+theorem lowBandCoefficient_eq_bot_add_top (n V m : ℕ) :
+    lowBandCoefficient (cutoffU n) (lowCut n) m
+      = lowBandCoefficientBot n V m + lowBandCoefficientTop n V m := by
+  classical
+  have hbot : (Nat.divisors m).filter
+      (fun a => cutoffU n < a ∧ a ≤ lowCut n ∧ cutoffU n < m / a ∧ m / a ≤ V)
+      = ((Nat.divisors m).filter
+          (fun a => cutoffU n < a ∧ a ≤ lowCut n ∧ cutoffU n < m / a)).filter
+          (fun a => m / a ≤ V) := by
+    ext a
+    simp only [Finset.mem_filter]
+    tauto
+  have htop : (Nat.divisors m).filter
+      (fun a => cutoffU n < a ∧ a ≤ lowCut n ∧ cutoffU n < m / a ∧ V < m / a)
+      = ((Nat.divisors m).filter
+          (fun a => cutoffU n < a ∧ a ≤ lowCut n ∧ cutoffU n < m / a)).filter
+          (fun a => ¬ m / a ≤ V) := by
+    ext a
+    simp only [Finset.mem_filter, not_le]
+    tauto
+  unfold lowBandCoefficient lowBandCoefficientBot lowBandCoefficientTop
+  rw [hbot, htop]
+  exact (Finset.sum_filter_add_sum_filter_not _ (fun a => m / a ≤ V) _).symm
+
+/-- **Support of the low part**: it vanishes above `B₁ · V`. -/
+theorem lowBandCoefficientBot_eq_zero (n V m : ℕ) (hm : lowCut n * V < m) :
+    lowBandCoefficientBot n V m = 0 := by
+  classical
+  unfold lowBandCoefficientBot
+  apply Finset.sum_eq_zero
+  intro a ha
+  obtain ⟨had, hUa, haB, hcofU, hcofV⟩ := Finset.mem_filter.mp ha
+  obtain ⟨hadvd, _⟩ := Nat.mem_divisors.mp had
+  exact absurd (le_mul_of_cofactor_le m a (lowCut n) V hadvd haB hcofV) (by omega)
+
+/-- Pointwise size of the low part (same bound as `tauCoeff_abs_le`). -/
+theorem lowBandCoefficientBot_abs_le (n V m : ℕ) {T : ℝ} (hT : 0 ≤ T)
+    (hc : ∀ a, cutoffU n < a → a ≤ lowCut n → |lowMoebiusWeight (cutoffU n) a| ≤ T) :
+    ‖(lowBandCoefficientBot n V m : ℂ)‖ ≤ T * Real.log m := by
+  classical
+  unfold lowBandCoefficientBot
+  rw [Complex.norm_real, Real.norm_eq_abs]
+  calc |∑ a ∈ (Nat.divisors m).filter
+        (fun a => cutoffU n < a ∧ a ≤ lowCut n ∧ cutoffU n < m / a ∧ m / a ≤ V),
+        lowMoebiusWeight (cutoffU n) a * ArithmeticFunction.vonMangoldt (m / a)|
+      ≤ ∑ a ∈ (Nat.divisors m).filter
+        (fun a => cutoffU n < a ∧ a ≤ lowCut n ∧ cutoffU n < m / a ∧ m / a ≤ V),
+        |lowMoebiusWeight (cutoffU n) a * ArithmeticFunction.vonMangoldt (m / a)| :=
+        Finset.abs_sum_le_sum_abs _ _
+    _ ≤ ∑ a ∈ (Nat.divisors m).filter
+        (fun a => cutoffU n < a ∧ a ≤ lowCut n ∧ cutoffU n < m / a ∧ m / a ≤ V),
+        T * ArithmeticFunction.vonMangoldt (m / a) := by
+        refine Finset.sum_le_sum fun a ha => ?_
+        obtain ⟨_, hUa, haB, _, _⟩ := Finset.mem_filter.mp ha
+        rw [abs_mul, abs_of_nonneg ArithmeticFunction.vonMangoldt_nonneg]
+        exact mul_le_mul_of_nonneg_right (hc a hUa haB) ArithmeticFunction.vonMangoldt_nonneg
+    _ ≤ ∑ a ∈ Nat.divisors m, T * ArithmeticFunction.vonMangoldt (m / a) := by
+        refine Finset.sum_le_sum_of_subset_of_nonneg (Finset.filter_subset _ _) ?_
+        intro a _ _
+        exact mul_nonneg hT ArithmeticFunction.vonMangoldt_nonneg
+    _ = T * Real.log m := by rw [← Finset.mul_sum, sum_vonMangoldt_div_divisors]
+
+/-- Parseval for an arbitrary coefficient sequence. -/
+theorem integral_plainPolynomial_norm_sq (n : ℕ) (a : ℕ → ℂ) :
+    (∫ t in (0:ℝ)..1, ‖plainPolynomial n a t‖ ^ 2)
+      = ∑ m ∈ Finset.range (n + 1), ‖a m‖ ^ 2 := by
+  simp_rw [← norm_shiftedPolynomial_eq n a]
+  exact shiftedPolynomial_parseval n a
+
+/-- **Localisation of the low part's `L²` mass**: only `m ≤ B₁ · V` contributes. -/
+theorem sum_bot_norm_sq_localize (n V : ℕ) (hV : lowCut n * V ≤ n) :
+    (∑ m ∈ Finset.range (n + 1), ‖(lowBandCoefficientBot n V m : ℂ)‖ ^ 2)
+      = ∑ m ∈ Finset.range (lowCut n * V + 1), ‖(lowBandCoefficientBot n V m : ℂ)‖ ^ 2 := by
+  classical
+  refine (Finset.sum_subset ?_ ?_).symm
+  · intro m hm
+    simp only [Finset.mem_range] at hm ⊢
+    omega
+  · intro m hm hmn
+    simp only [Finset.mem_range] at hm hmn
+    have hlt : lowCut n * V < m := by omega
+    rw [lowBandCoefficientBot_eq_zero n V m hlt]
+    simp
+
+/-- **The peeling bound.**  The low-cofactor part of `τ₁` has `L²` mass at most
+`T² · (B₁ · V + 1) · log²n`.  With the crude `T ≤ B₁` this is `o(n)` as soon as
+`B₁³ · V = o(n)`, i.e. `V = n^(1/4 − δ)`; with the divisor bound `T = n^o(1)` it is `o(n)`
+as soon as `B₁ · V = o(n)`, i.e. `V = n^(3/4 − δ)`. -/
+theorem integral_bot_norm_sq_le (n V : ℕ) (hV : lowCut n * V ≤ n)
+    {T : ℝ} (hT : 0 ≤ T)
+    (hc : ∀ a, cutoffU n < a → a ≤ lowCut n → |lowMoebiusWeight (cutoffU n) a| ≤ T) :
+    (∫ t in (0:ℝ)..1,
+        ‖plainPolynomial n (fun m => (lowBandCoefficientBot n V m : ℂ)) t‖ ^ 2)
+      ≤ T ^ 2 * ((lowCut n * V : ℕ) + 1 : ℝ) * (Real.log n) ^ 2 := by
+  rw [integral_plainPolynomial_norm_sq, sum_bot_norm_sq_localize n V hV]
+  have hlog : ∀ m ∈ Finset.range (lowCut n * V + 1),
+      (Real.log (m:ℝ)) ^ 2 ≤ (Real.log (n:ℝ)) ^ 2 := by
+    intro m hm
+    have hmn : m ≤ n := (Nat.lt_succ_iff.mp (Finset.mem_range.mp hm)).trans hV
+    rcases Nat.eq_zero_or_pos m with h0 | hpos
+    · subst h0
+      simpa using sq_nonneg (Real.log (n:ℝ))
+    · have h1 : Real.log (m:ℝ) ≤ Real.log (n:ℝ) :=
+        Real.log_le_log (by exact_mod_cast hpos) (by exact_mod_cast hmn)
+      have h2 : 0 ≤ Real.log (m:ℝ) := Real.log_nonneg (by exact_mod_cast hpos)
+      nlinarith [h1, h2]
+  have hsum : (∑ m ∈ Finset.range (lowCut n * V + 1),
+        ‖(lowBandCoefficientBot n V m : ℂ)‖ ^ 2)
+      ≤ ∑ m ∈ Finset.range (lowCut n * V + 1), T ^ 2 * (Real.log (n:ℝ)) ^ 2 := by
+    refine Finset.sum_le_sum fun m hm => ?_
+    have h1 : ‖(lowBandCoefficientBot n V m : ℂ)‖ ≤ T * Real.log (m:ℝ) :=
+      lowBandCoefficientBot_abs_le n V m hT hc
+    have h3 : 0 ≤ Real.log (m:ℝ) := by
+      rcases Nat.eq_zero_or_pos m with h0 | hpos
+      · subst h0; simp
+      · exact Real.log_nonneg (by exact_mod_cast hpos)
+    calc ‖(lowBandCoefficientBot n V m : ℂ)‖ ^ 2 ≤ (T * Real.log (m:ℝ)) ^ 2 :=
+          pow_le_pow_left₀ (norm_nonneg _) h1 2
+      _ = T ^ 2 * (Real.log (m:ℝ)) ^ 2 := by ring
+      _ ≤ T ^ 2 * (Real.log (n:ℝ)) ^ 2 :=
+          mul_le_mul_of_nonneg_left (hlog m hm) (by positivity)
+  refine hsum.trans ?_
+  rw [Finset.sum_const, Finset.card_range, nsmul_eq_mul]
+  push_cast
+  ring_nf
+  exact le_rfl
+
 end B1B1Port

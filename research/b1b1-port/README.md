@@ -2381,3 +2381,115 @@ Landmines recorded:
   `S_u * (S_v * phase)`; the bridge is one `integral_congr_ae` with `simp only [mul_assoc]`.
 
 Dossier: 2578 -> 2680 lines, 126 verified declarations (95 theorems, 22 defs, 9 lemmas), no `sorry`.
+
+## Milestone 41 (branch `research/b1b1-exponent-fix`): exponent correction + the `τ₁` peeling
+
+This branch exists because M36.5 and M40 contain an arithmetic error that invalidates
+their conclusions.  It does **not** rewrite those sections; it corrects them here.
+
+### 41.1 The error
+
+Both sections assert
+
+```text
+B₃ · n^(2/5) = n^(13/15)
+```
+
+Exact arithmetic: `2/3 + 2/5 = 10/15 + 6/15 = **16/15**`.  Since `16/15 > 1`, the bound
+`m ≤ B₃ · n^(2/5)` is **weaker than `m ≤ n`**, i.e. vacuous.
+
+The Lean lemmas are fine — `le_mul_of_cofactor_le` (M39) really does prove `m ≤ H · V₀`,
+and M40's Cauchy–Schwarz lemmas are correct and general.  What is wrong is the
+*instantiation* `H = B₃ = n^(2/3)`, `V₀ = n^(2/5)`.
+
+**Consequently the following are NOT established** (they appear in M36.5 and M40):
+
+```text
+‖S_res‖₂² = n^(13/15+o(1)) = o(n)                    ✗
+|Jdeep(res,res)| = o(n)                              ✗
+|Jdeep(main,res)| ≤ n^(14/15+o(1)) = o(n)            ✗
+Jdeep(τ₃,τ₃) = Jdeep(main,main) + o(n)               ✗
+```
+
+The `τ₃` residual is full-range, so its `L²` mass is `≈ ∑|τ₃|² ≈ n log²n`, not `o(n)`.
+
+### 41.2 The correct table
+
+Support of the low-cofactor part (`m/a ≤ V`) is `m ≤ H_i · V`.  With `V = n^(2/5)`:
+
+| cell | divisor upper bound `H_i` | `H_i · V` | short support? |
+|---|---|---|---|
+| **τ₁** | `B₁ = n^(1/4)` | **`n^(13/20)`** | **yes** |
+| **τ₂** | `B₂ = n^(1/3)` | **`n^(11/15)`** | **yes** |
+| τ₃ | `B₃ = n^(2/3)` | `n^(16/15)` | no (vacuous) |
+| τ₄ | `n/U = n^(15/16)` | `n^(107/80)` | no (vacuous) |
+
+**The trick works for `τ₁` and `τ₂` and fails for `τ₃`** — the opposite of what M40 says.
+The reason is structural: the support bound needs `H_i · V < n`, and `τ₃`'s divisor band
+reaches `n^(2/3)`, which is already too high.
+
+For `τ₃` the only short piece is `m/a ≤ n^(1/3−δ)` (giving `m ≤ n^(1−δ)`); the rest of the
+cofactor interval, and the whole gap band `a ∈ (n^(1/3), n^(2/5))`, are full-range:
+`n^(2/5) · n^(2/3) = n^(16/15)`.
+
+### 41.3 What is verified here: the `τ₁` peeling
+
+```lean
+def lowBandCoefficientBot (n V : ℕ) : ℕ → ℝ   -- τ₁ with m/a ≤ V
+def lowBandCoefficientTop (n V : ℕ) : ℕ → ℝ   -- τ₁ with V < m/a
+
+theorem lowBandCoefficient_eq_bot_add_top (n V m) :
+  lowBandCoefficient (U n) (B₁ n) m = Bot n V m + Top n V m
+
+theorem lowBandCoefficientBot_eq_zero (n V m) (hm : B₁ n * V < m) : Bot n V m = 0
+
+theorem lowBandCoefficientBot_abs_le (n V m) {T} (hT) (hc) :
+  ‖(Bot n V m : ℂ)‖ ≤ T * Real.log m
+
+theorem integral_plainPolynomial_norm_sq (n) (a : ℕ → ℂ) :
+  ∫₀¹ ‖plainPolynomial n a t‖² = ∑_{m ≤ n} ‖a m‖²
+
+theorem sum_bot_norm_sq_localize (n V) (hV : B₁ n * V ≤ n) :
+  ∑_{m ≤ n} ‖Bot n V m‖² = ∑_{m ≤ B₁ n * V} ‖Bot n V m‖²
+
+/-- **The peeling bound.** -/
+theorem integral_bot_norm_sq_le (n V) (hV : B₁ n * V ≤ n) {T} (hT) (hc) :
+  ∫₀¹ ‖S_{Bot n V}‖² ≤ T² * (B₁ n * V + 1) * (Real.log n)²
+```
+
+So the low-cofactor part's `L²` mass is bounded by an **explicit** quantity, and by M40's
+`norm_deepSelf_le` / `norm_deepCross_le_sqrt` its self term and its cross term with `τ₁`
+are controlled by it.
+
+### 41.4 The two regimes for `V`
+
+The bound is `T² · (B₁ V + 1) · log²n`, parametric in the coefficient bound `T`:
+
+| choice of `T` | condition for `o(n)` | admissible `V` |
+|---|---|---|
+| crude `T ≤ B₁ = n^(1/4)` (from `abs_lowMoebiusWeight_le` + `a.divisors.card ≤ a`) | `B₁³ V = o(n)` | `V = n^(1/4 − δ)` |
+| divisor bound `T = n^o(1)` | `B₁ V = o(n)` | **`V = n^(3/4 − δ)`** |
+
+The second regime is the interesting one: it peels off everything with cofactor
+`≤ n^(3/4−δ)`, leaving
+
+```text
+a ∈ (n^(1/16), n^(1/4)] ,   m/a > n^(3/4−δ) .
+```
+
+Since `Λ` is supported on prime powers, `m/a > n^(3/4−δ)` forces `m/a` to be essentially a
+**prime**.  So `b1-b1` reduces to a "small divisor × large prime" Type-I object.
+
+**Not yet formalized:** the instantiation `T ≤ B₁` (needs `a.divisors.card ≤ a`), and the
+divisor bound `T = n^o(1)`.  The verified lemma is parametric in `T`, so both are one
+instantiation away.
+
+### 41.5 Status of the two questions
+
+* **Is `h33` reachable?**  No.  Its residual is full-range (§41.2), the sup route is
+  uniformly dead (`|Jdeep| ≲ N²/U` needs `U = ω(N)`), and one-sidedness only gives
+  `Re Jdeep ≥ −∫_{Aᶜ}(Im T)²` with `T = S·e(−nt/2)`, still against a total `≈ n log²n`.
+* **Can the `τ₃` cofactor interval + gap band be resolved?**  Not by support/Cauchy–Schwarz.
+  Only `m/a ≤ n^(1/3−δ)` is short.  The rest needs a new minor-arc estimate.
+
+Dossier on this branch: 2840 lines, no `sorry`.
