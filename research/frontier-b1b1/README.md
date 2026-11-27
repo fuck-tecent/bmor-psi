@@ -356,3 +356,17 @@ fraction_inj (hq,hq' > 0) (Coprime a q) (Coprime a' q')
 Cross-multiplication gives `a q' = a' q`; coprimality forces `q | q'` and
 `q' | q`, hence `q = q'`, and then `a = a'`.  This is the index injectivity
 needed to regard the wide arcs as a `Finset`-indexed disjoint family.
+
+## Milestone 23: small-`h` arc total
+
+`smallh.lean`:
+
+```lean
+small_h_arc_total (hn : 0 < n) :
+  ∑_{q ≤ Q₁} q · (2 H/(q n)) = 2 H Q₁ / n
+```
+
+Each arc contributes its full length `2H/(qn)` for small `h`, the `a`-sum
+contributes `q` (`norm_ramanujan_le_q`), and the total is `2HQ₁/n =
+O(log⁴ n / n^(1/3))`.  This is the `h`-small part of the kernel bound
+`|K(h)| ≤ [h=0] + 2HQ₁/n`.
