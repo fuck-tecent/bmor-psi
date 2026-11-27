@@ -360,3 +360,50 @@ Therefore the remaining gap for b1-b1 is unchanged and precise:
 together with the near-side bound.  The numerics do *not* contradict this: the
 `L²` mass `∑|τ₁|² ≈ n log log n` is small enough that a power saving off the grid
 is plausible, exactly as in b1-b4.
+
+## Milestone 6: Fourier orthogonality (foundation of the weighted Parseval identity)
+
+Verified this round:
+
+```lean
+integral_phase_int (k : ℤ) :
+  ∫_{0}^{1} phase (k t) dt = if k = 0 then 1 else 0
+
+integral_phase_sub (a b : ℕ) :
+  ∫_{0}^{1} phase (a t) * conj (phase (b t)) dt = if a = b then 1 else 0
+```
+
+The first is the orthogonality of the Fourier modes, proved exactly like the
+verified `integral_E_circle`.  The second follows from the first via
+`conj (phase x) = phase (-x)` and `phase_add`.
+
+### Why this matters: the weighted Parseval identity
+
+The far side of the b1-b4 proof consumes the unweighted identity
+`∫ |wave u l r|² = r - l`.  For a `Λ`-weighted progression the correct value is
+
+```text
+∫ |wwave c u l r|² = ∑_{h ∈ (l,r]} ‖c h‖² .
+```
+
+With `integral_phase_sub`, the proof is a two-line computation once the double
+sum is written out:
+
+```text
+‖wwave t‖² = ∑_{h,h'} c h · conj (c h') · phase ((h - h') u t)
+∫ ‖wwave‖² = ∑_{h,h'} c h · conj (c h') · [h = h'] = ∑_h ‖c h‖² .
+```
+
+(The bookkeeping that remains is the `normSq` ⇄ `‖·‖²` ⇄ `z * conj z` rewrite and
+the collapse `[(h - h') u = 0] = [h = h']` for `u > 0`.)
+
+### Where the `∫_{gridᶜ}|S_{τ₁}|²` programme stands
+
+| ingredient | status |
+|---|---|
+| atom expansion `S_{τ₁} = ∑_a c(a) wwave Λ a U (n/a)` | ✅ |
+| exact far/near split `deepIntegral_split` | ✅ |
+| orthogonal modes `integral_phase_int/sub` | ✅ |
+| weighted Parseval `∫‖wwave‖² = ∑‖c h‖²` | next (computation outlined above) |
+| weighted `L²` off-grid (`awayBound` analogue) | open — needs a large-sieve/second-moment input |
+| near field: `wwave ≈ ∑ Λ h` on the window (error `π/(4M)`) | sketched, not formalised |

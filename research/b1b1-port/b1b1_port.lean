@@ -448,4 +448,74 @@ theorem lowMoebiusWeight_eq_neg_small (U a : ℕ) (ha : 1 < a) :
   unfold lowMoebiusWeight
   linarith [hsplit, hzero]
 
+
+
+/-! ### Fourier orthogonality on the unit interval
+
+These are the two facts on which the weighted `L²` (`Parseval`) identity
+
+```text
+∫ |wwave c u l r|² = ∑_{h ∈ (l,r]} ‖c h‖²
+```
+
+rests; the identity itself is the next target.  It is the exact replacement for
+the module's unweighted `∫ |wave u l r|² = r - l`.
+-/
+
+/-- Orthogonality of the Fourier modes `phase (k t)` on the unit interval. -/
+theorem integral_phase_int (k : ℤ) :
+    (∫ t in (0:ℝ)..1, phase ((k:ℝ)*t)) = if k = 0 then 1 else 0 := by
+  by_cases hk : k = 0
+  · subst hk
+    simp [phase]
+  · have hc : ((2*Real.pi*Complex.I) * (k:ℂ)) ≠ 0 := by
+      apply mul_ne_zero
+      · exact mul_ne_zero (by norm_num) Complex.I_ne_zero
+      · exact_mod_cast hk
+    rw [if_neg hk]
+    have hcongr : ∀ t : ℝ,
+        phase ((k:ℝ)*t) = Complex.exp (((2*Real.pi*Complex.I) * (k:ℂ)) * (t:ℂ)) := by
+      intro t
+      unfold phase
+      congr 1
+      push_cast
+      ring
+    simp_rw [hcongr]
+    rw [integral_exp_mul_complex hc]
+    have htop : Complex.exp (((2*Real.pi*Complex.I) * (k:ℂ)) * ((1:ℝ):ℂ)) = 1 := by
+      rw [show ((2*Real.pi*Complex.I) * (k:ℂ)) * ((1:ℝ):ℂ)
+          = (k:ℂ) * (2*Real.pi*Complex.I) by push_cast; ring]
+      exact Complex.exp_int_mul_two_pi_mul_I k
+    have hbot : Complex.exp (((2*Real.pi*Complex.I) * (k:ℂ)) * ((0:ℝ):ℂ)) = 1 := by simp
+    rw [htop, hbot, sub_self, zero_div]
+
+/-- Distinct modes are orthogonal on the unit interval. -/
+theorem integral_phase_sub (a b : ℕ) :
+    (∫ t in (0:ℝ)..1, phase ((a:ℝ)*t) * (starRingEnd ℂ) (phase ((b:ℝ)*t)))
+      = if a = b then 1 else 0 := by
+  have hconj : ∀ t : ℝ, (starRingEnd ℂ) (phase ((b:ℝ)*t)) = phase (-((b:ℝ)*t)) := by
+    intro t
+    unfold phase
+    rw [← Complex.exp_conj]
+    congr 1
+    simp [map_mul, map_ofNat]
+  simp_rw [hconj]
+  have hcomb : ∀ t : ℝ, phase ((a:ℝ)*t) * phase (-((b:ℝ)*t))
+      = phase ((((a:ℤ) - (b:ℤ) : ℤ) : ℝ) * t) := by
+    intro t
+    rw [← phase_add]
+    congr 1
+    push_cast
+    ring
+  simp_rw [hcomb]
+  rw [integral_phase_int]
+  by_cases hab : a = b
+  · subst hab
+    simp
+  · rw [if_neg hab]
+    have hne : ((a:ℤ) - (b:ℤ) : ℤ) ≠ 0 := by
+      intro h
+      exact hab (by exact_mod_cast (sub_eq_zero.mp h))
+    rw [if_neg hne]
+
 end B1B1Port
