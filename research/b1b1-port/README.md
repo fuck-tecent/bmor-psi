@@ -550,3 +550,55 @@ verified `b1-b4` / `b3-b4` proofs.
 | archimedean window decay (ball/annulus) | ✅ |
 | near annulus: weighted character large sieve | open (machinery exists in `b3-b4`) |
 | weighted `L²` off-grid (`awayBound` analogue) | open (second-moment input) |
+
+## Milestone 10: the exact reduction `Jdeep = D - W`
+
+Verified this round:
+
+```lean
+def diagonalSum (n) := ∑_{m, m' ≤ n} if m + m' = n then τ₁(m) τ₁(m') else 0
+
+plainPolynomial_sq_expand (n) (t) :
+  S(t)² e(-n t) = ∑_{m, m' ≤ n} τ₁ m τ₁ m' · e(((m + m') - n) t)
+
+integral_sq_phase_eq_diagonal (n) :
+  ∫_{0}^{1} S(t)² e(-n t) dt = diagonalSum n
+
+deepIntegral_eq_diagonal_sub_wide (n) :
+  Jdeep n = diagonalSum n
+              - ∫_{0}^{1} (wideSet n).indicator (S(t)² e(-n t)) dt
+```
+
+So the target `Jdeep = o(n)` is *exactly* the statement
+
+```text
+D  -  W  =  o(n) ,      D = ∑_{m + m' = n} τ₁(m) τ₁(m') ,   W = ∫_{wideArcs} S² e(-n·) .
+```
+
+Numerically `D/n ≈ 3.7, 2.4, 3.6, 5.3` for `n = 10^4 … 10^7` (and `D ≈ 2 n θ²` with
+`θ = ∑ c(a)/a ≈ -log B₁ log log B₁`), so `Jdeep = o(n)` is a **main-term matching**
+statement: `W` must reproduce `D` to relative accuracy `o(1)`.
+
+## Warning on the far-side programme
+
+My earlier proposal — "show `∫_{gridᶜ} |S_{τ₁}|² ≪ n^{1-δ}`" — now looks
+**doubtful**, and I did not build on it.  Order-of-magnitude reasoning for a single
+atom `a`:
+
+* total mass `∫ |wwave Λ a U (n/a)|² = ∑_{h ≤ n/a} Λ(h)² ≈ (n/a) log(n/a)`;
+* grid mass `∫_{grid_a} |wwave|²`: on the grid `‖a t‖ ≤ a·radius M ≈ n^{-13/24}`, so
+  the progression is coherent only up to `h ≲ n^{13/24}`, giving
+  `|wwave| ≈ n^{13/24}` on a set of measure `≈ a·n^{-19/24}`, i.e. mass
+  `≈ n^{13/24}·a·n^{-19/24} = a·n^{-1/4}` — negligible against `(n/a)log(n/a)`.
+
+If that is right, the grid removes almost none of the mass, and the far part is
+`≈ ‖S_{τ₁}‖₂ ‖G‖₂ ≈ n·log^{Θ(1)}` — **not** `o(n)`.  In `b1-b4` the mechanism works
+only because `τ₄`'s waves are short (`cofactor < n^{1/3}`), so their mass *is*
+concentrated on the grid.  `τ₁` has no short cofactor, so the far/near split alone
+cannot close b1-b1: the saving has to come from the `D`-`W` main-term cancellation
+itself.
+
+This should be checked (it is a paper computation), and it changes what the next
+investment should be: either the main-term computation of `W` on the wide arcs, or
+a genuinely new dispersion argument.  I am flagging it rather than porting thousands
+of lines into a bound that may be false.

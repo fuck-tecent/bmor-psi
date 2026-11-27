@@ -742,6 +742,132 @@ theorem norm_integral_annulus_phase_le (k : ℤ) (hk : k ≠ 0) {ρ inner : ℝ}
   have hval : 1/(Real.pi * |(k:ℝ)|) + 1/(Real.pi * |(k:ℝ)|) = 2/(Real.pi * |(k:ℝ)|) := by ring
   linarith [h1', h2]
 
+/-! ### The exact reduction `Jdeep = D - W`
+
+`Jdeep` is the deep-minor integral of `S_{τ₁}² e(-n·)`.  Splitting the circle at the
+wide arcs gives
+
+```text
+Jdeep = D  -  W ,
+D = ∑_{m + m' = n} τ₁(m) τ₁(m') ,        W = ∫_{wideArcs} S_{τ₁}² e(-n·) .
+```
+
+`D` is the *diagonal* (the full-circle Fourier coefficient) and `W` is the wide-arc
+part.  Numerically `D = Θ(n log log² n)` (see `theta_numerics.py`), so `Jdeep = o(n)`
+is a main-term *matching* statement, and this identity is its exact framework.
+-/
+
+/-- The diagonal sum `D = ∑_{m + m' = n} τ₁(m) τ₁(m')`. -/
+def diagonalSum (n : ℕ) : ℂ :=
+  ∑ m ∈ Finset.range (n + 1), ∑ m' ∈ Finset.range (n + 1),
+    if m + m' = n then tauCoeff n m * tauCoeff n m' else 0
+
+/-- The square of the polynomial, expanded on frequencies. -/
+theorem plainPolynomial_sq_expand (n : ℕ) (t : ℝ) :
+    plainPolynomial n (tauCoeff n) t ^ 2 * phase (-(n:ℝ)*t)
+      = ∑ m ∈ Finset.range (n + 1), ∑ m' ∈ Finset.range (n + 1),
+          tauCoeff n m * tauCoeff n m' *
+            phase (((((m:ℤ) + (m':ℤ) - (n:ℤ) : ℤ)) : ℝ) * t) := by
+  unfold plainPolynomial
+  rw [pow_two, Finset.sum_mul_sum, Finset.sum_mul]
+  refine Finset.sum_congr rfl fun m _ => ?_
+  rw [Finset.sum_mul]
+  refine Finset.sum_congr rfl fun m' _ => ?_
+  have hph : phase ((m:ℝ)*t) * phase ((m':ℝ)*t) * phase (-(n:ℝ)*t)
+      = phase (((((m:ℤ) + (m':ℤ) - (n:ℤ) : ℤ)) : ℝ) * t) := by
+    rw [← phase_add, ← phase_add]
+    congr 1
+    push_cast
+    ring
+  calc (tauCoeff n m * phase ((m:ℝ)*t)) * (tauCoeff n m' * phase ((m':ℝ)*t)) * phase (-(n:ℝ)*t)
+      = tauCoeff n m * tauCoeff n m' *
+          (phase ((m:ℝ)*t) * phase ((m':ℝ)*t) * phase (-(n:ℝ)*t)) := by ring
+    _ = _ := by rw [hph]
+
+/-- The full-circle Fourier coefficient is the diagonal sum. -/
+theorem integral_sq_phase_eq_diagonal (n : ℕ) :
+    (∫ t in (0:ℝ)..1, plainPolynomial n (tauCoeff n) t ^ 2 * phase (-(n:ℝ)*t))
+      = diagonalSum n := by
+  classical
+  have hpt : ∀ t : ℝ, plainPolynomial n (tauCoeff n) t ^ 2 * phase (-(n:ℝ)*t)
+      = ∑ m ∈ Finset.range (n + 1), ∑ m' ∈ Finset.range (n + 1),
+          tauCoeff n m * tauCoeff n m' *
+            phase (((((m:ℤ) + (m':ℤ) - (n:ℤ) : ℤ)) : ℝ) * t) :=
+    fun t => plainPolynomial_sq_expand n t
+  simp_rw [hpt]
+  rw [intervalIntegral.integral_finsetSum]
+  swap
+  · intro m _
+    exact (by unfold phase; fun_prop : Continuous fun t : ℝ =>
+      ∑ m' ∈ Finset.range (n + 1), tauCoeff n m * tauCoeff n m' *
+        phase (((((m:ℤ) + (m':ℤ) - (n:ℤ) : ℤ)) : ℝ) * t)).intervalIntegrable _ _
+  unfold diagonalSum
+  refine Finset.sum_congr rfl fun m _ => ?_
+  rw [intervalIntegral.integral_finsetSum]
+  swap
+  · intro m' _
+    exact (by unfold phase; fun_prop : Continuous fun t : ℝ =>
+      tauCoeff n m * tauCoeff n m' *
+        phase (((((m:ℤ) + (m':ℤ) - (n:ℤ) : ℤ)) : ℝ) * t)).intervalIntegrable _ _
+  refine Finset.sum_congr rfl fun m' _ => ?_
+  rw [intervalIntegral.integral_const_mul, integral_phase_int]
+  by_cases hmn : m + m' = n
+  · have hk : ((((m:ℤ) + (m':ℤ) - (n:ℤ) : ℤ)) = 0) := by
+      have : (m:ℤ) + (m':ℤ) = (n:ℤ) := by exact_mod_cast hmn
+      omega
+    rw [if_pos hmn, if_pos hk, mul_one]
+  · have hk : ((((m:ℤ) + (m':ℤ) - (n:ℤ) : ℤ)) ≠ 0) := by
+      intro h0
+      apply hmn
+      have : (m:ℤ) + (m':ℤ) - (n:ℤ) = 0 := h0
+      have h2 : (m:ℤ) + (m':ℤ) = (n:ℤ) := by omega
+      exact_mod_cast h2
+    rw [if_neg hmn, if_neg hk, mul_zero]
+
+/-- **The exact reduction**: the deep-minor integral is `D` minus the wide-arc part. -/
+theorem deepIntegral_eq_diagonal_sub_wide (n : ℕ) :
+    deepIntegral n = diagonalSum n
+      - ∫ t in (0:ℝ)..1, (wideSet n).indicator
+          (fun x => plainPolynomial n (tauCoeff n) x ^ 2 * phase (-(n:ℝ)*x)) t := by
+  have hcont : Continuous fun x : ℝ =>
+      plainPolynomial n (tauCoeff n) x ^ 2 * phase (-(n:ℝ)*x) := by
+    unfold plainPolynomial phase
+    fun_prop
+  have hmeas : MeasurableSet (wideSet n) := wide_measurable n (cutoffB n) (cutoffH n)
+  have hAc : IntervalIntegrable ((wideSet n)ᶜ.indicator
+      (fun x => plainPolynomial n (tauCoeff n) x ^ 2 * phase (-(n:ℝ)*x))) MeasureTheory.volume 0 1 :=
+    indicator_intervalIntegrable hcont hmeas.compl
+  have hA : IntervalIntegrable ((wideSet n).indicator
+      (fun x => plainPolynomial n (tauCoeff n) x ^ 2 * phase (-(n:ℝ)*x))) MeasureTheory.volume 0 1 :=
+    indicator_intervalIntegrable hcont hmeas
+  have hpt : ∀ t : ℝ, plainPolynomial n (tauCoeff n) t ^ 2 * phase (-(n:ℝ)*t)
+      = (wideSet n).indicator (fun x => plainPolynomial n (tauCoeff n) x ^ 2 * phase (-(n:ℝ)*x)) t
+        + (wideSet n)ᶜ.indicator (fun x => plainPolynomial n (tauCoeff n) x ^ 2 * phase (-(n:ℝ)*x)) t := by
+    intro t
+    by_cases ht : t ∈ wideSet n
+    · rw [Set.indicator_of_mem ht, Set.indicator_of_notMem (by simpa using ht)]
+      simp
+    · rw [Set.indicator_of_notMem ht, Set.indicator_of_mem (by simpa using ht)]
+      simp
+  have hsplit : (∫ t in (0:ℝ)..1, plainPolynomial n (tauCoeff n) t ^ 2 * phase (-(n:ℝ)*t))
+      = (∫ t in (0:ℝ)..1, (wideSet n).indicator
+            (fun x => plainPolynomial n (tauCoeff n) x ^ 2 * phase (-(n:ℝ)*x)) t)
+        + ∫ t in (0:ℝ)..1, (wideSet n)ᶜ.indicator
+            (fun x => plainPolynomial n (tauCoeff n) x ^ 2 * phase (-(n:ℝ)*x)) t := by
+    rw [← intervalIntegral.integral_add hA hAc]
+    exact intervalIntegral.integral_congr fun t _ => hpt t
+  have hdeep : deepIntegral n = ∫ t in (0:ℝ)..1, (wideSet n)ᶜ.indicator
+      (fun x => plainPolynomial n (tauCoeff n) x ^ 2 * phase (-(n:ℝ)*x)) t := by
+    unfold deepIntegral
+    apply intervalIntegral.integral_congr
+    intro t _
+    by_cases ht : t ∈ (wideSet n)ᶜ
+    · rw [Set.indicator_of_mem ht, Set.indicator_of_mem ht, shiftedPolynomial_eq]
+      ring
+    · rw [Set.indicator_of_notMem ht, Set.indicator_of_notMem ht]
+  rw [hdeep, ← integral_sq_phase_eq_diagonal n, hsplit]
+  ring
+
 /-- The `Λ` case of weighted Parseval. -/
 theorem integral_wwave_mangoldt_norm_sq (u l r : ℕ) (hu : 0 < u) :
     (∫ t in (0:ℝ)..1,
