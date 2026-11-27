@@ -52,3 +52,18 @@ proved from the pointwise decomposition `f = s.indicator f + sᶜ.indicator f`
 
 Next: evaluate `∫_0^1 E(h t) dt` (it is `1` for `h = 0`, `0` otherwise) and
 expand the wide-arc integral into the arc sum over `q ≤ Q₁`, `a ≤ q`.
+
+## Milestone 3: the full-circle Fourier integral
+
+`circle.lean`:
+
+```lean
+integral_E_circle (h : ℤ) :
+  ∫ t in (0:ℝ)..1, E ((h:ℝ)*t) = if h = 0 then 1 else 0
+```
+
+Proof via Mathlib's `integral_exp_mul_complex`
+(`∫ x in a..b, exp (c * x) = (exp (c*b) - exp (c*a))/c`) with `c = 2πi h`,
+plus `Complex.exp_int_mul_two_pi_mul_I`.
+
+Hence `K_n(h) = [h = 0] − ∫_{wideArcs} E(h t) dt`.
