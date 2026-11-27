@@ -518,4 +518,85 @@ theorem integral_phase_sub (a b : ℕ) :
       exact hab (by exact_mod_cast (sub_eq_zero.mp h))
     rw [if_neg hne]
 
+/-- **Weighted Parseval.**  For a `Λ`-weighted progression the `L²` mass is the
+sum of the squared weights, the exact replacement of `∫ |wave u l r|² = r - l`. -/
+theorem integral_wwave_norm_sq (c : ℕ → ℂ) {u : ℕ} (hu : 0 < u) (l r : ℕ) :
+    (∫ t in (0:ℝ)..1, ‖wwave c u l r t‖ ^ 2) = ∑ h ∈ Finset.Ioc l r, ‖c h‖ ^ 2 := by
+  classical
+  set N : ℕ := r * u with hN
+  set b : ℕ → ℂ := fun m => ∑ h ∈ (Finset.Ioc l r).filter (fun h => h * u = m), c h with hb
+  have hmaps : ∀ h ∈ Finset.Ioc l r, h * u ∈ Finset.range (N + 1) := by
+    intro h hh
+    refine Finset.mem_range.mpr (Nat.lt_succ_of_le ?_)
+    calc h * u ≤ r * u := Nat.mul_le_mul_right u (Finset.mem_Ioc.mp hh).2
+      _ = N := hN
+  have hfun : ∀ t : ℝ, wwave c u l r t =
+      ∑ m ∈ Finset.range (N + 1), b m * phase ((m:ℝ) * t) := by
+    intro t
+    have hrewrite : wwave c u l r t =
+        ∑ h ∈ Finset.Ioc l r, c h * phase (((h * u : ℕ) : ℝ) * t) := by
+      unfold wwave
+      refine Finset.sum_congr rfl fun h _ => ?_
+      rw [Nat.mul_comm u h]
+    rw [hrewrite, ← Finset.sum_fiberwise_of_maps_to hmaps
+      (fun h => c h * phase (((h * u : ℕ) : ℝ) * t))]
+    refine Finset.sum_congr rfl fun m _ => ?_
+    rw [Finset.sum_mul]
+    refine Finset.sum_congr rfl fun h hh => ?_
+    rw [(Finset.mem_filter.mp hh).2]
+  have hemode : ∀ (m : ℕ) (t : ℝ), phase ((m:ℝ)*t) = DyadicMixedB4Fourier.mode (m:ℤ) t := by
+    intro m t
+    rw [DyadicMixedB4Fourier.mode, DyadicMixedB4Fourier.frequency]
+    unfold phase
+    congr 1
+    push_cast
+    ring
+  have hstep : (∫ t in (0:ℝ)..1, ‖wwave c u l r t‖ ^ 2)
+      = ∫ t in (0:ℝ)..1, ‖∑ m ∈ Finset.range (N + 1), b m * phase ((m:ℝ)*t)‖ ^ 2 := by
+    apply intervalIntegral.integral_congr
+    intro t _
+    exact congrArg (fun z => ‖z‖ ^ 2) (hfun t)
+  rw [hstep]
+  have hparse : (∫ t in (0:ℝ)..1, ‖∑ m ∈ Finset.range (N + 1), b m * phase ((m:ℝ)*t)‖ ^ 2)
+      = ∑ m ∈ Finset.range (N + 1), ‖b m‖ ^ 2 := by
+    simp only [hemode]
+    exact DyadicMixedB4Fourier.parseval_real (N + 1) b
+  rw [hparse]
+  have hinj : ∀ h h' : ℕ, h * u = h' * u → h = h' := fun h h' he =>
+    Nat.eq_of_mul_eq_mul_right hu he
+  have hsingle : ∀ m : ℕ, ‖b m‖ ^ 2 =
+      ∑ h ∈ (Finset.Ioc l r).filter (fun h => h * u = m), ‖c h‖ ^ 2 := by
+    intro m
+    rw [hb]
+    simp only
+    have hcard : ((Finset.Ioc l r).filter (fun h => h * u = m)).card ≤ 1 := by
+      rw [Finset.card_le_one]
+      intro a ha b' hbb
+      exact hinj a b' (by rw [(Finset.mem_filter.mp ha).2, (Finset.mem_filter.mp hbb).2])
+    rcases Nat.eq_zero_or_pos ((Finset.Ioc l r).filter (fun h => h * u = m)).card with h0 | hpos
+    · rw [Finset.card_eq_zero.mp h0]
+      simp
+    · obtain ⟨h₀, hset⟩ := Finset.card_eq_one.mp (le_antisymm hcard hpos)
+      rw [hset]
+      simp
+  simp_rw [hsingle]
+  exact Finset.sum_fiberwise_of_maps_to hmaps (fun h => ‖c h‖ ^ 2)
+
+/-- The `Λ` case of weighted Parseval. -/
+theorem integral_wwave_mangoldt_norm_sq (u l r : ℕ) (hu : 0 < u) :
+    (∫ t in (0:ℝ)..1,
+        ‖wwave (fun h => (ArithmeticFunction.vonMangoldt h : ℂ)) u l r t‖ ^ 2)
+      = ∑ h ∈ Finset.Ioc l r, (ArithmeticFunction.vonMangoldt h) ^ 2 := by
+  rw [integral_wwave_norm_sq _ hu]
+  refine Finset.sum_congr rfl fun h _ => ?_
+  rw [Complex.norm_real, Real.norm_eq_abs, sq_abs]
+
+/-- Parseval for the task coefficient `τ₁`: its `L²` mass is the sum of the
+squares of its values. -/
+theorem integral_tauCoeff_norm_sq (n : ℕ) :
+    (∫ t in (0:ℝ)..1, ‖plainPolynomial n (tauCoeff n) t‖ ^ 2)
+      = ∑ m ∈ Finset.range (n + 1), ‖tauCoeff n m‖ ^ 2 := by
+  simp_rw [← norm_shiftedPolynomial_eq n (tauCoeff n)]
+  exact shiftedPolynomial_parseval n (tauCoeff n)
+
 end B1B1Port

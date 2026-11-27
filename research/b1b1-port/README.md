@@ -407,3 +407,41 @@ the collapse `[(h - h') u = 0] = [h = h']` for `u > 0`.)
 | weighted Parseval `∫‖wwave‖² = ∑‖c h‖²` | next (computation outlined above) |
 | weighted `L²` off-grid (`awayBound` analogue) | open — needs a large-sieve/second-moment input |
 | near field: `wwave ≈ ∑ Λ h` on the window (error `π/(4M)`) | sketched, not formalised |
+
+## Milestone 7: weighted Parseval (the `L²` workhorse)
+
+```lean
+integral_wwave_norm_sq (c) (hu : 0 < u) (l r) :
+  ∫_{0}^{1} ‖wwave c u l r t‖² dt = ∑_{h ∈ (l,r]} ‖c h‖²
+
+integral_wwave_mangoldt_norm_sq (u l r) (hu : 0 < u) :
+  ∫_{0}^{1} ‖wwave Λ u l r t‖² dt = ∑_{h ∈ (l,r]} Λ(h)²
+
+integral_tauCoeff_norm_sq (n) :
+  ∫_{0}^{1} ‖plainPolynomial n (tauCoeff n) t‖² dt = ∑_{m ≤ n} ‖tauCoeff n m‖²
+```
+
+Proof of the first: reindex the progression over the fibre map `h ↦ h·u`
+(`Finset.sum_fiberwise_of_maps_to`), apply the module's Fourier Parseval
+`DyadicMixedB4Fourier.parseval_real`, and collapse
+`∑_m ‖∑_{h·u = m} c h‖² = ∑_h ‖c h‖²` using injectivity of `h ↦ h·u` for
+`u > 0` (so each fibre has at most one element).  The second and third are
+immediate corollaries.
+
+This is the exact replacement for the module's unweighted `∫|wave u l r|² = r − l`.
+In particular
+
+```text
+∫_{gridᶜ} |S_{τ₁}|²  ≤  ∑_m |τ₁(m)|²  =  ∫_{0}^{1} |S_{τ₁}|² .
+```
+
+### Programme status
+
+| ingredient | status |
+|---|---|
+| atom expansion `S_{τ₁} = ∑_a c(a)·wwave Λ a U (n/a)` | ✅ |
+| exact far/near split `deepIntegral_split` | ✅ |
+| Fourier-mode orthogonality `integral_phase_int/sub` | ✅ |
+| weighted Parseval `∫‖wwave‖² = ∑‖c h‖²` | ✅ |
+| near field: `wwave ≈ ∑ Λ h` on the window, error `π/(4M)` | next |
+| weighted `L²` off-grid (`awayBound` analogue) | open — needs a second-moment/large-sieve input |
