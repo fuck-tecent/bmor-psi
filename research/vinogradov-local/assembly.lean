@@ -483,6 +483,97 @@ lemma norm_expSum_vaughan_typeI_le_truncated_tail (n q U M a : ℕ) (β : ℝ)
                 ((1 / (q:ℝ)) * (1 + Real.log ((((U * U) / q : ℕ)) : ℝ))))) := by
       ring
 
+set_option maxHeartbeats 1000000 in
+/-- Type-I bound from a Farey approximation when `Q ≥ 16 U`: the natural
+threshold is `M = U`, so the truncation tails vanish. -/
+lemma norm_expSum_vaughan_typeI_le_farey_large (n q U Q a : ℕ) (β : ℝ)
+    (hn : 1 ≤ n) (hUn : U ≤ n) (hq : 0 < q) (hcop : Nat.Coprime a q)
+    (hU1 : 1 ≤ U) (hlarge : 16 * U ≤ Q)
+    (hβ : |β| ≤ 1 / ((q:ℝ) * (Q:ℝ))) :
+    ‖expSum n Λ ((a:ℝ)/(q:ℝ) + β) -
+        expSum n (high U (μ : ArithmeticFunction ℝ) * (ζ : ArithmeticFunction ℝ) *
+          high U (Λ : ArithmeticFunction ℝ)) ((a:ℝ)/(q:ℝ) + β)‖ ≤
+      ((U:ℝ) + 1) * Real.log (n:ℝ)
+        + (2 * (q:ℝ) * (U:ℝ) * Real.log (n:ℝ)
+            + (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) / (q:ℝ))
+        + (2 * (q:ℝ) * (Real.log (n:ℝ) * ((U:ℝ) * (1 + Real.log (U:ℝ))))
+            + (n:ℝ) * (Real.log (n:ℝ) * (1 + Real.log (U:ℝ)) *
+                (1 + Real.log (U:ℝ)))
+            + (n:ℝ) * (Real.log (((U * U : ℕ)) : ℝ) *
+                ((1 / (q:ℝ)) * (1 + Real.log ((((U * U) / q : ℕ)) : ℝ))))) := by
+  have hqR : (0:ℝ) < (q:ℝ) := by exact_mod_cast hq
+  have hUpos : (0:ℝ) < (U:ℝ) := by exact_mod_cast (by omega : 0 < U)
+  have hQR : (16:ℝ) * (U:ℝ) ≤ (Q:ℝ) := by exact_mod_cast hlarge
+  have hβU : |β| ≤ 1 / (16 * (q:ℝ) * (U:ℝ)) := by
+    refine hβ.trans ?_
+    apply one_div_le_one_div_of_le (by positivity)
+    nlinarith [hQR, hqR, hUpos]
+  have hbase := norm_expSum_vaughan_typeI_le_truncated_tail n q U U a β
+    hn hUn hq hcop hU1 hU1 le_rfl hβU
+  have hUR : (U:ℝ) ≠ 0 := ne_of_gt hUpos
+  have hlogU : ((U:ℝ) * (U:ℝ)) / (U:ℝ) = (U:ℝ) := by field_simp
+  rw [hlogU] at hbase
+  calc
+    ‖expSum n Λ ((a:ℝ)/(q:ℝ) + β) -
+        expSum n (high U (μ : ArithmeticFunction ℝ) * (ζ : ArithmeticFunction ℝ) *
+          high U (Λ : ArithmeticFunction ℝ)) ((a:ℝ)/(q:ℝ) + β)‖
+        ≤ ((U:ℝ) + 1) * Real.log (n:ℝ)
+            + (2 * (q:ℝ) * (U:ℝ) * Real.log (n:ℝ)
+                + (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) / (q:ℝ)
+                + (n:ℝ) * Real.log (n:ℝ) * (Real.log (U:ℝ) - Real.log (U:ℝ)))
+            + (2 * (q:ℝ) * (Real.log (n:ℝ) * ((U:ℝ) * (1 + Real.log (U:ℝ))))
+                + (n:ℝ) * (Real.log (n:ℝ) * (1 + Real.log (U:ℝ)) * (1 + Real.log (U:ℝ)))
+                + (n:ℝ) * (Real.log (((U * U : ℕ)) : ℝ) *
+                    ((1 / (q:ℝ)) * (1 + Real.log ((((U * U) / q : ℕ)) : ℝ))))) := hbase
+    _ = ((U:ℝ) + 1) * Real.log (n:ℝ)
+        + (2 * (q:ℝ) * (U:ℝ) * Real.log (n:ℝ)
+            + (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) / (q:ℝ))
+        + (2 * (q:ℝ) * (Real.log (n:ℝ) * ((U:ℝ) * (1 + Real.log (U:ℝ))))
+            + (n:ℝ) * (Real.log (n:ℝ) * (1 + Real.log (U:ℝ)) *
+                (1 + Real.log (U:ℝ)))
+            + (n:ℝ) * (Real.log (((U * U : ℕ)) : ℝ) *
+                ((1 / (q:ℝ)) * (1 + Real.log ((((U * U) / q : ℕ)) : ℝ))))) := by
+      ring
+
+set_option maxHeartbeats 1000000 in
+/-- Type-I bound from a Farey approximation when `Q < 16 U` (and `Q ≥ 16`):
+the natural threshold is `M = Q/16`. -/
+lemma norm_expSum_vaughan_typeI_le_farey_small (n q U Q a : ℕ) (β : ℝ)
+    (hn : 1 ≤ n) (hUn : U ≤ n) (hq : 0 < q) (hcop : Nat.Coprime a q)
+    (hU1 : 1 ≤ U) (hQ16 : 16 ≤ Q) (hsmallQ : Q < 16 * U)
+    (hβ : |β| ≤ 1 / ((q:ℝ) * (Q:ℝ))) :
+    ‖expSum n Λ ((a:ℝ)/(q:ℝ) + β) -
+        expSum n (high U (μ : ArithmeticFunction ℝ) * (ζ : ArithmeticFunction ℝ) *
+          high U (Λ : ArithmeticFunction ℝ)) ((a:ℝ)/(q:ℝ) + β)‖ ≤
+      ((U:ℝ) + 1) * Real.log (n:ℝ)
+        + (2 * (q:ℝ) * ((Q / 16 : ℕ) : ℝ) * Real.log (n:ℝ)
+            + (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) / (q:ℝ)
+            + (n:ℝ) * Real.log (n:ℝ) *
+                (Real.log (U:ℝ) - Real.log ((Q / 16 : ℕ) : ℝ)))
+        + (2 * (q:ℝ) * (Real.log (n:ℝ) *
+              (((Q / 16 : ℕ) : ℝ) * (1 + Real.log (U:ℝ))))
+            + (n:ℝ) * (Real.log (n:ℝ) * (1 + Real.log (U:ℝ)) *
+                (1 + Real.log (((U:ℝ) * (U:ℝ)) / ((Q / 16 : ℕ) : ℝ))))
+            + (n:ℝ) * (Real.log (((U * U : ℕ)) : ℝ) *
+                ((1 / (q:ℝ)) * (1 + Real.log ((((U * U) / q : ℕ)) : ℝ))))) := by
+  have hqR : (0:ℝ) < (q:ℝ) := by exact_mod_cast hq
+  have hM1 : 1 ≤ Q / 16 := Nat.one_le_div_iff (by norm_num : 0 < 16) |>.mpr hQ16
+  have hMU : Q / 16 ≤ U := by
+    have hcast : ((Q / 16 : ℕ) : ℝ) ≤ (Q:ℝ) / 16 := Nat.cast_div_le
+    have hlt : (Q:ℝ) / 16 < (U:ℝ) := by
+      have : (Q:ℝ) < 16 * (U:ℝ) := by exact_mod_cast hsmallQ
+      linarith
+    have : ((Q / 16 : ℕ) : ℝ) < (U:ℝ) := lt_of_le_of_lt hcast hlt
+    exact_mod_cast le_of_lt this
+  have hβM : |β| ≤ 1 / (16 * (q:ℝ) * ((Q / 16 : ℕ) : ℝ)) := by
+    refine hβ.trans ?_
+    apply one_div_le_one_div_of_le (by positivity)
+    have hcast : ((Q / 16 : ℕ) : ℝ) ≤ (Q:ℝ) / 16 := Nat.cast_div_le
+    have h16 : 16 * ((Q / 16 : ℕ) : ℝ) ≤ (Q:ℝ) := by linarith
+    nlinarith [h16, hqR]
+  exact norm_expSum_vaughan_typeI_le_truncated_tail n q U (Q / 16) a β
+    hn hUn hq hcop hU1 hM1 hMU hβM
+
 end
 
 end PEqualNP.Outside.Vaughan

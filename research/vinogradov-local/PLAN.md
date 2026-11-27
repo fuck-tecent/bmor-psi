@@ -366,3 +366,25 @@ Next bottleneck: the multiples-of-`q` parts
 trivial estimates and are `n log² n`-sized for small `q`.  Exploiting the
 `β`-oscillation on those parts is necessary before the Type-I minor-arc
 estimate can be `o(n)`.
+
+## Type-I from a Farey approximation: two regimes
+
+- `norm_expSum_vaughan_typeI_le_farey_large`: `Q ≥ 16U`, threshold `U`.
+- `norm_expSum_vaughan_typeI_le_farey_small`: `Q < 16U`, `Q ≥ 16`,
+  threshold `Q/16`.
+
+These are the numerical Type-I bounds available from the current
+threshold machinery.  Two structural gaps remain before an `o(n)` Type-I
+minor-arc estimate:
+
+1. The `q`-multiples terms `n log n (1+log n)/q` and
+   `n log(U²)(1/q)(1+log(U²/q))` are still trivial estimates; for small
+   `q` they are `n log² n`-sized.  The correct treatment must use the
+   `β`-oscillation on the multiples of `q` (i.e. the distance
+   `‖d β‖`), which is a recursive Farey/Dirichlet argument.
+2. In the regime `Q < 16U` the tails `n log n log(16U/Q)` and
+   `n log n (1+log U)(1+log(16U²/Q))` are also too large unless
+   `Q` is close to `U`.
+
+Neither gap is a bookkeeping issue; both need genuinely sharper analytic
+input.

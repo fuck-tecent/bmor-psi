@@ -960,3 +960,34 @@ Honest limitation: the terms
 `n log² n`-sized, so this bound is not yet `o(n)`; improving them
 requires using the `β`-oscillation on the multiples of `q` rather than
 the trivial estimate.
+
+### Type-I bounds from a Farey approximation: the two regimes
+
+`assembly.lean` now instantiates the threshold bound with the threshold
+determined by the Farey data `|t - a/q| ≤ 1/(qQ)`:
+
+- `norm_expSum_vaughan_typeI_le_farey_large` (`Q ≥ 16 U`, threshold
+  `M = U`, so both truncation tails vanish):
+
+```text
+‖S_I‖ ≤ (U+1) log n
+        + 2qU log n + n log n (1+log n)/q
+        + 2qU log n (1+log U) + n log n (1+log U)^2
+        + n log(U²)(1/q)(1+log(U²/q)).
+```
+
+- `norm_expSum_vaughan_typeI_le_farey_small` (`Q < 16 U`, `Q ≥ 16`,
+  threshold `M = Q/16`):
+
+```text
+‖S_I‖ ≤ (U+1) log n
+        + 2q(Q/16) log n + n log n (1+log n)/q + n log n log(16U/Q)
+        + 2q(Q/16) log n (1+log U)
+        + n log n (1+log U)(1+log(16U²/Q))
+        + n log(U²)(1/q)(1+log(U²/q)).
+```
+
+Both hold for any reduced `a/q` with `q ≤ Q` and `|t - a/q| ≤ 1/(qQ)`.
+In the first regime `16U ≤ Q` gives `1/(qQ) ≤ 1/(16qU)`, so the
+pointwise sine separation applies with threshold `U`; in the second
+regime `Q/16` is the largest natural threshold compatible with `1/(qQ)`.
