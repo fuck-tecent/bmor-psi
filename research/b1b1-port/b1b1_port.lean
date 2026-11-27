@@ -1185,4 +1185,80 @@ theorem plainPolynomial_sq_dilated_expand (n : ℕ) (t : ℝ) :
           phase (-(n:ℝ)*t)) from by ring]
   rw [wwave_pair_expand]
 
+/-! ### The archimedean sinc factor
+
+The `spatial_exact_split` port collects, for each frequency `m`, the ball
+transform
+
+```text
+∫_{|β| ≤ ρ} e(m β) dβ  =  sin (2π m ρ) / (π m) .
+```
+
+First in exponential form, then converted to `sin`.
+-/
+
+/-- Ball transform of one mode, exponential form. -/
+theorem integral_phase_symmetric_exp (m : ℤ) (hm : m ≠ 0) (ρ : ℝ) :
+    (∫ β in (-ρ)..ρ, phase ((m:ℝ)*β))
+      = (Complex.exp (Complex.I * ((2*Real.pi*(m:ℝ)*ρ : ℝ):ℂ)) -
+          Complex.exp (-(Complex.I * ((2*Real.pi*(m:ℝ)*ρ : ℝ):ℂ)))) /
+          (2*Real.pi*((m:ℝ):ℂ)*Complex.I) := by
+  have hc : ((2*Real.pi*Complex.I) * (m:ℂ)) ≠ 0 := by
+    apply mul_ne_zero
+    · exact mul_ne_zero (by norm_num) Complex.I_ne_zero
+    · exact_mod_cast hm
+  have hcongr : ∀ β : ℝ,
+      phase ((m:ℝ)*β) = Complex.exp (((2*Real.pi*Complex.I) * (m:ℂ)) * (β:ℂ)) := by
+    intro β
+    unfold phase
+    congr 1
+    push_cast
+    ring
+  simp_rw [hcongr]
+  rw [integral_exp_mul_complex hc]
+  have hb : ((2*Real.pi*Complex.I) * (m:ℂ)) * ((ρ:ℝ):ℂ)
+      = Complex.I * ((2*Real.pi*(m:ℝ)*ρ : ℝ):ℂ) := by push_cast; ring
+  have ha : ((2*Real.pi*Complex.I) * (m:ℂ)) * (((-ρ):ℝ):ℂ)
+      = -(Complex.I * ((2*Real.pi*(m:ℝ)*ρ : ℝ):ℂ)) := by push_cast; ring
+  have hcval : ((2*Real.pi*Complex.I) * (m:ℂ)) = 2*Real.pi*((m:ℝ):ℂ)*Complex.I := by
+    push_cast
+    ring
+  rw [hb, ha, hcval]
+
+/-- Ball transform of one mode, `sinc` form. -/
+theorem integral_phase_symmetric (m : ℤ) (hm : m ≠ 0) (ρ : ℝ) :
+    (∫ β in (-ρ)..ρ, phase ((m:ℝ)*β))
+      = ((Real.sin (2*Real.pi*(m:ℝ)*ρ) : ℝ) : ℂ) / ((Real.pi*(m:ℝ) : ℝ) : ℂ) := by
+  rw [integral_phase_symmetric_exp m hm ρ]
+  set y : ℝ := 2*Real.pi*(m:ℝ)*ρ with hy
+  have hsin : Complex.exp (Complex.I * (y:ℂ)) - Complex.exp (-(Complex.I * (y:ℂ)))
+      = 2 * Complex.I * ((Real.sin y : ℝ) : ℂ) := by
+    have e2 : -(Complex.I * (y:ℂ)) = ((-y:ℝ):ℂ) * Complex.I := by push_cast; ring
+    have e1 : Complex.I * (y:ℂ) = (y:ℂ) * Complex.I := mul_comm _ _
+    rw [e2, e1, Complex.exp_ofReal_mul_I y, Complex.exp_ofReal_mul_I (-y),
+      Real.cos_neg, Real.sin_neg]
+    push_cast
+    ring
+  rw [hsin]
+  have hmR : (m:ℝ) ≠ 0 := by exact_mod_cast hm
+  have hpi : ((Real.pi*(m:ℝ) : ℝ) : ℂ) ≠ 0 := by
+    have h : Real.pi*(m:ℝ) ≠ 0 := by positivity
+    exact_mod_cast h
+  have hI : Complex.I ≠ 0 := Complex.I_ne_zero
+  have hden : 2*Real.pi*((m:ℝ):ℂ)*Complex.I ≠ 0 := by
+    have h2pi : (2*Real.pi : ℂ) ≠ 0 := by
+      have h : (2*Real.pi : ℝ) ≠ 0 := by positivity
+      exact_mod_cast h
+    have hmC : ((m:ℝ):ℂ) ≠ 0 := by exact_mod_cast hmR
+    exact mul_ne_zero (mul_ne_zero h2pi hmC) hI
+  rw [div_eq_div_iff hden hpi]
+  push_cast
+  ring
+
+/-- Ball transform of one mode in `sinc` form, as a set integral. -/
+theorem integral_ball_phase_eq_sinc (m : ℤ) (hm : m ≠ 0) {ρ : ℝ} (hρ : 0 ≤ ρ) :
+    (∫ t in {x : ℝ | |x| ≤ ρ}, phase ((m:ℝ)*t))
+      = ((Real.sin (2*Real.pi*(m:ℝ)*ρ) : ℝ) : ℂ) / ((Real.pi*(m:ℝ) : ℝ) : ℂ) := by
+  rw [integral_ball_eq hρ, integral_phase_symmetric m hm ρ]
+
 end B1B1Port

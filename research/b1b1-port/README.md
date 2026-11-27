@@ -887,3 +887,19 @@ same architecture with `m = a j + a' k - n` in place of `m = j + k - n`, so:
 
 This is a multi-session engineering project with a verified template, not an
 open problem.
+
+## Milestone 17: the archimedean sinc factor
+
+```lean
+integral_phase_symmetric_exp (m) (hm : m ≠ 0) (ρ) :
+  ∫_{-ρ}^{ρ} e(m β) dβ = (e(2πi m ρ) - e(-2πi m ρ)) / (2πi m)
+
+integral_phase_symmetric (m) (hm : m ≠ 0) (ρ) :
+  ∫_{-ρ}^{ρ} e(m β) dβ = sin (2π m ρ) / (π m)
+
+integral_ball_phase_eq_sinc (m) (hm) (hρ : 0 ≤ ρ) :
+  ∫_{|x| ≤ ρ} e(m x) dx = sin (2π m ρ) / (π m)
+```
+
+The last is exactly the archimedean factor of the verified `sincKernel`
+(`sin(2π m Q/(q n))/(π m)`), so the `exact_split` port can now collect it directly.
