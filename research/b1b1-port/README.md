@@ -1672,4 +1672,4 @@ archimedean interval.
 
 ### Dossier
 
-33 verified milestones, 2379 lines, no `sorry`, branch `research/b1b1-arcsplit`.
+33 verified milestones, 2336 lines, no `sorry`, branch `research/b1b1-arcsplit`.
