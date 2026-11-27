@@ -69,4 +69,34 @@ lemma sum_mu_filter_eq (a q : ℕ) (hq : 0 < q) :
       if Nat.Coprime a q then 1 else 0 := by
   rw [divisors_filter_dvd_eq_gcd a q hq, sum_moebius_divisors_eq]
 
+/-- Möbius sieve: the coprime-weighted sum is a Möbius combination of
+divisibility sums. -/
+lemma sum_coprime_eq_sum_mu (q : ℕ) (hq : 0 < q) (f : ℕ → ℂ) :
+    (∑ a ∈ Finset.range q, if Nat.Coprime a q then f a else 0)
+      = ∑ d ∈ q.divisors, ((ArithmeticFunction.moebius d : ℤ) : ℂ) *
+          ∑ a ∈ Finset.range q, if d ∣ a then f a else 0 := by
+  have hprod : (∑ p ∈ q.divisors ×ˢ Finset.range q,
+        (if p.1 ∣ p.2 then ((ArithmeticFunction.moebius p.1 : ℤ) : ℂ) * f p.2 else 0))
+      = ∑ d ∈ q.divisors, ((ArithmeticFunction.moebius d : ℤ) : ℂ) *
+          ∑ a ∈ Finset.range q, if d ∣ a then f a else 0 := by
+    rw [Finset.sum_product]
+    apply Finset.sum_congr rfl
+    intro d _
+    rw [Finset.mul_sum]
+    apply Finset.sum_congr rfl
+    intro a _
+    by_cases h : d ∣ a <;> simp [h]
+  rw [← hprod]
+  rw [Finset.sum_product, Finset.sum_comm]
+  apply Finset.sum_congr rfl
+  intro a _
+  calc (if Nat.Coprime a q then f a else 0)
+      = (if Nat.Coprime a q then 1 else 0) * f a := by by_cases h : Nat.Coprime a q <;> simp [h]
+    _ = (∑ d ∈ q.divisors.filter (fun d => d ∣ a),
+          ((ArithmeticFunction.moebius d : ℤ) : ℂ)) * f a := by rw [sum_mu_filter_eq a q hq]
+    _ = ∑ d ∈ q.divisors.filter (fun d => d ∣ a),
+          ((ArithmeticFunction.moebius d : ℤ) : ℂ) * f a := by rw [Finset.sum_mul]
+    _ = ∑ d ∈ q.divisors, (if d ∣ a then ((ArithmeticFunction.moebius d : ℤ) : ℂ) * f a else 0) := by
+        rw [Finset.sum_filter]
+
 end B1B1

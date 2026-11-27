@@ -277,3 +277,16 @@ So the Möbius weight of the divisors of `q` dividing `a` is exactly the
 coprimality indicator.  The full sieve identity
 `∑_{(a,q)=1} f a = ∑_{d|q} μ(d) ∑_{a: d|a} f a` now only needs a `Finset.sum_comm`
 over the product `q.divisors ×ˢ range q`.
+
+## Milestone 18: full Möbius sieve
+
+`musum.lean` now contains
+
+```lean
+sum_coprime_eq_sum_mu (hq : 0 < q) (f : ℕ → ℂ) :
+  ∑_{a<q} [Coprime a q] f a
+    = ∑_{d|q} μ(d) · ∑_{a<q} [d|a] f a
+```
+
+Proof: the product-finset `q.divisors ×ˢ range q`, `Finset.sum_product` +
+`Finset.sum_comm`, and the pointwise identity `sum_mu_filter_eq`.
