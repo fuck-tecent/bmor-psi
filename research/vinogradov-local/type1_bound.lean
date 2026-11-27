@@ -1165,6 +1165,186 @@ lemma double_sum_vonMangoldt_div_eq_zero (U q : ℕ) (h : U * U < q) :
   have := Nat.le_of_dvd hpos hdvd
   omega
 
+/-- Quantitative Farey-shift separation in terms of the residue of `d a` mod `q`:
+for `d < q` and `d |β| ≤ 1/(2q)`,
+`typeIDist (d (a/q + β)) ≥ r_d/(2q)` with `r_d = min ((d a) mod q) (q - (d a) mod q)`. -/
+lemma typeIDist_mul_farey_shift_ge_residue (q a d : ℕ) (β : ℝ) (hq : 0 < q)
+    (hcop : Nat.Coprime a q) (hd1 : 1 ≤ d) (hdq : d < q)
+    (hβ : (d:ℝ) * |β| ≤ 1 / (2 * (q:ℝ))) :
+    ((min ((d * a) % q) (q - (d * a) % q) : ℕ) : ℝ) / (2 * (q:ℝ))
+      ≤ typeIDist ((d:ℝ) * ((a:ℝ)/(q:ℝ) + β)) := by
+  have hqpos : (0:ℝ) < (q:ℝ) := by exact_mod_cast hq
+  have hxne : (d * a) % q ≠ 0 := by
+    intro h0
+    have hdvd : q ∣ d * a := Nat.dvd_of_mod_eq_zero h0
+    have hqd : q ∣ d := hcop.symm.dvd_of_dvd_mul_right hdvd
+    have := Nat.le_of_dvd (by omega) hqd
+    omega
+  have hx1 : 1 ≤ (d * a) % q := Nat.one_le_iff_ne_zero.mpr hxne
+  have hxq : (d * a) % q < q := Nat.mod_lt _ hq
+  have hqr1 : 1 ≤ q - (d * a) % q := by omega
+  have hr1 : 1 ≤ min ((d * a) % q) (q - (d * a) % q) := le_min hx1 hqr1
+  have hrat : ((min ((d * a) % q) (q - (d * a) % q) : ℕ) : ℝ) / (q:ℝ)
+      ≤ typeIDist (((d * a : ℕ) : ℝ)/(q:ℝ)) :=
+    typeIDist_natCast_div_ge_mod q (d * a) hq
+  have hsplit : (d:ℝ) * ((a:ℝ)/(q:ℝ) + β) =
+      ((d * a : ℕ) : ℝ)/(q:ℝ) + (d:ℝ) * β := by
+    push_cast
+    ring
+  have habs : |(d:ℝ) * β| = (d:ℝ) * |β| := by
+    rw [abs_mul, abs_of_nonneg (by positivity)]
+  have htri : typeIDist (((d * a : ℕ) : ℝ)/(q:ℝ)) ≤
+      typeIDist (((d * a : ℕ) : ℝ)/(q:ℝ) + (d:ℝ) * β) + |(d:ℝ) * β| := by
+    have h := typeIDist_add_le (((d * a : ℕ) : ℝ)/(q:ℝ) + (d:ℝ) * β) (-((d:ℝ) * β))
+    have heq : ((d * a : ℕ) : ℝ)/(q:ℝ) + (d:ℝ) * β + (-((d:ℝ) * β)) =
+        ((d * a : ℕ) : ℝ)/(q:ℝ) := by ring
+    rw [heq] at h
+    simpa [abs_neg] using h
+  rw [habs] at htri
+  have hstep : ((min ((d * a) % q) (q - (d * a) % q) : ℕ) : ℝ) / (2 * (q:ℝ)) ≤
+      ((min ((d * a) % q) (q - (d * a) % q) : ℕ) : ℝ) / (q:ℝ) - 1/(2 * (q:ℝ)) := by
+    have hr1R : (1:ℝ) ≤ ((min ((d * a) % q) (q - (d * a) % q) : ℕ) : ℝ) := by
+      exact_mod_cast hr1
+    have hqne : (q:ℝ) ≠ 0 := ne_of_gt hqpos
+    field_simp
+    linarith
+  rw [hsplit]
+  linarith [hrat, htri, hβ, hstep]
+
+/-- The residue map `d ↦ (d * a) mod q` is injective on `[1, U]` when `2U ≤ q`
+and `gcd (a, q) = 1`. -/
+lemma residue_inj {q a : ℕ} (hq : 0 < q) (hcop : Nat.Coprime a q)
+    {d1 d2 : ℕ} (hd1 : d1 < q) (hd2 : d2 < q)
+    (h : (d1 * a) % q = (d2 * a) % q) : d1 = d2 := by
+  have hmod : Nat.ModEq q (d1 * a) (d2 * a) := h
+  have hdvd : (q:ℤ) ∣ ((d1:ℤ) - (d2:ℤ)) * (a:ℤ) := by
+    have h1 : (q:ℤ) ∣ ((d2 * a : ℕ) : ℤ) - ((d1 * a : ℕ) : ℤ) :=
+      Nat.modEq_iff_dvd.mp hmod
+    have heq : ((d2 * a : ℕ) : ℤ) - ((d1 * a : ℕ) : ℤ) =
+        -(((d1:ℤ) - (d2:ℤ)) * (a:ℤ)) := by
+      push_cast
+      ring
+    rw [heq] at h1
+    exact dvd_neg.mp h1
+  have hcopZ : IsCoprime (q:ℤ) (a:ℤ) := hcop.symm.isCoprime
+  have hdvd2 : (q:ℤ) ∣ (d1:ℤ) - (d2:ℤ) := hcopZ.dvd_of_dvd_mul_right hdvd
+  rcases le_total d2 d1 with hle | hle
+  · have hnat : q ∣ d1 - d2 := by
+      have h' : (q:ℤ) ∣ ((d1 - d2 : ℕ) : ℤ) := by
+        rw [Nat.cast_sub hle]
+        exact hdvd2
+      exact_mod_cast h'
+    by_contra hne
+    have hpos : 0 < d1 - d2 := by omega
+    have := Nat.le_of_dvd hpos hnat
+    omega
+  · have hneg : (q:ℤ) ∣ ((d2 - d1 : ℕ) : ℤ) := by
+      have heq : ((d2 - d1 : ℕ) : ℤ) = -((d1:ℤ) - (d2:ℤ)) := by
+        rw [Nat.cast_sub hle]
+        ring
+      rw [heq]
+      exact dvd_neg.mpr hdvd2
+    have hnat : q ∣ d2 - d1 := by exact_mod_cast hneg
+    by_contra hne
+    have hpos : 0 < d2 - d1 := by omega
+    have := Nat.le_of_dvd hpos hnat
+    omega
+
+/-- Harmonic bound for reciprocal residues: if `2U ≤ q`, then
+`∑_{d ≤ U} 1/min ((d a) mod q) (q - (d a) mod q) ≤ 2 (1 + log q)`. -/
+lemma sum_inv_residue_le (q a U : ℕ) (hq : 0 < q) (hcop : Nat.Coprime a q)
+    (hUq : 2 * U ≤ q) :
+    (∑ d ∈ Finset.Icc 1 U,
+        (1:ℝ)/(((min ((d * a) % q) (q - (d * a) % q) : ℕ)) : ℝ))
+      ≤ 2 * (1 + Real.log (q:ℝ)) := by
+  classical
+  rcases Nat.eq_zero_or_pos U with hU0 | hU1
+  · subst hU0
+    rw [Finset.Icc_eq_empty_of_lt (by norm_num : 0 < 1), Finset.sum_empty]
+    have hq1 : (1:ℝ) ≤ (q:ℝ) := by exact_mod_cast hq
+    have hlogq : 0 ≤ Real.log (q:ℝ) := Real.log_nonneg hq1
+    linarith
+  have hUq' : U < q := by omega
+  -- Pointwise bound by the two reciprocal distances.
+  have hxne : ∀ d ∈ Finset.Icc 1 U, (d * a) % q ≠ 0 := by
+    intro d hd h0
+    obtain ⟨hd1, hdU⟩ := Finset.mem_Icc.mp hd
+    have hdvd : q ∣ d * a := Nat.dvd_of_mod_eq_zero h0
+    have hqd : q ∣ d := hcop.symm.dvd_of_dvd_mul_right hdvd
+    have := Nat.le_of_dvd (by omega) hqd
+    omega
+  have hpoint : ∀ d ∈ Finset.Icc 1 U,
+      (1:ℝ)/(((min ((d * a) % q) (q - (d * a) % q) : ℕ)) : ℝ)
+        ≤ 1/((((d * a) % q : ℕ)) : ℝ) + 1/(((q - (d * a) % q : ℕ)) : ℝ) := by
+    intro d hd
+    obtain ⟨hd1, hdU⟩ := Finset.mem_Icc.mp hd
+    have hx1 : 1 ≤ (d * a) % q := Nat.one_le_iff_ne_zero.mpr (hxne d hd)
+    have hxq : (d * a) % q < q := Nat.mod_lt _ hq
+    have hqr1 : 1 ≤ q - (d * a) % q := by omega
+    have hxpos : (0:ℝ) < (((d * a) % q : ℕ)) := by exact_mod_cast (by omega : 0 < (d*a)%q)
+    have hypos : (0:ℝ) < (((q - (d * a) % q : ℕ))) := by exact_mod_cast (by omega)
+    rcases le_total ((d*a)%q) (q - (d*a)%q) with hle | hle
+    · have hmin : min ((d * a) % q) (q - (d * a) % q) = (d * a) % q :=
+        min_eq_left hle
+      rw [hmin]
+      exact le_add_of_nonneg_right (by positivity)
+    · have hmin : min ((d * a) % q) (q - (d * a) % q) = q - (d * a) % q :=
+        min_eq_right hle
+      rw [hmin]
+      exact le_add_of_nonneg_left (by positivity)
+  -- The two harmonic sums.
+  have hinj : ∀ d1 ∈ Finset.Icc 1 U, ∀ d2 ∈ Finset.Icc 1 U,
+      (d1 * a) % q = (d2 * a) % q → d1 = d2 := by
+    intro d1 hd1 d2 hd2 h
+    have h1 : d1 < q := lt_of_le_of_lt (Finset.mem_Icc.mp hd1).2 hUq'
+    have h2 : d2 < q := lt_of_le_of_lt (Finset.mem_Icc.mp hd2).2 hUq'
+    exact residue_inj hq hcop h1 h2 h
+  have hsum1 : (∑ d ∈ Finset.Icc 1 U, (1:ℝ)/((((d * a) % q : ℕ)) : ℝ))
+      ≤ 1 + Real.log (q:ℝ) := by
+    have himg : (∑ d ∈ Finset.Icc 1 U, (1:ℝ)/((((d * a) % q : ℕ)) : ℝ))
+        = ∑ k ∈ (Finset.Icc 1 U).image (fun d => (d * a) % q), (1:ℝ)/((k:ℕ):ℝ) := by
+      rw [Finset.sum_image]
+      intro x hx y hy hxy
+      exact hinj x hx y hy hxy
+    rw [himg]
+    have hsub : (Finset.Icc 1 U).image (fun d => (d * a) % q) ⊆ Finset.Icc 1 q := by
+      intro k hk
+      obtain ⟨d, hd, rfl⟩ := Finset.mem_image.mp hk
+      exact Finset.mem_Icc.mpr ⟨Nat.one_le_iff_ne_zero.mpr (hxne d hd),
+        le_of_lt (Nat.mod_lt _ hq)⟩
+    exact (Finset.sum_le_sum_of_subset_of_nonneg hsub
+      (fun k _ _ => by positivity)).trans (sum_inv_Icc_le_one_add_log q)
+  have hsum2 : (∑ d ∈ Finset.Icc 1 U, (1:ℝ)/((((q - (d * a) % q : ℕ))) : ℝ))
+      ≤ 1 + Real.log (q:ℝ) := by
+    have himg : (∑ d ∈ Finset.Icc 1 U, (1:ℝ)/((((q - (d * a) % q : ℕ))) : ℝ))
+        = ∑ k ∈ (Finset.Icc 1 U).image (fun d => q - (d * a) % q),
+            (1:ℝ)/((k:ℕ):ℝ) := by
+      rw [Finset.sum_image]
+      intro x hx y hy hxy
+      apply hinj x hx y hy
+      have hxq : (x * a) % q < q := Nat.mod_lt _ hq
+      have hyq : (y * a) % q < q := Nat.mod_lt _ hq
+      exact (tsub_right_inj (le_of_lt hxq) (le_of_lt hyq)).mp hxy
+    rw [himg]
+    have hsub : (Finset.Icc 1 U).image (fun d => q - (d * a) % q) ⊆ Finset.Icc 1 q := by
+      intro k hk
+      obtain ⟨d, hd, rfl⟩ := Finset.mem_image.mp hk
+      have hxq : (d * a) % q < q := Nat.mod_lt _ hq
+      have hx1 : 1 ≤ (d * a) % q := Nat.one_le_iff_ne_zero.mpr (hxne d hd)
+      exact Finset.mem_Icc.mpr ⟨by omega, by omega⟩
+    exact (Finset.sum_le_sum_of_subset_of_nonneg hsub
+      (fun k _ _ => by positivity)).trans (sum_inv_Icc_le_one_add_log q)
+  calc (∑ d ∈ Finset.Icc 1 U,
+        (1:ℝ)/(((min ((d * a) % q) (q - (d * a) % q) : ℕ)) : ℝ))
+      ≤ ∑ d ∈ Finset.Icc 1 U,
+          (1/((((d * a) % q : ℕ)) : ℝ) + 1/(((q - (d * a) % q : ℕ)) : ℝ)) :=
+        Finset.sum_le_sum hpoint
+    _ = (∑ d ∈ Finset.Icc 1 U, (1:ℝ)/((((d * a) % q : ℕ)) : ℝ)) +
+          (∑ d ∈ Finset.Icc 1 U, (1:ℝ)/((((q - (d * a) % q : ℕ))) : ℝ)) := by
+        rw [Finset.sum_add_distrib]
+    _ ≤ 2 * (1 + Real.log (q:ℝ)) := by linarith [hsum1, hsum2]
+
+
 /-- Trivial (no oscillation) bound for the second Type-I term. -/
 lemma norm_expSum_low_mu_mul_log_le_trivial (n U : ℕ) (t : ℝ) (hUn : U ≤ n) :
     ‖expSum n (low U (μ : ArithmeticFunction ℝ) * ArithmeticFunction.log) t‖ ≤

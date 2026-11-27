@@ -446,3 +446,18 @@ Still open on the Type-I side:
 - the residue refinement `2qU → 2q log q` for the second term (the
   distinct-residue sum `∑_d 1/r_d ≤ 2(1+log q)`);
 - the bilinear analogue for the third term's `2qM`.
+
+## Type-I second term: residue refinement done
+
+`norm_expSum_low_mu_mul_log_le_residues` proves
+
+  ‖S₂(a/q+β)‖ ≤ 4 q log n (1 + log q)   provided q ≥ 2U, U|β| ≤ 1/(2q).
+
+Ingredients: the quantitative rational distance
+`typeIDist(n/q) ≥ min(n%q, q-n%q)/q`, the quantitative shift separation
+(in terms of `r_d`), injectivity of `d ↦ (d a) mod q` for `d < q`, and
+`∑ 1/r_d ≤ 2(1+log q)`.
+
+Next: the same reindexing (`k = d e`, multiplicity ≤ log k, `k < q`) for
+the third term's threshold part, replacing `2q M log²n` by
+`O(q log² n)`.

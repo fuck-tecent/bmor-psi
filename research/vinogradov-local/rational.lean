@@ -659,6 +659,64 @@ lemma typeIDist_natCast_div_ge_inv_of_not_dvd (q n : ℕ) (hq : 0 < q)
   have hqinv : (1:ℝ)/(q:ℝ) * (q:ℝ) = 1 := by field_simp
   linarith [habsR, hqinv]
 
+/-- Quantitative rational distance: for `0 < q`, the distance of `n/q` to the
+nearest integer is at least `min (n % q) (q - n % q) / q`. -/
+lemma typeIDist_natCast_div_ge_mod (q n : ℕ) (hq : 0 < q) :
+    ((min (n % q) (q - n % q) : ℕ) : ℝ) / (q:ℝ) ≤ typeIDist ((n:ℝ)/(q:ℝ)) := by
+  set r : ℕ := n % q with hr
+  have hrlt : r < q := by rw [hr]; exact Nat.mod_lt n hq
+  have hqpos : (0:ℝ) < (q:ℝ) := by positivity
+  have hqZ : (0:ℤ) < (q:ℤ) := by exact_mod_cast hq
+  set m : ℤ := round ((n:ℝ)/(q:ℝ)) with hm
+  -- Integer decomposition `n = q * (n/q) + r`.
+  have hdecomp : (n:ℤ) = (q:ℤ) * ((n / q : ℕ) : ℤ) + (r:ℤ) := by
+    have h : q * (n / q) + r = n := by
+      rw [hr]
+      exact Nat.div_add_mod n q
+    have h' : ((q * (n / q) + r : ℕ) : ℤ) = (n:ℤ) := by exact_mod_cast h
+    rw [Nat.cast_add, Nat.cast_mul] at h'
+    linarith
+  set t : ℤ := ((n / q : ℕ) : ℤ) - m with ht
+  have hrepr : (n:ℤ) - m * (q:ℤ) = t * (q:ℤ) + (r:ℤ) := by
+    rw [ht, hdecomp]
+    ring
+  have hrZ : (0:ℤ) ≤ (r:ℤ) := by positivity
+  have hrqZ : (r:ℤ) < (q:ℤ) := by exact_mod_cast hrlt
+  have hmin_le_r : ((min r (q - r) : ℕ) : ℤ) ≤ (r:ℤ) := by
+    exact_mod_cast min_le_left r (q - r)
+  have hmin_le_qr : ((min r (q - r) : ℕ) : ℤ) ≤ (q:ℤ) - (r:ℤ) := by
+    have h1 : min r (q - r) ≤ q - r := min_le_right _ _
+    have h2 : ((q - r : ℕ) : ℤ) = (q:ℤ) - (r:ℤ) := by
+      rw [Nat.cast_sub (le_of_lt hrlt)]
+    rw [← h2]
+    exact_mod_cast h1
+  have hkey : ((min r (q - r) : ℕ) : ℤ) ≤ |(n:ℤ) - m * (q:ℤ)| := by
+    rcases lt_trichotomy t 0 with htneg | ht0 | htpos
+    · have htle : t ≤ -1 := by omega
+      have hneg : t * (q:ℤ) + (r:ℤ) < 0 := by nlinarith [htle, hqZ, hrZ]
+      rw [hrepr, abs_of_neg hneg]
+      have hkey2 : -((t * (q:ℤ)) + (r:ℤ)) = (-t) * (q:ℤ) - (r:ℤ) := by ring
+      rw [hkey2]
+      nlinarith [hmin_le_qr, htle, hqZ]
+    · rw [hrepr, ht0, zero_mul, zero_add, abs_of_nonneg hrZ]
+      exact hmin_le_r
+    · have htge : (1:ℤ) ≤ t := by omega
+      have hpos : 0 < t * (q:ℤ) + (r:ℤ) := by nlinarith [htge, hqZ, hrZ]
+      rw [hrepr, abs_of_pos hpos]
+      nlinarith [hmin_le_r, htge, hqZ]
+  -- Transfer to `ℝ`.
+  have hxsub : (n:ℝ)/(q:ℝ) - (m:ℝ) =
+      ((((n:ℤ) - m * (q:ℤ) : ℤ)) : ℝ) / (q:ℝ) := by
+    push_cast
+    field_simp
+  have htype : typeIDist ((n:ℝ)/(q:ℝ)) =
+      ((|(n:ℤ) - m * (q:ℤ)| : ℤ) : ℝ) / (q:ℝ) := by
+    have hm' : (round ((n:ℝ)/(q:ℝ)) : ℤ) = m := hm.symm
+    unfold typeIDist
+    rw [hm', hxsub, abs_div, abs_of_nonneg (le_of_lt hqpos), Int.cast_abs]
+  rw [htype, div_le_div_iff_of_pos_right hqpos]
+  exact_mod_cast hkey
+
 /-- Separation for the Farey shift: if `1 ≤ l < q` and `l |β| ≤ 1/(2q)`,
 then `l (a/q + β)` stays at distance at least `1/(2q)` from the integers. -/
 lemma typeIDist_mul_farey_shift_ge (q a l : ℕ) (β : ℝ)

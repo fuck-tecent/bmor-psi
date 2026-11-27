@@ -1096,3 +1096,35 @@ minor-arc lower bound `q > Q0` instead of `q ≥ 1`.
 is exactly zero.  In the wide minor-arc regime `q > Q0` this applies
 whenever `Q0 ≥ U²`: the last summand of
 `norm_expSum_low_mu_lowLambda_zeta_le_truncated_tail` then disappears.
+
+### Residue refinement of the Type-I second term: `2qU → 2q log q`
+
+The `2q`-per-`d` sine bound is now refined to the *varying residues*
+`r_d = min ((d a) mod q) (q - (d a) mod q)`:
+
+```lean
+typeIDist_natCast_div_ge_mod :
+  typeIDist (n/q) ≥ min (n % q) (q - n % q) / q
+
+typeIDist_mul_farey_shift_ge_residue :
+  (d |β| ≤ 1/(2q), d < q) →
+    typeIDist (d (a/q + β)) ≥ r_d / (2q)
+
+residue_inj :
+  d1, d2 < q, (d1 a) % q = (d2 a) % q, (a,q)=1 → d1 = d2
+
+sum_inv_residue_le :
+  2U ≤ q → ∑_{d≤U} 1/r_d ≤ 2 (1 + log q)
+
+norm_expSum_low_mu_mul_log_le_residues :
+  q ≥ 2U, U|β| ≤ 1/(2q), (a,q)=1 →
+    ‖S₂(a/q + β)‖ ≤ 4 q log n (1 + log q).
+```
+
+This removes both the `2qU log n` term and the `n log n (1+log n)/q`
+term *simultaneously* in the regime `q ≥ 2U`.  The proof uses
+`1/min(x,y) = max(1/x,1/y) ≤ 1/x + 1/y` and the distinctness of the
+residues `(d a) mod q` for `d < q`.
+
+On the wide minor arcs (`q > Q0 ≥ 2U`) this gives the classical
+Type-I second-term saving `≪ q log n log q`.

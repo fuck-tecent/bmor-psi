@@ -783,6 +783,80 @@ theorem norm_expSum_vaughan_typeI_le_wideMinorArc (n U Q0 Q : ℕ) (α : ℝ)
     linarith [hm1, hm2, hm3, hm5]
   exact hbase.trans hstep1
 
+set_option maxHeartbeats 1000000 in
+/-- The Type-I second term at a minor arc with `q ≥ 2U`: the classical
+`q`-saving `2q log n (1 + log q)` replacing `2qU log n + n log n (1+log n)/q`. -/
+theorem norm_expSum_low_mu_mul_log_le_residues (n U q a : ℕ) (β : ℝ)
+    (hq : 0 < q) (hcop : Nat.Coprime a q) (hUn : U ≤ n) (hUq : 2 * U ≤ q)
+    (hβ : (U:ℝ) * |β| ≤ 1 / (2 * (q:ℝ))) :
+    ‖expSum n (low U (μ : ArithmeticFunction ℝ) * ArithmeticFunction.log)
+        ((a:ℝ)/(q:ℝ) + β)‖ ≤
+      4 * (q:ℝ) * Real.log (n:ℝ) * (1 + Real.log (q:ℝ)) := by
+  refine (norm_expSum_low_mu_mul_log_le_recip n U ((a:ℝ)/(q:ℝ) + β)).trans ?_
+  have hlog : 0 ≤ Real.log (n:ℝ) := Real.log_natCast_nonneg n
+  have hqpos : (0:ℝ) < (q:ℝ) := by exact_mod_cast hq
+  -- Pointwise: the capped reciprocal distance is at most `2q / r_d`.
+  have hpoint : ∀ d ∈ Finset.Icc 1 U,
+      Real.log (n:ℝ) * typeIDistRecip (n / d) ((d:ℝ) * ((a:ℝ)/(q:ℝ) + β))
+        ≤ Real.log (n:ℝ) * (2 * (q:ℝ) /
+            (((min ((d * a) % q) (q - (d * a) % q) : ℕ)) : ℝ)) := by
+    intro d hd
+    obtain ⟨hd1, hdU⟩ := Finset.mem_Icc.mp hd
+    have hUq' : U < q := by omega
+    have hdq : d < q := lt_of_le_of_lt hdU hUq'
+    have hβd : (d:ℝ) * |β| ≤ 1 / (2 * (q:ℝ)) := by
+      have hdU' : (d:ℝ) ≤ (U:ℝ) := by exact_mod_cast hdU
+      exact (mul_le_mul_of_nonneg_right hdU' (abs_nonneg β)).trans hβ
+    have hxne : (d * a) % q ≠ 0 := by
+      intro h0
+      have hdvd : q ∣ d * a := Nat.dvd_of_mod_eq_zero h0
+      have hqd : q ∣ d := hcop.symm.dvd_of_dvd_mul_right hdvd
+      have := Nat.le_of_dvd (by omega) hqd
+      omega
+    have hx1 : 1 ≤ (d * a) % q := Nat.one_le_iff_ne_zero.mpr hxne
+    have hxq : (d * a) % q < q := Nat.mod_lt _ hq
+    have hr1 : 1 ≤ min ((d * a) % q) (q - (d * a) % q) :=
+      le_min hx1 (by omega)
+    have hrpos : (0:ℝ) < (((min ((d * a) % q) (q - (d * a) % q) : ℕ)) : ℝ) := by
+      exact_mod_cast (by omega : 0 < min ((d * a) % q) (q - (d * a) % q))
+    have hsep := typeIDist_mul_farey_shift_ge_residue q a d β hq hcop hd1 hdq hβd
+    have hdistpos : 0 < typeIDist ((d:ℝ) * ((a:ℝ)/(q:ℝ) + β)) :=
+      lt_of_lt_of_le (div_pos (by positivity) (by positivity)) hsep
+    have hrecip : typeIDistRecip (n / d) ((d:ℝ) * ((a:ℝ)/(q:ℝ) + β))
+        ≤ 1 / typeIDist ((d:ℝ) * ((a:ℝ)/(q:ℝ) + β)) := by
+      rw [typeIDistRecip, if_neg (ne_of_gt hdistpos)]
+      exact min_le_right _ _
+    have hone : 1 / typeIDist ((d:ℝ) * ((a:ℝ)/(q:ℝ) + β))
+        ≤ 1 / ((((min ((d * a) % q) (q - (d * a) % q) : ℕ)) : ℝ) / (2 * (q:ℝ))) :=
+      one_div_le_one_div_of_le (div_pos hrpos (by positivity)) hsep
+    have hval : 1 / ((((min ((d * a) % q) (q - (d * a) % q) : ℕ)) : ℝ) / (2 * (q:ℝ)))
+        = 2 * (q:ℝ) / (((min ((d * a) % q) (q - (d * a) % q) : ℕ)) : ℝ) := by
+      field_simp
+    calc Real.log (n:ℝ) * typeIDistRecip (n / d) ((d:ℝ) * ((a:ℝ)/(q:ℝ) + β))
+        ≤ Real.log (n:ℝ) * (1 / typeIDist ((d:ℝ) * ((a:ℝ)/(q:ℝ) + β))) :=
+          mul_le_mul_of_nonneg_left hrecip hlog
+      _ ≤ Real.log (n:ℝ) * (1 / ((((min ((d * a) % q) (q - (d * a) % q) : ℕ)) : ℝ) / (2 * (q:ℝ)))) :=
+          mul_le_mul_of_nonneg_left hone hlog
+      _ = Real.log (n:ℝ) * (2 * (q:ℝ) /
+            (((min ((d * a) % q) (q - (d * a) % q) : ℕ)) : ℝ)) := by rw [hval]
+  calc (∑ d ∈ Finset.Icc 1 U,
+        Real.log (n:ℝ) * typeIDistRecip (n / d) ((d:ℝ) * ((a:ℝ)/(q:ℝ) + β)))
+      ≤ ∑ d ∈ Finset.Icc 1 U,
+          Real.log (n:ℝ) * (2 * (q:ℝ) /
+            (((min ((d * a) % q) (q - (d * a) % q) : ℕ)) : ℝ)) :=
+        Finset.sum_le_sum hpoint
+    _ = Real.log (n:ℝ) * (2 * (q:ℝ)) *
+          ∑ d ∈ Finset.Icc 1 U,
+            (1:ℝ)/(((min ((d * a) % q) (q - (d * a) % q) : ℕ)) : ℝ) := by
+        rw [Finset.mul_sum]
+        apply Finset.sum_congr rfl
+        intro d _
+        ring
+    _ ≤ Real.log (n:ℝ) * (2 * (q:ℝ)) * (2 * (1 + Real.log (q:ℝ))) := by
+        apply mul_le_mul_of_nonneg_left (sum_inv_residue_le q a U hq hcop hUq)
+        positivity
+    _ = 4 * (q:ℝ) * Real.log (n:ℝ) * (1 + Real.log (q:ℝ)) := by ring
+
 end
 
 end PEqualNP.Outside.Vaughan
