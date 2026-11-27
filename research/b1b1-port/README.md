@@ -2205,3 +2205,116 @@ coordinates, in four independent normal forms (M29-M33); (ii) the local-count id
 (M37); (iii) quantified impossibilities for every method class available (M11, M34,
 M36, M38); (iv) the position of b1-b1 as cell `h11` of the ten-cell `matrix_bridge`
 (M35).
+
+## Milestone 39: the two *mechanical* gaps of §38 are closed
+
+§38 said "the block-level Type-II estimate must be reproved below `N^(2/5)`".  **That was
+wrong.**  The block estimate is already stated for arbitrary cutoffs.  What is actually
+needed is (i) a budget conversion that does not assume `U ≥ N^(2/5)`, and (ii) a divisor
+*window* parameter.  Both are now verified.
+
+### 39.1 The block estimate was already general
+
+```lean
+-- OAI.Problem337.Vaughan
+theorem typeIIBlock_sq_le_uniform (θ a q) (hq) (hcop) (happrox) (N U V j) (hqN) (hU) (hV) :
+  ‖typeIIBlock N U V j (fun k => phase (θ*k))‖^2
+    ≤ 32 * N * (typeIILogScale N)^6 * (N/q + N/U + N/V + q)
+```
+
+`U` and `V` are free parameters; nothing forces `U = N^(2/5)`.  The `2/5` enters only
+one step later.
+
+### 39.2 The budget, with free cutoffs
+
+```lean
+theorem cutoff_squared_budget_general (X q C U V R : ℝ)
+    (hX : 1 ≤ X) (hq : 0 < q) (hC : 0 ≤ C) (hU : 0 < U) (hV : 0 < V)
+    (hbound : R^2 ≤ C * X * (1 + log (2X))^6 * (X/q + X/U + X/V + q)) :
+  R ≤ √C * (1 + log (2X))^3 * (X/√q + X/√U + X/√V + √(X q))
+```
+
+`optimizedCutoff_squared_budget` is the special case `U = V = ⌊X^(2/5)⌋`, where
+`X/√U = X^(4/5)`.  The identity that pins `2/5` is
+
+```text
+X · (X/U)  ≤  (X^(4/5))²  =  X^(8/5)      ⟺      U ≥ X^(2/5) .
+```
+
+For `U = X^(1/16)` the `U`-term is `X^(31/16)` against `X^(8/5)`: the loss is exactly
+`X^(27/80)`.  The block scale becomes `X^(31/32) log³` and the summed scale
+`X^(31/32) log⁴ = o(X)` — **the budget still closes**, so nothing analytic is lost here.
+
+Instantiation (imports `PEqualNP.Outside.L_goldbach_bulk_density_one`):
+
+```lean
+theorem typeIIBlock_norm_le_general (θ a q) (hq) (hcop) (happrox) (N U V j)
+    (hqN) (hU : 0 < U) (hV : 0 < V) (hN : 1 ≤ N) :
+  ‖typeIIBlock N U V j (fun k => phase (θ*k))‖
+    ≤ √32 * (1 + log (2N))^3 * (N/√q + N/√U + N/√V + √(N q))
+```
+
+### 39.3 The divisor window
+
+The verified coefficient has *no upper bound* on the divisor `a`, and its Möbius cutoff
+is tied to the same number:
+
+```text
+typeIICoefficient U m  = ∑_{a|m, m/a>U} (∑_{d|a, d>U} μ d) · Λ(m/a)
+```
+
+while `τ₃` needs `a ∈ (B₂, B₃]`.  The window is split off as a difference of half-lines:
+
+```lean
+/-- Möbius cutoff `U`, cofactor cutoff `V`, divisor only constrained by `a > L`. -/
+def halfLineTypeII (U V L : ℕ) : ℕ → ℝ
+/-- additionally `a ≤ H`. -/
+def windowTypeII (U V L H : ℕ) : ℕ → ℝ
+def cutoffB3 (n : ℕ) : ℕ := ⌊n^(2/3)⌋            -- B₃ (B₂ is the module's cutoffB)
+
+theorem windowTypeII_eq_sub (U V L H m) (hLH : L ≤ H) :
+  windowTypeII U V L H m = halfLineTypeII U V L m - halfLineTypeII U V H m
+
+def tauThree (n : ℕ) : ℕ → ℝ := windowTypeII (U n) (U n) (B₂ n) (B₃ n)
+theorem tauThree_apply (n m) :            -- exactly the catalogue's τ₃ display
+  tauThree n m
+    = ∑ a ∈ (Nat.divisors m).filter (B₂ < a ∧ a ≤ B₃ ∧ U < m/a), c_U(a) · Λ(m/a)
+theorem tauThree_eq_sub (n m) (h : B₂ ≤ B₃) :
+  tauThree n m = halfLineTypeII (U) (U) B₂ m - halfLineTypeII (U) (U) B₃ m
+```
+
+and the support statement behind §36.5(ii):
+
+```lean
+theorem le_mul_of_cofactor_le (m a H V₀) (ha : a ∣ m) (haH : a ≤ H) (hcof : m/a ≤ V₀) :
+  m ≤ H * V₀
+```
+
+With `H = B₃ = n^(2/3)` and `V₀ = n^(2/5)` this puts the small-cofactor part of `τ₃` on
+`m ≤ n^(13/15)`.
+
+Two implementation notes:
+
+* `windowTypeII_eq_sub` originally used `Finset.sum_sdiff`; in this Mathlib the
+  statement does not have the `∑_{s₁\s₂} = ∑_{s₁} - ∑_{s₂}` orientation.  The working
+  proof goes through `Finset.sum_filter` and `Finset.sum_sub_distrib`, reducing the
+  identity to a pointwise `if`-case split on `L < a`, `V < m/a`, `a ≤ H`.
+* `cutoff_squared_budget_general` needs `1 ≤ X`, not `0 < X`: `log (2X) ≥ 0` is used.
+
+### 39.4 Correction to §38
+
+**§38 is superseded.**  The correct statement of the remaining gap is now only §3 of the
+three-way split:
+
+| # | gap | status |
+|---|---|---|
+| 1 | budget with free cutoffs | **closed** (`cutoff_squared_budget_general`, `typeIIBlock_norm_le_general`) |
+| 2 | divisor window parameter | **closed** (`windowTypeII`, `tauThree_eq_sub`) |
+| 3 | the cofactor pieces falling out of the window difference, and the gap band `a ∈ (n^(1/3), n^(2/5))` | **open** |
+
+So the τ₃ reduction now needs only: (a) a *sum* version of §39.2–39.3 (interchange of
+the window difference with `weightedSum`), and (b) an estimate for the residual
+cofactor range — item 3, which is the analytic input.
+
+Dossier: 2552 lines (imports `L_goldbach_bulk_density_one`), 42 verified milestones,
+no `sorry`.

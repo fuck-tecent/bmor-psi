@@ -1,6 +1,7 @@
 import Mathlib
 import PEqualNP.Outside.L_goldbach_frontier_type2_b1_b4
 import Conjectures.Goldbach.FrontierType2B1B1BilinearExpansion
+import PEqualNP.Outside.L_goldbach_bulk_density_one
 
 set_option maxHeartbeats 4000000
 
@@ -2405,5 +2406,173 @@ theorem quad_sum_ramanujan (n q : ℕ) :
         (((ArithmeticFunction.vonMangoldt j : ℂ) *
           (ArithmeticFunction.vonMangoldt k : ℂ)) *
           phase (((((a*j:ℕ):ℝ) + ((a'*k:ℕ):ℝ) - (n:ℝ))) * ((a₀:ℝ)/(q:ℝ)))))).symm
+
+/-! ### Milestone 39 (step 1): the cutoff budget for a general divisor cutoff
+
+The verified engine converts a block bound carrying `(X/q + X/U + X/V + q)` into
+`X/√q + X/√U + X/√V + √(Xq)`.  In `optimizedCutoff_squared_budget` the two cutoffs are
+tied to `⌊X^(2/5)⌋`, which is exactly the exponent that matches `X/U` against the
+envelope's middle term `X^(4/5)`:  `X · (X/U) ≤ (X^(4/5))²` ⟺ `U ≥ X^(2/5)`.
+
+Below we keep the two cutoffs free.  For `U = X^(1/16)` the resulting scale is
+`X/√U = X^(31/32)`, hence `X^(31/32) log⁴ = o(X)` — the budget still closes, the loss
+against the `2/5` form being `X^(27/80)`. -/
+
+/-- **General cutoff budget.**  No relation between `U`, `V` and `X^(2/5)` is assumed. -/
+theorem cutoff_squared_budget_general (X q C U V R : ℝ)
+    (hX : 1 ≤ X) (hq : 0 < q) (hC : 0 ≤ C) (hU : 0 < U) (hV : 0 < V)
+    (hbound : R ^ 2 ≤ C * X * (1 + Real.log (2 * X)) ^ 6 *
+      (X / q + X / U + X / V + q)) :
+    R ≤ Real.sqrt C * (1 + Real.log (2 * X)) ^ 3 *
+      (X / Real.sqrt q + X / Real.sqrt U + X / Real.sqrt V + Real.sqrt (X * q)) := by
+  have hL : 0 ≤ 1 + Real.log (2 * X) := by
+    have h2X : (1 : ℝ) ≤ 2 * X := by linarith
+    have := Real.log_nonneg h2X
+    linarith
+  set S : ℝ := X / Real.sqrt q + X / Real.sqrt U + X / Real.sqrt V + Real.sqrt (X * q) with hS
+  have hS0 : 0 ≤ S := by rw [hS]; positivity
+  have hsq : X * (X / q + X / U + X / V + q) ≤ S ^ 2 := by
+    have hq' : (Real.sqrt q) ^ 2 = q := Real.sq_sqrt (le_of_lt hq)
+    have hU' : (Real.sqrt U) ^ 2 = U := Real.sq_sqrt (le_of_lt hU)
+    have hV' : (Real.sqrt V) ^ 2 = V := Real.sq_sqrt (le_of_lt hV)
+    have hXq' : (Real.sqrt (X * q)) ^ 2 = X * q := Real.sq_sqrt (by positivity)
+    have hsqsum : X * (X / q + X / U + X / V + q)
+        = (X / Real.sqrt q) ^ 2 + (X / Real.sqrt U) ^ 2 + (X / Real.sqrt V) ^ 2
+          + (Real.sqrt (X * q)) ^ 2 := by
+      rw [div_pow, div_pow, div_pow, hq', hU', hV', hXq']
+      field_simp
+    have e : S ^ 2 = (X / Real.sqrt q) ^ 2 + (X / Real.sqrt U) ^ 2 + (X / Real.sqrt V) ^ 2
+        + (Real.sqrt (X * q)) ^ 2
+        + 2 * ((X / Real.sqrt q) * (X / Real.sqrt U) + (X / Real.sqrt q) * (X / Real.sqrt V)
+            + (X / Real.sqrt q) * Real.sqrt (X * q) + (X / Real.sqrt U) * (X / Real.sqrt V)
+            + (X / Real.sqrt U) * Real.sqrt (X * q)
+            + (X / Real.sqrt V) * Real.sqrt (X * q)) := by
+      rw [hS]; ring
+    have hcross : 0 ≤ 2 * ((X / Real.sqrt q) * (X / Real.sqrt U)
+        + (X / Real.sqrt q) * (X / Real.sqrt V)
+        + (X / Real.sqrt q) * Real.sqrt (X * q) + (X / Real.sqrt U) * (X / Real.sqrt V)
+        + (X / Real.sqrt U) * Real.sqrt (X * q)
+        + (X / Real.sqrt V) * Real.sqrt (X * q)) := by positivity
+    rw [hsqsum, e]
+    linarith
+  have h3 : 0 ≤ C * (1 + Real.log (2 * X)) ^ 6 := by positivity
+  have hmain : R ^ 2 ≤ (C * (1 + Real.log (2 * X)) ^ 6) * S ^ 2 := by
+    calc R ^ 2 ≤ C * X * (1 + Real.log (2 * X)) ^ 6 * (X / q + X / U + X / V + q) := hbound
+      _ = (C * (1 + Real.log (2 * X)) ^ 6) * (X * (X / q + X / U + X / V + q)) := by ring
+      _ ≤ (C * (1 + Real.log (2 * X)) ^ 6) * S ^ 2 :=
+          mul_le_mul_of_nonneg_left hsq h3
+  have hK : Real.sqrt (C * (1 + Real.log (2 * X)) ^ 6)
+      = Real.sqrt C * (1 + Real.log (2 * X)) ^ 3 := by
+    rw [Real.sqrt_mul hC]
+    congr 1
+    rw [show (1 + Real.log (2 * X)) ^ 6 = ((1 + Real.log (2 * X)) ^ 3) ^ 2 by ring]
+    exact Real.sqrt_sq (by positivity)
+  calc R ≤ |R| := le_abs_self R
+    _ = Real.sqrt (R ^ 2) := (Real.sqrt_sq_eq_abs R).symm
+    _ ≤ Real.sqrt ((C * (1 + Real.log (2 * X)) ^ 6) * S ^ 2) := Real.sqrt_le_sqrt hmain
+    _ = Real.sqrt (C * (1 + Real.log (2 * X)) ^ 6) * S := by
+        rw [Real.sqrt_mul h3, Real.sqrt_sq hS0]
+    _ = Real.sqrt C * (1 + Real.log (2 * X)) ^ 3
+          * (X / Real.sqrt q + X / Real.sqrt U + X / Real.sqrt V + Real.sqrt (X * q)) := by
+        rw [hK, hS]
+
+/-! ### Milestone 39 (step 2): the divisor window
+
+`τ₃` restricts the divisor `a` to a **window** `(B₂, B₃]`, while the verified Type-II
+coefficient `typeIICoefficient U` has no upper bound on `a` at all (its Möbius cutoff
+and its divisor lower bound are the same number).  Below we split the window off as a
+difference of two half-lines, which is the only way the existing interface can see it. -/
+
+/-- The third band cut `B₃ = ⌊n^(2/3)⌋` (the second, `B₂ = ⌊n^(1/3)⌋`, is `cutoffB`). -/
+def cutoffB3 (n : ℕ) : ℕ := ⌊(n:ℝ)^(2/3:ℝ)⌋₊
+
+/-- The Type-II half-line coefficient: Möbius cutoff `U`, cofactor cutoff `V`, and the
+divisor `a` restricted only by `a > L`.  This is `typeIICoefficient U * longPart V`
+restricted to `a > L`. -/
+def halfLineTypeII (U V L : ℕ) : ℕ → ℝ :=
+  fun m => ∑ a ∈ (Nat.divisors m).filter (fun a => L < a ∧ V < m / a),
+    (lowMoebiusWeight U a) * (ArithmeticFunction.vonMangoldt (m / a) : ℝ)
+
+/-- The windowed Type-II coefficient: additionally `a ≤ H`. -/
+def windowTypeII (U V L H : ℕ) : ℕ → ℝ :=
+  fun m => ∑ a ∈ (Nat.divisors m).filter (fun a => L < a ∧ a ≤ H ∧ V < m / a),
+    (lowMoebiusWeight U a) * (ArithmeticFunction.vonMangoldt (m / a) : ℝ)
+
+/-- **The window is the difference of the two half-lines.** -/
+theorem windowTypeII_eq_sub (U V L H m : ℕ) (hLH : L ≤ H) :
+    windowTypeII U V L H m = halfLineTypeII U V L m - halfLineTypeII U V H m := by
+  classical
+  unfold windowTypeII halfLineTypeII
+  simp only [Finset.sum_filter]
+  rw [← Finset.sum_sub_distrib]
+  refine Finset.sum_congr rfl fun a _ => ?_
+  by_cases h1 : L < a
+  · by_cases h2 : V < m / a
+    · by_cases h3 : a ≤ H
+      · rw [if_pos (show L < a ∧ a ≤ H ∧ V < m / a from ⟨h1, h3, h2⟩),
+          if_pos (show L < a ∧ V < m / a from ⟨h1, h2⟩),
+          if_neg (by omega : ¬ (H < a ∧ V < m / a))]
+        ring
+      · rw [if_neg (by omega : ¬ (L < a ∧ a ≤ H ∧ V < m / a)),
+          if_pos (show L < a ∧ V < m / a from ⟨h1, h2⟩),
+          if_pos (show H < a ∧ V < m / a from ⟨by omega, h2⟩)]
+        ring
+    · rw [if_neg (by omega : ¬ (L < a ∧ a ≤ H ∧ V < m / a)),
+        if_neg (by omega : ¬ (L < a ∧ V < m / a)),
+        if_neg (by omega : ¬ (H < a ∧ V < m / a))]
+      ring
+  · rw [if_neg (by omega : ¬ (L < a ∧ a ≤ H ∧ V < m / a)),
+      if_neg (by omega : ¬ (L < a ∧ V < m / a)),
+      if_neg (by omega : ¬ (H < a ∧ V < m / a))]
+    ring
+
+/-- The catalogue's `τ₃`, in the window form. -/
+def tauThree (n : ℕ) : ℕ → ℝ := windowTypeII (cutoffU n) (cutoffU n) (cutoffB n) (cutoffB3 n)
+
+/-- The window form displayed exactly as the catalogue's `τ₃`. -/
+theorem tauThree_apply (n m : ℕ) :
+    tauThree n m = ∑ a ∈ (Nat.divisors m).filter
+        (fun a => cutoffB n < a ∧ a ≤ cutoffB3 n ∧ cutoffU n < m / a),
+      (lowMoebiusWeight (cutoffU n) a) * (ArithmeticFunction.vonMangoldt (m / a) : ℝ) := rfl
+
+/-- **`τ₃` as a difference of two half-line coefficients.** -/
+theorem tauThree_eq_sub (n m : ℕ) (h : cutoffB n ≤ cutoffB3 n) :
+    tauThree n m = halfLineTypeII (cutoffU n) (cutoffU n) (cutoffB n) m
+      - halfLineTypeII (cutoffU n) (cutoffU n) (cutoffB3 n) m :=
+  windowTypeII_eq_sub _ _ _ _ _ h
+
+/-- **Support of the small-cofactor region.**  If the cofactor is at most `V₀` then the
+argument is at most `H · V₀`.  With `H = n^(2/3)` and `V₀ = n^(2/5)` this puts the
+small-cofactor part of `τ₃` on `m ≤ n^(13/15)`. -/
+theorem le_mul_of_cofactor_le (m a H V₀ : ℕ) (ha : a ∣ m) (haH : a ≤ H)
+    (hcof : m / a ≤ V₀) : m ≤ H * V₀ := by
+  have hm : m = a * (m / a) := (Nat.mul_div_cancel' ha).symm
+  rw [hm]
+  exact Nat.mul_le_mul haH hcof
+
+/-- **The general-cutoff Type-II block bound.**  `typeIIBlock_sq_le_uniform` fed
+through `cutoff_squared_budget_general`: no relation between `U`, `V` and `N^(2/5)`.
+
+With `U = N^(1/16)` this gives `N/√U = N^(31/32)`, so the block scale is
+`N^(31/32) log³` and the summed scale `N^(31/32) log⁴ = o(N)` — the budget still
+closes, the loss against the `2/5` form being `N^(27/80)`. -/
+theorem typeIIBlock_norm_le_general (θ : ℝ) (a : ℤ) (q : ℕ) (hq : 0 < q)
+    (hcop : IsCoprime a (q : ℤ)) (happrox : |θ - (a : ℝ) / q| ≤ 1 / (q : ℝ) ^ 2)
+    (N U V j : ℕ) (hqN : q ≤ N) (hU : 0 < U) (hV : 0 < V) (hN : 1 ≤ N) :
+    ‖OAI.Problem337.Vaughan.typeIIBlock N U V j
+        (fun k => OAI.Problem337.VaughanBilinear.phase (θ * (k : ℝ)))‖
+      ≤ Real.sqrt 32 * (1 + Real.log (2 * (N : ℝ))) ^ 3 *
+        ((N : ℝ) / Real.sqrt q + (N : ℝ) / Real.sqrt U
+          + (N : ℝ) / Real.sqrt V + Real.sqrt ((N : ℝ) * q)) := by
+  have hb := OAI.Problem337.Vaughan.typeIIBlock_sq_le_uniform θ a q hq hcop happrox
+    N U V j hqN hU hV
+  have hlog : OAI.Problem337.Vaughan.typeIILogScale N = 1 + Real.log (2 * (N : ℝ)) := rfl
+  rw [hlog] at hb
+  exact cutoff_squared_budget_general (X := (N : ℝ)) (q := (q : ℝ)) (C := 32)
+    (U := (U : ℝ)) (V := (V : ℝ))
+    (R := ‖OAI.Problem337.Vaughan.typeIIBlock N U V j
+        (fun k => OAI.Problem337.VaughanBilinear.phase (θ * (k : ℝ)))‖)
+    (by exact_mod_cast hN) (by exact_mod_cast hq) (by norm_num)
+    (by exact_mod_cast hU) (by exact_mod_cast hV) hb
 
 end B1B1Port
