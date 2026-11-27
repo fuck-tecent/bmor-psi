@@ -1005,4 +1005,63 @@ theorem integral_tauCoeff_norm_sq_le (n : ℕ) (hn : 0 < n) {T : ℝ} (hT : 0 �
   exact le_rfl
 
 
+/-! ### The bridge to the prime-indicator major-arc model
+
+`Λ` and the prime indicator `w k = if k is prime then log k else 0` agree on
+primes and differ exactly on the prime powers `p^j` with `j ≥ 2`.  Splitting each
+atom into its prime part and this correction is what lets the verified
+major-arc model (`L_goldbach_frontier_medcore_bv_band`, stated for `S n w`)
+be applied to `S_{τ₁}`.
+-/
+
+/-- The prime part of one atom. -/
+def primeWave (a U N : ℕ) (t : ℝ) : ℂ :=
+  ∑ k ∈ Finset.Icc (U+1) N,
+    (if Nat.Prime k then (Real.log (k:ℝ) : ℂ) else 0) * phase ((a*k:ℕ)*t)
+
+/-- The prime-power correction `Λ - w` of one atom. -/
+def primePowerCorrection (a U N : ℕ) (t : ℝ) : ℂ :=
+  ∑ k ∈ Finset.Icc (U+1) N,
+    ((ArithmeticFunction.vonMangoldt k : ℂ) -
+      (if Nat.Prime k then (Real.log (k:ℝ) : ℂ) else 0)) * phase ((a*k:ℕ)*t)
+
+/-- An atom is its prime part plus the prime-power correction. -/
+theorem atomWave_eq_primeWave_add_correction (a U N : ℕ) (t : ℝ) :
+    atomWave a U N t = primeWave a U N t + primePowerCorrection a U N t := by
+  unfold atomWave primeWave primePowerCorrection
+  rw [← Finset.sum_add_distrib]
+  exact Finset.sum_congr rfl fun k _ => by ring
+
+/-- The prime-power correction is bounded by the total `Λ`-mass of the composite
+prime powers in the range. -/
+theorem primePowerCorrection_norm_le (a U N : ℕ) (t : ℝ) :
+    ‖primePowerCorrection a U N t‖
+      ≤ ∑ k ∈ Finset.Icc (U+1) N,
+          if Nat.Prime k then 0 else ArithmeticFunction.vonMangoldt k := by
+  unfold primePowerCorrection
+  refine (norm_sum_le _ _).trans ?_
+  refine Finset.sum_le_sum fun k _ => ?_
+  rw [norm_mul, show ‖phase ((a*k:ℕ)*t)‖ = 1 from by simp, mul_one]
+  by_cases hp : Nat.Prime k
+  · rw [if_pos hp]
+    have hlam : ArithmeticFunction.vonMangoldt k = Real.log (k:ℝ) :=
+      ArithmeticFunction.vonMangoldt_apply_prime hp
+    rw [if_pos hp, hlam]
+    simp
+  · rw [if_neg hp, if_neg hp, sub_zero, Complex.norm_real, Real.norm_eq_abs,
+      abs_of_nonneg ArithmeticFunction.vonMangoldt_nonneg]
+
+/-- **Prime/major-arc split of `S_{τ₁}`.** -/
+theorem plainPolynomial_tauCoeff_prime_split (n : ℕ) (t : ℝ) :
+    plainPolynomial n (tauCoeff n) t
+      = (∑ a ∈ Finset.Icc (cutoffU n + 1) (lowCut n),
+          (lowMoebiusWeight (cutoffU n) a : ℂ) * primeWave a (cutoffU n) (n / a) t)
+        + ∑ a ∈ Finset.Icc (cutoffU n + 1) (lowCut n),
+          (lowMoebiusWeight (cutoffU n) a : ℂ) *
+            primePowerCorrection a (cutoffU n) (n / a) t := by
+  unfold tauCoeff
+  rw [plainPolynomial_tau1]
+  simp_rw [atomWave_eq_primeWave_add_correction, mul_add]
+  rw [Finset.sum_add_distrib]
+
 end B1B1Port

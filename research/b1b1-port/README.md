@@ -710,3 +710,58 @@ The remaining step needs the major-arc approximation
 i.e. equidistribution of `τ₁` in residue classes modulo `q ≤ n^(1/3)` — a
 Siegel–Walfisz-type input for the Möbius/divisor coefficient.  That is the
 genuine research content of the cell, and the reason it is marked `challenge_only`.
+
+## Milestone 13: the bridge to the prime-indicator major-arc model
+
+Verified this round:
+
+```lean
+def primeWave (a U N) (t) :=
+  ∑_{k ∈ (U,N]} (if k prime then log k else 0) · e(a k t)
+
+def primePowerCorrection (a U N) (t) :=
+  ∑_{k ∈ (U,N]} (Λ k - (if k prime then log k else 0)) · e(a k t)
+
+atomWave_eq_primeWave_add_correction :
+  atomWave a U N t = primeWave a U N t + primePowerCorrection a U N t
+
+primePowerCorrection_norm_le :
+  ‖primePowerCorrection a U N t‖ ≤ ∑_{k ∈ (U,N]} if k prime then 0 else Λ k
+
+plainPolynomial_tauCoeff_prime_split :
+  S_{τ₁}(t) = ∑_a c(a) · primeWave a U (n/a) t
+                + ∑_a c(a) · primePowerCorrection a U (n/a) t
+```
+
+So `S_{τ₁}` is a finite combination of **dilated prime sums** plus a
+prime-power correction.  This is the bridge to the verified major-arc model
+`L_goldbach_frontier_medcore_bv_band` (and `spatial_lowmod_model_match`),
+which are stated for `S n w` with `w = ` prime indicator.
+
+### What remains, precisely
+
+1. **Dilation**: `primeWave a U N (t) = S N w (a t)` up to the `k ≤ U` truncation
+   (`∑_{k ≤ U} w k ≈ n^(1/16)`) and the `N = n/a` truncation.
+   On the arc `t = a₀/q + β`, `a t` sits on the arc around `a a₀/q` with reduced
+   denominator `q / gcd(a,q)`, so the model must be summed over the fibre.
+2. **Apply the model** to each dilated prime sum, expand the square, and use
+   the verified `bandRamanujan` / `K n` machinery.
+3. **Bound `D`** by the same computation (it is the `q = 0` / full-circle term)
+   and show the difference is `o(n)`.
+
+### Dossier summary (13 verified milestones, 1091 lines, no `sorry`)
+
+| layer | content |
+|---|---|
+| definitions | `τ₁ = lowBandCoefficient`, `wideArcs`, `tauCoeff`, `diagonalSum` |
+| atom/prime structure | `plainPolynomial_tau1`, `primeWave`, `primePowerCorrection`, `…_prime_split` |
+| weighted analysis | `wwave`, `woffWave`, `centered_deep_wwave_integral`, `split_shifted_wwave` |
+| Fourier toolkit | `integral_phase_int/sub`, `integral_wwave_norm_sq`, ball/annulus decay |
+| exact reduction | `deepIntegral_split`, `deepIntegral_eq_diagonal_sub_wide` |
+| size bounds | `|τ₁(m)| ≤ T log m`, `∫‖S‖² ≤ T² n log²` |
+| numerical evidence | `theta_numerics.py`, `vmass_numerics.py` |
+| decisive negative | far/near cannot reach `o(n)` |
+
+The remaining step is the major-arc model application — a substantial but
+*standard* computation, with the prime-indicator version already verified in the
+catalogue.
