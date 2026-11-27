@@ -1947,4 +1947,22 @@ theorem arcKernel_eq_sinc (n : ℕ) (m : ℤ) (hm : m ≠ 0)
   rw [integral_compl_indicator_phase_eq n m hm,
     integral_wideSet_phase_eq_sinc_range n m hm hn hQ hρ0 hρ1 hint]
 
+/-- The kernel at zero frequency is the complement measure. -/
+theorem arcKernel_zero (n : ℕ) :
+    arcKernel n 0
+      = ((MeasureTheory.volume.real ((wideSet n)ᶜ ∩ Set.Ioc (0:ℝ) 1) : ℝ) : ℂ) := by
+  have hmeas : MeasurableSet (wideSet n) := wide_measurable n (cutoffB n) (cutoffH n)
+  have hpt : ∀ t : ℝ, (wideSet n)ᶜ.indicator (fun y => phase (((0:ℤ):ℝ)*y)) t
+      = (wideSet n)ᶜ.indicator (fun _ => (1:ℂ)) t := by
+    intro t
+    congr 1
+    funext y
+    simp [phase]
+  unfold arcKernel
+  simp_rw [hpt]
+  rw [intervalIntegral.integral_of_le zero_le_one,
+    MeasureTheory.setIntegral_indicator hmeas.compl]
+  rw [Set.inter_comm, MeasureTheory.setIntegral_const]
+  simp
+
 end B1B1Port

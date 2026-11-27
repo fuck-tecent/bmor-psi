@@ -1409,3 +1409,38 @@ Jdeep n = D - W ,   D = ∑_{a j + a' k = n} c(a)c(a')Λ(j)Λ(k) ,
 ### Dossier
 
 28 verified milestones, 1929 lines, no `sorry`, branch `research/b1b1-arcsplit`.
+
+## Milestone 29: the kernel at zero frequency
+
+```lean
+arcKernel_zero (n) :
+  arcKernel n 0 = ↑(volume.real ((wideSet n)ᶜ ∩ Set.Ioc 0 1))
+```
+
+(the complement measure, via `setIntegral_indicator` + `setIntegral_const`).
+
+### The last interface for the full substitution
+
+`deepIntegral_eq_quadruple_sum` + `arcKernel_eq_sinc` (`m ≠ 0`) + `arcKernel_zero`
+(`m = 0`) now give, by `Finset.sum_congr` with a `by_cases h : m = 0` split,
+
+```text
+Jdeep n = ∑_{a,a'} (c a · c a') ∑_{j,k} (Λ j · Λ k) ·
+   if a j + a' k = n
+   then arcKernel n 0
+   else - ∑_{q ≤ Q₁} ∑_{a₀ ∈ (range q), (a₀,q)=1} e(m a₀/q) sin(2π m H/(q n))/(π m)
+```
+
+i.e. `Jdeep = D·(1 - |A|) - W` with
+
+```text
+D = ∑_{a j + a' k = n} c(a)c(a')Λ(j)Λ(k)
+W = ∑_{quad} c(a)c(a')Λ(j)Λ(k) ∑_q c_q(m) sin(2π m H/(q n))/(π m)
+```
+
+This is the complete `τ₁`-version of `spatial_exact_split`.  The remaining work is
+the local-density aggregation (Milestone "second layer" in the handover).
+
+### Dossier
+
+29 verified milestones, 1966 lines, no `sorry`, branch `research/b1b1-arcsplit`.
