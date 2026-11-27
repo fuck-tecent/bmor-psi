@@ -171,6 +171,44 @@ lemma norm_log_weighted_geometric_sum_Icc_le_recip (n N : ℕ) (t : ℝ) (hNn : 
     · rw [min_eq_right (le_of_not_ge hmin)]
       simpa [mul_comm] using hdist'
 
+/-- Geometric sum in reciprocal-distance form, with the zero-distance case
+capped by the length. -/
+lemma norm_geometric_sum_Icc_le_recip (N : ℕ) (t : ℝ) :
+    ‖∑ m ∈ Finset.Icc 1 N, E ((m : ℝ) * t)‖ ≤ typeIDistRecip N t := by
+  have normE : ∀ x : ℝ, ‖E x‖ = 1 := by
+    intro x
+    dsimp only [E]
+    simpa only [mul_comm] using Complex.norm_exp_ofReal_mul_I (2 * Real.pi * x)
+  rw [typeIDistRecip]
+  by_cases hdist : typeIDist t = 0
+  · rw [if_pos hdist]
+    calc
+      ‖∑ m ∈ Finset.Icc 1 N, E ((m : ℝ) * t)‖ ≤
+          ∑ _m ∈ Finset.Icc 1 N, (1 : ℝ) := by
+        refine (norm_sum_le _ _).trans ?_
+        apply Finset.sum_le_sum
+        intro m _
+        rw [normE]
+      _ = (N : ℝ) := by
+        rw [Finset.sum_const, Nat.card_Icc, nsmul_eq_mul]
+        norm_num
+  · rw [if_neg hdist]
+    have hdistb := norm_geometric_sum_Icc_le_dist N t hdist
+    by_cases hmin : (N : ℝ) ≤ 1 / typeIDist t
+    · rw [min_eq_left hmin]
+      calc
+        ‖∑ m ∈ Finset.Icc 1 N, E ((m : ℝ) * t)‖ ≤
+            ∑ _m ∈ Finset.Icc 1 N, (1 : ℝ) := by
+          refine (norm_sum_le _ _).trans ?_
+          apply Finset.sum_le_sum
+          intro m _
+          rw [normE]
+        _ = (N : ℝ) := by
+          rw [Finset.sum_const, Nat.card_Icc, nsmul_eq_mul]
+          norm_num
+    · rw [min_eq_right (le_of_not_ge hmin)]
+      exact hdistb
+
 /-- The harmonic sum is at most `1 + log K`. -/
 
 lemma typeI_small_q_coeff_sum_le (n q U : ℕ) (hq : 0 < q) (hUn : U ≤ n) :
@@ -986,6 +1024,105 @@ theorem norm_expSum_low_mu_lowLambda_zeta_le_majorArc_small_q (n q U a : ℕ) (�
     _ ≤ 2 * ((U:ℝ) * (U:ℝ)) * (q:ℝ) * Real.log (n:ℝ) +
         4 * (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) / (q:ℝ) := by
       linarith [hnd, hdiv]
+
+set_option maxHeartbeats 1600000 in
+/-- Third Type-I term in reciprocal-distance form, unconditional. -/
+lemma norm_expSum_low_mu_lowLambda_zeta_le_recip (n U : ℕ) (t : ℝ) :
+    ‖expSum n (low U (μ : ArithmeticFunction ℝ) * low U (Λ : ArithmeticFunction ℝ) *
+        (ζ : ArithmeticFunction ℝ)) t‖ ≤
+      ∑ d ∈ Finset.Icc 1 U, ∑ e ∈ Finset.Icc 1 U,
+        ((Λ : ArithmeticFunction ℝ) e) *
+          typeIDistRecip (n / (d * e)) (((d * e : ℕ) : ℝ) * t) := by
+  rw [expSum_low_mu_lowLambda_zeta_eq n U t]
+  have hstep : ‖∑ d ∈ Finset.Icc 1 (min U n), ((μ : ArithmeticFunction ℝ) d : ℂ) *
+        ∑ e ∈ Finset.Icc 1 (min U (n / d)),
+          ((Λ : ArithmeticFunction ℝ) e : ℂ) *
+            ∑ m ∈ Finset.Icc 1 (n / (d * e)),
+              E (((d * e * m : ℕ) : ℝ) * t)‖ ≤
+      ∑ d ∈ Finset.Icc 1 (min U n),
+        ∑ e ∈ Finset.Icc 1 (min U (n / d)),
+          ((Λ : ArithmeticFunction ℝ) e) *
+            typeIDistRecip (n / (d * e)) (((d * e : ℕ) : ℝ) * t) := by
+    refine (norm_sum_le _ _).trans ?_
+    apply Finset.sum_le_sum
+    intro d hd
+    rw [norm_mul, Complex.norm_real, Real.norm_eq_abs]
+    have hμ : |(μ : ArithmeticFunction ℝ) d| ≤ 1 := by
+      have h : |(ArithmeticFunction.moebius d : ℤ)| ≤ 1 :=
+        ArithmeticFunction.abs_moebius_le_one
+      have h' : |((ArithmeticFunction.moebius d : ℤ) : ℝ)| ≤ 1 := by
+        exact_mod_cast h
+      simpa using h'
+    calc
+      |(μ : ArithmeticFunction ℝ) d| *
+          ‖∑ e ∈ Finset.Icc 1 (min U (n / d)),
+            ((Λ : ArithmeticFunction ℝ) e : ℂ) *
+              ∑ m ∈ Finset.Icc 1 (n / (d * e)),
+                E (((d * e * m : ℕ) : ℝ) * t)‖
+          ≤ 1 * ‖∑ e ∈ Finset.Icc 1 (min U (n / d)),
+              ((Λ : ArithmeticFunction ℝ) e : ℂ) *
+                ∑ m ∈ Finset.Icc 1 (n / (d * e)),
+                  E (((d * e * m : ℕ) : ℝ) * t)‖ :=
+            mul_le_mul_of_nonneg_right hμ (norm_nonneg _)
+      _ = ‖∑ e ∈ Finset.Icc 1 (min U (n / d)),
+            ((Λ : ArithmeticFunction ℝ) e : ℂ) *
+              ∑ m ∈ Finset.Icc 1 (n / (d * e)),
+                E (((d * e * m : ℕ) : ℝ) * t)‖ := one_mul _
+      _ ≤ ∑ e ∈ Finset.Icc 1 (min U (n / d)),
+            ((Λ : ArithmeticFunction ℝ) e) *
+              typeIDistRecip (n / (d * e)) (((d * e : ℕ) : ℝ) * t) := by
+        refine (norm_sum_le _ _).trans ?_
+        apply Finset.sum_le_sum
+        intro e he
+        rw [norm_mul, Complex.norm_real, Real.norm_eq_abs,
+          abs_of_nonneg ArithmeticFunction.vonMangoldt_nonneg]
+        have hinner : ‖∑ m ∈ Finset.Icc 1 (n / (d * e)),
+              E (((d * e * m : ℕ) : ℝ) * t)‖ ≤
+            typeIDistRecip (n / (d * e)) (((d * e : ℕ) : ℝ) * t) := by
+          have harg' : ∀ m : ℕ, ((d : ℝ) * (e : ℝ) * (m : ℝ)) * t =
+              (m : ℝ) * ((d : ℝ) * (e : ℝ) * t) := by
+            intro m
+            ring
+          simpa [harg'] using
+            norm_geometric_sum_Icc_le_recip (n / (d * e))
+              (((d * e : ℕ) : ℝ) * t)
+        exact mul_le_mul_of_nonneg_left hinner ArithmeticFunction.vonMangoldt_nonneg
+  have hext : ∑ d ∈ Finset.Icc 1 (min U n),
+        ∑ e ∈ Finset.Icc 1 (min U (n / d)),
+          ((Λ : ArithmeticFunction ℝ) e) *
+            typeIDistRecip (n / (d * e)) (((d * e : ℕ) : ℝ) * t)
+      ≤ ∑ d ∈ Finset.Icc 1 U, ∑ e ∈ Finset.Icc 1 U,
+        ((Λ : ArithmeticFunction ℝ) e) *
+          typeIDistRecip (n / (d * e)) (((d * e : ℕ) : ℝ) * t) := by
+    have houter : ∑ d ∈ Finset.Icc 1 (min U n),
+          ∑ e ∈ Finset.Icc 1 (min U (n / d)),
+            ((Λ : ArithmeticFunction ℝ) e) *
+              typeIDistRecip (n / (d * e)) (((d * e : ℕ) : ℝ) * t)
+        ≤ ∑ d ∈ Finset.Icc 1 U,
+          ∑ e ∈ Finset.Icc 1 (min U (n / d)),
+            ((Λ : ArithmeticFunction ℝ) e) *
+              typeIDistRecip (n / (d * e)) (((d * e : ℕ) : ℝ) * t) := by
+      apply Finset.sum_le_sum_of_subset_of_nonneg
+      · intro d hd
+        exact Finset.mem_Icc.mpr ⟨(Finset.mem_Icc.mp hd).1,
+          le_trans (Finset.mem_Icc.mp hd).2 (min_le_left _ _)⟩
+      · intro d _ _
+        apply Finset.sum_nonneg
+        intro e _
+        apply mul_nonneg ArithmeticFunction.vonMangoldt_nonneg
+        exact typeIDistRecip_nonneg _ _
+    refine houter.trans ?_
+    apply Finset.sum_le_sum
+    intro d _
+    apply Finset.sum_le_sum_of_subset_of_nonneg
+    · intro e he
+      exact Finset.mem_Icc.mpr ⟨(Finset.mem_Icc.mp he).1,
+        le_trans (Finset.mem_Icc.mp he).2 (min_le_left _ _)⟩
+    · intro e _ _
+      apply mul_nonneg ArithmeticFunction.vonMangoldt_nonneg
+      exact typeIDistRecip_nonneg _ _
+  exact hstep.trans hext
+
 
 /- Milestone: on a major arc with `q > U^2`, the entire Type-I part of the
 Vaughan decomposition is bounded by `6 U^2 q log n`.  Only the Type-II

@@ -761,3 +761,19 @@ This is the classical Type-I minor-arc form, unconditional even at
 rational points: the zero-distance case is capped by the trivial length
 `n/d`.  The remaining Type-I minor-arc estimate is the arithmetic bound on
 this capped reciprocal sum using the Farey approximation.
+
+### Third Type-I term in reciprocal-distance form
+
+`norm_geometric_sum_Icc_le_recip` gives the no-log geometric bound
+`‖∑_{m≤N} E(mθ)‖ ≤ typeIDistRecip N θ`.  Consequently
+
+```lean
+norm_expSum_low_mu_lowLambda_zeta_le_recip :
+  ‖S_3(t)‖ ≤ ∑_{d≤U} ∑_{e≤U}
+    Λ(e) · typeIDistRecip (n/(de)) (de · t).
+```
+
+All three Type-I terms now have unconditional reciprocal-distance forms:
+the first term is `(U+1) log n`, the second and third are the capped
+reciprocal sums above.  The remaining Type-I minor-arc estimate is the
+arithmetic bound on these reciprocal sums.

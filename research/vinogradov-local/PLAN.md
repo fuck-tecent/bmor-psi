@@ -292,3 +292,10 @@ unconditional Type-I second-term bound
 
 The zero-distance case is capped by `n/d`.  Next: estimate this capped
 reciprocal sum on the minor arcs with the Farey approximation.
+
+## Type-I third term reciprocal form
+
+`norm_expSum_low_mu_lowLambda_zeta_le_recip` puts the third Type-I term
+in the same unconditional reciprocal-distance form as the second.  All
+Type-I terms now have the classical minor-arc shape; the remaining step
+is the capped reciprocal sum estimate.

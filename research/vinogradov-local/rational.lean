@@ -568,6 +568,19 @@ noncomputable def typeIDistRecip (N : ℕ) (θ : ℝ) : ℝ :=
 
 lemma typeIDist_nonneg (x : ℝ) : 0 ≤ typeIDist x := abs_nonneg _
 
+lemma typeIDistRecip_nonneg (N : ℕ) (θ : ℝ) : 0 ≤ typeIDistRecip N θ := by
+  rw [typeIDistRecip]
+  by_cases h : typeIDist θ = 0
+  · rw [if_pos h]
+    positivity
+  · rw [if_neg h]
+    apply le_min
+    · positivity
+    · exact div_nonneg zero_le_one
+        (le_of_lt (lt_of_le_of_ne (typeIDist_nonneg θ) (Ne.symm h)))
+
+
+
 lemma typeIDist_le_half (x : ℝ) : typeIDist x ≤ 1 / 2 := abs_sub_round x
 
 lemma abs_sin_pi_mul_ge_two_mul_typeIDist (x : ℝ) :
