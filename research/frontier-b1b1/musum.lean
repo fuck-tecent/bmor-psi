@@ -49,4 +49,24 @@ lemma sum_moebius_divisors_eq (n : ℕ) :
   rw [ArithmeticFunction.one_apply] at h'
   exact h'
 
+/-- The divisors of `q` that divide `a` are exactly the divisors of `gcd a q`. -/
+lemma divisors_filter_dvd_eq_gcd (a q : ℕ) (hq : 0 < q) :
+    q.divisors.filter (fun d => d ∣ a) = (Nat.gcd a q).divisors := by
+  ext d
+  rw [Finset.mem_filter, Nat.mem_divisors, Nat.mem_divisors]
+  constructor
+  · rintro ⟨⟨hdq, _hqne⟩, hda⟩
+    exact ⟨Nat.dvd_gcd hda hdq, (Nat.gcd_pos_of_pos_right a hq).ne'⟩
+  · rintro ⟨hdg, _⟩
+    exact ⟨⟨hdg.trans (Nat.gcd_dvd_right a q), by omega⟩,
+      hdg.trans (Nat.gcd_dvd_left a q)⟩
+
+/-- Pointwise Möbius sieve: the Möbius sum over the divisors of `q` that divide
+`a` is the coprimality indicator. -/
+lemma sum_mu_filter_eq (a q : ℕ) (hq : 0 < q) :
+    (∑ d ∈ q.divisors.filter (fun d => d ∣ a),
+        ((ArithmeticFunction.moebius d : ℤ) : ℂ)) =
+      if Nat.Coprime a q then 1 else 0 := by
+  rw [divisors_filter_dvd_eq_gcd a q hq, sum_moebius_divisors_eq]
+
 end B1B1

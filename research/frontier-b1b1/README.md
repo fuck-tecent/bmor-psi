@@ -259,3 +259,21 @@ sum_moebius_divisors_eq (n : ℕ) :
 
 From `ArithmeticFunction.coe_moebius_mul_coe_zeta` (`μ * ζ = 1`), `mul_apply`,
 and the `divisorsAntidiagonal → divisors` reindexing via `Finset.sum_nbij'`.
+
+## Milestone 17: pointwise Möbius sieve
+
+Added to `musum.lean`:
+
+```lean
+divisors_filter_dvd_eq_gcd (hq : 0 < q) :
+  q.divisors.filter (fun d => d ∣ a) = (Nat.gcd a q).divisors
+
+sum_mu_filter_eq (hq : 0 < q) :
+  ∑ d ∈ q.divisors.filter (fun d => d ∣ a), μ(d)
+    = if Nat.Coprime a q then 1 else 0
+```
+
+So the Möbius weight of the divisors of `q` dividing `a` is exactly the
+coprimality indicator.  The full sieve identity
+`∑_{(a,q)=1} f a = ∑_{d|q} μ(d) ∑_{a: d|a} f a` now only needs a `Finset.sum_comm`
+over the product `q.divisors ×ˢ range q`.
