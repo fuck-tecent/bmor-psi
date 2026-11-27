@@ -1858,3 +1858,131 @@ absolute-value or mean-square instrument, and each one provably loses at least
 `n^(1/3)` (or `n^(1/4)` in the sup route) more than the budget `εn` allows.  The
 dossier therefore stands as the exact reduction plus a proof that the available
 method classes cannot finish it.
+
+## Milestone 35: the exact position of b1-b1 in the upstream reduction chain
+
+This is the last substantive finding of the port.  It supersedes the framing of
+Milestone 34 (which said "no Type-II instrument exists"): the sharper statement is
+that the upstream chain is **already assembled** and b1-b1 is literally one of six
+missing cells in it.
+
+### 35.1 Type-I is done, twice
+
+**(a) Upstream, verified.**
+`lean/PEqualNP/Outside/L_goldbach_frontier_vaughan_type1_elimination.lean`
+(1569 lines, no `sorry`, on `main`):
+
+```lean
+theorem PEqualNP.Outside.L_goldbach_frontier_vaughan_type1_elimination :
+  … ‖Jdeep n Λ Λ − Jdeep n (typeII n) (typeII n)‖ ≤ 60 * Z ,
+        Z = (n:ℝ)^(23/24) * (Real.log n)^2  =  o(n)
+```
+
+So the whole `Λ × Λ` deep-minor problem reduces to the **Type-II coefficient**
+with a sublinear error `n^(23/24) log² n`.
+
+**(b) Local machinery.**
+`goldback-vinogradov/research/vinogradov-local/` (`type1.lean`, `type1_bound.lean`
+≈ 230 KB, `assembly.lean`, `separated_large_sieve.lean`, …).  Its own README records
+the conclusion verbatim:
+
+> For `U = n^(1/16)`, `C = O(log n)`, this is `o(n)` without any prime-distribution
+> input.  **The remaining hard part is therefore the Type-II range, not the low
+> Type-I terms.**
+
+Support bound `‖∑_{k≤N} low U f k · E(k t)‖ ≤ (U+1)·C`; residue refinement
+`‖S₂(a/q+β)‖ ≤ 4 q log n (1 + log q)` for `q ≥ 2U`; third-term fibre reindexing
+`∑_{d,e≤U} … ≤ log(U²)·2q·2(1+log q)`.
+
+Note: that directory is being actively edited by another session (mtime same day);
+this port does not touch it.
+
+### 35.2 `τ₁` **is** Vaughan's Type-II coefficient, band-truncated
+
+```lean
+-- upstream  typeII_coefficient (U m)
+∑ a ∈ m.divisors.filter (U < a ∧ U < m/a),
+    (∑ d ∈ a.divisors.filter (U < d), μ d) * Λ (m/a)
+
+-- catalogue τ₁
+∑ a ∈ m.divisors.filter (U < a ∧ a ≤ B₁ ∧ U < m/a),
+    (∑ d ∈ a.divisors.filter (U < d), μ d) * Λ (m/a)
+```
+
+The two are **identical except for the extra `a ≤ B₁`**.  Hence `τ₁, τ₂, τ₃, τ₄` are
+the band-splits of Vaughan's Type-II coefficient:
+
+```text
+τ₁ : a ∈ (U,  B₁] = (n^(1/16), n^(1/4)]
+τ₂ : a ∈ (B₁, B₂] = (n^(1/4),  n^(1/3)]
+τ₃ : a ∈ (B₂, B₃] = (n^(1/3),  n^(2/3)]
+τ₄ : a ∈ (B₃, n/U] = (n^(2/3), n/U]
+typeII = τ₁ + τ₂ + τ₃ + τ₄ .
+```
+
+### 35.3 The assembly theorem: ten cells
+
+`lean/PEqualNP/Outside/L_goldbach_frontier_type2_matrix_bridge.lean` (58 lines,
+no `sorry`) proves, from the following hypotheses,
+
+```lean
+intro hswap htype ⟨N₀,hsplit⟩ h11 h12 h14 h44 h22 h24 h13 h23 h34 h33 e he
+```
+
+that `‖deepMinor n‖ ≤ e * n`.  Reading the hypothesis list:
+
+```text
+Jdeep(Λ,Λ) = o(n)
+  ← hswap + htype            swap + Type-I elimination      PROVED
+  ← hsplit : typeII = τ₁+τ₂+τ₃+τ₄                          PROVED
+  ← all ten cells (i,j)                                    ← the gap
+```
+
+The symmetric 4×4 matrix has exactly ten independent cells, and the hypothesis list
+contains exactly those ten: `h11 h12 h13 h14 h22 h23 h24 h33 h34 h44`.  The budget is
+split as `e/18` per hypothesis.
+
+Board status (catalogue revision `970850fd`):
+
+| cell | task | status |
+|---|---|---|
+| h11 | `…-type2-b1-b1` | **open**, `challenge_only`, 914 |
+| h12 | `…-type2-b1-b2` | open, claimed by another handle |
+| h13 | `…-type2-b1-b3` | open, claimed by another handle |
+| h22 | `…-type2-b2-b2` | open, `challenge_only`, 914 |
+| h23 | `…-type2-b2-b3` | open, `challenge_only`, 914 |
+| h33 | `…-type2-b3-b3-parity` | open, `challenge_only`, 914 |
+| h14 | `…-type2-b1-b4` | **proved** |
+| h24 | `…-type2-b2-b4` | **proved** |
+| h34 | `…-type2-b3-b4` | **proved** |
+| h44 | `…-type2-b4-b4` | **proved** |
+
+**Four of ten are proved, and they are exactly the `τ₄` column** — the short-cofactor
+column (`a > n^(2/3) ⇒ m/a < n^(1/3)`), which is the only regime the far/near engine
+reaches.  The six open cells all have long cofactors.
+
+### 35.4 Why a naive port of the Type-I budget fails
+
+Type-I elimination gives `n^(23/24)`.  For `τ₁` one would have to sum the same
+estimate over the short divisors `a ∈ (U, B₁]`, with
+`∑_{a≤B₁} |c(a)| ≤ ∑_{a≤B₁} τ(a) ≍ n^(1/4) log n`.  That gives
+
+```text
+n^(23/24) · n^(1/4)  =  n^(29/24) ,
+```
+
+i.e. **`n^(5/24)` over budget**.  (Estimate, not a verified statement.)  The `a`-sum
+must therefore be treated *jointly* with Vaughan's `d, e` — which is precisely the
+missing Type-II instrument.
+
+### 35.5 Verdict
+
+* b1-b1 is **not** an isolated problem.  It is cell `h11` of the ten-cell
+  decomposition of `Jdeep(Λ,Λ) = o(n)`, and that conclusion is exactly the
+  binary-Goldbach-type asymptotic for the log-weighted prime sum.
+* All glue is verified: swap, Type-I elimination, `typeII = Στᵢ`, matrix assembly.
+* The only open content is the six long-cofactor cells.  Every method available to
+  this port fails on them by a quantified margin (Milestones 11, 34, and 35.4).
+* Therefore: **no clear path to b1-b1 with the current toolset**; no PR can be
+  opened; this dossier (exact reduction + quantified impossibilities + the position
+  of the cell in the upstream chain) is the deliverable.
