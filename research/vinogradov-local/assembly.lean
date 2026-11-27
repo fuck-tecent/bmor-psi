@@ -126,6 +126,64 @@ lemma norm_expSum_low_mu_mul_log_le_recip (n U : ℕ) (t : ℝ) :
         norm_log_weighted_geometric_sum_Icc_le_recip n (n / d) ((d:ℝ) * t)
           (Nat.div_le_self n d)
 
+/-- Type-I second term for every `α ∈ [0,1]` when `Q ≥ 16U`: the Farey
+approximation is already inside the major-arc radius, so the small-`q`
+second-term bound applies (in particular on the minor arcs). -/
+lemma norm_expSum_low_mu_mul_log_le_of_large_Q (n U Q : ℕ) (α : ℝ)
+    (hUn : U ≤ n) (hU1 : 1 ≤ U) (hQ : 16 * U ≤ Q)
+    (hα0 : 0 ≤ α) (hα1 : α ≤ 1) :
+    ∃ q : ℕ, 1 ≤ q ∧ q ≤ Q ∧
+      ‖expSum n (low U (μ : ArithmeticFunction ℝ) * ArithmeticFunction.log) α‖ ≤
+        2 * (U:ℝ) * (q:ℝ) * Real.log (n:ℝ) +
+          2 * (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) / (q:ℝ) := by
+  have hQpos : 0 < Q := by omega
+  obtain ⟨a, q, hq1, hqQ, _ha, hcop, hdist⟩ :=
+    exists_farey_approx α hα0 hα1 Q hQpos
+  let β : ℝ := α - (a:ℝ)/(q:ℝ)
+  have hβ : |β| ≤ 1 / (16 * (q:ℝ) * (U:ℝ)) := by
+    have h1 : |β| ≤ 1 / ((q:ℝ) * (Q:ℝ)) := by
+      simpa [β] using hdist
+    have hqR : (0:ℝ) < (q:ℝ) := by exact_mod_cast (by omega : 0 < q)
+    have hQle : (16:ℝ) * (U:ℝ) ≤ (Q:ℝ) := by exact_mod_cast hQ
+    have hden : (q:ℝ) * ((16:ℝ) * (U:ℝ)) ≤ (q:ℝ) * (Q:ℝ) :=
+      mul_le_mul_of_nonneg_left hQle hqR.le
+    have hstep : 1 / ((q:ℝ) * (Q:ℝ)) ≤ 1 / (16 * (q:ℝ) * (U:ℝ)) := by
+      apply one_div_le_one_div_of_le (by positivity)
+      calc
+        (16:ℝ) * (q:ℝ) * (U:ℝ) = (q:ℝ) * ((16:ℝ) * (U:ℝ)) := by ring
+        _ ≤ (q:ℝ) * (Q:ℝ) := hden
+    exact h1.trans hstep
+  refine ⟨q, hq1, hqQ, ?_⟩
+  have hαeq : α = (a:ℝ)/(q:ℝ) + β := by simp [β]
+  rw [hαeq]
+  exact norm_expSum_low_mu_mul_log_le_majorArc_small_q n q U a β
+    (by omega) hcop hU1 hUn hβ
+
+/-- Uniform Type-I second-term bound for `Q ≥ 16U`. -/
+lemma norm_expSum_low_mu_mul_log_le_uniform_of_large_Q (n U Q : ℕ) (α : ℝ)
+    (hUn : U ≤ n) (hU1 : 1 ≤ U) (hQ : 16 * U ≤ Q)
+    (hα0 : 0 ≤ α) (hα1 : α ≤ 1) :
+    ‖expSum n (low U (μ : ArithmeticFunction ℝ) * ArithmeticFunction.log) α‖ ≤
+      2 * (U:ℝ) * (Q:ℝ) * Real.log (n:ℝ) +
+        2 * (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) := by
+  obtain ⟨q, hq1, hqQ, hbound⟩ :=
+    norm_expSum_low_mu_mul_log_le_of_large_Q n U Q α hUn hU1 hQ hα0 hα1
+  have hqR : (1:ℝ) ≤ (q:ℝ) := by exact_mod_cast hq1
+  have hqQ' : (q:ℝ) ≤ (Q:ℝ) := by exact_mod_cast hqQ
+  have hlog : 0 ≤ Real.log (n:ℝ) := Real.log_natCast_nonneg n
+  have hnum : 0 ≤ 2 * (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) := by
+    positivity
+  have h1 : 2 * (U:ℝ) * (q:ℝ) * Real.log (n:ℝ) ≤
+      2 * (U:ℝ) * (Q:ℝ) * Real.log (n:ℝ) := by
+    apply mul_le_mul_of_nonneg_right _ hlog
+    apply mul_le_mul_of_nonneg_left hqQ'
+    positivity
+  have h2 : 2 * (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) / (q:ℝ) ≤
+      2 * (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) := by
+    rw [div_le_iff₀ (by positivity : (0:ℝ) < (q:ℝ))]
+    nlinarith [hnum, hqR]
+  linarith
+
 end
 
 end PEqualNP.Outside.Vaughan

@@ -299,3 +299,10 @@ reciprocal sum on the minor arcs with the Farey approximation.
 in the same unconditional reciprocal-distance form as the second.  All
 Type-I terms now have the classical minor-arc shape; the remaining step
 is the capped reciprocal sum estimate.
+
+## Type-I minor-arc second term for Q ≥ 16U
+
+`norm_expSum_low_mu_mul_log_le_uniform_of_large_Q` bounds the second
+Type-I term uniformly by `2UQ log n + 2n log n (1+log n)` whenever
+`Q ≥ 16U`.  This covers the minor arcs in that regime.  The third term
+still needs a separate small-`Q` argument.

@@ -777,3 +777,22 @@ All three Type-I terms now have unconditional reciprocal-distance forms:
 the first term is `(U+1) log n`, the second and third are the capped
 reciprocal sums above.  The remaining Type-I minor-arc estimate is the
 arithmetic bound on these reciprocal sums.
+
+### Type-I minor-arc second term for `Q ≥ 16U`
+
+`exists_farey_approx` gives a reduced approximation `a/q` with
+`|α - a/q| ≤ 1/(qQ)`.  When `Q ≥ 16U` this is inside the major-arc
+radius `1/(16qU)`, so the second-term small-`q` estimate applies to
+**every** `α ∈ [0,1]` (in particular on the minor arcs):
+
+```lean
+norm_expSum_low_mu_mul_log_le_of_large_Q :
+  ∃ q ≤ Q, ‖S₂(α)‖ ≤ 2Uq log n + 2n log n (1+log n)/q
+
+norm_expSum_low_mu_mul_log_le_uniform_of_large_Q :
+  ‖S₂(α)‖ ≤ 2UQ log n + 2n log n (1+log n).
+```
+
+This is a genuine minor-arc Type-I estimate in the regime `Q ≥ 16U`.
+The third term needs `Q ≥ 16U²` for the analogous argument (which makes
+the minor arcs empty), so its small-`Q` treatment remains open.
