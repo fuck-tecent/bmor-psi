@@ -2113,3 +2113,37 @@ bilinear `L²` handle because `Jdeep` is a product of two such sums.
 
 So: no new path; the correct statement is "τ₃ has a Vaughan-covered sub-region, and two
 named residual regions, neither of which is covered".
+
+## Milestone 37: the local-count identity is verified
+
+```lean
+def ramanujanPhase (q : ℕ) (m : ℝ) : ℂ :=
+  ∑ a₀ ∈ (Finset.range q).filter (fun a₀ => Nat.Coprime a₀ q), phase (m * (a₀/q))
+
+theorem sum_comm_outer5 {α} [AddCommMonoid α] … :
+  ∑_{x∈s} ∑_{y∈t} ∑_{y'∈t'} ∑_{z∈u y} ∑_{w∈v y'} f x y y' z w
+    = ∑_{y∈t} ∑_{y'∈t'} ∑_{z∈u y} ∑_{w∈v y'} ∑_{x∈s} f x y y' z w
+
+theorem quad_sum_ramanujan (n q : ℕ) :
+  ∑_{a ∈ I₁} ∑_{a' ∈ I₁} (c a · c a') · ∑_{j ∈ I₂ a} ∑_{k ∈ I₂ a'} (Λ j · Λ k) ·
+      ramanujanPhase q (a j + a' k − n)
+    = ∑_{a₀ ∈ (range q), (a₀,q)=1} S_{τ₁}(a₀/q)² · e(−n a₀/q)
+```
+
+Two implementation notes worth keeping:
+
+* `ramanujanPhase` is stated with a **real** frequency `m : ℝ`, deliberately.  The
+  frequency produced by `plainPolynomial_sq_dilated_expand` is
+  `(((a*j:ℕ):ℝ) + ((a'*k:ℕ):ℝ) - (n:ℝ))`; using `ℤ` here forces a cast rewrite in every
+  single term.  With `ℝ` the two sides match syntactically and the proof is
+  `simp only [ramanujanPhase, Finset.mul_sum]` followed by one `symm`.
+* `sum_comm_outer5` is proved by four `Finset.sum_comm` rewrites interleaved with three
+  `Finset.sum_congr` descents — `rw [Finset.sum_comm]` always rewrites the *outermost*
+  pair, so the descent is mandatory.  It replaces the failed `conv_rhs` attempt of
+  Milestone 31.
+
+Content: `D` is the `q = ∞` local count, and the `q`-th term of the `sincSum` layer is
+the finite-modulus local count.  This closes the bookkeeping of the "local density"
+picture; the estimate that would use it is the one shown impossible in M34/M36.
+
+Dossier: 2336 → 2414 lines, no `sorry`, 36 verified milestones.

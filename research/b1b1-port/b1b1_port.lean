@@ -2333,4 +2333,77 @@ theorem deepIntegral_eq_diagonal_sub_shifted_arc_sum (n : ℕ)
   refine Finset.sum_congr rfl fun q _ => Finset.sum_congr rfl fun a _ => ?_
   exact integral_arcSet_shift n q a
 
+/-! ### The local-count identity: `q = ∞` versus finite modulus `q` -/
+
+/-- The Ramanujan sum at a real frequency: `c_q(m) = ∑_{(a₀,q)=1} e(m a₀/q)`.
+Stated with a **real** frequency so that it matches the phase argument produced by
+`plainPolynomial_sq_dilated_expand` without cast rewriting. -/
+def ramanujanPhase (q : ℕ) (m : ℝ) : ℂ :=
+  ∑ a₀ ∈ (Finset.range q).filter (fun a₀ => Nat.Coprime a₀ q),
+    phase (m * ((a₀:ℝ)/(q:ℝ)))
+
+/-- The outer sum of a five-fold nested sum commutes all the way in.  The fourth and
+fifth index sets may depend on the second and third variables respectively. -/
+theorem sum_comm_outer5 {α : Type*} [AddCommMonoid α]
+    {β γ δ ε ζ : Type*}
+    (s : Finset β) (t : Finset γ) (t' : Finset δ)
+    (u : γ → Finset ε) (v : δ → Finset ζ)
+    (f : β → γ → δ → ε → ζ → α) :
+    (∑ x ∈ s, ∑ y ∈ t, ∑ y' ∈ t', ∑ z ∈ u y, ∑ w ∈ v y', f x y y' z w)
+      = ∑ y ∈ t, ∑ y' ∈ t', ∑ z ∈ u y, ∑ w ∈ v y', ∑ x ∈ s, f x y y' z w := by
+  rw [Finset.sum_comm]
+  refine Finset.sum_congr rfl fun y _ => ?_
+  rw [Finset.sum_comm]
+  refine Finset.sum_congr rfl fun y' _ => ?_
+  rw [Finset.sum_comm]
+  refine Finset.sum_congr rfl fun z _ => ?_
+  rw [Finset.sum_comm]
+
+/-- **The local-count identity.**  The `q`-local weighted count of the diagonal
+condition equals the sum of `S(a₀/q)² e(-n a₀/q)` over the reduced numerators:
+
+```text
+∑_{quads} c(a)c(a')Λ(j)Λ(k) · c_q(a j + a' k - n)
+  = ∑_{a₀ ∈ (range q), (a₀,q)=1} S_{τ₁}(a₀/q)² · e(-n a₀/q)
+```
+
+This is the precise statement that `D` is the `q = ∞` count and that the `q`-th term
+of `W` is the finite-modulus count. -/
+theorem quad_sum_ramanujan (n q : ℕ) :
+    (∑ a ∈ Finset.Icc (cutoffU n + 1) (lowCut n),
+      ∑ a' ∈ Finset.Icc (cutoffU n + 1) (lowCut n),
+        ((lowMoebiusWeight (cutoffU n) a : ℂ) * (lowMoebiusWeight (cutoffU n) a' : ℂ)) *
+          ∑ j ∈ Finset.Ioc (cutoffU n) (n / a),
+            ∑ k ∈ Finset.Ioc (cutoffU n) (n / a'),
+              ((ArithmeticFunction.vonMangoldt j : ℂ) *
+                (ArithmeticFunction.vonMangoldt k : ℂ)) *
+                ramanujanPhase q ((((a*j:ℕ):ℝ) + ((a'*k:ℕ):ℝ) - (n:ℝ))))
+      = ∑ a₀ ∈ (Finset.range q).filter (fun a₀ => Nat.Coprime a₀ q),
+          plainPolynomial n (tauCoeff n) ((a₀:ℝ)/(q:ℝ)) ^ 2 *
+            phase (-(n:ℝ)*((a₀:ℝ)/(q:ℝ))) := by
+  have h1 : ∀ a₀ ∈ (Finset.range q).filter (fun a₀ => Nat.Coprime a₀ q),
+      plainPolynomial n (tauCoeff n) ((a₀:ℝ)/(q:ℝ)) ^ 2 * phase (-(n:ℝ)*((a₀:ℝ)/(q:ℝ)))
+        = ∑ a ∈ Finset.Icc (cutoffU n + 1) (lowCut n),
+            ∑ a' ∈ Finset.Icc (cutoffU n + 1) (lowCut n),
+              ((lowMoebiusWeight (cutoffU n) a : ℂ) * (lowMoebiusWeight (cutoffU n) a' : ℂ)) *
+                ∑ j ∈ Finset.Ioc (cutoffU n) (n / a),
+                  ∑ k ∈ Finset.Ioc (cutoffU n) (n / a'),
+                    ((ArithmeticFunction.vonMangoldt j : ℂ) *
+                      (ArithmeticFunction.vonMangoldt k : ℂ)) *
+                      phase (((((a*j:ℕ):ℝ) + ((a'*k:ℕ):ℝ) - (n:ℝ))) * ((a₀:ℝ)/(q:ℝ))) :=
+    fun a₀ _ => plainPolynomial_sq_dilated_expand n _
+  rw [Finset.sum_congr rfl h1]
+  simp only [ramanujanPhase, Finset.mul_sum]
+  exact (sum_comm_outer5
+    (s := (Finset.range q).filter (fun a₀ => Nat.Coprime a₀ q))
+    (t := Finset.Icc (cutoffU n + 1) (lowCut n))
+    (t' := Finset.Icc (cutoffU n + 1) (lowCut n))
+    (u := fun a => Finset.Ioc (cutoffU n) (n / a))
+    (v := fun a' => Finset.Ioc (cutoffU n) (n / a'))
+    (f := fun a₀ a a' j k =>
+      ((lowMoebiusWeight (cutoffU n) a : ℂ) * (lowMoebiusWeight (cutoffU n) a' : ℂ)) *
+        (((ArithmeticFunction.vonMangoldt j : ℂ) *
+          (ArithmeticFunction.vonMangoldt k : ℂ)) *
+          phase (((((a*j:ℕ):ℝ) + ((a'*k:ℕ):ℝ) - (n:ℝ))) * ((a₀:ℝ)/(q:ℝ)))))).symm
+
 end B1B1Port
