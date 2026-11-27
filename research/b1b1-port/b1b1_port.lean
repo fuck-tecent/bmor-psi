@@ -1568,4 +1568,32 @@ theorem sum_arcSet_phase (n : ℕ) (m : ℤ) (hm : m ≠ 0) :
   refine Finset.sum_congr rfl fun q _ => Finset.sum_congr rfl fun a _ => ?_
   exact integral_arcSet_phase n q a m hm
 
+/-- The phase at an integer is `1`. -/
+theorem phase_int (k : ℤ) : phase ((k:ℝ)) = 1 := by
+  unfold phase
+  rw [show (((2 * Real.pi * (k:ℝ) : ℝ) : ℂ) * Complex.I)
+      = (k:ℂ) * (2*Real.pi*Complex.I) by push_cast; ring]
+  exact Complex.exp_int_mul_two_pi_mul_I k
+
+/-- **Boundary arcs**: by `1`-periodicity of `e(m·)`, the two clipped boundary
+pieces at `0` and `1` combine to the full ball at `0`. -/
+theorem integral_boundary_arcs (m : ℤ) (ρ : ℝ) :
+    (∫ t in (0:ℝ)..ρ, phase ((m:ℝ)*t)) + (∫ t in (1-ρ)..1, phase ((m:ℝ)*t))
+      = ∫ t in (-ρ)..ρ, phase ((m:ℝ)*t) := by
+  have hcont : Continuous fun t : ℝ => phase ((m:ℝ)*t) := by unfold phase; fun_prop
+  have hone : ∀ u : ℝ, phase ((m:ℝ)*(u+1)) = phase ((m:ℝ)*u) := by
+    intro u
+    rw [show (m:ℝ)*(u+1) = (m:ℝ)*u + (m:ℝ) by ring, phase_add, phase_int, mul_one]
+  have hshift : (∫ t in (1-ρ)..1, phase ((m:ℝ)*t))
+      = ∫ u in (-ρ)..0, phase ((m:ℝ)*u) := by
+    have h := intervalIntegral.integral_comp_add_right
+      (f := fun t : ℝ => phase ((m:ℝ)*t)) (a := -ρ) (b := 0) (1:ℝ)
+    simp only [neg_add_cancel, zero_add] at h
+    rw [show (-ρ + 1 : ℝ) = 1 - ρ by ring] at h
+    rw [← h]
+    exact intervalIntegral.integral_congr fun u _ => hone u
+  rw [hshift, add_comm,
+    intervalIntegral.integral_add_adjacent_intervals (hcont.intervalIntegrable _ _)
+      (hcont.intervalIntegrable _ _)]
+
 end B1B1Port

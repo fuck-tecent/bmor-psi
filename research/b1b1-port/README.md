@@ -983,3 +983,32 @@ and hence (using `∫_{0}^{1} e(m t) dt = [m=0]` for `m ≠ 0`)
 ```
 
 That is the `τ₁`-analogue of `spatial_exact_split`'s sinc collection.
+
+## Milestone 20: the boundary arcs combine by periodicity
+
+```lean
+phase_int (k : ℤ) : phase (k : ℝ) = 1
+
+integral_boundary_arcs (m : ℤ) (ρ : ℝ) :
+  ∫_{0}^{ρ} e(m t) dt + ∫_{1-ρ}^{1} e(m t) dt = ∫_{-ρ}^{ρ} e(m t) dt
+```
+
+The second is the `1`-periodicity statement behind the two boundary arcs
+`(q,a) = (1,0)` and `(1,1)`: their clipped pieces together give exactly the full
+ball at `0`, hence the same `sinc` term
+`sin(2π m ρ₁)/(π m)`.
+
+With `integral_arcSet_indicator_phase_of_inside` (interior arcs are not clipped)
+and `sum_arcSet_phase`, the sinc collection is now complete up to the bookkeeping
+of separating the `q = 1` case from `q ≥ 2`:
+
+```text
+∫_{0}^{1} 1_{wideSet n} e(m t) dt
+  = ∑_{q ≤ cutoffB n} ∑_{a, (a,q)=1} e(m a/q) · sin(2π m H/(q n))/(π m) ,
+```
+
+hence
+
+```text
+∫_{(wideSet n)ᶜ} e(m t) dt = - ∑_{q,a} e(m a/q) sin(2π m H/(q n))/(π m)     (m ≠ 0).
+```
