@@ -1783,3 +1783,78 @@ because `K(0) = 1 − |wideArcs| ≥ 1/2`. So the method's own error budget exce
 `εn` no matter how sharp the Ramanujan or kernel bounds are made; the signed
 cancellation `D − W` has to be used in the space domain (Milestones 10–11), not in
 the frequency domain.
+
+## Milestone 34: upstream merge (`1fe24b28`) and why the "local density" triangle inequality cannot close b1-b1
+
+### Merge
+
+`goldback-work` was fast-forwarded `1133b2d2 → 1fe24b28` (32 commits).  The dossier
+re-checks clean against the merged tree (2336 lines, no `sorry`, 1m40s).
+
+The merge brings a **new, fully proved route**, `selberg-large-sieve-and-power-saving`.
+All six of its modules are sorry-free and axiom-free on `main`:
+
+| module | lines | content |
+|---|---|---|
+| `Conjectures.Goldbach.SelbergSharpLargeSieve` | 1382 | sharp large sieve: `∑_{i<M}‖∑_{k≤N} a k e(k x_i)‖² ≤ (N + max 1 (2/δ)) ∑‖a k‖²` for points `δ`-separated mod 1 |
+| `Conjectures.Goldbach.UnconditionalMinorFiveSixths` | 3517 | `‖S_n(w,t)‖ ≤ n^(5/6+ε)` outside `wideArcs` |
+| `Conjectures.Goldbach.DeepThreeQuartersFromFareyError` | 679 | Friedlander–Goldston error ⇒ 3/4 bound |
+| `Conjectures.Goldbach.ThreeQuartersExceptionalDirichletWindows` | 632 | exceptional Dirichlet windows |
+| `Conjectures.Goldbach.ThreeQuartersModelSqrtExceptions` | 2095 | conditional circle model ⇒ `X^(1/2+ε)` Goldbach exceptions |
+| `Conjectures.Goldbach.DeepThreeQuartersExceptionalZeroCriterion` | 6599 | equivalence with the correction-only form |
+
+Consequences for this port:
+
+* `L_goldbach_finite_large_sieve` (the weak single-modulus `ZMod Q` version in
+  `goldback-artifacts`) is **obsolete** — the sharp Selberg form with separation is
+  on `main` and strictly stronger.  Do not add the old file.
+* The only remaining open target of that route is
+  `L-goldbach-frontier-deep-three-quarters-saving` itself.
+
+### The quantitative obstruction to "local density absolute convergence"
+
+Proposed route: bound `|Jdeep| ≤ ∑_q |A_q| · |weight − limit density|`.  Two problems.
+
+**(1) There is no limit density in `q`.**  From `arcKernel_eq_neg_sincSum`,
+
+```text
+W = ∑_{q ≤ Q₁} ∑_{quads} coeff · c_q(m) · sin(2π m ρ_q)/(π m),    ρ_q = H/(q n) .
+```
+
+For fixed `m ≠ 0`, `sin(2π m ρ_q)/(π m) → 0` as `n → ∞` because `ρ_q → 0`.  So every
+`q`-term tends to `0`; the sum over `q ≤ n^(1/3)` takes its value entirely from the
+range `|m − n| ≲ 1/ρ_q = q n / H`, not from convergence of local densities in `q`.
+
+**(2) The triangle inequality is off by `n^(1/3)`.**  By Milestone 33,
+
+```text
+Jdeep = D − ∑_{q ≤ Q₁} ∑_{a₀,(a₀,q)=1} e(−n a₀/q) ∫_{−ρ_q}^{ρ_q} S(a₀/q+β)² e(−nβ) dβ ,
+```
+
+and `∫_{arc}|S|² ≈ n/φ(q)` (the `|β| ≤ ρ_q` window integrates the `n` frequencies),
+so for one modulus
+
+```text
+∑_{a₀} |A_q|  ≈  φ(q) · n/φ(q)  =  n ,
+hence   ∑_{q ≤ Q₁} |A_q|  ≈  n · Q₁  =  n^(4/3) .
+```
+
+But the target is `|∑_q A_q| ≤ ε n`, and `∑_q A_q = D + O(εn) = Θ(n)`.  So the
+`q`-sum has to cancel from `n^(4/3)` down to `n`: a factor `n^(1/3)`.  Any bound of the
+form `|Jdeep| ≤ ∑_q |·| · |·|` is therefore *structurally* too lossy, no matter how
+sharp the per-`q` estimate.  This is the quantitative form of Milestone 11.
+
+**(3) A sup-norm route is also too lossy.**  `|Jdeep| ≤ ∫_{Aᶜ}|S|²`, and
+`‖S‖₂² = ∑|τ₁|² ≈ n log⁴ n`, so `∫_{Aᶜ}|S|² ≤ ‖S‖_∞(Aᶜ) · n^(1/2) log² n`.  To get
+`o(n)` one needs `‖S‖_∞(Aᶜ) ≲ n^(1/2−δ)`.  The newly merged 5/6 bound gives
+`n^(4/3)`; even the open 3/4 bound gives `n^(5/4)`.  **Neither suffices**, and the
+`1/2` threshold is exactly "major arcs up to `√n`".
+
+### Where that leaves the port
+
+`b1-b1` is a **signed main-term identity** (`W = D + o(n)`), not a smallness statement.
+Every verified tool — `sincSum`, arc geometry, large sieve, 5/6 bound — is an
+absolute-value or mean-square instrument, and each one provably loses at least
+`n^(1/3)` (or `n^(1/4)` in the sup route) more than the budget `εn` allows.  The
+dossier therefore stands as the exact reduction plus a proof that the available
+method classes cannot finish it.
