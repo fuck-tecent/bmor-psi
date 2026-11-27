@@ -370,3 +370,46 @@ Each arc contributes its full length `2H/(qn)` for small `h`, the `a`-sum
 contributes `q` (`norm_ramanujan_le_q`), and the total is `2HQ₁/n =
 O(log⁴ n / n^(1/3))`.  This is the `h`-small part of the kernel bound
 `|K(h)| ≤ [h=0] + 2HQ₁/n`.
+
+## Milestone 24: the wide-arc integral splits into its arcs
+
+`arcsplit.lean`:
+
+```lean
+arcSet (n q a) = {t | |t - a/q| ≤ H/(q n)}     -- individual arc
+
+measurableSet_arcSet, intervalIntegrable_indicator
+
+mem_wideArcs_iff  -- membership in the arc-family form
+
+arcSet_unique     -- a point lies in at most one arc
+wideArcs_indicator_eq_sum  -- 1_{wideArcs} = ∑_{q,a} 1_{arcSet q a}
+integral_wideArcs_eq_sum   -- ∫_{wideArcs} f = ∑_{q,a} ∫_{arcSet q a} f
+```
+
+The uniqueness lemma combines `wideArcs_pieces_disjoint` (Farey spacing) with
+`fraction_inj` (reduced fractions are equal only if numerators and denominators
+agree), so the arc family is a genuine finite disjoint union and the integral of
+any continuous function splits without multiplicity.
+
+This is the structural input for the explicit kernel
+`K(h) = [h = 0] - ∫_{wideArcs} e(h t) dt`, i.e. for computing the Fourier
+transform of `1_{wideArcs}` as a Ramanujan sum times an archimedean factor.
+
+### Status note (route assessment)
+
+A word of caution on the route `K(h) = [h=0] - c_q(h)·archimedean` followed by
+`Jdeep = ∑_h d(h) K(h)` and an `L²`/Cauchy–Schwarz step: that step cannot close.
+With `d(h) = ∑_{m₁+m₂=n+h} τ₁(m₁) τ₁(m₂)` one has
+
+```text
+∑_h |d(h)|²  =  ∫₀¹ |S_{τ₁}(t)|⁴ dt  ≥  (∫₀¹ |S_{τ₁}(t)|² dt)²
+             =  (∑_m |τ₁(m)|²)²      ≈  (n log³ n)² ,
+```
+
+so `‖d‖₂ ≳ n log³ n`, while the kernel satisfies `‖K‖₂ = O(log n)`; the product is
+`n log⁴ n`, which is *larger* than the target `n`.  The saving in `Jdeep = o(n)`
+therefore has to come from genuine oscillatory cancellation (a pointwise or
+dispersion estimate for `S_{τ₁}` off the wide arcs), not from separate bounds on
+`d` and `K`.  The arc/Ramanujan machinery above remains necessary (it computes
+the wide-arc contribution exactly), but it is not sufficient by itself.
