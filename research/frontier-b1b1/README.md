@@ -185,3 +185,18 @@ much *smaller* than the Farey spacing `1/(qq') ≥ 1/Q₁²`, since
 `512 Q₁² Q < n` eventually (Q₁³ ≈ n, Q = log⁴ n).  Hence the wide arcs are
 **pairwise disjoint**, and the deep-minor integral over `wideArcs` is exactly
 the *sum* of the arc integrals — no bounded-overlap loss.
+
+## Milestone 12: arc phase as a power
+
+`phasepow.lean`:
+
+```lean
+E_nat_mul (x : ℝ) (a : ℕ) : E (a * x) = E x ^ a
+
+E_phase_pow (h : ℤ) (q a : ℕ) : E (h a / q) = E (h/q) ^ a
+```
+
+So the `a`-sum in each arc becomes a geometric progression with ratio
+`ω = E(h/q)`, ready for `geom_sum_eq`.  The remaining Ramanujan step is
+`∑_{a,(a,q)=1} ω^a`, whose size is `≤ gcd(q,h)`, using
+`Complex.exp_eq_one_iff` for `ω = 1 ↔ q ∣ h`.
