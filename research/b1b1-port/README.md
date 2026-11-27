@@ -1189,3 +1189,25 @@ The formal term-by-term integration of `plainPolynomial_sq_dilated_expand` over
 `wideSetᶜ` is what remains: the pointwise rewrite goes through, but the final
 matching of the two nested-sum shapes (coefficient association) was not closed
 this round.
+
+## Milestone 25: the pointwise quadruple expansion with distributed indicator
+
+```lean
+deepIntegrand_eq_quadruple_sum (n) (t) :
+  1_{wideSet n}ᶜ (S² e(-n·)) t
+    = ∑_{a, a' ∈ (U,B₁]} (c a · c a') ·
+        ∑_{j ∈ (U, n/a]} ∑_{k ∈ (U, n/a']} (Λ j · Λ k) ·
+          1_{wideSet n}ᶜ (e((a j + a' k - n) ·)) t
+```
+
+This is the exact pointwise form the `exact_split` integration consumes: after
+integrating over `[0,1]` and interchanging the finite sums with the integral
+(using `intervalIntegral.integral_finsetSum` and
+`indicator_intervalIntegrable`), each quadruple contributes
+`arcKernel n (a j + a' k - n)`.
+
+The remaining formal step is the nested `integral_finsetSum` interchange.  The
+integrability side conditions need the `convert … using 1; ext x;
+simp only [Finset.sum_apply]` pattern for `IntervalIntegrable.sum` (its conclusion
+is stated for `∑ i ∈ s, f i` as a function, which is only definitionally the goal's
+`fun x => ∑ i ∈ s, f i x`).

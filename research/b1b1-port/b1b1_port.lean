@@ -1729,4 +1729,36 @@ theorem sum_arcSet_phase_interior (n : ℕ) (m : ℤ) (hm : m ≠ 0)
 def arcKernel (n : ℕ) (m : ℤ) : ℂ :=
   ∫ t in (0:ℝ)..1, (wideSet n)ᶜ.indicator (fun x => phase ((m:ℝ)*x)) t
 
+/-- **The weighted quadruple expansion with the arc indicator distributed.**
+Pointwise form of the `τ₁` `exact_split` expansion: the deep-minor integrand is a
+nested sum over the four atom indices with the arc indicator applied to each
+frequency separately. -/
+theorem deepIntegrand_eq_quadruple_sum (n : ℕ) (t : ℝ) :
+    (wideSet n)ᶜ.indicator
+      (fun x => plainPolynomial n (tauCoeff n) x * plainPolynomial n (tauCoeff n) x *
+        phase (-(n:ℝ)*x)) t
+    = ∑ a ∈ Finset.Icc (cutoffU n + 1) (lowCut n),
+        ∑ a' ∈ Finset.Icc (cutoffU n + 1) (lowCut n),
+          ((lowMoebiusWeight (cutoffU n) a : ℂ) * (lowMoebiusWeight (cutoffU n) a' : ℂ)) *
+            ∑ j ∈ Finset.Ioc (cutoffU n) (n / a),
+              ∑ k ∈ Finset.Ioc (cutoffU n) (n / a'),
+                ((ArithmeticFunction.vonMangoldt j : ℂ) *
+                  (ArithmeticFunction.vonMangoldt k : ℂ)) *
+                  (wideSet n)ᶜ.indicator (fun x =>
+                    phase (((((a*j:ℕ):ℝ) + ((a'*k:ℕ):ℝ) - (n:ℝ))) * x)) t := by
+  classical
+  by_cases ht : t ∈ (wideSet n)ᶜ
+  · rw [Set.indicator_of_mem ht]
+    rw [show plainPolynomial n (tauCoeff n) t * plainPolynomial n (tauCoeff n) t *
+          phase (-(n:ℝ)*t)
+        = plainPolynomial n (tauCoeff n) t ^ 2 * phase (-(n:ℝ)*t) from by ring]
+    rw [plainPolynomial_sq_dilated_expand n t]
+    simp only [Set.indicator_of_mem ht]
+  · have hz : ∀ a a' j k, (wideSet n)ᶜ.indicator (fun x =>
+        phase (((((a*j:ℕ):ℝ) + ((a'*k:ℕ):ℝ) - (n:ℝ))) * x)) t = 0 := by
+      intro a a' j k
+      exact Set.indicator_of_notMem ht _
+    rw [Set.indicator_of_notMem ht]
+    simp only [hz, mul_zero, Finset.sum_const_zero]
+
 end B1B1Port
