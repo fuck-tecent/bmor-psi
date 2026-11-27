@@ -885,4 +885,124 @@ theorem integral_tauCoeff_norm_sq (n : ℕ) :
   simp_rw [← norm_shiftedPolynomial_eq n (tauCoeff n)]
   exact shiftedPolynomial_parseval n (tauCoeff n)
 
+/-! ### The `L²` size of `S_{τ₁}`
+
+The far side consumes `‖S_{τ₁}‖₂² = ∫ |S_{τ₁}|² = ∑_m |τ₁(m)|²`.  Here is the
+elementary bound needed for it: with `T` a bound for `|c(a)|`,
+
+```text
+|τ₁(m)| ≤ T · ∑_{a | m, U < a ≤ B₁} Λ(m/a) ≤ T · ∑_{a | m} Λ(m/a) = T · log m ,
+```
+
+hence `∑_{m ≤ n} |τ₁(m)|² ≤ T² n (log n)²`.
+-/
+
+/-- Reindexing: `∑_{a | m} Λ(m/a) = log m`. -/
+theorem sum_vonMangoldt_div_divisors (m : ℕ) :
+    (∑ a ∈ m.divisors, ArithmeticFunction.vonMangoldt (m / a)) = Real.log m := by
+  rw [← ArithmeticFunction.vonMangoldt_sum (n := m)]
+  refine Finset.sum_nbij' (fun a : ℕ => m / a) (fun d : ℕ => m / d) ?_ ?_ ?_ ?_ ?_
+  · intro a ha
+    refine Nat.mem_divisors.mpr ⟨⟨a, ?_⟩, (Nat.mem_divisors.mp ha).2⟩
+    rw [Nat.mul_comm]
+    exact (Nat.mul_div_cancel' (Nat.dvd_of_mem_divisors ha)).symm
+  · intro d hd
+    refine Nat.mem_divisors.mpr ⟨⟨d, ?_⟩, (Nat.mem_divisors.mp hd).2⟩
+    rw [Nat.mul_comm]
+    exact (Nat.mul_div_cancel' (Nat.dvd_of_mem_divisors hd)).symm
+  · intro a ha
+    obtain ⟨⟨k, hk⟩, hm0⟩ := Nat.mem_divisors.mp ha
+    have hapos : 0 < a := Nat.pos_of_mem_divisors ha
+    have hkpos : 0 < k := by
+      rcases Nat.eq_zero_or_pos k with h0 | h
+      · rw [h0, mul_zero] at hk; omega
+      · exact h
+    have hm_eq : m = a * k := hk
+    have h1 : m / a = k := by rw [hm_eq, Nat.mul_comm a k, Nat.mul_div_cancel k hapos]
+    have h2 : m / k = a := by rw [hm_eq, Nat.mul_div_cancel a hkpos]
+    rw [h1, h2]
+  · intro d hd
+    obtain ⟨⟨k, hk⟩, hm0⟩ := Nat.mem_divisors.mp hd
+    have hdpos : 0 < d := Nat.pos_of_mem_divisors hd
+    have hkpos : 0 < k := by
+      rcases Nat.eq_zero_or_pos k with h0 | h
+      · rw [h0, mul_zero] at hk; omega
+      · exact h
+    have hm_eq : m = d * k := hk
+    have h1 : m / d = k := by rw [hm_eq, Nat.mul_comm d k, Nat.mul_div_cancel k hdpos]
+    have h2 : m / k = d := by rw [hm_eq, Nat.mul_div_cancel d hkpos]
+    rw [h1, h2]
+  · intro a _
+    rfl
+
+/-- Pointwise size of the task coefficient. -/
+theorem tauCoeff_abs_le (n m : ℕ) {T : ℝ} (hT : 0 ≤ T)
+    (hc : ∀ a, cutoffU n < a → a ≤ lowCut n → |lowMoebiusWeight (cutoffU n) a| ≤ T) :
+    ‖tauCoeff n m‖ ≤ T * Real.log m := by
+  classical
+  unfold tauCoeff lowBandCoefficient
+  rw [Complex.norm_real, Real.norm_eq_abs]
+  have hstep : ∀ a ∈ (Nat.divisors m).filter
+      (fun a => cutoffU n < a ∧ a ≤ lowCut n ∧ cutoffU n < m / a),
+      |lowMoebiusWeight (cutoffU n) a * ArithmeticFunction.vonMangoldt (m / a)|
+        ≤ T * ArithmeticFunction.vonMangoldt (m / a) := by
+    intro a ha
+    obtain ⟨_, hUa, haB, _⟩ := Finset.mem_filter.mp ha
+    rw [abs_mul, abs_of_nonneg ArithmeticFunction.vonMangoldt_nonneg]
+    exact mul_le_mul_of_nonneg_right (hc a hUa haB) ArithmeticFunction.vonMangoldt_nonneg
+  calc |∑ a ∈ (Nat.divisors m).filter
+          (fun a => cutoffU n < a ∧ a ≤ lowCut n ∧ cutoffU n < m / a),
+          lowMoebiusWeight (cutoffU n) a * ArithmeticFunction.vonMangoldt (m / a)|
+      ≤ ∑ a ∈ (Nat.divisors m).filter
+          (fun a => cutoffU n < a ∧ a ≤ lowCut n ∧ cutoffU n < m / a),
+          |lowMoebiusWeight (cutoffU n) a * ArithmeticFunction.vonMangoldt (m / a)| :=
+        Finset.abs_sum_le_sum_abs _ _
+    _ ≤ ∑ a ∈ (Nat.divisors m).filter
+          (fun a => cutoffU n < a ∧ a ≤ lowCut n ∧ cutoffU n < m / a),
+          T * ArithmeticFunction.vonMangoldt (m / a) := Finset.sum_le_sum hstep
+    _ ≤ ∑ a ∈ Nat.divisors m, T * ArithmeticFunction.vonMangoldt (m / a) := by
+        refine Finset.sum_le_sum_of_subset_of_nonneg (Finset.filter_subset _ _) ?_
+        intro a _ _
+        exact mul_nonneg hT ArithmeticFunction.vonMangoldt_nonneg
+    _ = T * ∑ a ∈ Nat.divisors m, ArithmeticFunction.vonMangoldt (m / a) := by
+        rw [Finset.mul_sum]
+    _ = T * Real.log m := by rw [sum_vonMangoldt_div_divisors]
+
+/-- `L²` bound for `S_{τ₁}`. -/
+theorem integral_tauCoeff_norm_sq_le (n : ℕ) (hn : 0 < n) {T : ℝ} (hT : 0 ≤ T)
+    (hc : ∀ a, cutoffU n < a → a ≤ lowCut n → |lowMoebiusWeight (cutoffU n) a| ≤ T) :
+    (∫ t in (0:ℝ)..1, ‖plainPolynomial n (tauCoeff n) t‖ ^ 2)
+      ≤ T ^ 2 * ((n : ℝ) + 1) * (Real.log n) ^ 2 := by
+  rw [integral_tauCoeff_norm_sq]
+  have hlog : ∀ m ∈ Finset.range (n + 1), (Real.log (m:ℝ)) ^ 2 ≤ (Real.log (n:ℝ)) ^ 2 := by
+    intro m hm
+    have hmn : m ≤ n := Nat.lt_succ_iff.mp (Finset.mem_range.mp hm)
+    rcases Nat.eq_zero_or_pos m with h0 | hpos
+    · subst h0
+      simpa using sq_nonneg (Real.log (n:ℝ))
+    · have h1 : Real.log (m:ℝ) ≤ Real.log (n:ℝ) :=
+        Real.log_le_log (by exact_mod_cast hpos) (by exact_mod_cast hmn)
+      have h2 : 0 ≤ Real.log (m:ℝ) := Real.log_nonneg (by exact_mod_cast hpos)
+      nlinarith [h1, h2]
+  have hsum : (∑ m ∈ Finset.range (n + 1), ‖tauCoeff n m‖ ^ 2)
+      ≤ ∑ m ∈ Finset.range (n + 1), T ^ 2 * (Real.log (n:ℝ)) ^ 2 := by
+    refine Finset.sum_le_sum fun m hm => ?_
+    have h1 : ‖tauCoeff n m‖ ≤ T * Real.log (m:ℝ) := tauCoeff_abs_le n m hT hc
+    have h2 : (Real.log (m:ℝ)) ^ 2 ≤ (Real.log (n:ℝ)) ^ 2 := hlog m hm
+    have h3 : 0 ≤ Real.log (m:ℝ) := by
+      rcases Nat.eq_zero_or_pos m with h0 | hpos
+      · subst h0; simp
+      · exact Real.log_nonneg (by exact_mod_cast hpos)
+    calc ‖tauCoeff n m‖ ^ 2 ≤ (T * Real.log (m:ℝ)) ^ 2 := by
+          exact pow_le_pow_left₀ (norm_nonneg _) h1 2
+      _ = T ^ 2 * (Real.log (m:ℝ)) ^ 2 := by ring
+      _ ≤ T ^ 2 * (Real.log (n:ℝ)) ^ 2 := by
+          exact mul_le_mul_of_nonneg_left h2 (by positivity)
+  refine hsum.trans ?_
+  rw [Finset.sum_const, Finset.card_range, nsmul_eq_mul]
+  push_cast
+  ring_nf
+  exact le_rfl
+
+
 end B1B1Port

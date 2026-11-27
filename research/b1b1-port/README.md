@@ -667,3 +667,46 @@ W  =  D + o(n) ,      W = ∫_{wideArcs} S² e(-n·) ,   D = ∑_{m+m'=n} τ₁(
 
 i.e. the classical major-arc main-term computation (singular series × archimedean
 factor) with enough precision to cancel `D ≈ 2 n θ²`, `θ = ∑ c(a)/a`.
+
+## Milestone 12: the `L²` size of `S_{τ₁}`
+
+Verified this round:
+
+```lean
+sum_vonMangoldt_div_divisors (m) :
+  ∑_{a | m} Λ(m/a) = log m
+
+tauCoeff_abs_le (n m) {T} (0 ≤ T)
+    (hc : ∀ a, U < a → a ≤ B₁ → |c(a)| ≤ T) :
+  ‖τ₁(m)‖ ≤ T · log m
+
+integral_tauCoeff_norm_sq_le (n) (0 < n) (0 ≤ T)
+    (hc : ∀ a, U < a → a ≤ B₁ → |c(a)| ≤ T) :
+  ∫_{0}^{1} ‖S_{τ₁}(t)‖² dt ≤ T² (n+1) (log n)²
+```
+
+The middle one is the pointwise bound `|τ₁(m)| ≤ T ∑_{a|m}Λ(m/a) = T log m`
+(using `∑_{d|m} Λ(d) = log m`), and the last is its `L²` consequence via the
+verified weighted Parseval `∫‖S‖² = ∑|τ₁|²`.
+
+These are the two `F`-side inputs of any far estimate: a pointwise bound
+`aBound : ∀ m, ‖τ₁(m)‖ ≤ A` and `‖S_{τ₁}‖₂² ≤ A² n`.
+
+### Running status of the b1-b1 dossier
+
+| layer | content | status |
+|---|---|---|
+| task definitions | `τ₁ = lowBandCoefficient`, `wideArcs = wide cutoffB cutoffH` | ✅ |
+| atom expansion | `S_{τ₁} = ∑_a c(a) wwave Λ a U (n/a)` | ✅ |
+| weighted far/near split | `deepIntegral_split` (exact) | ✅ |
+| Fourier toolkit | orthogonality, weighted Parseval, archimedean ball/annulus decay | ✅ |
+| exact reduction | `Jdeep = D − W` | ✅ |
+| coefficient sizes | `|τ₁(m)| ≤ T log m`, `∫‖S‖² ≤ T² n log²` | ✅ |
+| decisive negative | far/near cannot give `o(n)` (off-grid carries ~3/4 of `n log`) | ✅ |
+| **what remains** | **`W = D + o(n)`**: major-arc main-term computation for `τ₁` | open |
+
+The remaining step needs the major-arc approximation
+`S(a/q + β) ≈ (1/q)(∑_{r mod q} e(ar/q)) v(β)` with `v(β) = ∑_m τ₁(m) e(mβ)`,
+i.e. equidistribution of `τ₁` in residue classes modulo `q ≤ n^(1/3)` — a
+Siegel–Walfisz-type input for the Möbius/divisor coefficient.  That is the
+genuine research content of the cell, and the reason it is marked `challenge_only`.
