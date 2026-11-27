@@ -1,0 +1,18 @@
+{
+  "id": "L-quadratic-primes-sieve-switched-cofactor",
+  "statement": "let f := fun k : ℕ => 4*k^2+1; ∀ p r t : ℕ, 2<p → p.Prime → r<p → p ∣ f r →\n  let cofactor := 4*p*t^2+8*r*t+(f r)/p;\n  f (p*t+r) = p*cofactor ∧\n    (8*(r : ℤ))^2 - 4*(4*(p : ℤ))*((f r / p : ℕ) : ℤ) = -16 ∧\n    (∀ d : ℕ, Nat.Coprime d p → (d ∣ cofactor ↔ d ∣ f (p*t+r)))",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然扩张 · QP-0080 · 切换首次因子后保留二次余因子的判别式与筛条件",
+    "en": "New route · Levent GRH and natural extensions · QP-0080 · Preserve the discriminant and sieve conditions after switching out a first factor"
+  },
+  "brief": {
+    "zh": "在实际根 r 上写 k=pt+r。除掉 p 后判别式恒为 −16；与 p 互素的旧筛条件保持等价。此式用在最小因子 p 的内层和。",
+    "en": "Write k=pt+r at an actual root r. Removing p leaves discriminant −16 and preserves sieve conditions coprime to p. This supplies the inner sum with least factor p."
+  },
+  "source": "https://doi.org/10.1090/coll/057",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

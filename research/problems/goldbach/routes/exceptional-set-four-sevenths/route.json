@@ -1,0 +1,14 @@
+{
+  "id": "exceptional-set-four-sevenths",
+  "title": {
+    "zh": "无条件哥德巴赫例外集 4/7 界",
+    "en": "An unconditional 4/7 Goldbach exceptional-set bound"
+  },
+  "description": {
+    "zh": "在同一例外集口径下，把 Pintz–Althöfer 公开预印本的 7/12 指数降至 4/7。",
+    "en": "Improve the exponent 7/12 in Pintz–Althöfer v1 to 4/7 on the same set without zero-free hypotheses."
+  },
+  "feeds": [
+    "arc-budget"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-binary-shift-short-mixed-energy",
+  "statement": "let J := fun (a b m : ℕ) => ((Finset.Icc a b).filter (fun e => Nat.Prime (m-2^e))).card; ∃ C X₀ : ℕ, ∀ X ≥ X₀, ∀ H : ℕ, X^3 ≤ H^4 → H ≤ X → let L := Nat.log 2 X / 2; (∑ m ∈ Finset.Ico X (X+H), (J 1 L m)^2) ≤ C*H",
+  "plain_statement": {
+    "zh": "估计候选：短窗口内素数加二次幂的碰撞二阶矩",
+    "en": "Candidate estimate: short-window second moment for prime-plus-power collisions"
+  },
+  "brief": {
+    "zh": "展开平方。对角线用单素数上界，非对角用间距 |2^e−2^f| 的双素数上界筛；要统一处理每个长度至少 X^(3/4) 的窗口。",
+    "en": "Separate the diagonal prime count from an upper-bound sieve for prime pairs at gaps |2^e−2^f|. The constant must hold in every stated short window."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/f4f754c4709c0c1b2dbc67e4c8f74ce2475b8935/research/ROADMAP.md",
+  "program": "exceptions",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "exceptions",
+  "role": "target",
+  "module": "Conjectures.Goldbach.BinaryShiftShortMixedEnergy",
+  "file": "lean/Conjectures/Goldbach/BinaryShiftShortMixedEnergy.lean"
+}

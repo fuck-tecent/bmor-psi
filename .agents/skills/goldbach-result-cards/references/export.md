@@ -1,5 +1,7 @@
 # 导出核验报告卡
 
+每条 PR 来源都须附 `attribution` 对象，其中 `user` 写 GitHub 用户名（含 @），`model` 和 `harness` 写披露值或「未披露」。可写 `harness_version`。在 `evidence` 注明「研究台提交记录 · 自报」「PR 正文自报」等来源。可用 HTTPS `evidence_url` 链到具体证据。数个 PR 合作完成一条结果时，每个 PR 单独列出处和署名。普通论文来源继续使用 `label` 和 `url`。
+
 在仓库外或被 Git 忽略的输出目录准备 UTF-8 JSON。顶层字段为 `title`、`date`、`summary`、`cards` 及可选的 `note`。每个卡片包含 `track`、`title`、`scope`、`body` 和 `sources`。每条来源包含 `label` 和 `url`。在标题或正文里直接写 Unicode 数学符号。所有文字由脚本转义。第一项作为视觉焦点，其他项在桌面双栏排布。HTTPS 网站二维码由脚本从目标 URL 直接生成，包含标准静区，旁边保留可读域名。
 
 安装本机渲染依赖：`python -m pip install playwright "qrcode[pil]"`。可用已有的 Chrome 或 Edge，也可用 `python -m playwright install chromium` 安装浏览器。在仓库根目录运行：

@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-reflected-factor-centers",
+  "statement": "∀ (p b h a₁ a₂ c₁ c₂ : ℤ), 0 ≤ b → b^2 < p-b → 0 < h → p-b ≤ a₁ → a₁ ≤ a₂ → p-b ≤ c₁ → c₁ ≤ c₂ → Even (a₁+a₂) → Even (c₁+c₂) → a₁*a₂ = p^2+h → c₁*c₂ = p^2-h → ∃ k u v : ℤ, 0 < k ∧ p*k ≤ h ∧ 0 ≤ u ∧ 0 ≤ v ∧ a₁ = p+k-u ∧ a₂ = p+k+u ∧ c₁ = p-k-v ∧ c₂ = p-k+v ∧ u^2+v^2 = 2*k^2 ∧ |h-2*p*k| ≤ k^2",
+  "plain_statement": {
+    "zh": "设 p、b、h 及四个因子均为整数，b≥0、b²<p−b、h>0。设 p²+h 与 p²−h 的两组因子各按升序排列，每组之和为偶数，且四个因子均不小于 p−b。则可分别写成 (p+k−u,p+k+u) 和 (p−k−v,p−k+v)，其中 k>0、u,v≥0、pk≤h、u²+v²=2k² 且 |h−2pk|≤k²。",
+    "en": "Let p,b,h and four factors be integers with b≥0, b²<p−b and h>0. Suppose the ordered factor pairs for p²+h and p²−h each have even sum and all four factors are at least p−b. The pairs then have the forms (p+k−u,p+k+u) and (p−k−v,p−k+v) with k>0, u,v≥0, pk≤h, u²+v²=2k² and |h−2pk|≤k²."
+  },
+  "brief": {
+    "zh": "对大奇素数 p 取 b=⌊√p⌋−1，可把深筛后两端均为合数的中央偏移归约为勾股数计数。一端是素数、另一端是合数的情形另需估计。",
+    "en": "With b=floor(sqrt(p))−1 for a large odd prime p, the lemma reduces the offsets with two surviving composites to a count of Pythagorean triples. Offsets with one prime and one composite require a separate estimate."
+  },
+  "source": "https://github.com/LonelyQuantum/goldbach-proofs/blob/d26a22c26ca26ecc093e2a06b10b179e335aba35/research/diagnostics/ReflectedFactorCenters.md",
+  "program": "correlation",
+  "parallel": true,
+  "imports": [],
+  "track": "rh-central-support",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.ReflectedFactorCenters",
+  "file": "lean/Conjectures/Goldbach/ReflectedFactorCenters.lean"
+}

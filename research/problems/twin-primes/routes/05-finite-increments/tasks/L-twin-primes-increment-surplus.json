@@ -19,6 +19,9 @@
     "L-twin-primes-second-difference",
     "L-twin-primes-gap-one-sum"
   ],
-  "imports": [],
+  "imports": [
+    "PEqualNP.Outside.L_twin_primes_second_difference",
+    "PEqualNP.Outside.L_twin_primes_gap_one_sum"
+  ],
   "challenge_only": true
 }

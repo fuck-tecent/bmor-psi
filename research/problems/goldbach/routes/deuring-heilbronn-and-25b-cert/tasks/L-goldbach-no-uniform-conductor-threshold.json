@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-no-uniform-conductor-threshold",
+  "statement": "let E (x : ℝ) := Complex.exp (((2 * Real.pi * x : ℝ) : ℂ) * Complex.I); let Q (n : ℕ) := (Nat.log 2 (n + 2)) ^ 2; let numerators (q : ℕ) := (Finset.range (q + 1)).filter (fun a => Nat.Coprime a q); let center (q a : ℕ) := (a : ℝ) / q; let width (n q : ℕ) := (Q n : ℝ) / ((q : ℝ) * n); let K (n : ℕ) (t : ℝ) := ∑ k ∈ Finset.range (n + 1), E ((k : ℝ) * t); let unitMean (q a : ℕ) := (∑ b ∈ (Finset.range q).filter (fun b => Nat.Coprime b q), E ((b : ℝ) * center q a)) / (q.totient : ℂ); let finiteFourier (q a : ℕ) (v : ℕ → ℝ) := ∑ b ∈ Finset.range q, (v b : ℂ) * E ((b : ℝ) * center q a); let secondary (d : ℕ) (c : ℕ → ℕ → ℝ) (ψ : ℕ → ℝ) (m q b : ℕ) := if d ∣ q then c q b * ψ m / q.totient else 0; let profileSize (n d : ℕ) (c : ℕ → ℕ → ℝ) (ψ : ℕ → ℝ) (q a : ℕ) := (Finset.range (n + 2)).sup' ⟨0, Finset.mem_range.mpr (Nat.zero_lt_succ (n + 1))⟩ (fun m => ‖finiteFourier q a (secondary d c ψ m q)‖); let amplified (n : ℕ) (D β : ℝ) := D * (1 + 2 * Real.pi * n * |β|); let prefixCost (n q a : ℕ) (D β : ℝ) := amplified n D β * (2 * ‖unitMean q a * K n β‖ + amplified n D β); let leftEnd (n q a : ℕ) := max (center q a - width n q) 0 - center q a; let rightEnd (n q a : ℕ) := min (center q a + width n q) 1 - center q a; let exceptionalBudget (n d : ℕ) (D : ℕ → ℕ → ℝ) := ∑ q ∈ (Finset.Icc 1 (Q n)).filter (fun q => d ∣ q), ∑ a ∈ numerators q, intervalIntegral (prefixCost n q a (D q a)) (leftEnd n q a) (rightEnd n q a) MeasureTheory.volume; ∀ Q₀ : ℕ, ∃ (d n : ℕ) (c : ℕ → ℕ → ℝ) (β : ℝ), Nat.Prime d ∧ Q₀ ≤ d ∧ d ≤ Q n ∧ 100000000000 < n ∧ Even n ∧ 0 < β ∧ β < 1 ∧ (∀ m : ℕ, m ≤ n + 1 → |(m : ℝ) ^ β| ≤ m) ∧ (∀ q ∈ Finset.Icc 1 (Q n), d ∣ q → ∀ a ∈ numerators q, ‖finiteFourier q a (c q)‖ ≤ Real.sqrt (d : ℝ)) ∧ (n : ℝ) / 288 < exceptionalBudget n d (profileSize n d c (fun m => (m : ℝ) ^ β))",
+  "plain_statement": {
+    "en": "Above every proposed conductor cutoff there is a prime d and an even n > 10¹¹ for which every reduced-numerator Fourier norm obeys the √d cap and the power profile obeys its envelope, yet the exceptional arc budget exceeds n/288.",
+    "zh": "对每个给定的导子下限，存在素数导子 d 和偶数 n > 10¹¹，使每个既约分子对应的傅里叶范数均不超过 √d，幂函数也满足包络界，而例外弧预算仍大于 n/288。"
+  },
+  "brief": {
+    "en": "Choose a sufficiently large prime conductor and construct the profile from its quadratic character. The exact Gauss norm and the integrated prefix costs give a lower bound for the exceptional budget.",
+    "zh": "选取充分大的素数导子，用二次特征构造剖面，由精确的高斯和范数与前缀代价的积分给出例外预算的下界。"
+  },
+  "program": "correlation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/5c12780c17ea2303bdcca2226443828da679b137/research/gaps.json#L1845-L1864",
+  "track": "deuring-heilbronn-and-25b-cert",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.NoUniformConductorThreshold",
+  "file": "lean/Conjectures/Goldbach/NoUniformConductorThreshold.lean"
+}

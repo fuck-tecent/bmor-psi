@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-selberg-sharp-large-sieve",
+  "statement": "let E (x : ℝ) := Complex.exp (((2 * Real.pi * x : ℝ) : ℂ) * Complex.I); ∀ (M N : ℕ) (x : Fin M → ℝ) (δ : ℝ) (a : ℕ → ℂ), 0 < δ → (∀ i j : Fin M, i ≠ j → δ ≤ |x i - x j - ((round (x i - x j) : ℤ) : ℝ)|) → (∑ i : Fin M, ‖∑ k ∈ Finset.range (N + 1), a k * E ((k : ℝ) * x i)‖ ^ 2) ≤ ((N : ℝ) + max 1 (2 / δ)) * ∑ k ∈ Finset.range (N + 1), ‖a k‖ ^ 2",
+  "plain_statement": {
+    "en": "For M points separated modulo one by δ > 0, the squared samples of a trigonometric polynomial on frequencies 0 through N sum to at most (N + max(1, 2/δ)) times its coefficient energy.",
+    "zh": "对模一间距至少为 δ > 0 的 M 个点，频率从 0 至 N 的三角多项式在这些点上的取值模平方之和至多为系数平方和的 N + max(1, 2/δ) 倍。"
+  },
+  "brief": {
+    "en": "Average the dual sum over translates of the frequency interval. A reciprocal-square bound on each row controls the off-diagonal terms, and duality gives coefficient one on N.",
+    "zh": "在频率区间的平移上平均对偶和，以每行的倒数平方和控制非对角项，再由对偶性得到 N 项的系数一。"
+  },
+  "program": "correlation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://doi.org/10.1112/S0025579300004708",
+  "track": "selberg-large-sieve-and-power-saving",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.SelbergSharpLargeSieve",
+  "file": "lean/Conjectures/Goldbach/SelbergSharpLargeSieve.lean"
+}

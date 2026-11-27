@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-cell-lp-dual-certificate",
+  "statement": "∀ (C K : ℕ) (M s t : ℕ → ℝ) (y B : ℕ → ℝ) (A : ℕ → ℕ → ℝ) (U : ℝ), (∀ c ∈ Finset.range C, 0 ≤ M c) → (∀ c ∈ Finset.range C, (∑ k ∈ Finset.range K, y k * A k c) - s c ≤ t c) → (∀ k ∈ Finset.range K, B k ≤ y k * ∑ c ∈ Finset.range C, M c * A k c) → (∑ c ∈ Finset.range C, M c * s c ≤ U) → ∑ k ∈ Finset.range K, B k - U ≤ ∑ c ∈ Finset.range C, M c * t c",
+  "plain_statement": {
+    "zh": "有限胞腔线性规划对偶见证与切换松弛下界",
+    "en": "Finite cell linear-programming dual certificate with switched slack bound"
+  },
+  "brief": {
+    "zh": "以非负胞腔质量乘逐胞腔对偶不等式后求和，交换有限双重和并代入各观测量下界与总切换松弛上界。",
+    "en": "Multiply the pointwise dual inequality by nonnegative cell masses, interchange the finite double sum, and substitute the observable lower bounds and total slack upper bound."
+  },
+  "source": "https://arxiv.org/abs/0705.1652",
+  "program": "foundation",
+  "parallel": true,
+  "imports": [],
+  "track": "representations",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.CellLpDualCertificate",
+  "file": "lean/Conjectures/Goldbach/CellLpDualCertificate.lean"
+}

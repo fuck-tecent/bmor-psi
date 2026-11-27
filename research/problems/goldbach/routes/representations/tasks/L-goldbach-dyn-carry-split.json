@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-dyn-carry-split",
+  "statement": "let W := fun (A B : Finset ℕ) (n : ℕ) => ((A ×ˢ B).filter (fun t => t.1+t.2=n)).card; ∀ (m n : ℕ) (A B : Finset ℕ), n < m → (∀ a ∈ A, a < m) → (∀ b ∈ B, b < m) → ((A ×ˢ B).filter (fun t => (t.1+t.2)%m=n)).card = W A B n + W A B (n+m)",
+  "plain_statement": {
+    "zh": "模图的两步路径精确分成无进位与进位两层",
+    "en": "Split modular two-step paths into two exact carry layers"
+  },
+  "brief": {
+    "zh": "用 a+b<2m 列出两个可能的整数终点，再划分有序路径。后续估计必须扣除第二层。",
+    "en": "Use a+b<2m to partition ordered paths by their two possible integer endpoints."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "module": "Conjectures.Goldbach.DynCarrySplit",
+  "file": "lean/Conjectures/Goldbach/DynCarrySplit.lean",
+  "imports": [],
+  "track": "representations",
+  "role": "lemma"
+}

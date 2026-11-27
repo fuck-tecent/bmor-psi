@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-odd-signed-subset-floor",
+  "statement": "∀ (m : ℕ) (c : Finset ℕ → ℝ), c ∅ = 1 → (∀ T ∈ (Finset.range m).powerset, -1 ≤ c T) → (1 / 2 : ℝ) < Finset.sum (Finset.range m).powerset (fun T => c T * Finset.prod T (fun j => 1 / (4 * ((j : ℝ) + 1)^2)))",
+  "plain_statement": {
+    "zh": "对任意自然数 m，给 {j ∈ ℕ | j < m} 的每个子集 T 指定实系数 c(T)。若 c(∅)=1 且所有 c(T)≥−1，则各子集的 c(T)·∏_{j∈T} 1/[4(j+1)²] 之和严格大于 1/2。",
+    "en": "For any natural m, assign a real coefficient c(T) to each subset T of the natural indices j < m. If c(∅) = 1 and every c(T) ≥ −1, the sum of c(T) times the product of 1/[4(j+1)²] over j in T is strictly greater than 1/2."
+  },
+  "brief": {
+    "zh": "将 ∏_{j<m}(1+1/[4(j+1)²]) 展开，并用归纳法证明其至多为 (3m+2)/(2m+2)。由此可控制所有非空子集的总权重。在奇素数 p=2j+3 处，单项权重为 1/(p−1)²，取零系数可表示对平方自由分母的截断。",
+    "en": "Expand the product of 1+1/[4(j+1)²] over j < m and bound it by (3m+2)/(2m+2) by induction. This controls the combined weight of the nonempty subsets. At an odd prime p = 2j+3 the weight is 1/(p−1)², and zero coefficients can encode a cutoff on squarefree denominators."
+  },
+  "program": "correlation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/BigOperators/Ring/Finset.html#Finset.prod_one_add",
+  "track": "series",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.OddSignedSubsetFloor",
+  "file": "lean/Conjectures/Goldbach/OddSignedSubsetFloor.lean"
+}

@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-finite-major-rescaled-interval-kernel",
+  "statement": "let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let _J := fun (h : ℝ) (f : ℝ → ℂ) => intervalIntegral f (-h) h MeasureTheory.volume; let Jr := fun (h : ℝ) (f : ℝ → ℝ) => intervalIntegral f (-h) h MeasureTheory.volume; let V := fun (n : ℕ) (β : ℝ) => ∑ k ∈ Finset.Icc 1 n, E ((k:ℝ)*β); ∀ (n : ℕ) (h : ℝ), 0<n → 0≤h → (let f := fun t : ℝ => V n (t/n)/(n:ℂ); (∀ t : ℝ, ‖f t - E (t/2)*(Real.sinc (Real.pi*t):ℂ)‖ ≤ 2*Real.pi*|t|/(n:ℝ)) ∧ |((_J (h/n) (fun β => (V n β)^2*E (-(n:ℝ)*β))).re/(n:ℝ)) - Jr h (fun t => Real.sinc (Real.pi*t)^2)| ≤ 4*Real.pi*h^2/(n:ℝ) ∧ |Jr (h/n) (fun β => ‖V n β‖^2)/(n:ℝ) - Jr h (fun t => Real.sinc (Real.pi*t)^2)| ≤ 4*Real.pi*h^2/(n:ℝ))",
+  "plain_statement": {
+    "zh": "新路线 · 小偶数覆盖第三批 · FR-9007 · 同时控制归一化主弧平方与平方模的 sinc 逼近",
+    "en": "New route · Finite-range coverage III · FR-9007 · Bound the rescaled sinc approximation for both the square and the squared norm"
+  },
+  "brief": {
+    "zh": "将 [0,1] 分成 n 个子区间，逐段用相位弦长控制右端点 Riemann 和。用同一误差处理乘 e(−nβ) 的平方以及模型能量。",
+    "en": "Split [0,1] into n cells and bound the error of each right-endpoint term by the phase chord length. Apply the same estimate to the square with e(−nβ) and to the model energy."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/finite-rfc-third/README.md#fixed-major-arcs",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-phase-unit"
+  ],
+  "imports": []
+}

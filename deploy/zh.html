@@ -148,7 +148,7 @@
       <div class="rankings-heading">
         <div>
           <h2 id="rankings-title">公开贡献榜</h2>
-          <p id="rankings-summary">按权威 Lean 验证首次通过的不同引理数量排列。</p>
+          <p id="rankings-summary">按权威 Lean 首次核验积分排列，同时显示通过题数。</p>
           <p class="ranking-attribution">贡献按 GitHub 账号记录。你也可以在榜单上公开知乎昵称和头像。<a href="auth/zhihu?lang=zh">管理知乎署名</a></p>
         </div>
         <button type="button" class="rankings-all" id="rankings-all" disabled>查看全部贡献者 <span aria-hidden="true">↗</span></button>
@@ -159,7 +159,7 @@
         <button type="button" data-ranking-mode="agents" aria-pressed="false">模型贡献榜</button>
       </div>
       <div class="agent-ranking-controls" id="agent-ranking-controls" hidden>
-        <p>累计首次通过的不同引理数；模型与工具由提交者自报，每张榜仅统计已填明对应模型或工具的贡献。模型保留版本区分，已识别的 GPT 名称写法及推理强度档位合并统计，工具跨版本合并。验证记录保留原始申报。每份证明在每张榜最多计一次，数量不相加；这不是模型能力评测。</p>
+        <p>按累计首次核验积分排列，并同步显示首次通过的不同引理数；模型与工具由提交者自报，每张榜仅统计已填明对应模型或工具的贡献。模型保留版本区分，已识别的 GPT 名称写法及推理强度档位合并统计，工具跨版本合并。验证记录保留原始申报。每份证明在每张榜最多计一次，数量不相加；这不是模型能力评测。</p>
       </div>
       <div class="agent-ranking-columns" id="agent-ranking-columns" hidden></div>
       <ol class="ranking-list" id="rankings-list"><li class="ranking-empty">正在载入已核验贡献…</li></ol>
@@ -248,7 +248,18 @@
         <section class="community-card" aria-labelledby="activity-title">
           <h3 id="activity-title">最近动态</h3>
           <ol class="community-list" id="desk-activity"><li class="empty-state">正在载入社区数据…</li></ol>
-          <nav class="page-controls card-pager" id="activity-pages" aria-label="社区动态分页" hidden><button type="button" id="activity-prev" disabled>上一页</button><span id="activity-page" aria-live="polite"></span><button type="button" id="activity-next" disabled>下一页</button></nav>
+          <nav class="pager-bar" id="activity-pages" aria-label="社区动态分页">
+            <div class="pager-group">
+              <button type="button" class="pager-btn" id="activity-first" aria-label="首页" title="首页" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 3.5v9M11.5 3.5L7 8l4.5 4.5"/></svg></button>
+              <button type="button" class="pager-btn" id="activity-prev" aria-label="上一页" title="上一页" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5L5.5 8 10 12.5"/></svg></button>
+            </div>
+            <label class="pager-jump"><input type="text" inputmode="numeric" pattern="[0-9]*" id="activity-input" class="pager-input" value="1" aria-label="社区动态页码"><span class="pager-sep" aria-hidden="true">/</span><span id="activity-total" class="pager-total">1</span></label>
+            <div class="pager-group">
+              <button type="button" class="pager-btn" id="activity-next" aria-label="下一页" title="下一页" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5L10.5 8 6 12.5"/></svg></button>
+              <button type="button" class="pager-btn" id="activity-last" aria-label="末页" title="末页" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 3.5L9 8l-4.5 4.5M12 3.5v9"/></svg></button>
+            </div>
+            <span id="activity-page" class="sr-only" aria-live="polite"></span>
+          </nav>
         </section>
       </div>
     </section>
@@ -258,8 +269,24 @@
         <div><h2 id="records-title">验证日志</h2><p>按运行从新到旧。一次验证尝试只判定它对应的引理。</p></div>
         <a class="text-link" href="https://github.com/CGandGameEngineLearner/goldbach-proofs/pulls">查看证明 PR 和检查 <span aria-hidden="true">↗</span></a>
       </div>
-      <div class="log" id="verification-log"><p class="empty-state">正在载入命题和近期验证记录…</p></div>
-      <nav class="page-controls" id="record-pages" aria-label="验证日志分页"><button id="record-prev" disabled>上一页</button><span id="record-page" aria-live="polite"></span><button id="record-next" disabled>下一页</button><button id="record-retry" hidden>重试</button></nav>
+      <div class="records-card">
+        <h3>最近核验</h3>
+        <div class="log" id="verification-log"><p class="empty-state">正在载入命题和近期验证记录…</p></div>
+        <nav class="pager-bar" id="record-pages" aria-label="验证日志分页">
+          <div class="pager-group">
+            <button type="button" class="pager-btn" id="record-first" aria-label="首页" title="首页" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 3.5v9M11.5 3.5L7 8l4.5 4.5"/></svg></button>
+            <button type="button" class="pager-btn" id="record-prev" aria-label="上一页" title="上一页" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5L5.5 8 10 12.5"/></svg></button>
+          </div>
+          <label class="pager-jump"><input type="text" inputmode="numeric" pattern="[0-9]*" id="record-input" class="pager-input" value="1" aria-label="验证日志页码"><span class="pager-sep" aria-hidden="true">/</span><span id="record-total" class="pager-total">1</span></label>
+          <div class="pager-group">
+            <button type="button" class="pager-btn" id="record-next" aria-label="下一页" title="下一页" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5L10.5 8 6 12.5"/></svg></button>
+            <button type="button" class="pager-btn" id="record-last" aria-label="末页" title="末页" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 3.5L9 8l-4.5 4.5M12 3.5v9"/></svg></button>
+          </div>
+          <button type="button" class="pager-btn pager-retry" id="record-retry" aria-label="重试" title="重试" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M12.5 8a4.5 4.5 0 1 1-1.3-3.2M12.5 3v2.5H10"/></svg></button>
+          <span id="record-status" class="pager-status" aria-live="polite" hidden></span>
+          <span id="record-page" class="sr-only" aria-live="polite"></span>
+        </nav>
+      </div>
     </section>
 
     <section class="section road-section" id="roadmap">

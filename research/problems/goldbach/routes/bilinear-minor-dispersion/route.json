@@ -1,0 +1,14 @@
+{
+  "id": "bilinear-minor-dispersion",
+  "title": {
+    "en": "Rational approximation and minor-arc sums",
+    "zh": "有理逼近与次弧指数和"
+  },
+  "description": {
+    "en": "Locate a reduced rational on each minor arc, bound a block of reciprocal chords near that rational, and turn a uniform exponential-sum estimate into a ternary coefficient bound.",
+    "zh": "为每个次弧点找到既约有理逼近，控制该逼近下一个分母长度区间上的倒弦长之和，并将指数和的一致估计转化为三元傅里叶系数的上界。"
+  },
+  "feeds": [
+    "arc-budget"
+  ]
+}

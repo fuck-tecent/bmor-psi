@@ -1,0 +1,18 @@
+{
+  "id": "L-quadratic-primes-middle-coarse",
+  "statement": "let wgt := fun (n p : ℕ) => (((n ^ 2 + 1).factorization p : ℕ) : ℝ) * Real.log (p : ℝ); let middle := fun (x : ℕ) => Finset.sum (Finset.Ioc x (2 * x)) (fun n => Finset.sum ((n ^ 2 + 1).primeFactors.filter (fun p => x < p ∧ p ^ 100000 ≤ n ^ 132301)) (fun (p : ℕ) => wgt n p)); let apTheta := fun (x : ℕ) => Finset.sum ((Finset.range ((2 * x) ^ 132301 + 1)).filter (fun p => p.Prime ∧ p % 4 = 1)) (fun p => Real.log (p : ℝ)); ∀ x : ℕ, 1 ≤ x → middle x ≤ 4 * apTheta x",
+  "plain_statement": {
+    "zh": "存在常数 4：对每个 x ≥ 1，中段质量（n 取遍 (x,2x]、p 取遍 n²+1 的素因子且满足 x<p、p^100000≤n^132301，按 v_p(n²+1)·log p 加权求和）不超过 4 倍的 apTheta(x)=Σ log p（p 取遍 ≤(2x)^132301 且 p≡1 (mod 4) 的素数）。",
+    "en": "For every x ≥ 1, the middle mass — the sum of v_p(n^2+1)·log p over n in (x,2x] and prime divisors p of n^2+1 with x < p and p^100000 ≤ n^132301 — is at most 4 times apTheta(x), the sum of log p over primes p ≤ (2x)^132301 with p ≡ 1 (mod 4)."
+  },
+  "brief": {
+    "zh": "把中段质量按素数纤维重排：每个中段素数的根数≤2、重数≤2，故单素数贡献≤4 log p，从而 middle x ≤ 4·apTheta x。这是「粗计数路线无法在 x log x 预算内闭合」的障碍钉死（常数 2 不成立，见反例）。",
+    "en": "Regroup the middle mass by prime fibres: each middle prime has at most two roots and multiplicity at most two, hence contributes at most 4 log p, so middle x ≤ 4·apTheta x. This pins down the obstruction that crude counting cannot close within an x log x budget (constant 2 is false; see the counterexample)."
+  },
+  "program": "correlation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://arxiv.org/abs/1908.08816",
+  "module": "Conjectures.QuadraticPrimes.MiddleCoarse",
+  "file": "lean/Conjectures/QuadraticPrimes/MiddleCoarse.lean"
+}

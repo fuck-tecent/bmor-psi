@@ -1,0 +1,22 @@
+{
+  "id": "L-twin-primes-divisor-ap-error-to-square-root",
+  "statement": "(∀ (q : ℕ) [NeZero q] (χ : DirichletCharacter ℂ q) (s : ℂ), 0 < s.re → s.re < 1 → DirichletCharacter.LFunction χ s = 0 → s.re = 1/2) → (let w := fun (X : ℕ) => (Finset.range (2*X+1)).filter (fun n => X < n ∧ 50*n < 51*X); let A := fun (X d : ℕ) => ((w X).filter (fun p => p.Prime ∧ d ∣ p+2)).sum (fun p => Real.log p); let D := fun (X : ℕ) => Nat.floor (Real.sqrt X/(Real.log (2+(X:ℝ)))^5); ∃ C : ℝ, 0 < C ∧ ∀ X : ℕ, 3 ≤ X → (((Finset.Icc 1 (D X)).filter Odd).sum (fun d => Real.log d * |A X d-(X:ℝ)/(50*Nat.totient d)|))/(X:ℝ) ≤ C/(Real.log (2+(X:ℝ)))^2)",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然推广 · TP-0059 · 将 GRH 进程误差绝对求和到近平方根截点",
+    "en": "New route · Levent GRH methods and extensions · TP-0059 · Sum the absolute GRH progression errors to a cutoff below the square root"
+  },
+  "brief": {
+    "zh": "逐模使用 TP-0030。d≤D≤X 时有 log d·log²(2dX)≪log³(2+X)，乘上 D/√X 后得到逆平方对数预算。",
+    "en": "Apply TP-0030 separately to each modulus. For d≤D≤X, the three log factors cost O(log³(2+X)). Multiplying by D/√X gives an inverse-square-log error."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/GlobalInterpolation/TruncatedExplicitFormula.lean#L607",
+  "program": "correlation",
+  "role": "conditional",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-ap-short-error"
+  ],
+  "imports": [
+    "PEqualNP.Outside.L_twin_primes_ap_short_error"
+  ]
+}

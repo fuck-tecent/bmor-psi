@@ -1,0 +1,11 @@
+{
+  "id": "07-global-heights",
+  "title": {
+    "zh": "全局高度与 abc",
+    "en": "Global heights and abc"
+  },
+  "description": {
+    "zh": "分别冻结族上的结论、固定指数和每个 ε 的统一常数。",
+    "en": "Distinguish a family result, a fixed exponent and constants uniform in all triples for each ε."
+  }
+}

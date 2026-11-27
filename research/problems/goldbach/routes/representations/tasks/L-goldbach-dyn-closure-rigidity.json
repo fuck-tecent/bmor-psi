@@ -1,0 +1,23 @@
+{
+  "id": "L-goldbach-dyn-closure-rigidity",
+  "statement": "∀ (A B : Set ℤ), (∀ x ∈ A, 0 < x) → (∀ x ∈ B, x < 0) → ∀ (P Q : Set ℤ), P.Nonempty → Q.Nonempty → (∀ F : Finset ℤ, ∃ k : ℤ, ∀ i ∈ F, (i ∈ P ↔ i+k ∈ A) ∧ (i ∈ Q ↔ i+k ∈ B)) → ∃ k : ℤ, ∀ i : ℤ, (i ∈ P ↔ i+k ∈ A) ∧ (i ∈ Q ↔ i+k ∈ B)",
+  "plain_statement": {
+    "zh": "有限窗口可匹配的混合极限必为原轨道点",
+    "en": "Recover mixed orbit limits from finite-window matches"
+  },
+  "brief": {
+    "zh": "固定两个命中坐标，把平移限制到有限候选。若每个候选都失败，取各自一个反证坐标并合成一个窗口。",
+    "en": "Anchor one hit in each coordinate. Exclude each of the finitely many shifts with one witness and combine witnesses in a single window."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-dyn-window-trap"
+  ],
+  "module": "Conjectures.Goldbach.DynClosureRigidity",
+  "file": "lean/Conjectures/Goldbach/DynClosureRigidity.lean",
+  "imports": [],
+  "track": "representations",
+  "role": "lemma"
+}

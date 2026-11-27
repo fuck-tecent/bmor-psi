@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-packet-smooth-moduli-weight",
+  "statement": "let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let smooth := fun n q : ℕ => ∀ p ∈ q.primeFactors, p ≤ (1+Nat.log 2 (Q n))^8; ∀ ε : ℝ, 0<ε → ∃ N : ℕ, ∀ n ≥ N, (∑ q ∈ (Finset.Icc 1 ((Q n)^2)).filter (fun q => smooth n q), min (1:ℝ) ((q:ℝ)/(Q n:ℝ))/(Nat.totient q:ℝ)) ≤ ε",
+  "plain_statement": {
+    "zh": "所有小素因子分母的加权总量趋零",
+    "en": "Vanishing weight of smooth denominators"
+  },
+  "brief": {
+    "zh": "算术猜想，允许全部 (1+log₂ Q)⁸ 光滑分母。先用 q/Q 控制小分母，再尝试用 Rankin 界估计较大光滑数及其 1/φ(q) 权重。",
+    "en": "Allow every denominator whose prime factors are at most (1+log₂ Q)⁸. Use q/Q for small q and try a Rankin bound for the weighted smooth-number tail."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "minor-truncation",
+  "role": "target",
+  "module": "Conjectures.Goldbach.PacketSmoothModuliWeight",
+  "file": "lean/Conjectures/Goldbach/PacketSmoothModuliWeight.lean"
+}

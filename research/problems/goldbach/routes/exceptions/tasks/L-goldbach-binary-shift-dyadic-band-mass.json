@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-binary-shift-dyadic-band-mass",
+  "statement": "let w := fun p : ℕ => if Nat.Prime p then Real.log (p:ℝ) else 0; let R := fun m : ℕ => ∑ p ∈ (Finset.range (m+1)).filter (fun p => m ≤ 3*p ∧ 3*p ≤ 2*m), w p*w (m-p); ∃ c : ℝ, 0 < c ∧ ∃ K : ℕ, ∀ k ≥ K, let I := Finset.Icc (k/4+1) (k/2); c*(I.card:ℝ)*((2:ℝ)^k) ≤ ∑ e ∈ I, R (2^k-2^e)",
+  "plain_statement": {
+    "zh": "猜想：二次幂目标的中段移位有线性平均质量",
+    "en": "Conjecture: a middle band of binary shifts at dyadic targets has linear mean mass"
+  },
+  "brief": {
+    "zh": "只取 n=2^k，考察 n^(1/4) 到 n^(1/2) 附近的移位。先分析 2^k−2^e 的局部因子，再比较正主项与平均误差。此窗完全剔除了零移位。",
+    "en": "At dyadic n inspect the local factors of 2^k−2^e, then compare the main term and the mean error on this band. It omits the unshifted coefficient."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/f4f754c4709c0c1b2dbc67e4c8f74ce2475b8935/research/ROADMAP.md",
+  "program": "exceptions",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "exceptions",
+  "role": "target",
+  "module": "Conjectures.Goldbach.BinaryShiftDyadicBandMass",
+  "file": "lean/Conjectures/Goldbach/BinaryShiftDyadicBandMass.lean"
+}

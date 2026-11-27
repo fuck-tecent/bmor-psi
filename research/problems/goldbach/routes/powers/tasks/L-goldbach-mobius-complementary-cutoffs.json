@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-mobius-complementary-cutoffs",
+  "statement": "∀ (n : ℕ) (t : ℝ), 1 < n → Squarefree n → let T := fun x : ℝ => n.divisors.sum (fun d => (ArithmeticFunction.moebius d : ℝ) * max (x - Real.log (d : ℝ)) 0); ArithmeticFunction.vonMangoldt n = T t - (ArithmeticFunction.moebius n : ℝ) * T (Real.log (n : ℝ) - t)",
+  "plain_statement": {
+    "zh": "对每个无平方因子的 n>1 和实数 t，若 T(t) 是对数截断的莫比乌斯除数和，则 Λ(n)=T(t)−μ(n)T(log n−t)。",
+    "en": "For each squarefree integer n>1 and real t, the logarithmically truncated Möbius divisor sum T satisfies Λ(n)=T(t)−μ(n)T(log n−t)."
+  },
+  "imports": [],
+  "program": "foundation",
+  "brief": {
+    "zh": "在阈值 t 处分拆莫比乌斯加权的对数和，并在长除数项中用 n/d 替换 d。在 t=(log n)/2 处，系数化为 1−μ(n)，给出筛权奇偶性的精确恒等式。",
+    "en": "Split the Möbius-weighted log sum at t and replace each long divisor d by n/d. Taking t=(log n)/2 gives the explicit parity factor 1−μ(n) in the truncated prime weight."
+  },
+  "source": "https://github.com/leanprover-community/mathlib4/blob/fc4f59e577feb1a4956671bc04ac18aaaf8cd842/Mathlib/NumberTheory/ArithmeticFunction/VonMangoldt.lean",
+  "parallel": true,
+  "track": "powers",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.MobiusComplementaryCutoffs",
+  "file": "lean/Conjectures/Goldbach/MobiusComplementaryCutoffs.lean"
+}

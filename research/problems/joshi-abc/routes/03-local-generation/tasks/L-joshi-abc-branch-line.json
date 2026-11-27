@@ -1,0 +1,21 @@
+{
+  "id": "L-joshi-abc-branch-line",
+  "statement": "let g := fun (u : ZMod 29) => (![u,0,0] : Fin 3 → ZMod 29); let S := {v | ∃ u : ZMod 29, u^14=1 ∧ v=g u}; Submodule.span (ZMod 29) S = Submodule.span (ZMod 29) ({g 1} : Set (Fin 3 → ZMod 29))",
+  "plain_statement": {
+    "zh": "新路线 · 29 进生成与反例族 · JA-0020 · 十四个根分支只生出模 29 一条直线",
+    "en": "New route · 29-adic generation and counterfamilies · JA-0020 · Show the fourteen root branches span just one residual line"
+  },
+  "brief": {
+    "zh": "每个向量是第一基向量的倍数，且分支 1 存在。",
+    "en": "Every branch is on the first coordinate axis, which contains the branch at 1."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/joshi-abc.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "03-local-generation",
+  "module": "Conjectures.JoshiAbc.BranchLine",
+  "file": "lean/Conjectures/JoshiAbc/BranchLine.lean"
+}

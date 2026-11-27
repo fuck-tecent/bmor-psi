@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-farey-late-prime-square-loss",
+  "statement": "∀ (n : ℕ) (J : Finset ℕ), 64 ≤ n → let I := Finset.Icc ((n+2)/3) ((2*n)/3); let Hit := I.filter (fun u => u.Coprime n ∧ (J.filter (fun a => (a*u)%n = 1)).Nonempty ∧ (∃ p : ℕ, p ≤ Nat.sqrt n ∧ p.Prime ∧ n < p^3 ∧ p ≤ (u*(n-u)).minFac ∧ (u=p^2 ∨ n-u=p^2))); Hit.card ≤ 2*Nat.sqrt n",
+  "plain_statement": {
+    "zh": "新路线 · Farey 分母对与逆元筛 · HD-8014 · 给带逆元标记的末段素数平方一个统一计数上界",
+    "en": "New route · Farey denominator pairs and inverse sieve · HD-8014 · Bound the inverse-labelled prime-square loss in the late band"
+  },
+  "brief": {
+    "zh": "在末段换元后单独计 q=p。每个 p≤⌊√n⌋对每个方向至多贡献一次，无需估计筛后的另一分母。这个预算可用于全窗和任意固定逆元窗。",
+    "en": "Count q=p after the late-band reindexing. Each possible p contributes at most once per orientation. The estimate applies to both the full window and any fixed inverse-labelled window."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/farey-inverse-sieve/README.md",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-farey-late-first-hit-factor-switch"
+  ],
+  "imports": []
+}

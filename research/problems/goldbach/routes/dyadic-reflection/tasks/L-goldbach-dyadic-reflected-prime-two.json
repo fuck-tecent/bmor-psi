@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-dyadic-reflected-prime-two",
+  "statement": "∀ (N k : ℕ), 4 ≤ N → Even N → 1 ≤ k →\n  let q : ℕ := 2^k\n  let A := fun r : ℕ => ∑ n ∈ (Finset.range (N+1)).filter (fun n => n%(2*q)=r ∧ n.Prime), Real.log (n : ℝ)\n  let D := fun r : ℕ => A r - A (r+q)\n  (∑ r ∈ (Finset.range q).filter (fun r => Even r),\n    (if (N+2*q-r)%(2*q) < q then (1 : ℝ) else -1) * D r * D ((N+q-r)%q)) =\n    (if N%(2*q)=4%(2*q) then (1 : ℝ) else if N%(2*q)=(4+q)%(2*q) then -1 else 0) * (Real.log 2)^2",
+  "plain_statement": {
+    "zh": "新路线 · 二进反射与 Levent GRH · DR-0013 · 精确分出素数 2 在偶余类上的带符号贡献",
+    "en": "New route · Dyadic reflection and Levent GRH · DR-0013 · Compute the signed contribution of the prime 2 in the even residues"
+  },
+  "brief": {
+    "zh": "在 q≥2 的二幂层按 N=4 或 4+q 模 2q 取正负号，其余目标给零。结果可跨层给出小于 (log 2)^2 的绝对预算。",
+    "en": "On each power-of-two layer q≥2, the sign is positive at N≡4 and negative at N≡4+q modulo 2q. The other targets give zero. Summing the absolute costs gives a budget below (log 2)^2."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/dyadic-reflection/README.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-dyadic-carry-increment"
+  ],
+  "imports": []
+}

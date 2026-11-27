@@ -1,0 +1,18 @@
+{
+  "id": "L-twin-primes-cofactor-sieve-root-count",
+  "statement": "∀ (r ℓ : ℕ), r.Prime → 2 < r → ℓ.Prime → ((Finset.range ℓ).filter (fun a => a % ℓ = 0 ∨ (r*a) % ℓ = 2 % ℓ)).card = if ℓ = 2 ∨ ℓ = r then 1 else 2",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然推广 · TP-0061 · 计算余因子素数 r 下两条线性式的局部坏类",
+    "en": "New route · Levent GRH methods and extensions · TP-0061 · Count the forbidden classes for the two linear forms with prime cofactor r"
+  },
+  "brief": {
+    "zh": "两条线性式为 s 和 rs−2。模 2 时两根合并，模 r 时第二式为非零常数，其余素数各去两个不同类。使用同余式避免在 s=0 时发生 Nat 截断。",
+    "en": "The forms are s and rs−2. Their roots coincide modulo 2. Modulo r the second form is a nonzero constant. Every other prime removes two distinct classes. Use modular equality to handle s=0 without truncated subtraction."
+  },
+  "source": "https://doi.org/10.1090/coll/057",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

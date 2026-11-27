@@ -1,0 +1,23 @@
+{
+  "id": "L-joshi-abc-theta-minimum",
+  "statement": "∀ (l j : ℚ), 0 < j → j < l → let b := fun (n : ℤ) => (n:ℚ)*(n+1)/2+(2*(n:ℚ)+1)*j/(2*l); ∀ n : ℤ, n ≠ -1 → b (-1) < b n",
+  "plain_statement": {
+    "zh": "新路线 · 缩放对数与 Theta 值 · JA-0012 · 证明指标 −1 是唯一最小项",
+    "en": "New route · Scaled logarithms and theta values · JA-0012 · Prove the unique minimum occurs at index minus one"
+  },
+  "brief": {
+    "zh": "由相邻差的符号分别沿 −1 的两边归纳。",
+    "en": "Use the signs of the successive differences on either side of −1."
+  },
+  "source": "https://arxiv.org/abs/2303.01662",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-joshi-abc-theta-exponent"
+  ],
+  "imports": [],
+  "track": "02-scaled-log-and-theta",
+  "module": "Conjectures.JoshiAbc.ThetaMinimum",
+  "file": "lean/Conjectures/JoshiAbc/ThetaMinimum.lean"
+}

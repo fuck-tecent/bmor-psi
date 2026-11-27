@@ -1,0 +1,11 @@
+{
+  "id": "01-haar-volume",
+  "title": {
+    "zh": "原文反例与 Haar 体积",
+    "en": "Printed comparisons and Haar volume"
+  },
+  "description": {
+    "zh": "锁定符号与同一张量子集的量值，再构造相容的次数归一。",
+    "en": "Check the printed sign and the value on a tensor subset before constructing a compatible degree normalization."
+  }
+}

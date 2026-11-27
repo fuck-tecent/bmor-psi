@@ -1,0 +1,11 @@
+{
+  "id": "02-scaled-log-and-theta",
+  "title": {
+    "zh": "缩放对数与 Theta 值",
+    "en": "Scaled logarithms and theta values"
+  },
+  "description": {
+    "zh": "把真正的双边级数与相邻商放在同一个赋值域内。",
+    "en": "Work with the actual bilateral series and adjacent quotients in one valued field."
+  }
+}

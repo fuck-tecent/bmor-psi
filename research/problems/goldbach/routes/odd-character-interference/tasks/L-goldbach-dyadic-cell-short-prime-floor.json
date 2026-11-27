@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-dyadic-cell-short-prime-floor",
+  "statement": "let w := fun p : ℕ => if Nat.Prime p then Real.log (p : ℝ) else 0; ∃ K : ℕ, ∀ k ≥ K, let n : ℕ := 2^k; let H : ℕ := 2^(k-k/4); ∀ x : ℕ, n ≤ 3*x → 3*x ≤ 2*n → (H:ℝ)/2 ≤ ∑ t ∈ Finset.range H, w (x+t)",
+  "plain_statement": {
+    "zh": "新路线 · 奇特征干涉 · OC-0103 · 每个中心短区间的素数权至少为块长的一半",
+    "en": "New route · Odd-character interference · OC-0103 · Prime weight exceeds half a block length at every central start"
+  },
+  "brief": {
+    "zh": "块长约为 n 的四分之三次方。以一致短区间素数定理为入口，核对半开区间的端点、对数权及对全部 x 有效的共同阈值。",
+    "en": "Apply a uniform short-interval prime theorem at length of order n to the power 3/4. Transfer to the half-open interval and prime log weight with one threshold for all starts."
+  },
+  "source": "https://arxiv.org/abs/2405.20552v2",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "odd-character-interference",
+  "role": "target",
+  "module": "Conjectures.Goldbach.DyadicCellShortPrimeFloor",
+  "file": "lean/Conjectures/Goldbach/DyadicCellShortPrimeFloor.lean"
+}

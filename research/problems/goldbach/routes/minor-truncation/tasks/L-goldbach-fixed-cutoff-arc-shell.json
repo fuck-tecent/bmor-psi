@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-fixed-cutoff-arc-shell",
+  "statement": "∀ (Q N n : ℕ), 1 ≤ N → N ≤ n → let r := fun (x q : ℕ) => (Q : ℝ) / ((q : ℝ) * (x : ℝ)); let A := fun (x : ℕ) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ Q ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t - (a : ℝ) / (q : ℝ)| ≤ r x q}; A n ⊆ A N ∧ (∀ t ∈ A N \\ A n, ∃ q a : ℕ, 1 ≤ q ∧ q ≤ Q ∧ a ≤ q ∧ Nat.Coprime a q ∧ r n q < |t - (a : ℝ) / (q : ℝ)| ∧ |t - (a : ℝ) / (q : ℝ)| ≤ r N q) ∧ (∑ q ∈ Finset.Icc 1 Q, ((q : ℝ) + 1) * (2 * (r N q - r n q))) ≤ 4 * (Q : ℝ)^2 * ((n : ℝ) - (N : ℝ)) / ((N : ℝ) * (n : ℝ))",
+  "plain_statement": {
+    "zh": "固定自然数 Q，取 1≤N≤n。以 Q/(qx) 为半径的有理主弧 Aₓ 随 x 收缩。属于 A_N 而落在 A_n 外的每点都位于某个最简分数的边界带内。按所有分母和分子计，两侧边界带的总长度至多为 4Q²(n−N)/(Nn)。",
+    "en": "At fixed natural Q and 1≤N≤n, the rational arcs of radii Q/(qx) shrink with x. Every point lost from A_N lies in a boundary shell of a reduced fraction. Counting both sides and all numerators with multiplicity gives total width at most 4Q²(n−N)/(Nn)."
+  },
+  "imports": [],
+  "program": "correlation",
+  "brief": {
+    "zh": "沿用同一个分数作包含关系的见证。新旧半径之差含因子 1/q，而分子数至多为 q+1。逐分母求和，无需弧互不相交。",
+    "en": "Keep the same rational witness for nesting. Each loss of radius has a factor 1/q and at most q+1 numerators occur. Sum both sides over the denominators, allowing overlaps."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/316",
+  "parallel": true,
+  "track": "minor-truncation",
+  "role": "lemma",
+  "depends_on": [],
+  "module": "Conjectures.Goldbach.FixedCutoffArcShell",
+  "file": "lean/Conjectures/Goldbach/FixedCutoffArcShell.lean"
+}

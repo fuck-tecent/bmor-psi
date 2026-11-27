@@ -1,0 +1,29 @@
+{
+  "id": "L-goldbach-farey-initial-sieve-lower",
+  "statement": "let I := fun n : ℕ => Finset.Icc ((n+2)/3) ((2*n)/3); let P := fun z : ℕ => (Finset.Icc 2 z).filter Nat.Prime; let V := fun n z : ℕ => ((I n).card:ℝ)*(n.totient:ℝ)/n * ∏ p ∈ (P z).filter (fun p => ¬ p ∣ n), (1-2/(p:ℝ)); let S := fun n z : ℕ => ((I n).filter (fun u => u.Coprime n ∧ z < (u*(n-u)).minFac)).card; let Z₀ := fun n U : ℕ => ⌊(n:ℝ)^((1:ℝ)/(U:ℝ))⌋₊; let Z₂ := Nat.sqrt; ∃ U₀ : ℕ, 8 ≤ U₀ ∧ ∀ U : ℕ, U₀ ≤ U → ∃ N₀ : ℕ, 64 ≤ N₀ ∧ ∀ n : ℕ, N₀ ≤ n → Even n → V n (Z₀ n U) - V n (Z₂ n)/8 ≤ (S n (Z₀ n U):ℝ)",
+  "plain_statement": {
+    "zh": "新路线 · Farey 分母对与逆元筛 · HD-8011 · 把初筛下界误差吸收到终筛主项的八分之一",
+    "en": "New route · Farey denominator pairs and inverse sieve · HD-8011 · Bound the lower-sieve loss by one eighth of the terminal main term"
+  },
+  "brief": {
+    "zh": "在全分子窗应用二维筛基本引理。取水平 n^(1/4)，初筛 n^(1/U)，证明筛基本引理的相对误差乘两筛点比后仍不超过 1/8。量词选定任意充分大的固定 U，再选 n 的阈值。",
+    "en": "Apply the dimension-two fundamental lemma in the full window. Use level n^(1/4) and initial cutoff n^(1/U). Bound the fundamental-lemma error times the main-term ratio by 1/8. Choose a threshold in n for each sufficiently large fixed U."
+  },
+  "source": "https://doi.org/10.1090/coll/057",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-farey-full-sieve-remainder",
+    "L-goldbach-farey-sieve-root-total",
+    "L-goldbach-farey-sieve-terminal-floor",
+    "L-goldbach-farey-sieve-cutoff-ratio"
+  ],
+  "imports": [
+    "Conjectures.Goldbach.FareyFullSieveRemainder",
+    "Conjectures.Goldbach.FareySieveRootTotal",
+    "Conjectures.Goldbach.FareySieveTerminalFloor",
+    "Conjectures.Goldbach.FareySieveCutoffRatio"
+  ],
+  "challenge_only": true
+}

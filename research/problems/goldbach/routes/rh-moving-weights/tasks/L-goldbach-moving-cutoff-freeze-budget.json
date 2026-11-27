@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-moving-cutoff-freeze-budget",
+  "statement": "∀ (I : Finset ℕ) (K : ℕ) (b : ℕ → ℕ) (f : ℕ → ℂ) (r y : ℕ → ℝ) (G : ℕ → ℝ → ℂ), (∀ m ∈ I, b m < K) → (∀ m ∈ I, ‖f m‖ ≤ 1) → let B : ℕ → Finset ℕ := fun j => I.filter (fun m => b m = j); ‖∑ m ∈ I, f m * G m (r m)‖ ≤ ∑ j ∈ Finset.range K, ‖∑ m ∈ B j, f m * G m (y j)‖ + ∑ j ∈ Finset.range K, ∑ m ∈ B j, ‖G m (r m) - G m (y j)‖ ∧ (∑ j ∈ Finset.range K, Real.sqrt ((B j).card : ℝ)) ≤ Real.sqrt (K : ℝ) * Real.sqrt (I.card : ℝ)",
+  "plain_statement": {
+    "zh": "移动上界分箱端点冻结分解与子箱长度平方根预算",
+    "en": "Moving-cutoff bin-freezing decomposition and square-root bin cardinality budget"
+  },
+  "brief": {
+    "zh": "按分箱映射将求和拆为互斥纤维，在每箱插入冻结端点项并用三角不等式估计差值；第二式对常数列与箱长平方根应用实数柯西不等式。",
+    "en": "Fiber the sum by the bin map, insert the frozen value on each fiber with the triangle inequality, and apply real Cauchy-Schwarz to ones against square-root fiber cardinalities."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/dc76b2788ef7ad0a6d2d4575ca3320a677c72cd9/src/Main.lean",
+  "program": "correlation",
+  "parallel": true,
+  "imports": [],
+  "track": "rh-moving-weights",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.MovingCutoffFreezeBudget",
+  "file": "lean/Conjectures/Goldbach/MovingCutoffFreezeBudget.lean"
+}

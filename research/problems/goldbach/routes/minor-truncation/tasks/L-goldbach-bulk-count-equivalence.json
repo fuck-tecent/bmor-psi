@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-bulk-count-equivalence",
+  "statement": "(let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; ∀ e:ℝ,0<e → ∃ N:ℕ,∀ n≥N, Even n → -(e*(n:ℝ))≤(I n (high n) (high n)).re) ↔ (let w := fun p : ℕ => if p.Prime then Real.log (p:ℝ) else 0; let R := fun n : ℕ => Finset.sum (Finset.HasAntidiagonal.antidiagonal n) (fun x => w x.1*w x.2); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let c := fun q n : ℕ => Finset.sum q.divisors (fun d => (if d ∣ n then (d:ℝ) else 0)*(ArithmeticFunction.moebius (q/d):ℝ)); let J := fun z : ℝ => intervalIntegral (fun t : ℝ => (Real.sinc (Real.pi*t))^2) (-z) z MeasureTheory.volume; let M := fun n : ℕ => (n:ℝ)*Finset.sum (Finset.Icc 1 (Q n)) (fun q => c q n*((ArithmeticFunction.moebius q:ℝ)/q.totient)^2*J ((Q n:ℝ)/q)); ∀ ε:ℝ, 0<ε → ∃ N:ℕ, ∀ n≥N, Even n → M n ≤ R n+ε*n)",
+  "plain_statement": {
+    "zh": "高段素数的带符号次弧下界等价于普通对数加权哥德巴赫计数对有限主弧模型的逐偶数单侧下界。",
+    "en": "The signed high-prime minor-arc floor is equivalent to a pointwise lower bound on the ordinary log-weighted Goldbach count against a finite major-arc model."
+  },
+  "brief": {
+    "zh": "保留实际弧宽，按分母求和，控制离散核与连续核之差及素数截断误差。对每个充分大的偶数证明任意小的线性误差下两侧相互推出。",
+    "en": "Keep the actual arc widths when summing over reduced centres. Control the discrete-to-continuous kernel error and the removed small primes. Transfer the one-sided estimate in both directions for every sufficiently large even target."
+  },
+  "source": "https://www.goldbach.tech/?lemma=L-goldbach-bulk-signed-floor#roadmap",
+  "program": "correlation",
+  "parallel": true,
+  "imports": [],
+  "track": "minor-truncation",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.BulkCountEquivalence",
+  "file": "lean/Conjectures/Goldbach/BulkCountEquivalence.lean"
+}

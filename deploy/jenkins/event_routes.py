@@ -13,6 +13,9 @@ GRH_PATHS = {
     "lean/PEqualNP/GRH.lean", "lean/CheckLemma.lean", "lean/lean-toolchain",
     "deploy/jenkins/check-grh.sh", ".github/workflows/grh.yml",
 }
+PROOF_PATH = re.compile(
+    r"lean/(?:PEqualNP/Outside/L_[a-z0-9_]+|Conjectures/[A-Z][A-Za-z0-9]*/[A-Z][A-Za-z0-9]*)\.lean"
+)
 
 
 def route(event, body, paths=(), *, grh_enabled=True):
@@ -48,7 +51,10 @@ def route(event, body, paths=(), *, grh_enabled=True):
             return ["grh"] if grh_enabled else []
         if ref != "refs/heads/main":
             return []
-        # The former CircleCI job checked every main push with the same commands.
+        # Proof-only updates cannot change the catalogue or its frozen declarations.
+        # Keep checking empty or unavailable comparisons as well as mixed updates.
+        if paths and all(PROOF_PATH.fullmatch(path) for path in paths):
+            return []
         jobs = ["catalogue"]
     else:
         return []

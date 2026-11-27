@@ -1,0 +1,24 @@
+{
+  "id": "L-joshi-abc-kummer-residue",
+  "statement": "∀ (p k : ℕ) [Fact p.Prime], Odd p → ∀ x y : PadicInt p, let u := fun (z : PadicInt p) => 1+(p:Padic p)*(z:Padic p); (∃ v : Padic p, v^(p^k)=u x/u y) ↔ ‖(x:Padic p)-y‖ ≤ (1/(p:ℝ))^k",
+  "plain_statement": {
+    "zh": "新路线 · 指定 Kummer 像与 Θ 测试 · JA-0041 · 在奇 p 处判别两个主单位的有限层 Kummer 类相等",
+    "en": "New route · Marked Kummer images and theta tests · JA-0041 · Detect equality of finite-level Kummer classes of principal units at odd p"
+  },
+  "brief": {
+    "zh": "在 Qₚ 的 1+pZₚ 上用 log/exp；若完整乘法群中有根，先消掉剩余域单位。",
+    "en": "Use log and exp on 1+pZₚ. For a root in the full multiplicative group first remove its residue-field unit."
+  },
+  "source": "https://arxiv.org/abs/2303.01662",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-joshi-abc-padic-isometry",
+    "L-joshi-abc-kummer-quotient"
+  ],
+  "imports": [],
+  "track": "05-kummer-images",
+  "module": "Conjectures.JoshiAbc.KummerResidue",
+  "file": "lean/Conjectures/JoshiAbc/KummerResidue.lean"
+}

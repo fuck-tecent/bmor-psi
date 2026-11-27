@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-reflection-conductor-blocks",
+  "statement": "∀ (p k : ℕ) [Fact p.Prime], 1 ≤ k →\n  ∀ (N : ZMod (p^k)) (χ ψ : DirichletCharacter ℂ (p^k)),\n    max p χ.conductor ≠ max p ψ.conductor →\n      (∑ x : (ZMod (p^k))ˣ, star (χ (x : ZMod (p^k))) * ψ (N - (x : ZMod (p^k)))) = 0",
+  "plain_statement": {
+    "zh": "新路线 · 二进反射与 Levent GRH · DR-0008 · 排除不同活跃导子层之间的反射项",
+    "en": "New route · Dyadic reflection and Levent GRH · DR-0008 · Eliminate reflection entries between distinct active conductor layers"
+  },
+  "brief": {
+    "zh": "用模 p^j 的平均作正交投影，选择一个只使两特征之一通过的 j。导子 1 和 p 放在同一最低块，因此冻结结论只区分 max(p,导子)。",
+    "en": "Use the average modulo p^j as an orthogonal projector and choose j so exactly one character passes. Conductors 1 and p share the bottom block, so the statement distinguishes max(p,conductor)."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/FoundationProofs/DirichletCharFiniteFourierTransformProperties.lean#L85",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-reflection-conductor-average",
+    "L-goldbach-reflection-character-contraction"
+  ],
+  "imports": []
+}

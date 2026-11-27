@@ -1,0 +1,22 @@
+{
+  "id": "L-goldbach-shift-fixed-row-grid-model",
+  "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (u : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (u k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let Q₁ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊; let H := fun n : ℕ => 256 * Q₁ n * Q n; let wideArcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q₁ n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (H n:ℝ)/((q:ℝ)*(n:ℝ))}; let deepCoeff := fun (n m : ℕ) => intervalIntegral (fun t => (wideArcs n)ᶜ.indicator (fun u => (S n w u)^2 * E (-(m:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let model := fun n m : ℕ =>\n  let K : ℕ := (n+1)^6\n  let t := fun j : ℕ => ((j:ℝ) + 1/2) / K\n  ((∑ j ∈ Finset.range K, ((wideArcs n)ᶜ.indicator (fun u => (S n w u)^2 * E (-(m:ℝ)*u)) (t j))).re) / K\n∀ ε η : ℝ, 0 < ε → 0 < η → η < 1/3 → ∃ n₀ : ℕ, ∀ n : ℕ, n₀ ≤ n → Even n →\nlet W := (Finset.Icc n (2*n)).filter Even\nlet ω := fun m : ℕ => if m ∈ W then 1 / (W.card : ℝ) else 0\n(∑ m ∈ W, ω m) = 1 ∧\n(∑ m ∈ W, (ω m)^2) * (n:ℝ)^(8/3+η) ≤ ((ε/2)*(n:ℝ))^2 ∧\n(∑ m ∈ W, ((deepCoeff n m).re - model n m)^2) ≤ 1/(n:ℝ)^2",
+  "plain_statement": {
+    "zh": "新路线 · 有符号因子与移位窗 · FW-9004 · 用同一中点网格在平方和范数中逼近深弧的整行偶系数",
+    "en": "New route · Signed factors and shift windows · FW-9004 · Approximate a fixed row of deep-arc coefficients on one midpoint grid"
+  },
+  "brief": {
+    "zh": "在不跨界的格上用频率至多 4n 的指数和导数界 O(n³log²(2n))；跨界格用 O(n²log²(2n)) 的振幅界。每个系数同用 (n+1)^6 个格，平方后再对 W 求和。均匀权有 |W|≥n/2。尚须比较有限模型的窗口均值与其在 n 处的值。",
+    "en": "On smooth cells use the derivative bound O(n³ log²(2n)) for frequencies up to 4n. On crossing cells use the amplitude bound O(n² log²(2n)). Use the same (n+1)^6 cells for every even shift before summing squares. The uniform window has at least n/2 points. Comparing the model mean with its value at n remains open."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/signed-factor-windows/split-3.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "imports": [],
+  "depends_on": [
+    "L-goldbach-shift-grid-mask-crossings",
+    "L-goldbach-shift-frozen-even-average",
+    "L-goldbach-shift-normalized-support"
+  ]
+}

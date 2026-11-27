@@ -1,0 +1,21 @@
+{
+  "id": "L-joshi-abc-measurable-density",
+  "statement": "∀ (w v ρ : ℝ) (d : ℕ), 0 < w → 0 < ρ → ρ ≤ 1 → 0 < d → ρ*w ≤ v → (Real.log w + Real.log ρ)/d ≤ Real.log v/d",
+  "plain_statement": {
+    "zh": "新路线 · 迹、不同理想与 Fourier 缺额 · JA-0036 · 从一般可测区域的相对测度恢复体积下界",
+    "en": "New route · Trace, different and Fourier deficit · JA-0036 · Recover a volume floor from the density of a measurable region"
+  },
+  "brief": {
+    "zh": "用 ρ=μ(C∩W)/μ(W)；此输入对一般区域不要求封闭于加法。",
+    "en": "Use ρ=μ(C∩W)/μ(W). The measured region may be any measurable set."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/joshi-abc.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "04-trace-and-fourier",
+  "module": "Conjectures.JoshiAbc.MeasurableDensity",
+  "file": "lean/Conjectures/JoshiAbc/MeasurableDensity.lean"
+}

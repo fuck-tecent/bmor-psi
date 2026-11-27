@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-dyn-factorial-collisions",
+  "statement": "let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); let P := fun X : ℕ => (Finset.Icc (Nat.sqrt X) (2*Nat.sqrt X)).filter Nat.Prime; let H := fun (X n : ℕ) => ((P X).filter (fun p => p ≤ n ∧ Nat.Prime (n-p))).card; let K := fun (X p q : ℕ) => ((E X).filter (fun n => p≤n ∧ q≤n ∧ Nat.Prime (n-p) ∧ Nat.Prime (n-q))).card; ∀ X : ℕ, (∑ n ∈ E X, H X n * (H X n - 1)) = ∑ p ∈ P X, ∑ q ∈ (P X).erase p, K X p q",
+  "plain_statement": {
+    "zh": "把碰撞矩分解成不同小素数对的共同终点",
+    "en": "Resolve factorial collisions into shared endpoints"
+  },
+  "brief": {
+    "zh": "数同一终点的两条不同路径。排除相同第一步，避免把对角线送进两素数筛。",
+    "en": "Count ordered distinct paths arriving together and remove the diagonal before applying a two-prime sieve."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "module": "Conjectures.Goldbach.DynFactorialCollisions",
+  "file": "lean/Conjectures/Goldbach/DynFactorialCollisions.lean",
+  "imports": [],
+  "track": "representations",
+  "role": "lemma"
+}

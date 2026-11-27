@@ -1,0 +1,23 @@
+{
+  "id": "L-joshi-abc-finite-affine-transform",
+  "statement": "∀ (G : Type) [AddCommGroup G] [Fintype G] (H : AddSubgroup G) [Fintype H] (b : G) (χ : AddChar G ℂ) [Decidable (∀ h : H, χ h.val=1)], (∑ h : H, χ (b+h.val)) = if (∀ h : H, χ h.val=1) then (Nat.card H:ℂ)*χ b else 0",
+  "plain_statement": {
+    "zh": "新路线 · 指定 Kummer 像与 Θ 测试 · JA-0043 · 计算指定剩余陪集指示函数的 Fourier 系数",
+    "en": "New route · Marked Kummer images and theta tests · JA-0043 · Evaluate the Fourier coefficient of a prescribed residual coset"
+  },
+  "brief": {
+    "zh": "在陪集上提取 χ(b)，再用有限群字符正交。这个测试保留陪集代表给出的相位。",
+    "en": "Factor out χ(b) and apply finite character orthogonality. The test retains the phase of the chosen coset representative."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/DecoratedLatticeProofs/ThetaKernelSplitPlacesEqJetClassicalThetaStatement.lean#L1335",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-joshi-abc-character-cancellation"
+  ],
+  "imports": [],
+  "track": "05-kummer-images",
+  "module": "Conjectures.JoshiAbc.FiniteAffineTransform",
+  "file": "lean/Conjectures/JoshiAbc/FiniteAffineTransform.lean"
+}

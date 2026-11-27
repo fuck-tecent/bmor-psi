@@ -18,8 +18,12 @@
   "depends_on": [
     "L-twin-primes-window-bridge",
     "L-twin-primes-divisor-bridge",
-    "L-twin-primes-energy-bridge"
+    "L-twin-primes-energy-bridge-v2"
   ],
-  "imports": [],
+  "imports": [
+    "PEqualNP.Outside.L_twin_primes_window_bridge",
+    "PEqualNP.Outside.L_twin_primes_divisor_bridge",
+    "Conjectures.TwinPrimes.EnergyBridgeV2"
+  ],
   "challenge_only": true
 }

@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-packet-wheel-grid-tail",
+  "statement": "let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let D := fun (n : ℕ) (t : ℝ) => ((n:ℝ)+1)^2/(1+((n:ℝ)+1)^2*‖E (30*t)-1‖^2); ∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ n ≥ N, intervalIntegral ((arcs n)ᶜ.indicator (D n)) (0:ℝ) 1 MeasureTheory.volume ≤ ε*(n:ℝ)",
+  "plain_statement": {
+    "zh": "模 30 有理网格在冻结次弧上的积分尾部",
+    "en": "Integrate the smooth rational-grid tail on the frozen minor arcs"
+  },
+  "brief": {
+    "zh": "只含显式余弦相位和实际弧宽。充分大 n 时，每个 a/30 约分后分母至多 30，主弧包含宽度至少 Q/(30n) 的邻域。可按最近网格点分区，利用正弦下界并积分距离的倒数平方。",
+    "en": "The task contains no prime weights. For large n each reduced a/30 has a major-arc neighborhood of radius at least Q/(30n). Partition by the nearest grid point and integrate an inverse-square distance estimate."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "minor-truncation",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.PacketWheelGridTail",
+  "file": "lean/Conjectures/Goldbach/PacketWheelGridTail.lean"
+}

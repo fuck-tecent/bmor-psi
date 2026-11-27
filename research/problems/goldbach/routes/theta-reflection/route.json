@@ -1,0 +1,14 @@
+{
+  "id": "theta-reflection",
+  "title": {
+    "zh": "Theta 提升与素数反射",
+    "en": "Theta lifts and prime reflection"
+  },
+  "description": {
+    "zh": "固定测试向量，比较正负反射范数；核心缺口是同一归一化下的算术匹配与严格间隔。 建议从中心卷积一阶矩、上界筛或局部因子二阶均值开始；这些中间结果允许剩余例外。",
+    "en": "Fix both test vectors and compare their norms with one normalization. Arithmetic matching and strict separation remain open. Start with the central first moment, the sieve envelope or the local second moment; these allow exceptional targets."
+  },
+  "feeds": [
+    "representations"
+  ]
+}

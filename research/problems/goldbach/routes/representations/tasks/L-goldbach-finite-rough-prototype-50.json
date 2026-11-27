@@ -1,0 +1,27 @@
+{
+  "id": "L-goldbach-finite-rough-prototype-50",
+  "statement": "∀ n : ℕ, 4 ≤ n → Even n → (n:ℝ) < Real.exp (Real.exp 5) → ∃ p : ℕ, Nat.Prime p ∧ 2 ≤ n-p ∧ (n-p).primeFactorsList.length ≤ 50",
+  "plain_statement": {
+    "zh": "新路线 · 小偶数覆盖 · FR-7034 · 将原型全域因子上界降至五十",
+    "en": "New route · Finite-range coverage · FR-7034 · Reduce the full prototype factor bound to fifty"
+  },
+  "brief": {
+    "zh": "对 n≥2313 用模 510510 的 19 粗候选与 exp 5<51 log 19；更小的偶数取 p=2，因 n−2<2^51。",
+    "en": "For n≥2313 use the 19-rough candidate modulo 510510 and exp 5<51 log 19. For smaller even n take p=2, since n−2<2^51."
+  },
+  "source": "https://www.goldbach.tech/?lemma=L-goldbach-binary-pointwise-positivity",
+  "program": "foundation",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-finite-residue-rough-510510",
+    "L-goldbach-finite-rough-prototype-constants-19",
+    "L-goldbach-finite-rough-factor-power"
+  ],
+  "imports": [
+    "PEqualNP.Outside.L_goldbach_finite_rough_factor_power"
+  ],
+  "track": "representations",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.FiniteRoughPrototype50",
+  "file": "lean/Conjectures/Goldbach/FiniteRoughPrototype50.lean"
+}

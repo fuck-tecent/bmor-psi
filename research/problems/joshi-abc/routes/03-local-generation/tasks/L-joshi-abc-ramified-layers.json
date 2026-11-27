@@ -1,0 +1,21 @@
+{
+  "id": "L-joshi-abc-ramified-layers",
+  "statement": "∀ (p f n m : ℕ), p.Prime → n ≤ m → (p^f)^n * p^(f*(m-n)) = (p^f)^m",
+  "plain_statement": {
+    "zh": "新路线 · 29 进生成与反例族 · JA-0018 · 数出主理想两层之间的精确指数",
+    "en": "New route · 29-adic generation and counterfamilies · JA-0018 · Count the exact index between powers of the uniformizer"
+  },
+  "brief": {
+    "zh": "每个连续商有 pᶠ 个元素，乘指数。代入 f=1、n=1、m=4 得三个剩余域方向。",
+    "en": "Each successive quotient has pᶠ elements. Substitute f=1, n=1 and m=4 for the three residue layers."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/joshi-abc.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "03-local-generation",
+  "module": "Conjectures.JoshiAbc.RamifiedLayers",
+  "file": "lean/Conjectures/JoshiAbc/RamifiedLayers.lean"
+}

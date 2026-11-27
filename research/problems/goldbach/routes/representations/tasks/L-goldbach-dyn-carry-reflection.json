@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-dyn-carry-reflection",
+  "statement": "let W := fun (A B : Finset ℕ) (n : ℕ) => ((A ×ˢ B).filter (fun t => t.1+t.2=n)).card; ∀ (m n : ℕ) (A B : Finset ℕ), 2 ≤ m → n+2 ≤ m → (∀ a ∈ A, a < m) → (∀ b ∈ B, b < m) → W A B (n+m) = W (A.image (fun a => m-1-a)) (B.image (fun b => m-1-b)) (m-2-n)",
+  "plain_statement": {
+    "zh": "把进位层反射成低端整数的路径计数",
+    "en": "Reflect wrapped paths into a low-end integer count"
+  },
+  "brief": {
+    "zh": "两个坐标分别关于 m−1 作反射，用反射的自逆性保持路径重数。可用低端的支撑或筛界估计伪命中。",
+    "en": "Reflect both coordinates about the endpoints of [0,m−1]. An involution preserves multiplicity and gives access to low-end bounds."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "module": "Conjectures.Goldbach.DynCarryReflection",
+  "file": "lean/Conjectures/Goldbach/DynCarryReflection.lean",
+  "imports": [],
+  "track": "representations",
+  "role": "lemma"
+}

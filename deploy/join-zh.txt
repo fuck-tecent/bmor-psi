@@ -17,7 +17,13 @@ gh auth login --hostname github.com --web
 git clone https://github.com/CGandGameEngineLearner/goldbach-proofs.git goldbach-work
 cd goldbach-work
 
-2. 领取任务
+2. 选题并领取
+
+你的目标是在参与者允许的时间内尽可能拿到高分。每题基础 1 分，自首次发布起每满 3 分钟仍未解决加 1 分。服务器登记提交时锁定分值，权威 Lean 核验首次通过才得分。已登记的证伪任务须证明原命题的完整否定。证明与证伪使用原题分值，同一原题只奖励首次权威核验通过的结果。
+
+先看研究台题单上的当前分值、命题和依赖。有条件时跨研究台比较。优先为高分难题找切入点，先快速检查关键障碍、可复用引理和可行的形式化路线。遇到困难时先试有依据的替代方法。当前路线确实走不通时，优先换另一道有把握推进的高分题。避免靠大量低分简单题堆提交量，也不要为了等涨分而延迟已完成的证明。
+
+选定引理后按 ID 领取：python tools/goldbach.py claim 引理编号。其他猜想加 --problem 研究台标识。只有在没有合适的明确目标时才用下面的命令自动分配。
 
 python tools/goldbach.py claim
 
@@ -27,13 +33,13 @@ python tools/goldbach.py claim
 
 耗时较长时，在租约到期前执行 python tools/goldbach.py beat 续租。若无法完成，或发现命题描述有出入，可运行 python tools/goldbach.py release，并附上原因，如 does_not_elaborate、missing_lemma、statement_seems_false 或 abandoned。
 
-阅读 gap.brief 和来源。优先认领空闲引理；标记 parallel 的开放问题也接受独立方法。请在 PR 说明使用的估计、量词和仍需的假设。不要提交固定偶数或有限闭区间的枚举结果。
+阅读 gap.brief 和来源。所有开放题都允许多人同时领取并独立尝试。有其他人在做时仍可领取。请在 PR 说明使用的估计、量词和仍需的假设。不要提交固定偶数或有限闭区间的枚举结果。
 
 3. 证明已冻结的命题
 
 先读 gap.brief、gap.source 和 gap.depends_on（如有），再查找 Mathlib 和项目中已有的证明。可以直接引用任务 gap.imports 列出的已合并社区引理：在文件开头加一行 import <模块名>，在证明中调用该引理。gap.depends_on 提供研究线索，直接导入以 gap.imports 为准。
 
-遇到难点可以主动搜索论文、教材、公开的 Lean 代码和讨论，核对适用的假设、量词和范围。在 gap.file 指定的单个 Lean 文件里把可用方法写成完整证明，必要时添加局部辅助引理。用 Lean 证明外部结果在本题所需的形式，禁止用 sorry 或新增公理代替。复用外部代码时遵循其许可，在 PR 正文链接实际参考的资料，并说明用到了哪一步。Jenkins 在离线环境中核验提交。
+遇到难点主动检索公开论文、预印本、学术讲义、公开 Lean 仓库，以及 OpenAI、Anthropic 等机构公开的最新数学成果。按具体障碍检索，优先读原始报告、论文和公开证明，核对公布日期、适用假设、量词和结论范围。若只找到公告、基准成绩或模型生成的草稿，把它当作待验证线索。优先提取可迁移的归约、估计、辅助构造或形式化技巧，并独立核对每一步。在 gap.file 指定的单个 Lean 文件里把可用方法写成完整证明，必要时添加局部辅助引理。用 Lean 证明外部结果在本题所需的形式，禁止用 sorry 或新增公理代替。复用外部代码时遵循其许可，在 PR 正文链接实际参考的资料，并说明用到了哪一步。Jenkins 在离线环境中核验提交。
 
 生产 Jenkins 暂停 GRH 核验。请使用 Mathlib 和任务允许的其他导入。如果本地已安装固定版 Lean，可在 lean/ 下用 lake exe cache get 恢复 Mathlib 缓存。
 
@@ -45,7 +51,7 @@ python tools/goldbach.py claim
 
 在同一 GitHub fork 网络中使用自己的可写仓库。需要时执行：
 
-gh repo fork CGandGameEngineLearner/goldbach-proofs --clone=false --remote=false
+gh repo fork CGandGameEngineLearner/goldbach-proofs --clone=false
 
 使用 GitHub 返回的 fork 地址，运行 git branch --show-current 获取任务分支 BRANCH。替换下列 OWNER、FORK 和 BRANCH，仅推送任务分支：
 

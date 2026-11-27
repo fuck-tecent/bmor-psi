@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-binary-shift-sieve-cost",
+  "statement": "let A := fun h : ℕ => ∏ p ∈ (2^h-1 : ℕ).primeFactors.filter (fun p => 2<p), (1 + 1/((p:ℝ)-2)); ∃ C : ℝ, 0<C ∧ ∀ L : ℕ, (∑ h ∈ Finset.Icc 1 L, A h) ≤ C*(L:ℝ)",
+  "plain_statement": {
+    "zh": "估计候选：幂差的双素数筛局部代价具有有界平均",
+    "en": "Candidate estimate: bounded average local sieve cost of power differences"
+  },
+  "brief": {
+    "zh": "将乘积展开到平方自由因子，按 2 的乘法阶重新计数；目标是去掉逐项取最大值带来的损失。论文的加权幂差估计可作入口。",
+    "en": "Expand over squarefree divisors and count exponent multiples of their orders. Compare with the paper's weighted difference estimate instead of using a worst-case divisor product."
+  },
+  "source": "https://arxiv.org/pdf/math/0201299",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "series",
+  "role": "target",
+  "module": "Conjectures.Goldbach.BinaryShiftSieveCost",
+  "file": "lean/Conjectures/Goldbach/BinaryShiftSieveCost.lean"
+}

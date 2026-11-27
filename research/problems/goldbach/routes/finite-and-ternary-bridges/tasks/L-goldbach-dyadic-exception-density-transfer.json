@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-dyadic-exception-density-transfer",
+  "statement": "let reps (n : ℕ) := (Finset.range (n + 1)).filter (fun p => Nat.Prime p ∧ Nat.Prime (n - p)); let D (X : ℕ) := (Finset.Ico X (2 * X)).filter (fun n => 4 ≤ n ∧ Even n); let bad (X : ℕ) := (D X).filter (fun n => (reps n).card = 0); let exc (N : ℕ) := (Finset.range (N + 1)).filter (fun n => 4 ≤ n ∧ Even n ∧ (reps n).card = 0); ∀ (K N : ℕ) (ε : ℝ), 0 ≤ ε → (∀ n : ℕ, 4 ≤ n → n < 2 ^ K → Even n → (reps n).Nonempty) → (∀ j : ℕ, K ≤ j → ((bad (2 ^ j)).card : ℝ) ≤ ε * ((2 ^ j : ℕ) : ℝ)) → ((exc N).card : ℝ) ≤ 2 * ε * (N : ℝ)",
+  "plain_statement": {
+    "en": "If every eligible even number below 2ᴷ has a representation and each later block [2ʲ,2ʲ⁺¹) has at most ε2ʲ exceptions, then there are at most 2εN exceptions through N.",
+    "zh": "若所有小于 2ᴷ 且至少为 4 的偶数都有表示，且此后的每个区间 [2ʲ,2ʲ⁺¹) 至多有 ε2ʲ 个例外，则直到 N 的例外数至多为 2εN。"
+  },
+  "brief": {
+    "en": "Count an exception when the finite set of prime summands p with n−p prime is empty. Split at each dyadic midpoint, then use the least power of two strictly above N, which is at most 2N for positive N.",
+    "zh": "若所有满足 n−p 也为素数的素数加数 p 构成的有限集为空，则将 n 计为例外。逐个倍增区间在中点拆分。对正整数 N，严格大于 N 的最小二次幂至多为 2N。"
+  },
+  "program": "exceptions",
+  "imports": [],
+  "parallel": true,
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/7f44a36351316045d58882f5e9cfe4eeeeb826e3/research/gaps.json#L2165-L2184",
+  "track": "finite-and-ternary-bridges",
+  "role": "conditional",
+  "module": "Conjectures.Goldbach.DyadicExceptionDensityTransfer",
+  "file": "lean/Conjectures/Goldbach/DyadicExceptionDensityTransfer.lean"
+}

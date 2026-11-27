@@ -1,0 +1,15 @@
+{
+  "id": "integrals",
+  "title": {
+    "zh": "提取圆法积分系数",
+    "en": "Extract continuous Fourier coefficients"
+  },
+  "description": {
+    "zh": "逐项验证单位圆、截断权和主次弧分割的积分操作。",
+    "en": "Verify integration on the unit interval, truncated weights, and the partition into arcs."
+  },
+  "feeds": [
+    "arc-budget",
+    "exceptions"
+  ]
+}

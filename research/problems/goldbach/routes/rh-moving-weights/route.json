@@ -1,0 +1,14 @@
+{
+  "id": "rh-moving-weights",
+  "title": {
+    "zh": "把区间误差转成平滑权误差",
+    "en": "Transfer interval bounds to smooth weights"
+  },
+  "description": {
+    "zh": "先控制权的离散差分，再用已知的前缀和误差做分部求和。",
+    "en": "Bound discrete variation before summation by parts against prefix discrepancies."
+  },
+  "feeds": [
+    "arc-budget"
+  ]
+}

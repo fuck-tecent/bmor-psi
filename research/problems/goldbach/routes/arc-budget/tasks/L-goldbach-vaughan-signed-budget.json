@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-vaughan-signed-budget",
+  "statement": "let cut (h : ℕ) (f : ArithmeticFunction ℝ) : ArithmeticFunction ℝ := ⟨fun k => if k ≤ h then f k else 0, (ite_eq_left (Nat.zero_le h)).trans f.map_zero⟩; let L := ArithmeticFunction.vonMangoldt; let m : ArithmeticFunction ℝ := ArithmeticFunction.moebius; let z : ArithmeticFunction ℝ := ArithmeticFunction.zeta; let h (n : ℕ) := Nat.sqrt (Nat.sqrt n); let a (n : ℕ) := cut (h n) m; let b (n : ℕ) := cut (h n) L; let I (n : ℕ) := a n * ArithmeticFunction.log - a n * b n * z; let J (n : ℕ) := (m-a n) * ((L-b n) * z); let w (k : ℕ) := if Nat.Prime k then Real.log (k : ℝ) else 0; let E (x : ℝ) := Complex.exp (((2 * Real.pi * x : ℝ) : ℂ) * Complex.I); let S (n : ℕ) (u : ℕ → ℝ) (t : ℝ) := ∑ k ∈ Finset.range (n+1), (u k : ℂ) * E ((k : ℝ)*t); let Q (n : ℕ) := (Nat.log 2 (n+2))^2; let A (n : ℕ) := {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let B (n : ℕ) (u v : ℕ → ℝ) := (intervalIntegral ((A n)ᶜ.indicator (fun t => S n u t * S n v t * E (-(n : ℝ)*t))) (0:ℝ) 1 MeasureTheory.volume).re; let lower (F : ℕ → ℝ) := ∀ e : ℝ, 0 < e → ∃ N : ℕ, ∀ n ≥ N, Even n → -(e*(n:ℝ)) ≤ F n; lower (fun n => B n (I n) L) → lower (fun n => B n (J n) L) → lower (fun n => B n w w)",
+  "plain_statement": {
+    "en": "Two signed Vaughan coefficient estimates imply the published minor-arc saving",
+    "zh": "两类沃恩带符号系数估计推出已公布的次弧下界"
+  },
+  "brief": {
+    "en": "Use the four-term identity with fourth-root cutoffs. Bound the short term by Parseval and Cauchy–Schwarz, then replace Λ by the prime-only weight. Both signed hypotheses remain analytic obligations.",
+    "zh": "采用四次方根截断分解。用帕塞瓦尔等式和柯西不等式处理短项，再换成仅支撑于素数的权重。两项带符号假设仍需解析估计。"
+  },
+  "program": "correlation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://personal.science.psu.edu/rcv4/Vol2/Vol2.pdf",
+  "track": "arc-budget",
+  "role": "conditional",
+  "module": "Conjectures.Goldbach.VaughanSignedBudget",
+  "file": "lean/Conjectures/Goldbach/VaughanSignedBudget.lean"
+}

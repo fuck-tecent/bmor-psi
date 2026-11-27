@@ -1,0 +1,21 @@
+{
+  "id": "L-quadratic-primes-sieve-divisor-remainders",
+  "statement": "let f := fun k : ℕ => 4*k^2+1; let roots := fun (q : ℕ) => (Finset.range q).filter (fun r => q ∣ f r); let rho := fun q : ℕ => ((roots q).card : ℝ); let count := fun A B d : ℕ => ((Finset.Ioc A B).filter (fun k => d ∣ f k)).card;\n∀ A B D : ℕ, A≤B → 1≤D →\n  (∑ d ∈ (Finset.Icc 1 D).filter (fun d => Odd d ∧ Squarefree d),\n    |(count A B d : ℝ) - ((B-A : ℕ) : ℝ) * rho d / d|) ≤\n    (D : ℝ) * (1 + Real.log D)",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然扩张 · QP-0074 · 把奇平方自由除数的窗口余项累加到任意筛层 D",
+    "en": "New route · Levent GRH and natural extensions · QP-0074 · Sum window remainders for odd squarefree moduli up to any level D"
+  },
+  "brief": {
+    "zh": "在模奇数 d 下用 r↦2r 搬运 QP-0014 的根数。每根的区间取整误差至多一。以 ρ(d)≤τ(d) 加总，再用成对约数的调和和。",
+    "en": "Transport the QP-0014 root count by r↦2r modulo odd d. The rounding error per root is at most one. Sum ρ(d)≤τ(d) by pairing divisors and using the harmonic sum."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2487",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-quadratic-primes-levent-root-count-multiplicative",
+    "L-quadratic-primes-interval-residue-count"
+  ],
+  "imports": []
+}

@@ -1,0 +1,21 @@
+{
+  "id": "L-joshi-abc-series-symmetry",
+  "statement": "∀ (K : Type) [NontriviallyNormedField K] [CompleteSpace K] [IsUltrametricDist K], let theta := fun (q u : K) => ∑' n : ℤ, q^(n*(n+1)/2) * u^(2*n+1); ∀ q u : K, u ≠ 0 → q ≠ 0 → theta q u⁻¹ = theta q u",
+  "plain_statement": {
+    "zh": "新路线 · 缩放对数与 Theta 值 · JA-0014 · 对收敛的双边 Theta 级数实施换指标",
+    "en": "New route · Scaled logarithms and theta values · JA-0014 · Reindex the convergent bilateral theta series"
+  },
+  "brief": {
+    "zh": "按 n↦−n−1 置换全体整数，跟踪 zpow 和反演。",
+    "en": "Use the involution n↦−n−1 on integer indices and the identities for integer powers."
+  },
+  "source": "https://arxiv.org/abs/2303.01662",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "02-scaled-log-and-theta",
+  "module": "Conjectures.JoshiAbc.SeriesSymmetry",
+  "file": "lean/Conjectures/JoshiAbc/SeriesSymmetry.lean"
+}

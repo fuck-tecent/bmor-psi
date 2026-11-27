@@ -1,0 +1,23 @@
+{
+  "id": "L-goldbach-reflection-prime-power-model-error",
+  "statement": "∀ (m : ℕ) [NeZero m] (N : ℕ) (s : Finset (DirichletCharacter ℂ m)), 2 ≤ N →\n  let w := fun n : ℕ => if n.Prime then Real.log (n : ℝ) else 0\n  let v := fun (a : ℕ → ℝ) (χ : DirichletCharacter ℂ m) =>\n    (∑ n ∈ Finset.range (N+1), (a n : ℂ) * star (χ (n : ZMod m))) / (Real.sqrt (m.totient : ℝ) : ℂ)\n  let H := fun χ ψ : DirichletCharacter ℂ m =>\n    (∑ x : (ZMod m)ˣ, star (χ (x : ZMod m)) * ψ ((N : ZMod m) - (x : ZMod m))) / (m.totient : ℂ)\n  let R := fun z : DirichletCharacter ℂ m → ℂ => (∑ χ ∈ s, ∑ ψ ∈ s, star (z χ) * H χ ψ * z ψ).re\n  |R (v ArithmeticFunction.vonMangoldt) - R (v w)| ≤\n    2 * (1 + (N/m : ℕ) : ℝ) * Real.sqrt (((N+1) * (Nat.sqrt N+1) * (Nat.log 2 N+1) : ℕ) : ℝ) *\n      (Real.log (N : ℝ))^2",
+  "plain_statement": {
+    "zh": "新路线 · 二进反射与 Levent GRH · DR-0016 · 估计反射二次型内替换真素数权的素数幂误差",
+    "en": "New route · Dyadic reflection and Levent GRH · DR-0016 · Bound prime-power replacement inside the reflected quadratic form"
+  },
+  "brief": {
+    "zh": "将差写成两个混合项。用窗口纤维界、反射压缩界和已收录的真幂计数给出可跨二幂层相加的显式误差。",
+    "en": "Write the difference as two mixed terms. Use the window fiber bound, the contraction and the recorded proper-power count to obtain an explicit cost that can be summed over dyadic layers."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/dyadic-reflection/README.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-reflection-character-contraction",
+    "L-goldbach-character-window-fiber-energy",
+    "L-goldbach-power-index-count",
+    "L-goldbach-mangoldt-power-support"
+  ],
+  "imports": []
+}

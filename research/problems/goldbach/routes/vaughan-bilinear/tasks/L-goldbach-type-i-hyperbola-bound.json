@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-type-i-hyperbola-bound",
+  "statement": "let E (x : ℝ) := Complex.exp (((2 * Real.pi * x : ℝ) : ℂ) * Complex.I); let cap (H : ℕ) (x : ℝ) := if E x = 1 then (H : ℝ) else min (H : ℝ) (2 / ‖1 - E x‖); ∀ (N D : ℕ) (a : ℕ → ℂ) (t : ℝ), ‖∑ d ∈ Finset.Icc 1 D, a d * ∑ k ∈ Finset.Icc 1 (N / d), E ((d : ℝ) * (k : ℝ) * t)‖ ≤ ∑ d ∈ Finset.Icc 1 D, ‖a d‖ * cap (N / d) ((d : ℝ) * t)",
+  "plain_statement": {
+    "en": "Type I bound with the product cutoff and resonant terms",
+    "zh": "保留乘积截断与共振项的一类和估计"
+  },
+  "brief": {
+    "en": "For each divisor length N / d use both the geometric-series bound and the number of terms.",
+    "zh": "按 d 固定求和长度，同时使用几何级数界与项数界。"
+  },
+  "program": "correlation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://personal.science.psu.edu/rcv4/Vol2/Vol2.pdf",
+  "track": "vaughan-bilinear",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.TypeIHyperbolaBound",
+  "file": "lean/Conjectures/Goldbach/TypeIHyperbolaBound.lean"
+}

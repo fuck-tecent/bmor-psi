@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-deep-three-quarters-from-farey-error",
+  "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (u : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (u k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let Q₁ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊; let H := fun n : ℕ => 256 * Q₁ n * Q n; let wideArcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q₁ n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (H n:ℝ)/((q:ℝ)*(n:ℝ))}; let I := fun (n : ℕ) (β : ℝ) => ∑ k ∈ Finset.Icc 1 n, E ((k : ℝ) * β); (∃ K : ℝ, 0 < K ∧ ∃ N₀ : ℕ, ∀ n : ℕ, N₀ ≤ n → ∀ a q : ℕ, 1 ≤ q → a ≤ q → a.Coprime q → (q : ℝ) ≤ Real.sqrt n → ∀ β : ℝ, |β| ≤ 1 / ((q : ℝ) * Real.sqrt n) → ‖S n w ((a : ℝ) / (q : ℝ) + β) - (ArithmeticFunction.moebius q : ℂ) / (q.totient : ℂ) * I n β‖ ≤ K * (Real.sqrt ((q : ℝ) * n) * Real.log n * (Real.log n + Real.sqrt (n * |β|)))) → ∀ η : ℝ, 0 < η → ∃ N : ℕ, ∀ n : ℕ, N ≤ n → ∀ t ∈ Set.Icc (0 : ℝ) 1, t ∉ wideArcs n → ‖S n w t‖ ≤ (n : ℝ) ^ (3 / 4 + η)",
+  "plain_statement": {
+    "zh": "假设素数对数权指数和在每个既约有理数附近满足 Friedlander–Goldston 式 (1.15) 的一致误差界。证明对每个 η > 0，充分大 n 的深次弧上该和的模至多为 n^(3/4+η)。",
+    "en": "Assume the uniform Friedlander–Goldston (1.15) error bound for the log-weighted prime exponential sum near reduced fractions. Prove that, for every η > 0 and all sufficiently large n, its modulus on the deep minor arcs is at most n^(3/4+η)."
+  },
+  "brief": {
+    "zh": "父题为 L-goldbach-frontier-deep-three-quarters-saving。写 t = a/q + β，取 B = max(q, qn|β|)。深次弧上的 Dirichlet 逼近给出 n^(1/3) ≤ B ≤ √n。以几何级数和 q/φ(q) 控制有理主项，以统一的常数吸收余项中的对数。论文式 (1.15) 以 GRH 为前提；此任务直接假设显示的误差界，其无条件证明仍是父题路线的缺口。",
+    "en": "Parent: L-goldbach-frontier-deep-three-quarters-saving. Write t = a/q + β and B = max(q, qn|β|). Dirichlet approximation on the deep arcs gives n^(1/3) ≤ B ≤ √n. Bound the rational main term using a geometric sum and q/φ(q), and absorb the logarithms in the error uniformly. Formula (1.15) in the paper assumes GRH. This task assumes the displayed error estimate directly. An unconditional derivation is still needed on this route to the parent."
+  },
+  "source": "https://doi.org/10.1090/S0002-9947-97-01652-8",
+  "program": "correlation",
+  "parallel": true,
+  "imports": [],
+  "track": "frontier-moment-antispike",
+  "role": "lemma",
+  "depends_on": [],
+  "module": "Conjectures.Goldbach.DeepThreeQuartersFromFareyError",
+  "file": "lean/Conjectures/Goldbach/DeepThreeQuartersFromFareyError.lean"
+}

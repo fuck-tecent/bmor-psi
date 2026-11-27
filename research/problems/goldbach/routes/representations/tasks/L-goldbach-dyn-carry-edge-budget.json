@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-dyn-carry-edge-budget",
+  "statement": "let W := fun (A B : Finset ℕ) (n : ℕ) => ((A ×ˢ B).filter (fun t => t.1+t.2=n)).card; ∀ (m n : ℕ) (A B : Finset ℕ), n < m → (∀ a ∈ A, a < m) → (∀ b ∈ B, b < m) → W A B (n+m) ≤ min ((A.filter (fun a => n < a)).card) ((B.filter (fun b => n < b)).card)",
+  "plain_statement": {
+    "zh": "用高端步长数限制伪命中的重数",
+    "en": "Bound wrapped multiplicity by the smaller upper tail"
+  },
+  "brief": {
+    "zh": "在进位层两个坐标都大于 n。固定一个坐标后另一个惟一，分别向两个高端集合单射。",
+    "en": "Both summands exceed n on the wrapped layer. Project injectively onto each upper tail."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "module": "Conjectures.Goldbach.DynCarryEdgeBudget",
+  "file": "lean/Conjectures/Goldbach/DynCarryEdgeBudget.lean",
+  "imports": [],
+  "track": "representations",
+  "role": "lemma"
+}

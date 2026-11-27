@@ -1,0 +1,22 @@
+{
+  "id": "L-quadratic-primes-gauss-mode-error",
+  "statement": "let block := fun x : ℕ => Finset.Ioc x (2*x); let window := fun x p : ℕ => (block x).filter (fun n => p^100000≤n^132301); let phase := fun p k (t : ℕ) => 2*Real.pi*(k : ℝ)*(t : ℝ)/(p : ℝ); let rootWave := fun q k t : ℕ => 2*Real.cos (phase q k t); let good := fun p a b r v : ℕ => p.Prime ∧ 2<p ∧ 0<a ∧ a≤b ∧ p=a^2+b^2 ∧ r<p ∧ v<b ∧ (b*r)%p=a%p ∧ (a*v)%b=1%b; ∀ x p a b r v k : ℕ, good p a b r v → 0<k → k≤Nat.sqrt p →\n  |(rootWave p k r - rootWave b k v) * (∑ n ∈ window x p, Real.cos (phase p k n)) / (p : ℝ)| ≤\n  2*Real.pi/p",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然扩张 · QP-0090 · 逐频控制真实移动窗上替换根相位的误差",
+    "en": "New route · Levent GRH and natural extensions · QP-0090 · Bound the root-phase replacement error on the actual moving window at one frequency"
+  },
+  "brief": {
+    "zh": "逆元互反把根对的误差压到 4πk/p。QP-0037 的几何和与 k≤√p≤p/2 给窗口和 ≤p/(2k)，所以每频归一化损失 ≤2π/p。",
+    "en": "Reciprocity bounds the paired-root error by 4πk/p. QP-0037 and k≤√p≤p/2 give a window sum at most p/(2k). The normalized loss per frequency is at most 2π/p."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/FoundationProofs/DirichletCharFiniteFourierTransformProperties.lean#L85",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": false,
+  "depends_on": [
+    "L-quadratic-primes-gauss-inverse-reciprocity",
+    "L-quadratic-primes-levent-incomplete-phase-bound",
+    "L-quadratic-primes-levent-window-factorization"
+  ],
+  "imports": []
+}

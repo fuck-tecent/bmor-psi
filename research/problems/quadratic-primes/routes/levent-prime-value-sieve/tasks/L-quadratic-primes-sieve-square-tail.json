@@ -1,0 +1,21 @@
+{
+  "id": "L-quadratic-primes-sieve-square-tail",
+  "statement": "let f := fun k : ℕ => 4*k^2+1; let block := fun x : ℕ => Finset.Ioc (x/2) x; let flagged := fun x y : ℕ => (block x).filter (fun k =>\n  ((Finset.Ioc y (2*x)).filter (fun p => Nat.Prime p ∧ p^2 ∣ f k)).Nonempty);\n∃ C : ℝ, 0<C ∧ ∀ x y : ℕ, 2≤x → 2≤y →\n  ((flagged x y).card : ℝ) ≤ C*((x : ℝ)/y + (x : ℝ)^(2/3 : ℝ))",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然扩张 · QP-0083 · 在初筛深度之后定量扣除重复素因子",
+    "en": "New route · Levent GRH and natural extensions · QP-0083 · Bound the repeated-prime loss beyond the initial sieve cutoff"
+  },
+  "brief": {
+    "zh": "在 p≤x^(2/3) 用素数平方根数与区间误差。其上按 m=(n²+1)/p² 切换，只有 O(x^(2/3)) 个余因子，每个由 QP-0082 至多命中一次。",
+    "en": "For p≤x^(2/3), count roots modulo p² and keep the interval error. Above that cutoff switch to m=(n²+1)/p². There are O(x^(2/3)) cofactors and QP-0082 allows at most one hit per cofactor."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2487",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": false,
+  "depends_on": [
+    "L-quadratic-primes-sieve-pell-spacing",
+    "L-quadratic-primes-prime-power-roots"
+  ],
+  "imports": []
+}

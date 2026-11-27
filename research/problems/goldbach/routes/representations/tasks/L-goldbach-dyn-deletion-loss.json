@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-dyn-deletion-loss",
+  "statement": "∀ (A B D E : Finset ℕ) (t : ℕ), let r := fun (B' : Finset ℕ) (n : ℕ) => (A.filter (fun p => p≤n ∧ n-p ∈ B')).card; t * (E.filter (fun n => t ≤ r B n ∧ r (B \\ D) n = 0)).card ≤ A.card * (B ∩ D).card",
+  "plain_statement": {
+    "zh": "删除大步长后有多少富终点会完全失去路径",
+    "en": "Bound rich endpoints destroyed by deleting long steps"
+  },
+  "brief": {
+    "zh": "每个失去全部路径的富终点消耗至少 t 个被删有序对，而每个小步长和被删大步长只能配成一对。",
+    "en": "Charge each destroyed rich target at least t distinct removed pairs; bound total pairs by the product of the two step counts."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "module": "Conjectures.Goldbach.DynDeletionLoss",
+  "file": "lean/Conjectures/Goldbach/DynDeletionLoss.lean",
+  "imports": [],
+  "track": "representations",
+  "role": "lemma"
+}

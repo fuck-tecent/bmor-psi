@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-odd-character-mixed-moment",
+  "statement": "∀ (N : ℕ) [NeZero N] (F G : (ZMod N)ˣ → ℂ), let oddChars := @Finset.filter (DirichletCharacter ℂ N) (fun χ => χ.Odd) (fun χ => Classical.propDecidable χ.Odd) Finset.univ; let T := fun (W : (ZMod N)ˣ → ℂ) (χ : DirichletCharacter ℂ N) => Finset.univ.sum (fun a : (ZMod N)ˣ => W a * χ (a : ZMod N)); 2 * oddChars.sum (fun χ => star (T F χ) * T G χ) = (N.totient : ℂ) * Finset.univ.sum (fun a : (ZMod N)ˣ => star (F a) * (G a - G (-a)))",
+  "plain_statement": {
+    "zh": "固定正模数 N 和单位群上的两组复权 F、G。取全部奇狄利克雷特征，混合矩的两倍等于 φ(N) 乘以 F 的共轭与 G(a)−G(−a) 的配对和。",
+    "en": "For each positive modulus N and complex weights F and G on its units, twice the mixed moment over all odd Dirichlet characters equals φ(N) times the sum of conjugate F(a) against G(a)−G(−a)."
+  },
+  "imports": [],
+  "program": "correlation",
+  "brief": {
+    "zh": "将同类与相反类的正交关系相减，再展开两组权的有限和。计入全部奇特征，包括非本原特征。这个等式保留了补数 N−n 对应的反射项。",
+    "en": "Subtract character orthogonality at equal and opposite unit classes, then expand the two weighted sums. Include imprimitive odd characters. The reflected term records the class of the complementary summand N−n."
+  },
+  "source": "https://github.com/leanprover-community/mathlib4/blob/fc4f59e577feb1a4956671bc04ac18aaaf8cd842/Mathlib/NumberTheory/DirichletCharacter/Orthogonality.lean",
+  "parallel": true,
+  "track": "fourier",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.OddCharacterMixedMoment",
+  "file": "lean/Conjectures/Goldbach/OddCharacterMixedMoment.lean"
+}

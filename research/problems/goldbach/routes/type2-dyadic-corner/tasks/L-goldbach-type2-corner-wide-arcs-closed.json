@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-type2-corner-wide-arcs-closed",
+  "statement": "let Q₁ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊; let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let H := fun n : ℕ => 256 * Q₁ n * Q n; let wideArcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q₁ n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (H n:ℝ)/((q:ℝ)*(n:ℝ))}; ∀ n : ℕ, IsClosed (wideArcs n)",
+  "plain_statement": {
+    "zh": "宽弧带 wideArcs n 是闭集：它是有限个闭区间的并。",
+    "en": "The wide-arc band wideArcs n is closed: a finite union of closed intervals."
+  },
+  "brief": {
+    "zh": "把 q≤Q₁ n、a≤q 两重存在量词写成有限并，每段 {t | |t−a/q| ≤ H/(qn)} 是闭区间，再用有限并的闭性。用于说明角胞积分的指标函数可测、补集为开集。仍缺：这些弧的总测度与例外模数估计。",
+    "en": "Rewrite the two existential quantifiers over q≤Q₁ n and a≤q as a finite union, note each piece {t | |t−a/q| ≤ H/(qn)} is a closed interval, and apply closedness under finite unions. This makes the indicator measurable and its complement open. Still missing: total arc measure and exceptional moduli."
+  },
+  "source": "https://www.goldbach.tech/?lemma=L-goldbach-arc-minor-saving#roadmap",
+  "program": "foundation",
+  "parallel": true,
+  "imports": [],
+  "track": "type2-dyadic-corner",
+  "role": "lemma",
+  "depends_on": [],
+  "module": "Conjectures.Goldbach.Type2CornerWideArcsClosed",
+  "file": "lean/Conjectures/Goldbach/Type2CornerWideArcsClosed.lean"
+}

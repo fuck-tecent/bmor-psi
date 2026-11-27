@@ -1,0 +1,22 @@
+{
+  "id": "L-joshi-abc-frey-upper-at-seven",
+  "statement": "let rad := fun (n : ℕ) => n.primeFactors.prod id; let r := fun (a b : ℕ) => Real.log (rad (a*b*(a+b))); ∃ K : ℝ, ∀ a b : ℕ, 0<a → 0<b → Nat.Coprime a b → Real.log (16*((a:ℝ)^2+a*b+(b:ℝ)^2))/2 ≤ (15/8 : ℝ)*r a b+K",
+  "plain_statement": {
+    "zh": "新路线 · 全局高度与 abc · JA-0066 · 在 ℓ=7 取得独立于三元组的 Frey 高度上界",
+    "en": "New route · Global heights and abc · JA-0066 · Obtain a Frey height bound at ℓ=7 uniformly over triples"
+  },
+  "brief": {
+    "zh": "该开放界等价于指数 15/8 的具体弱 abc 界，并经 JA-0064 蕴含 JA-0059。常数必须统一于全部互素正整数对。",
+    "en": "This open bound is equivalent to the fixed exponent 15/8 and implies JA-0059 via JA-0064. Use one constant for all coprime positive pairs."
+  },
+  "source": "https://arxiv.org/abs/2403.10430",
+  "program": "correlation",
+  "role": "target",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "challenge_only": true,
+  "track": "07-global-heights",
+  "module": "Conjectures.JoshiAbc.FreyUpperAtSeven",
+  "file": "lean/Conjectures/JoshiAbc/FreyUpperAtSeven.lean"
+}

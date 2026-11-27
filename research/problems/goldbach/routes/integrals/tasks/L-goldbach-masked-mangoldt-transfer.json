@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-masked-mangoldt-transfer",
+  "statement": "let E (x : ℝ) := Complex.exp (((2 * Real.pi * x : ℝ) : ℂ) * Complex.I); let S (n : ℕ) (u : ℕ → ℝ) (t : ℝ) := ∑ k ∈ Finset.range (n+1), (u k : ℂ) * E ((k : ℝ)*t); let C (A : Set ℝ) (n : ℕ) (u : ℕ → ℝ) := intervalIntegral (A.indicator (fun t => (S n u t)^2 * E (-(n : ℝ)*t))) (0 : ℝ) 1 MeasureTheory.volume; let w (k : ℕ) := if Nat.Prime k then Real.log (k : ℝ) else 0; ∀ e : ℝ, 0 < e → ∃ N : ℕ, ∀ n ≥ N, ∀ A : Set ℝ, MeasurableSet A → ‖C A n ArithmeticFunction.vonMangoldt - C A n w‖ ≤ e * (n : ℝ)",
+  "plain_statement": {
+    "en": "Uniform sublinear cost of removing proper prime powers on measurable frequency sets",
+    "zh": "在可测频率集上剔除真素数幂的一致次线性代价"
+  },
+  "brief": {
+    "en": "Only proper prime powers contribute to Λ − w. Bound their count by a base–exponent box and use the discrete ℓ² inequality.",
+    "zh": "Λ − w 仅支撑于真素数幂。用底数和指数的范围估计个数，再应用离散二范数界。"
+  },
+  "program": "correlation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/178",
+  "track": "integrals",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.MaskedMangoldtTransfer",
+  "file": "lean/Conjectures/Goldbach/MaskedMangoldtTransfer.lean"
+}

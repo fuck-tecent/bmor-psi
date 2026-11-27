@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "problem": "goldbach",
+  "base_revision": "d2e842c6562f895bdade56598d481db87c541235",
+  "request_id": "type2-prime-power-support",
+  "parent": {
+    "id": "L-goldbach-frontier-type2-b1-b1",
+    "statement_sha256": "7399d30d1b2ef53f1a1146bf79984a323b92f72e20a36e146c306497efcf4d7e"
+  },
+  "motivation": {
+    "en": "Separate the sparse proper-power contribution before estimating the first-band prime correlation.",
+    "zh": "先分离稀疏的真素数幂项，再估计第一带的素数相关。"
+  },
+  "tasks": [
+    {
+      "id": "L-goldbach-type2-prime-power-support",
+      "statement": "∀ n U B : ℕ, let w := fun k : ℕ => if Nat.Prime k then Real.log (k : ℝ) else 0; let coeff := fun (v : ℕ → ℝ) (m : ℕ) => ∑ a ∈ m.divisors.filter (fun a => U < a ∧ a ≤ B ∧ U < m / a), (∑ d ∈ a.divisors.filter (fun d => U < d), ((ArithmeticFunction.moebius d : ℤ) : ℝ)) * v (m / a); (((Finset.range (n + 1)).filter (fun m => coeff ArithmeticFunction.vonMangoldt m ≠ coeff w m)).card : ℝ) ≤ 2 * Real.sqrt n * Real.sqrt B * (Nat.log 2 n : ℝ)",
+      "plain_statement": {
+        "zh": "限制 Type II 余因子为素数时发生权重变化的指标数",
+        "en": "Count the Type II coefficients changed by restricting the cofactor to primes"
+      },
+      "brief": {
+        "zh": "对任意 n、U、B，比较同一除数带内的冯·芒戈尔特权和素数对数权。发生变化时 m = a pᵏ，且 a ≤ B、k ≥ 2。按 a 和指数计数，对底数上界求和得 2√n √B ⌊log₂ n⌋。第一带取 B = ⌊n^(1/4)⌋。",
+        "en": "Use the same divisor band for both weights. Every changed index has the form a p^k with a ≤ B and k ≥ 2. Sum the base cutoffs over a to get 2√n √B ⌊log₂ n⌋. The first band uses B = ⌊n^(1/4)⌋."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2489",
+      "program": "correlation",
+      "parallel": false,
+      "depends_on": [],
+      "assumptions": [],
+      "route": "frontier-type2-dyadic-matrix"
+    }
+  ],
+  "links": [
+    {
+      "kind": "input",
+      "inputs": [
+        "L-goldbach-type2-prime-power-support"
+      ],
+      "output": "L-goldbach-frontier-type2-b1-b1",
+      "explanation": {
+        "en": "The support bound controls the number of changed coefficients in a Parseval error estimate. The signed prime-only correlation on the deep minor arcs remains open.",
+        "zh": "该计数控制 Parseval 误差估计中权值变化的指标数。深次弧上的素数相关项仍需单独估计。"
+      }
+    }
+  ],
+  "route_note": {
+    "en": "Use the first-band cutoff to obtain a support bound of order n^(5/8) log n.",
+    "zh": "代入第一带上界，可将发生变化的指标数控制在 n^(5/8) log n 量级。"
+  }
+}

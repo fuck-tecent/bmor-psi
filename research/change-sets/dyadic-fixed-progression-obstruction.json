@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "problem": "goldbach",
+  "base_revision": "f4f754c4709c0c1b2dbc67e4c8f74ce2475b8935",
+  "request_id": "dyadic-fixed-progression-obstruction",
+  "parent": {
+    "id": "L-goldbach-dyadic-central-prime-mass",
+    "statement_sha256": "e55d25428b18c96411d2a09b73ecb98988b0439f264f7ab2ac118932d99ecb86"
+  },
+  "motivation": {
+    "zh": "检验固定模数上的单点质量信息能否单独迫使反射配对。要求同一个有界倍数的人工权重同时避开所有二次幂，并在任意长等差数列上保留基线至有界误差。",
+    "en": "Test the reach of fixed-modulus one-point information. A single synthetic weight must avoid every dyadic sum and preserve an arbitrary periodic profile up to bounded discrepancy on progressions of every length."
+  },
+  "tasks": [
+    {
+      "id": "L-goldbach-dyadic-sum-avoiding-mask",
+      "statement": "∀ W : ℕ, 0 < W → ∃ M : ℕ, 1 < M ∧ Nat.Coprime W M ∧ ∃ S : Finset ℕ, S ⊆ Finset.range M ∧ M ≤ 8 * S.card ∧ ∀ (a b k : ℕ), a ∈ S → b ∈ S → (a+b)%M ≠ (2^k)%M",
+      "plain_statement": {
+        "zh": "新路线 · 奇特征干涉 · OC-0107 · 避开全部二次幂和的正密度周期支撑",
+        "en": "New route · Odd-character interference · OC-0107 · A positive-density residue set whose sums avoid every power of two"
+      },
+      "brief": {
+        "zh": "取素数 s>max(W,5)，令 L=2^(s−3)、M=8L−1、S=[3L,4L)。倍增轨道的余数至多 4L，两点之和落在 [6L,8L−2]。若奇素数 p 同时整除 W 与 M，则 2 的模 p 阶同时整除 s 和 p−1。",
+        "en": "Take prime s>max(W,5), L=2^(s−3), M=8L−1 and S=[3L,4L). The doubling orbit has residues at most 4L while sums lie in [6L,8L−2]. For any odd prime p dividing both W and M the order of 2 modulo p divides s and p−1."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/5054190a0d5a7cec50b1a4fbee80f19b0c5084cc/research/change-sets/dyadic-reflected-cells.json",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": [],
+      "route": "odd-character-interference"
+    },
+    {
+      "id": "L-goldbach-dyadic-progression-countermodel",
+      "statement": "∀ W : ℕ, 0 < W → ∀ u : ℕ → ℝ, (∀ x, 0 ≤ u x) → (∀ x, u (x+W) = u x) → ∃ (f : ℕ → ℝ) (C : ℝ), 0 < C ∧ (∀ x, 0 ≤ f x ∧ f x ≤ 8 * u x) ∧ (∀ x H : ℕ, |(∑ j ∈ Finset.range H, f (x+j*W)) - (H:ℝ)*u x| ≤ C*u x) ∧ ∀ a b k : ℕ, a+b = 2^k → f a * f b = 0",
+      "plain_statement": {
+        "zh": "新路线 · 奇特征干涉 · OC-0108 · 保持任意固定周期分布而消去所有二次幂配对",
+        "en": "New route · Odd-character interference · OC-0108 · Preserve any fixed periodic profile while killing all dyadic pairs"
+      },
+      "brief": {
+        "zh": "用支撑内取 M/|S|、支撑外取零的掩码乘以 u。步长 W 在模 M 的每个整周期遍历全部余数；尾段掩码权与尾长都在 [0,M]，可取 C=M。u≡1 已能检验单侧短区间质量论证。",
+        "en": "Multiply u by M/|S| on the mask and zero elsewhere. The step W permutes the residues in each full period. Tail weight and tail length both lie in [0,M], so take C=M. The constant profile already tests a short-interval argument."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/5054190a0d5a7cec50b1a4fbee80f19b0c5084cc/research/change-sets/dyadic-reflected-cells.json",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": [
+        "L-goldbach-dyadic-sum-avoiding-mask"
+      ],
+      "route": "odd-character-interference"
+    }
+  ],
+  "links": [
+    {
+      "kind": "exploration",
+      "inputs": [
+        "L-goldbach-dyadic-progression-countermodel"
+      ],
+      "output": "L-goldbach-dyadic-central-prime-mass",
+      "explanation": {
+        "zh": "反例检验抽象权重上的推理。它能排除只使用给定固定周期边际信息的证明，真素数的双点估计仍然开放。",
+        "en": "The countermodel tests an inference for abstract weights. It rules out relying solely on a prescribed fixed periodic marginal, leaving the genuine two-prime estimate open."
+      }
+    }
+  ],
+  "route_note": {
+    "zh": "二次幂子族还需检验单点信息的局限：尝试在保留固定周期质量的同时消去全部反射配对。",
+    "en": "For dyadic targets, test the limits of one-point information by preserving fixed periodic masses while removing all reflected pairs."
+  }
+}

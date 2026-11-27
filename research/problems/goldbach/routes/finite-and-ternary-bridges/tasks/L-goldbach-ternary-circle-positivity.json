@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-ternary-circle-positivity",
+  "statement": "let w (k : ℕ) := if Nat.Prime k then Real.log (k : ℝ) else 0; let E (x : ℝ) := Complex.exp (((2 * Real.pi * x : ℝ) : ℂ) * Complex.I); let S (n : ℕ) (t : ℝ) := ∑ k ∈ Finset.range (n + 1), (w k : ℂ) * E ((k : ℝ) * t); ∀ (n : ℕ) (A : Set ℝ) (U : ℝ), MeasurableSet A → 0 ≤ U → (∀ t ∈ Set.Icc (0 : ℝ) 1, t ∉ A → ‖S n t‖ ≤ U) → U * (∑ k ∈ Finset.range (n + 1), (w k)^2) < (intervalIntegral (A.indicator (fun t => (S n t)^3 * E (-(n : ℝ) * t))) (0 : ℝ) 1 MeasureTheory.volume).re → ∃ p q r : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ Nat.Prime r ∧ p + q + r = n",
+  "plain_statement": {
+    "en": "A cubic major-arc coefficient with real part greater than U times the prime-log square sum forces a three-prime representation of n, provided the complementary supremum is at most U.",
+    "zh": "若补弧上的指数和上确界至多为 U，且三次主弧系数的实部大于 U 乘以素数对数权的平方和，则 n 有三元素数表示。"
+  },
+  "brief": {
+    "en": "Bound the complementary cubic integral by the supremum and Parseval. Fourier orthogonality makes the full coefficient zero in the absence of a prime triple, contradicting the strict floor.",
+    "zh": "以上确界和帕塞瓦尔等式控制补弧上的三次积分。若无三元素数表示，傅里叶正交性使完整系数为零，与严格下界矛盾。"
+  },
+  "program": "correlation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/7f44a36351316045d58882f5e9cfe4eeeeb826e3/research/gaps.json#L1365-L1384",
+  "track": "finite-and-ternary-bridges",
+  "role": "conditional",
+  "module": "Conjectures.Goldbach.TernaryCirclePositivity",
+  "file": "lean/Conjectures/Goldbach/TernaryCirclePositivity.lean"
+}

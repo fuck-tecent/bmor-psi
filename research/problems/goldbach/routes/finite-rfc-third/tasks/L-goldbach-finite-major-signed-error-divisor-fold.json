@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-finite-major-signed-error-divisor-fold",
+  "statement": "let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); ∀ (q n : ℕ) (F : ℕ → ℂ), 0<q → let U := (Finset.range q).filter (fun r => Nat.Coprime r q); let G := fun (d y : ℕ) => ∑ r ∈ U.filter (fun r => r%d=y), F r; (∑ a ∈ U, E (-(n:ℝ)*(a:ℝ)/q) * (∑ r ∈ U, F r*E ((a:ℝ)*(r:ℝ)/q))^2) = ∑ d ∈ q.divisors, (d:ℂ)*((ArithmeticFunction.moebius (q/d):ℤ):ℂ) * (∑ y ∈ Finset.range d, G d y * G d ((n+d-y)%d))",
+  "plain_statement": {
+    "zh": "新路线 · 小偶数覆盖第三批 · FR-9022 · 将带符号的真实主弧误差平方折叠到除数纤维",
+    "en": "New route · Finite-range coverage III · FR-9022 · Fold the signed major-arc error square into divisor fibers"
+  },
+  "brief": {
+    "zh": "展开复平方后，按 Ramanujan 的除数公式分组，并保留每个纤维的反射相位。取 F 为带相位的单位余类误差时，可匹配第三章的反射矩阵。模 1 为常数项，非单位项由 FR-7023 处理。",
+    "en": "Expand the complex square and group terms using the Ramanujan divisor formula. Preserve the reflected fibers. Taking F to be the phased unit-class error connects this identity to the reflection matrix. Modulus one gives the constant term. FR-7023 handles nonunits."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/finite-rfc-third/README.md#fixed-major-arcs",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-ram-prime-power",
+    "L-goldbach-ram-crt"
+  ],
+  "imports": []
+}

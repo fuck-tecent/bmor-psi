@@ -1,0 +1,15 @@
+{
+  "id": "selberg-large-sieve-and-power-saving",
+  "title": {
+    "en": "Sharp large sieve and power-saving minor arcs",
+    "zh": "尖锐大筛不等式与次弧幂次节省"
+  },
+  "description": {
+    "en": "Control exponential sums at separated points and on minor arcs. Relate a stronger uniform circle-model estimate to the cumulative number of binary Goldbach exceptions.",
+    "zh": "控制分离点上的指数和及次弧素数指数和，并将更强的全圆模型误差估计转化为二元哥德巴赫例外的累积计数界。"
+  },
+  "feeds": [
+    "arc-budget",
+    "exceptions"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "id": "L-goldbach-finite-weighted-sieve-remove-unit",
+  "statement": "let W := fun (z y s : ℕ) => let P := (Finset.Ico z y).filter Nat.Prime; (2:ℤ)-((P.filter (fun p => p∣s)).card:ℤ)-((P.filter (fun p => p^2∣s)).card:ℤ); let A := fun (n z : ℕ) => (Finset.range (n+1)).filter (fun p => p.Prime ∧ ¬ (p ∣ n) ∧ ((Finset.Ico 2 z).filter (fun q => Nat.Prime q ∧ q ∣ (n-p))) = ∅); ∀ (n z y : ℕ), 4≤n → (∑ p ∈ A n z, W z y (n-p)) = (∑ p ∈ Finset.filter (fun p => 2≤n-p) (A n z), W z y (n-p)) + (if (n-1).Prime then (2:ℤ) else 0)",
+  "plain_statement": {
+    "zh": "新路线 · 小偶数覆盖第三批 · FR-9016 · 从 1+4 筛和中精确扣除余项 1",
+    "en": "New route · Finite-range coverage III · FR-9016 · Remove the remainder one exactly from the one-plus-four sieve sum"
+  },
+  "brief": {
+    "zh": "本题用原权的两倍作整数权。由 p 不整除 n 排除余项 0。余项 1 当且仅当 n−1 为素数时出现，对和贡献 2。",
+    "en": "Use twice the original weight to work with integers. The condition p∤n excludes remainder zero. Remainder one contributes two precisely when n−1 is prime."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/finite-rfc-third/README.md#weighted-sieve-and-chen-counts",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

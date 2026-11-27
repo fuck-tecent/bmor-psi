@@ -17,8 +17,13 @@
   "parallel": true,
   "depends_on": [
     "L-twin-primes-cofactor-switch",
-    "L-twin-primes-semiprime-cancellation"
+    "L-twin-primes-semiprime-cancellation",
+    "L-twin-primes-divisor-near-square-root-strip"
   ],
-  "imports": [],
+  "imports": [
+    "PEqualNP.Outside.L_twin_primes_cofactor_switch",
+    "PEqualNP.Outside.L_twin_primes_semiprime_cancellation",
+    "Conjectures.TwinPrimes.DivisorNearSquareRootStrip"
+  ],
   "challenge_only": true
 }

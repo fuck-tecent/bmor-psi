@@ -1,0 +1,37 @@
+{
+  "id": "L-twin-primes-prescribed-energy-v2",
+  "statement": "let w := fun (X : ℕ) => (Finset.range (2*X+1)).filter (fun n => X < n ∧ 50*n < 51*X); let N := fun (X : ℕ) => 2*X+5; let f := fun (X n : ℕ) => if n ∈ w X ∧ n.Prime then Real.log n else 0; let energy := fun (X : ℕ) => letI : NeZero (N X) := ⟨Nat.succ_ne_zero _⟩; ∑ k : ZMod (N X), (ZMod.stdAddChar (N:=N X) (2*k)).re * ‖ZMod.dft (fun j : ZMod (N X) => ((f X j.val:ℝ):ℂ)) k‖^2; ∀ B : ℕ, ∃ X : ℕ, B<X ∧ 0<energy X",
+  "plain_statement": {
+    "zh": "新路线 · 指定平移的 Θ 提升 · TP-0052R · 在无界尺度估计指定差二测试的谱能量",
+    "en": "New route · Theta lift for a prescribed shift · TP-0052R · Bound the signed energy of the prescribed gap-two test on unbounded scales"
+  },
+  "brief": {
+    "zh": "TP-0052 的修正版，与 TP-0054 等价。挑战要求对实际素数权证明无界尺度上的正性。任意固定尺度的有限检验仅校验归一化。",
+    "en": "This replaces TP-0052 and is equivalent to TP-0054. The challenge asks for positive energy of the actual prime weights at unbounded scales. A finite check at a fixed scale only tests the normalization."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2833",
+  "program": "correlation",
+  "role": "target",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-sifted-correlation",
+    "L-twin-primes-cosine-plancherel",
+    "L-twin-primes-theta-error-budget",
+    "L-twin-primes-window-endpoint-overhang",
+    "L-twin-primes-rough-window-prime-extraction",
+    "L-twin-primes-shifted-character-jacobi",
+    "L-twin-primes-prime-wheel-progression-budget",
+    "L-twin-primes-wheel-marginal-counterexample"
+  ],
+  "imports": [
+    "PEqualNP.Outside.L_twin_primes_sifted_correlation",
+    "PEqualNP.Outside.L_twin_primes_cosine_plancherel",
+    "PEqualNP.Outside.L_twin_primes_theta_error_budget",
+    "Conjectures.TwinPrimes.WindowEndpointOverhang",
+    "Conjectures.TwinPrimes.RoughWindowPrimeExtraction",
+    "Conjectures.TwinPrimes.ShiftedCharacterJacobi",
+    "Conjectures.TwinPrimes.PrimeWheelProgressionBudget",
+    "Conjectures.TwinPrimes.WheelMarginalCounterexample"
+  ],
+  "challenge_only": true
+}

@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-frontier-type2-b1-b1-tau-support",
+  "statement": "let U := fun n : ℕ => ⌊(n:ℝ)^(1/16:ℝ)⌋₊; let B₁ := fun n : ℕ => ⌊(n:ℝ)^(1/4:ℝ)⌋₊; let τ₁ := fun (n m : ℕ) => ∑ a ∈ (Nat.divisors m).filter (fun a => U n < a ∧ a ≤ B₁ n ∧ U n < m / a), (∑ d ∈ (Nat.divisors a).filter (fun d => U n < d), ((ArithmeticFunction.moebius d : ℤ) : ℝ)) * ArithmeticFunction.vonMangoldt (m / a); ∀ n m : ℕ, m ≤ (U n)^2 → τ₁ n m = 0",
+  "plain_statement": {
+    "zh": "Type-II 支撑下界：m ≤ U(n)² 时 τ₁(n,m)=0。",
+    "en": "Type-II support bound: τ₁(n,m)=0 whenever m ≤ U(n)²."
+  },
+  "brief": {
+    "zh": "若 a 和 m/a 都大于 U，则 m=a·(m/a)>U²；因此小区间上的项全部消失。",
+    "en": "If a and m/a are both greater than U, then m=a·(m/a)>U²; every term below that range vanishes."
+  },
+  "source": "https://www.goldbach.tech/?lemma=L-goldbach-frontier-type2-b1-b1#roadmap",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "frontier-type2-dyadic-matrix",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.FrontierType2B1B1TauSupport",
+  "file": "lean/Conjectures/Goldbach/FrontierType2B1B1TauSupport.lean"
+}

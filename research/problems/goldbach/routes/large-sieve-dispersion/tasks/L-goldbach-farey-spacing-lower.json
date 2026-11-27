@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-farey-spacing-lower",
+  "statement": "∀ (Q a b q r : ℕ), 1 ≤ q → q ≤ Q → 1 ≤ r → r ≤ Q → Nat.Coprime a q → Nat.Coprime b r → (q ≠ r ∨ a % q ≠ b % r) → ∀ m : ℤ, 1 / (Q : ℝ) ^ 2 ≤ |(a : ℝ) / q - (b : ℝ) / r - (m : ℝ)|",
+  "plain_statement": {
+    "en": "Distinct reduced fractions with denominators at most Q are at least 1/Q² apart modulo one, including across the end of the period.",
+    "zh": "分母不超过 Q 的两个不同既约分数在模 1 意义下至少相距 1/Q²，跨越周期端点时也成立。"
+  },
+  "brief": {
+    "en": "Clear the denominators after an arbitrary integer translation. A zero determinant would force equal denominators by coprimality and then equal numerator residues.",
+    "zh": "对任意整数平移清除分母。若所得行列式为零，互素性迫使两分母相等，进而两分子的余数也相等。"
+  },
+  "program": "correlation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://personal.science.psu.edu/rcv4/Vol2/Vol2.pdf",
+  "track": "large-sieve-dispersion",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.FareySpacingLower",
+  "file": "lean/Conjectures/Goldbach/FareySpacingLower.lean"
+}

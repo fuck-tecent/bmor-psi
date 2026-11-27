@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-reflection-grid-thinning",
+  "statement": "∀ (n m : ℕ) (w : ℕ → ℝ) (a : ℕ → Fin m → ℝ), (∀ k, 0 ≤ w k) → ∃ v : ℕ → ℝ, (∀ k, 0 ≤ v k ∧ v k ≤ 2*w k) ∧ (∀ k ≤ 2*n, v k * v (2*n-k) = 0) ∧ v n = 0 ∧ (∑ j, ((∑ k ∈ Finset.range (2*n+1), (v k-w k)*a k j) + w n*a n j)^2) ≤ ∑ j, ∑ k ∈ Finset.range n, (w k*a k j-w (2*n-k)*a (2*n-k) j)^2",
+  "plain_statement": {
+    "zh": "对任意非负实权 w、半长 n 和有限维实观测 a，存在权 v，使 0≤v≤2w、中央点 v(n)=0，所有 k≤2n 的反射对乘积均为零；将中央点误差单独补回后，观测误差的平方和不超过所有反射对观测差的平方和。",
+    "en": "For every nonnegative real weight w, half-length n, and finite-dimensional real observations a, there exists a weight v with 0≤v≤2w, v(n)=0, and zero reflected products at every k≤2n. After restoring the central-point contribution, the sum of squared observation errors is bounded by the sum of squared differences of the reflected observations."
+  },
+  "brief": {
+    "zh": "用共同符号平衡控制全部观测，再将反射对的权分别乘以 1+s 和 1−s。明确中央项与全区间求和的重排。该结论针对人为构造的扰动权，不能代替真实素数权的逐点次弧估计。",
+    "en": "Use simultaneous sign balancing for the observations, multiply each reflected pair by 1+s and 1−s, and split the full sum with its central term explicit. This is a statement about constructed perturbations, not cancellation for the actual prime weights."
+  },
+  "program": "correlation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://github.com/Elm-Forest/goldbach-proofs/blob/311e25dd0415f0c1b333727061b3f8af8951bfec/preflight-proofs/L_goldbach_reflection_grid_thinning.lean",
+  "track": "arc-perturbation",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.ReflectionGridThinning",
+  "file": "lean/Conjectures/Goldbach/ReflectionGridThinning.lean"
+}

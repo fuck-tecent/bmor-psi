@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-central-prime-almost-prime-seven",
+  "statement": "∀ d : ℕ, 0 < d → ∃ c : ℝ, 0 < c ∧ ∃ p₀ : ℕ, ∀ p H b : ℕ, p₀ ≤ p → p.Prime → b < d → b.Coprime d → (2*p^2-b).Coprime d → H^3 ≤ p^4 → p^4 < (H+1)^3 → let hits := (Finset.Icc 1 H).filter (fun h => (p^2+h)%d=b ∧ (p^2+h).Prime ∧ (p^2-h).primeFactorsList.Nodup ∧ (p^2-h).primeFactorsList.length ≤ 7); c * (H : ℝ) ≤ (hits.card : ℝ) * (Real.log ((p : ℝ)^2))^2",
+  "plain_statement": {
+    "zh": "新路线 · TH-8000 · 对每个充分大的素数 p，在中心 p²、半宽 ⌊p^(4/3)⌋ 的窗口中，每个固定模数的容许类都有 ≫_d H/log²(p²) 个正偏移，使较大端为素数，较小端无平方因子且至多有七个素因子。",
+    "en": "TH-8000 · For every sufficiently large prime p and each admissible residue modulo a fixed d, find ≫_d H/log²(p²) offsets in the central window H=⌊p^(4/3)⌋ with larger summand prime and smaller summand squarefree with at most seven prime factors."
+  },
+  "brief": {
+    "zh": "固定 d 后常数和起点对剩余类一致。任务包括短区间算术级数分布及一维加权筛的解析输入。公开推导含参数和误差求和；附件 Lean 引理核验有限因子计数。此目标允许较小端为合数。",
+    "en": "Fix d before choosing the constant and threshold, uniformly in the admissible classes. Formalize the short-interval prime distribution input and weighted linear sieve or provide an independent proof. The source gives parameters, remainder sums and checked finite factor-count lemmas. The smaller summand may be composite."
+  },
+  "source": "https://github.com/LonelyQuantum/goldbach-proofs/blob/36b0d52d9585d07feeb93da6ac3b8de09b36f018/research/diagnostics/CentralPrimeAlmostPrime.md",
+  "program": "correlation",
+  "parallel": true,
+  "imports": [],
+  "track": "theta-reflection",
+  "role": "lemma",
+  "depends_on": [],
+  "module": "Conjectures.Goldbach.CentralPrimeAlmostPrimeSeven",
+  "file": "lean/Conjectures/Goldbach/CentralPrimeAlmostPrimeSeven.lean"
+}

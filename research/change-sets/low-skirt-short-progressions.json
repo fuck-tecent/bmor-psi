@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "problem": "goldbach",
+  "base_revision": "b2de984e64f223e36d732fc6c9dcbebc50ee8dba",
+  "request_id": "low-skirt-short-progressions",
+  "parent": {
+    "id": "L-goldbach-frontier-skirt-polylog-moduli",
+    "statement_sha256": "69461c3256fe2b2c038d0e3b83890f1a425833ea22af39ec63014fed9779b5f9"
+  },
+  "motivation": {
+    "zh": "裙边外缘达到立方根尺度。仅在多对数宽度上成立的估计无法覆盖该外缘。一个已发表的短区间平均定理足以控制余下的全宽。",
+    "en": "The outer skirt reaches the cube-root width. Estimates at fixed polylogarithmic widths cover only its inner portion. A published mean theorem on short intervals suffices for the full width."
+  },
+  "tasks": [
+    {
+      "id": "L-goldbach-short-progressions-mean-theta",
+      "statement": "let theta := fun (q : ℕ) [NeZero q] (r : ZMod q) (y h : ℝ) => Finset.sum ((Finset.Icc (⌊y⌋₊+1) ⌊y+h⌋₊).filter (fun k : ℕ => (k:ZMod q)=r)) (fun k => if k.Prime then Real.log (k:ℝ) else 0); let E := fun (q : ℕ) (h y : ℝ) => if hq : q=0 then (0:ℝ) else (letI : NeZero q := ⟨hq⟩; (Finset.univ : Finset (ZMod q)).sup' Finset.univ_nonempty (fun r => if IsUnit r then |theta q r y h - h/(q.totient:ℝ)| else 0)); ∃ C : ℝ, 0<C ∧ ∃ X : ℕ, ∀ x t : ℝ, (X:ℝ)≤x → 1≤x → 5/8≤t → t≤1 → ∀ Q : ℕ, 1≤Q → (Q:ℝ)^2*x^((1-t)/3+1/16) ≤ x^t → intervalIntegral (fun y => Finset.sum (Finset.Icc 1 Q) (fun q => E q (x^t) y)) x (2*x) MeasureTheory.volume ≤ C*x*x^t/(Real.log x)^18",
+      "plain_statement": {
+        "zh": "设 h=xᵗ，5/8≤t≤1。在 Q²x^((1−t)/3+1/16)≤h 时，对 q≤Q 求和的短区间素数对数权最大既约剩余类误差，在 x≤y≤2x 上的积分至多为 Cxh/(log x)¹⁸。常数和起始点对 t、Q 一致。",
+        "en": "For h=xᵗ with 5/8≤t≤1 and Q²x^((1−t)/3+1/16)≤h, the integral over x≤y≤2x of the sum over q≤Q of the largest reduced-class prime-log discrepancy in (y,y+h] is at most Cxh/(log x)¹⁸. The constants are uniform in t and Q."
+      },
+      "brief": {
+        "zh": "形式化 Koukoulopoulos《Primes in short arithmetic progressions》定理 1.2 的高指数分支，固定 A=18、ε=1/16。使用素数的 log p 权及 h/φ(q) 主项。论文第 4 节给出证明；仍需将其解析估计移植到固定版 Lean。",
+        "en": "Formalize the upper-exponent branch of Koukoulopoulos, Theorem 1.2, with A=18 and ε=1/16. Use log p on primes and h/φ(q) for the main term. Section 4 proves the published theorem. Its analytic estimates require a port to the pinned Lean library."
+      },
+      "source": "https://dms.umontreal.ca/~koukoulo/documents/publications/shortaps.pdf#page=3",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "route": "explicit-skirt-inputs",
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-low-skirt-from-short-progressions",
+      "statement": "(let theta := fun (q : ℕ) [NeZero q] (r : ZMod q) (y h : ℝ) => Finset.sum ((Finset.Icc (⌊y⌋₊+1) ⌊y+h⌋₊).filter (fun k : ℕ => (k:ZMod q)=r)) (fun k => if k.Prime then Real.log (k:ℝ) else 0); let E := fun (q : ℕ) (h y : ℝ) => if hq : q=0 then (0:ℝ) else (letI : NeZero q := ⟨hq⟩; (Finset.univ : Finset (ZMod q)).sup' Finset.univ_nonempty (fun r => if IsUnit r then |theta q r y h - h/(q.totient:ℝ)| else 0)); ∃ C : ℝ, 0<C ∧ ∃ X : ℕ, ∀ x t : ℝ, (X:ℝ)≤x → 1≤x → 5/8≤t → t≤1 → ∀ Q : ℕ, 1≤Q → (Q:ℝ)^2*x^((1-t)/3+1/16) ≤ x^t → intervalIntegral (fun y => Finset.sum (Finset.Icc 1 Q) (fun q => E q (x^t) y)) x (2*x) MeasureTheory.volume ≤ C*x*x^t/(Real.log x)^18) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (u : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (u k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let Q₁ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊; let H := fun n : ℕ => 256 * Q₁ n * Q n; let lowWideArcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (H n:ℝ)/((q:ℝ)*(n:ℝ))}; let lowSkirt := fun n : ℕ => intervalIntegral (fun t => (lowWideArcs n \\ arcs n).indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume; ∀ e : ℝ, 0 < e → ∃ N : ℕ, ∀ n : ℕ, N ≤ n → Even n → -(e * (n : ℝ)) ≤ (lowSkirt n).re)",
+      "plain_statement": {
+        "zh": "上述短等差数列平均估计蕴含父题的完整小分母裙边下界，对每个充分大的偶数 n 成立。",
+        "en": "The short-progression mean estimate implies the full low-modulus skirt lower bound for every sufficiently large even n."
+      },
+      "brief": {
+        "zh": "取公共整数窗口 h=⌊n/(12H)⌋。将连续平均离散化，按二倍区间求和，分开两端截断及非互素剩余类，再用有限 Fourier 正交与局部能量控制有符号系数。组合命题保留解析输入。",
+        "en": "Use one integer window h=⌊n/(12H)⌋. Discretize the continuous mean and sum over dyadic intervals. Bound the clipped endpoints and nonunit residues, then use finite Fourier orthogonality and local energy to control the signed coefficient. The analytic input is explicit in the implication."
+      },
+      "source": "https://github.com/34245621/goldbach-proofs/blob/9307efdd28b54073bdac386f3bf9d9c7c091bda4/lean/Conjectures/Goldbach/LowSkirtFromShortProgressions.lean",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "route": "explicit-skirt-inputs",
+      "assumptions": [
+        "L-goldbach-short-progressions-mean-theta"
+      ]
+    }
+  ],
+  "links": [
+    {
+      "kind": "sufficient_reduction",
+      "inputs": [
+        "L-goldbach-short-progressions-mean-theta"
+      ],
+      "output": "L-goldbach-frontier-skirt-polylog-moduli",
+      "bridge": "L-goldbach-low-skirt-from-short-progressions",
+      "explanation": {
+        "zh": "将短等差数列平均估计代入组合引理，即得到父题冻结命题，分母、弧宽和偶数量词完全相同。",
+        "en": "Apply the transfer theorem to the short-progression estimate. The result has the frozen parent’s denominator cutoff, arc width and even-target quantifier."
+      }
+    }
+  ],
+  "route_note": {
+    "zh": "逐个目标只需一个窗口长度；剩余的解析任务是对全部相关模数和区间起点的加权素数平均估计。",
+    "en": "One window length per target suffices. The remaining analytic task is a prime-logarithmic mean estimate over all relevant moduli and interval starting points."
+  }
+}

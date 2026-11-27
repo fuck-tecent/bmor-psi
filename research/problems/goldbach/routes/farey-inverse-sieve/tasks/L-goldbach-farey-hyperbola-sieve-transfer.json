@@ -1,0 +1,22 @@
+{
+  "id": "L-goldbach-farey-hyperbola-sieve-transfer",
+  "statement": "∀ (n d l h a b : ℕ) (E : ℝ), 1 < n → 0 < d → d.Coprime n → Squarefree d → l ≤ h → h < n → b < n → 0 ≤ E → ( ∀ c l h a b : ℕ, c.Coprime n → h < n → b < n → let I := Finset.Icc l h; let J := Finset.Icc a b; |((((I.product J).filter (fun (x : ℕ × ℕ) => (x.1*x.2)%n = c%n)).card : ℝ) - (I.card:ℝ)*(J.card:ℝ)*(n.totient:ℝ)/(n:ℝ)^2)| ≤ E) → let I := (Finset.Icc l h).filter (fun u => d ∣ u*(n-u)); let J := Finset.Icc a b; let R : ℝ := (2 : ℝ)^d.primeFactors.card; |((((I.product J).filter (fun (x : ℕ × ℕ) => (x.1*x.2)%n = 1)).card : ℝ) - ((h-l+1 : ℕ):ℝ)*(J.card:ℝ)*(n.totient:ℝ)*R/((d:ℝ)*(n:ℝ)^2))| ≤ R*(E+1)",
+  "plain_statement": {
+    "zh": "新路线 · Farey 分母对与逆元筛 · HD-8007 · 把矩形误差传到带逆元标记的平方自由筛余项",
+    "en": "New route · Farey denominator pairs and inverse sieve · HD-8007 · Transfer rectangle discrepancy to the inverse-labelled squarefree sieve"
+  },
+  "brief": {
+    "zh": "逐根应用平移。即使某根超过区间上端，也只损失一个单位计数误差。每根的矩形误差至多 E，加一个长度误差后乘根数。",
+    "en": "Apply the shift to each root. A root above the upper endpoint costs at most one unit of discrepancy. Add the rectangle error and the length error for each root, then sum."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/farey-inverse-sieve/README.md",
+  "program": "correlation",
+  "role": "conditional",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-farey-hyperbola-shift",
+    "L-goldbach-sieve-residue-dimension",
+    "L-goldbach-sieve-residue-crt"
+  ],
+  "imports": []
+}

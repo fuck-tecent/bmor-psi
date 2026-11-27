@@ -1,0 +1,23 @@
+{
+  "id": "L-goldbach-finite-major-fixed-model-bounds",
+  "statement": "let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let _J := fun (h : ℝ) (f : ℝ → ℂ) => intervalIntegral f (-h) h MeasureTheory.volume; let Jr := fun (h : ℝ) (f : ℝ → ℝ) => intervalIntegral f (-h) h MeasureTheory.volume; let V := fun (n : ℕ) (β : ℝ) => ∑ k ∈ Finset.Icc 1 n, E ((k:ℝ)*β); let M := fun (n q : ℕ) (β : ℝ) => ((ArithmeticFunction.moebius q:ℤ):ℂ)/(Nat.totient q:ℂ)*V n β; let H := fun (n q : ℕ) => (105:ℝ)/((q:ℝ)*(n:ℝ)); let Q := Finset.Icc (1:ℕ) 105; let A := fun (q : ℕ) => (Finset.range q).filter (fun a => Nat.Coprime a q); let B := fun (n : ℕ) => ∑ q ∈ Q, ((A q).card:ℝ) * Jr (H n q) (fun β => ‖M n q β‖^2); let C := fun (n : ℕ) => ∑ q ∈ Q, ∑ a ∈ A q, (_J (H n q) (fun β => (M n q β)^2*E (-(n:ℝ)*((a:ℝ)/q+β)))).re; ∀ n : ℕ, 4000000000000000000≤n → 30 ∣ n → (7/2:ℝ)*(n:ℝ) < C n ∧ B n < 6*(n:ℝ)",
+  "plain_statement": {
+    "zh": "新路线 · 小偶数覆盖第三批 · FR-9010 · 在 105 分母的同一组主弧上给出模型下界和能量上界",
+    "en": "New route · Finite-range coverage III · FR-9010 · Bound the model below and its energy above on the same denominator-105 arcs"
+  },
+  "brief": {
+    "zh": "先对既约分子求和。模型的相位平方用 FR-9009 的带符号表，能量用正的 φ(q) 倒数和。两者由 FR-9007、9008 控制截断和离散误差。",
+    "en": "Sum over reduced numerators first. Use FR-9009 for the signed square and the positive reciprocal-totient sum for the energy. FR-9007 and FR-9008 control discretization and truncation."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/finite-rfc-third/README.md#fixed-major-arcs",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-finite-major-rescaled-interval-kernel",
+    "L-goldbach-finite-major-sinc-mass",
+    "L-goldbach-finite-major-signed-kernel-table",
+    "L-goldbach-finite-fixed-chi-constant-mode"
+  ],
+  "imports": []
+}

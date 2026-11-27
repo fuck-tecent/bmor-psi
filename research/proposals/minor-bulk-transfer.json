@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "problem": "goldbach",
+  "base_revision": "ea88c9d2bb6822669ceb57b3137e879293f71a7a",
+  "request_id": "minor-bulk-transfer-v1-ea88c9d2",
+  "parent": {
+    "id": "L-goldbach-arc-minor-saving",
+    "statement_sha256": "60662fc98701122852841eda83dcc327a52613cd10914b2fc44d9614e2a24bb8"
+  },
+  "motivation": {
+    "zh": "明确如何用已登记的三项分解和两项误差界，把高高项的单侧下界转为完整次弧的单侧下界。仍须对每个充分大的偶数证明高高项下界。",
+    "en": "Record how the published three-term decomposition and two error estimates transfer a signed high-high bound to the full minor arcs. The high-high bound is still needed for every sufficiently large even target."
+  },
+  "tasks": [
+    {
+      "id": "L-goldbach-minor-bulk-transfer",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0;\nlet E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I);\nlet S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t));\nlet Q := fun n : ℕ => (Nat.log 2 (n+2))^2;\nlet arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))};\nlet low := fun (n k : ℕ) => if k^3≤n then w k else 0;\nlet high := fun (n k : ℕ) => w k-low n k;\nlet I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume;\nlet f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t);\nlet minor := fun n : ℕ => intervalIntegral (fun t => (arcs n)ᶜ.indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume;\n(∀ n:ℕ,I n w w=I n (low n) (low n)+2*I n (low n) (high n)+I n (high n) (high n)) →\n(∀ e:ℝ, 0<e → ∃ N:ℕ, ∀ n≥N, ‖I n (low n) (low n)‖≤e*(n:ℝ)) →\n(∀ e:ℝ, 0<e → ∃ N:ℕ, ∀ n≥N, ‖I n (low n) (high n)‖≤e*(n:ℝ)) →\n(∀ e:ℝ,0<e → ∃ N:ℕ,∀ n≥N, Even n → -(e*(n:ℝ))≤(I n (high n) (high n)).re) →\n∀ e : ℝ, 0<e → ∃ N : ℕ, ∀ n : ℕ, N≤n → Even n → -(e*(n:ℝ)) ≤ (minor n).re",
+      "plain_statement": {
+        "zh": "给定次弧三项分解、低低项与低高项的次线性范数界，以及高高项的逐偶数单侧下界，推出完整次弧的逐偶数单侧下界。",
+        "en": "Deduce the one-sided minor-arc bound for all sufficiently large even targets from the three-term decomposition, sublinear norm bounds for the low-low and low-high terms, and the one-sided bound for the high-high term."
+      },
+      "brief": {
+        "zh": "对任意正误差 ε，分别用 ε/4 调用三个估计，取三个阈值的最大值。用复数实部的绝对值不超过范数，并计入低高项前的系数 2。",
+        "en": "Apply each of the three estimates at ε/4 and take the maximum of their thresholds. Bound the absolute real part by the complex norm and retain the coefficient 2 on the mixed term."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/ea88c9d2bb6822669ceb57b3137e879293f71a7a/research/gaps.json#L7346",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [
+        "L-goldbach-minor-bilinear-split",
+        "L-goldbach-small-small-saving",
+        "L-goldbach-small-bulk-saving",
+        "L-goldbach-bulk-signed-floor"
+      ],
+      "depends_on": [],
+      "route": "minor-truncation"
+    }
+  ],
+  "links": [
+    {
+      "kind": "sufficient_reduction",
+      "inputs": [
+        "L-goldbach-minor-bilinear-split",
+        "L-goldbach-small-small-saving",
+        "L-goldbach-small-bulk-saving",
+        "L-goldbach-bulk-signed-floor"
+      ],
+      "output": "L-goldbach-arc-minor-saving",
+      "bridge": "L-goldbach-minor-bulk-transfer",
+      "explanation": {
+        "zh": "分解恒等式和两个范数界控制低段误差，高高项下界给出剩余的有符号估计。四个输入共同推出父命题。",
+        "en": "The identity and two norm bounds control the low terms. The high-high bound supplies the remaining signed estimate. All four inputs together imply the parent proposition."
+      }
+    }
+  ],
+  "route_note": {
+    "zh": "两条攻关任务采用同一套弧宽、权和阈值定义。两项估计若都成立，可得到充分大偶数的结论，阈值以下仍需另证。次弧分解中低高项出现两次。低低、低高和高高三项若各使用 ε/4 的预算，合计给出 ε 的逐偶数单侧预算。",
+    "en": "Both research targets use the same arcs and weights. Together they would cover sufficiently large evens. Values below the resulting threshold require a separate proof. The mixed term occurs twice in the minor-arc decomposition. Assigning ε/4 to each of the low-low, mixed and high-high bounds gives a total one-sided error budget of ε at each sufficiently large even target."
+  }
+}

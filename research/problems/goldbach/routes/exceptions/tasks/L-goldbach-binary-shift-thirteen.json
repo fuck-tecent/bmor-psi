@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-binary-shift-thirteen",
+  "statement": "∃ N : ℕ, ∀ n ≥ N, Even n → ∃ (p q : ℕ) (e : Fin 13 → ℕ), Nat.Prime p ∧ Nat.Prime q ∧ n = p+q+∑ j, 2^(e j+1)",
+  "plain_statement": {
+    "zh": "文献基线：两个素数加恰好十三个二次幂",
+    "en": "Literature baseline: two primes plus exactly thirteen powers of two"
+  },
+  "brief": {
+    "zh": "形式化 Heath-Brown–Puchta 定理 1。保留正指数，允许重复，核对圆法计数为正如何给出有序指数见证。仍需消去全部附加项。",
+    "en": "Formalize Theorem 1 with positive exponents and repetitions allowed. Extract an exponent tuple from the positive circle-method count; the zero-shift target remains."
+  },
+  "source": "https://arxiv.org/pdf/math/0201299",
+  "program": "exceptions",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "exceptions",
+  "role": "target",
+  "module": "Conjectures.Goldbach.BinaryShiftThirteen",
+  "file": "lean/Conjectures/Goldbach/BinaryShiftThirteen.lean"
+}

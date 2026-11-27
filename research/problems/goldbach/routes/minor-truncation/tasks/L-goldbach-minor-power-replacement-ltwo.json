@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-minor-power-replacement-ltwo",
+  "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let highLambda := fun (n k : ℕ) => if k^3≤n then 0 else ArithmeticFunction.vonMangoldt k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; ∃ (C : ℝ) (N : ℕ), 0 < C ∧ ∀ n : ℕ, N ≤ n → ‖I n (highLambda n) (highLambda n) - I n (high n) (high n)‖ ≤ C * (n : ℝ) ^ (3 / 4 : ℝ) * (Real.log (n : ℝ)) ^ 3",
+  "plain_statement": {
+    "zh": "新路线 · 高段次弧 · MA-7008 · 在旧次弧高段上用 Mangoldt 权替换素数权",
+    "en": "New route · High-segment minor arcs · MA-7008 · Replace prime weights by von Mangoldt weights on the high minor-arc segment"
+  },
+  "brief": {
+    "zh": "保持原题的弧和立方根高段截止，利用全圆 Parseval 与真素数幂计数把高段次弧双线性积分中的素数权 w 替换为 Λ，误差为 O(n^(3/4) (log n)^3)，供高段 Vaughan 分拆使用。",
+    "en": "Keep the original arcs and cube-root high-segment cutoff. Use full-circle Parseval and the proper prime-power count to replace w by von Mangoldt Λ in the high-segment minor-arc integral within O(n^(3/4) (log n)^3), preparing Vaughan's identity."
+  },
+  "source": "https://www.goldbach.tech/?lemma=L-goldbach-bulk-signed-floor",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "minor-truncation",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.MinorPowerReplacementLtwo",
+  "file": "lean/Conjectures/Goldbach/MinorPowerReplacementLtwo.lean"
+}

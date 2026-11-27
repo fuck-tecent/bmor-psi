@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-twisted-cutoff-residual",
+  "statement": "∀ (N : ℕ) [NeZero N] (χ : DirichletCharacter ℂ N) (c : ℝ) (s : ℂ), 1 ≤ c → 1 < s.re → let w : ℕ → ℂ := fun n => if 1 ≤ n ∧ (n : ℝ) < c then ((Real.log c - Real.log (n : ℝ) : ℝ) : ℂ) else 0; let r : ℕ → ℂ := (Real.log c : ℂ) • LSeries.delta - LSeries.convolution (fun n : ℕ => (ArithmeticFunction.moebius n : ℂ)) w; LSeries (fun n : ℕ => χ (n : ZMod N) * r n) s = (Real.log c : ℂ) - LSeries (fun n : ℕ => χ (n : ZMod N) * w n) s / χ.LFunction s",
+  "plain_statement": {
+    "zh": "对每个正模数的狄利克雷特征 χ，令 w 为支于 1≤n<c 的对数权，r=(log c)δ−μ∗w。在 c≥1、Re(s)>1 时，r 的 χ 扭曲级数等于 log c 减去 w 的有限 χ 扭曲级数除以 L(s,χ)。",
+    "en": "For every Dirichlet character χ of positive modulus, let w be the logarithmic cutoff on 1≤n<c and r=(log c)δ−μ∗w. If c≥1 and Re(s)>1, the χ-twisted series of r equals log c minus the finite χ-twisted series of w divided by L(s,χ)."
+  },
+  "imports": [],
+  "program": "grh",
+  "brief": {
+    "zh": "对狄利克雷卷积作同一特征的扭曲，利用绝对收敛和扭曲莫比乌斯级数的倒数恒等式。该等式在实部大于一的区域成立，无需零点分布假设。",
+    "en": "Twist the Dirichlet convolution by the same character and use absolute convergence and the reciprocal identity for the twisted Möbius series. The half-plane Re(s)>1 suffices without a zero-location hypothesis."
+  },
+  "source": "https://github.com/leanprover-community/mathlib4/blob/fc4f59e577feb1a4956671bc04ac18aaaf8cd842/Mathlib/NumberTheory/LSeries/Dirichlet.lean",
+  "parallel": true,
+  "track": "progressions",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.TwistedCutoffResidual",
+  "file": "lean/Conjectures/Goldbach/TwistedCutoffResidual.lean"
+}

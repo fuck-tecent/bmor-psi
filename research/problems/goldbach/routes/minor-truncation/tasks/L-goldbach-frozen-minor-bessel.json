@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-frozen-minor-bessel",
+  "statement": "∀ (x : ℕ) (b : ℕ → ℝ) (A : Set ℝ), MeasurableSet A → let H := fun t : ℝ => ∑ k ∈ Finset.range (x+1), (b k : ℂ) * Complex.exp (((2 * Real.pi * ((k : ℝ) * t) : ℝ) : ℂ) * Complex.I); let f := A.indicator (fun t => H t ^ 2); let c := fun j : ℤ => fourierCoeffOn (zero_lt_one : (0 : ℝ) < 1) f j; ∀ (F : Finset ℤ) (T : ℝ), 0 < T → (((F.filter fun j => (c j).re ≤ -T).card : ℝ) * T ^ 2) ≤ intervalIntegral (A.indicator (fun t => ‖H t‖^4)) 0 1 MeasureTheory.volume",
+  "plain_statement": {
+    "zh": "固定实系数三角多项式 H 和单位区间内的可测区域 A。任取有限整数频率集 F 和 T>0，A 上 H² 的傅里叶系数实部至多为 −T 的频率个数乘以 T²，不超过 A 上 |H|⁴ 的积分。",
+    "en": "Fix a trigonometric polynomial H with real coefficients and a measurable mask A on the unit interval. For any finite integer frequency set F and T>0, T² times the number of frequencies in F where the masked Fourier coefficient of H² has real part at most −T is bounded by the integral of |H|⁴ on A."
+  },
+  "imports": [],
+  "program": "correlation",
+  "brief": {
+    "zh": "将可测截断的平方多项式置于单位区间的 L² 中。对选定的整数频率用有限 Bessel 不等式，再用傅里叶系数的模控制负实部。所有频率共用同一组系数和同一区域。",
+    "en": "Put the masked square of the polynomial in L² on the unit interval. Apply finite Bessel to the selected integer frequencies and dominate the negative real part by the modulus. The coefficients and region are fixed across frequencies."
+  },
+  "source": "https://arxiv.org/html/2610.26756v1#S8.L8",
+  "parallel": true,
+  "track": "minor-truncation",
+  "role": "lemma",
+  "depends_on": [],
+  "module": "Conjectures.Goldbach.FrozenMinorBessel",
+  "file": "lean/Conjectures/Goldbach/FrozenMinorBessel.lean"
+}

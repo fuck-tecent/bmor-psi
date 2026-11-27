@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-rectangular-divisor-budget",
+  "statement": "∀ (A D : ℕ) (T : ℕ→ℝ), (∀ q,0≤T q) → (∑ u ∈ Finset.Icc 1 A, ∑ v ∈ Finset.Icc 1 D, ((∑ q ∈ (u.gcd v).divisors,T q)*(u:ℝ)⁻¹*(v:ℝ)⁻¹)) ≤ (∑ q ∈ Finset.Icc 1 (min A D),T q*(q:ℝ)⁻¹^2)* (∑ u ∈ Finset.Icc 1 A,(u:ℝ)⁻¹)*(∑ v ∈ Finset.Icc 1 D,(v:ℝ)⁻¹)",
+  "plain_statement": {
+    "zh": "任意非负除数权 T 在不同步长范围 A、D 上的双重公因数除数和，由 q≤min(A,D) 的加权和与两个调和和的乘积控制。",
+    "en": "The weighted common-divisor sum over distinct positive step ranges A and D is bounded by the q≤min(A,D) weighted inverse-square sum times the two harmonic sums."
+  },
+  "brief": {
+    "zh": "将共同除数求和转成 q|u、q|v 的独立倍数和。推广 PR 2468 的正方形估计到矩形区域，使混合带保留各自步长范围。",
+    "en": "Factor each common-divisor contribution into two independent sums over multiples. Generalizes the square estimate in PR 2468 to a rectangle, preserving separate step bounds for mixed bands."
+  },
+  "source": "https://github.com/Elm-Forest/goldbach-proofs/blob/5ab45a6864de00cd55d5093c3f2bb5ed4f0fd858/rectangular-proofs/L_goldbach_rectangular_divisor_budget.lean",
+  "program": "correlation",
+  "parallel": true,
+  "imports": [],
+  "track": "frontier-type2-dyadic-matrix",
+  "role": "lemma",
+  "depends_on": [],
+  "module": "Conjectures.Goldbach.RectangularDivisorBudget",
+  "file": "lean/Conjectures/Goldbach/RectangularDivisorBudget.lean"
+}

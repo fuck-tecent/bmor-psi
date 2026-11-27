@@ -1,0 +1,14 @@
+{
+  "id": "finite-rfc-third",
+  "title": {
+    "zh": "小偶数覆盖第三批",
+    "en": "Finite-range coverage III"
+  },
+  "description": {
+    "zh": "核验已发表端点以后的素数对，推进固定主弧的误差和余量，并改进有限范围的素因子数与陈氏计数界。",
+    "en": "Verify further prime pairs above the published cutoff, bound errors on fixed major arcs and improve the finite-range factor and Chen count estimates."
+  },
+  "feeds": [
+    "representations"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "id": "dyadic-reflection",
+  "title": {
+    "zh": "二进反射与 Levent GRH 零点公式",
+    "en": "Dyadic reflection and the Levent GRH explicit formula"
+  },
+  "description": {
+    "zh": "固定一个偶数，按二进余类拆出反射相关，再用本原特征和与带重数的零点和替换细层。粗层预算、零点替换误差与真实零点相位是三项独立工作。",
+    "en": "Fix the even target. Expand its reflected correlation by dyadic residue classes and use primitive character sums and zeros with multiplicity on fine layers. The coarse budget, the replacement error and the actual zero phases require separate estimates."
+  },
+  "feeds": [
+    "odd-character-interference",
+    "representations"
+  ]
+}

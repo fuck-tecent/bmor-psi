@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-finite-major-signed-kernel-table",
+  "statement": "let R := fun (q n : ℕ) => ∑ d ∈ q.divisors.filter (fun d => d ∣ n), (d:ℝ)*(ArithmeticFunction.moebius (q/d):ℝ); ∀ (n : ℕ) (K : ℕ → ℝ), 30 ∣ n → (∀ q ∈ Finset.Icc (1:ℕ) 105, 0≤K q ∧ K q≤1) → (∀ q ∈ Finset.Icc (1:ℕ) 105, q ∣ 30 → 1-2*(q:ℝ)/(9*105)≤K q) → (351/100:ℝ) < ∑ q ∈ Finset.Icc (1:ℕ) 105, (ArithmeticFunction.moebius q:ℝ)^2/(Nat.totient q:ℝ)^2*R q n*K q",
+  "plain_statement": {
+    "zh": "新路线 · 小偶数覆盖第三批 · FR-9009 · 给 30 的倍数计算带符号主弧模型的有限下界表",
+    "en": "New route · Finite-range coverage III · FR-9009 · Bound the signed major-arc model table on multiples of 30"
+  },
+  "brief": {
+    "zh": "q∣30 的贡献至少 26/7。其余负项由 q 的一个不整除 n 的素因子控制，各项上界的有理数和小于 201/1000。复用 Ramanujan 和的 CRT 分解。",
+    "en": "Denominators dividing 30 contribute at least 26/7. Bound each possible negative term with a prime factor of q that does not divide n. The rational sum of these bounds is below 201/1000. Use the CRT factorization of Ramanujan sums."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/finite-rfc-third/README.md#fixed-major-arcs",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-ram-prime",
+    "L-goldbach-ram-crt"
+  ],
+  "imports": []
+}

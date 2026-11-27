@@ -1,0 +1,11 @@
+{
+  "id": "04-trace-and-fourier",
+  "title": {
+    "zh": "迹、不同理想与 Fourier 缺额",
+    "en": "Trace, different and Fourier deficit"
+  },
+  "description": {
+    "zh": "用逆不同理想校正整层下降，在余商的零化子上计量实际生成的缺额。",
+    "en": "Correct whole-lattice descent with the inverse different and measure the actual residual deficit by its annihilator."
+  }
+}

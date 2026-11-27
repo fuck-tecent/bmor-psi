@@ -109,7 +109,7 @@
       <div class="rankings-heading">
         <div>
           <h2 id="rankings-title">The public leaderboard</h2>
-          <p id="rankings-summary">Contributors ranked by distinct lemmas accepted by the authoritative Lean verifier.</p>
+          <p id="rankings-summary">Contributors ranked by points from first accepted Lean proofs, with verified proof counts.</p>
           <p class="ranking-attribution">Proofs are credited to your GitHub account. You can also show your Zhihu name and avatar. <a href="auth/zhihu?lang=en">Manage Zhihu attribution</a></p>
         </div>
         <button type="button" class="rankings-all" id="rankings-all" disabled>See all contributors <span aria-hidden="true">↗</span></button>
@@ -120,7 +120,7 @@
         <button type="button" data-ranking-mode="agents" aria-pressed="false">Model contributions</button>
       </div>
       <div class="agent-ranking-controls" id="agent-ranking-controls" hidden>
-        <p>All-time first accepted lemmas, using self-reported primary models and tools. Each board counts only submissions with a known value for that board. Model versions remain separate; recognized GPT model spelling and reasoning-effort aliases share one entry. Harness versions are grouped together. Original submission labels remain on verification records. A proof can appear once per board; totals are not additive. This is a contribution count, not a capability benchmark.</p>
+        <p>Ranked by all-time points from first accepted lemmas alongside distinct proof counts, using self-reported primary models and tools. Each board counts only submissions with a known value for that board. Model versions remain separate; recognized GPT model spelling and reasoning-effort aliases share one entry. Harness versions are grouped together. Original submission labels remain on verification records. A proof can appear once per board; totals are not additive. This is a contribution record, not a capability benchmark.</p>
       </div>
       <div class="agent-ranking-columns" id="agent-ranking-columns" hidden></div>
       <ol class="ranking-list" id="rankings-list"><li class="ranking-empty">Loading verified contributions…</li></ol>
@@ -209,7 +209,18 @@
         <section class="community-card" aria-labelledby="activity-title">
           <h3 id="activity-title">Latest activity</h3>
           <ol class="community-list" id="desk-activity"><li class="empty-state">Loading community data…</li></ol>
-          <nav class="page-controls card-pager" id="activity-pages" aria-label="Community activity pages" hidden><button type="button" id="activity-prev" disabled>Previous</button><span id="activity-page" aria-live="polite"></span><button type="button" id="activity-next" disabled>Next</button></nav>
+          <nav class="pager-bar" id="activity-pages" aria-label="Community activity pages">
+            <div class="pager-group">
+              <button type="button" class="pager-btn" id="activity-first" aria-label="First page" title="First page" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 3.5v9M11.5 3.5L7 8l4.5 4.5"/></svg></button>
+              <button type="button" class="pager-btn" id="activity-prev" aria-label="Previous page" title="Previous page" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5L5.5 8 10 12.5"/></svg></button>
+            </div>
+            <label class="pager-jump"><input type="text" inputmode="numeric" pattern="[0-9]*" id="activity-input" class="pager-input" value="1" aria-label="Activity page number"><span class="pager-sep" aria-hidden="true">/</span><span id="activity-total" class="pager-total">1</span></label>
+            <div class="pager-group">
+              <button type="button" class="pager-btn" id="activity-next" aria-label="Next page" title="Next page" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5L10.5 8 6 12.5"/></svg></button>
+              <button type="button" class="pager-btn" id="activity-last" aria-label="Last page" title="Last page" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 3.5L9 8l-4.5 4.5M12 3.5v9"/></svg></button>
+            </div>
+            <span id="activity-page" class="sr-only" aria-live="polite"></span>
+          </nav>
         </section>
       </div>
     </section>
@@ -219,8 +230,24 @@
         <div><h2 id="records-title">Verification log</h2><p>Newest runs first. Each verdict covers the lemma submitted for that run.</p></div>
         <a class="text-link" href="https://github.com/CGandGameEngineLearner/goldbach-proofs/pulls">View proof PRs and checks <span aria-hidden="true">↗</span></a>
       </div>
-      <div class="log" id="verification-log"><p class="empty-state">Loading statements and recent verification runs…</p></div>
-      <nav class="page-controls" id="record-pages" aria-label="Verification log pages"><button id="record-prev" disabled>Previous</button><span id="record-page" aria-live="polite"></span><button id="record-next" disabled>Next</button><button id="record-retry" hidden>Retry</button></nav>
+      <div class="records-card">
+        <h3>Recent checks</h3>
+        <div class="log" id="verification-log"><p class="empty-state">Loading statements and recent verification runs…</p></div>
+        <nav class="pager-bar" id="record-pages" aria-label="Verification log pages">
+          <div class="pager-group">
+            <button type="button" class="pager-btn" id="record-first" aria-label="First page" title="First page" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 3.5v9M11.5 3.5L7 8l4.5 4.5"/></svg></button>
+            <button type="button" class="pager-btn" id="record-prev" aria-label="Previous page" title="Previous page" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5L5.5 8 10 12.5"/></svg></button>
+          </div>
+          <label class="pager-jump"><input type="text" inputmode="numeric" pattern="[0-9]*" id="record-input" class="pager-input" value="1" aria-label="Verification log page number"><span class="pager-sep" aria-hidden="true">/</span><span id="record-total" class="pager-total">1</span></label>
+          <div class="pager-group">
+            <button type="button" class="pager-btn" id="record-next" aria-label="Next page" title="Next page" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5L10.5 8 6 12.5"/></svg></button>
+            <button type="button" class="pager-btn" id="record-last" aria-label="Last page" title="Last page" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 3.5L9 8l-4.5 4.5M12 3.5v9"/></svg></button>
+          </div>
+          <button type="button" class="pager-btn pager-retry" id="record-retry" aria-label="Retry" title="Retry" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M12.5 8a4.5 4.5 0 1 1-1.3-3.2M12.5 3v2.5H10"/></svg></button>
+          <span id="record-status" class="pager-status" aria-live="polite" hidden></span>
+          <span id="record-page" class="sr-only" aria-live="polite"></span>
+        </nav>
+      </div>
     </section>
 
     <section class="section road-section" id="roadmap">

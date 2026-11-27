@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-rough-fifth-square-error",
+  "statement": "let C := fun N : ℕ => (Finset.range N).filter (fun p => Nat.Prime p ∧ N < 3*p ∧ 3*p < 2*N ∧ 1 < N-p ∧ N < (N-p).minFac^5); ∀ N z : ℕ, 1 ≤ z → z^5 ≤ N → z*((C N).filter (fun p => ¬ Squarefree (N-p))).card ≤ N",
+  "plain_statement": {
+    "zh": "对任意自然数 N 和满足 1≤z、z⁵≤N 的整数 z，令 D 为中央粗糙候选集中补数有素数平方因子的候选数。则 zD≤N。",
+    "en": "For all natural numbers N and z with 1≤z and z⁵≤N, let D count central rough candidates whose complement is divisible by the square of a prime. Then zD≤N."
+  },
+  "imports": [],
+  "program": "correlation",
+  "brief": {
+    "zh": "每个这样的补数 n 都有素数平方 q² 整除它，且 q>z。映射 p↦N−p 在候选集上单射。对 z<q≤√N 的所有整数 q，将各自的正倍数个数相加即得上界。用 1/q²≤1/(q−1)−1/q 求和。取 z 为 N 的五次方根的整数部分，得 D=O(N⁴ᐟ⁵)。Liouville 与 Möbius 和之差的绝对值、含重复素因子的三因子补数个数均至多为 D。",
+    "en": "Each such complement n has q² dividing n for some prime q>z. Reflection is injective on the candidates. Bound the count by summing the number of positive multiples of q² over all integers z<q≤√N. The inequality 1/q²≤1/(q−1)−1/q telescopes. Taking the integer part of the fifth root gives D=O(N^(4/5)). Both the absolute difference of the Liouville and Möbius sums and the count of triples with a repeated prime factor are at most D."
+  },
+  "source": "https://leanprover-community.github.io/mathlib4_docs/Mathlib/Data/Nat/Squarefree.html#Nat.squarefree_iff_prime_squarefree",
+  "parallel": true,
+  "track": "rough-fifth-parity",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.RoughFifthSquareError",
+  "file": "lean/Conjectures/Goldbach/RoughFifthSquareError.lean"
+}

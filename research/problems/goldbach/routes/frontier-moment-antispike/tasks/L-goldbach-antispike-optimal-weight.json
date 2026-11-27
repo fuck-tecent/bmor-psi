@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-antispike-optimal-weight",
+  "statement": "∀ (s : Finset ℕ) (c : ℕ → ℝ) (B : ℝ), 0 ≤ B → (∃ w : ℕ → ℝ, (∀ i, 0 ≤ w i) ∧ (∑ i ∈ s, (w i)^2) ≤ B^2 ∧ (∑ i ∈ s, w i*c i) = -(B*Real.sqrt (∑ i ∈ s, (max 0 (-c i))^2))) ∧ (∀ v : ℕ → ℝ, (∀ i, 0 ≤ v i) → (∑ i ∈ s, (v i)^2) ≤ B^2 → -(B*Real.sqrt (∑ i ∈ s, (max 0 (-c i))^2)) ≤ ∑ i ∈ s, v i*c i)",
+  "plain_statement": {
+    "zh": "给定有限实系数和非负二范数预算 B，非负权的加权和最小值等于负部的二范数乘以 −B。存在达到该最小值的权，并且所有满足同样预算的非负权均不低于此值。",
+    "en": "For any finite real coefficient family and nonnegative L2 budget B, the minimum of the weighted sum over nonnegative weights equals minus B times the L2 norm of the negative part. The minimum is attained and bounds every feasible weight from below."
+  },
+  "brief": {
+    "zh": "取 d_i=max(0,−c_i)，R=√Σd_i²；当 R>0 时取 w_i=Bd_i/R，否则取零权。用 Cauchy–Schwarz 得到下界。这将反尖峰传递命题中的存在权重条件等价化为一个负部能量的标量不等式；并不证明该解析不等式。",
+    "en": "Set d_i=max(0,-c_i) and R=sqrt(sum d_i^2). Choose w_i=B*d_i/R if R>0, otherwise zero. Cauchy–Schwarz gives the universal lower bound. Eliminates the weight-existence quantifier in the anti-spike transfer target without establishing its remaining analytic inequality."
+  },
+  "source": "https://github.com/Elm-Forest/goldbach-proofs/blob/30f7bf767c4e9cbdcd7f00b14f02838cd6b5d785/antispike-proof/L_goldbach_antispike_optimal_weight.lean",
+  "program": "correlation",
+  "parallel": true,
+  "imports": [],
+  "track": "frontier-moment-antispike",
+  "role": "lemma",
+  "depends_on": [],
+  "module": "Conjectures.Goldbach.AntispikeOptimalWeight",
+  "file": "lean/Conjectures/Goldbach/AntispikeOptimalWeight.lean"
+}

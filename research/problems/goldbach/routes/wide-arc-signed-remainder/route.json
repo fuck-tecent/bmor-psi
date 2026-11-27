@@ -1,0 +1,14 @@
+{
+  "id": "wide-arc-signed-remainder",
+  "title": {
+    "zh": "扩宽弧区的无条件积分下界",
+    "en": "Unconditional signed bounds on widened arcs"
+  },
+  "description": {
+    "zh": "保留已证低模数弧带，按距有理数的尺度拆分其余扩宽弧区，控制总积分中的负贡献。",
+    "en": "Reuse the proved low-modulus skirt and split the remaining widened arcs by distance to rational points."
+  },
+  "feeds": [
+    "frontier-medium-arc-scales"
+  ]
+}

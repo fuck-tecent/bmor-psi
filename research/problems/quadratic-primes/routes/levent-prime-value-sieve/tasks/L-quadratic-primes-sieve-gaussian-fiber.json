@@ -1,0 +1,20 @@
+{
+  "id": "L-quadratic-primes-sieve-gaussian-fiber",
+  "statement": "∀ a b c₀ d₀ c d : ℤ, a*d₀+b*c₀=1 →\n  (a*d+b*c=1 ↔ ∃ t : ℤ, c=c₀+a*t ∧ d=d₀-b*t) ∧\n  (∀ t : ℤ, a*(c₀+a*t)-b*(d₀-b*t) = (a*c₀-b*d₀)+(a^2+b^2)*t) ∧\n  (2*(a*c₀-b*d₀))^2 - 4*(a^2+b^2)*(c₀^2+d₀^2) = -4",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然扩张 · QP-0086 · 为高斯余因子给出整数纤维与固定判别式",
+    "en": "New route · Levent GRH and natural extensions · QP-0086 · Parametrize the Gaussian cofactor fibre and retain its fixed discriminant"
+  },
+  "brief": {
+    "zh": "初始解 a d₀+b c₀=1 给出互素性。核对整数解的实际步长 p=a²+b² 和二次余因子的判别式 −4。",
+    "en": "The initial solution a d₀+b c₀=1 gives coprimality. Check that the integer parameter advances n by p=a²+b² and that the quadratic cofactor has discriminant −4."
+  },
+  "source": "https://github.com/leanprover-community/mathlib4/blob/fc4f59e577feb1a4956671bc04ac18aaaf8cd842/Mathlib/NumberTheory/Zsqrtd/GaussianInt.lean",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": false,
+  "depends_on": [
+    "L-quadratic-primes-sieve-terminal-gaussian"
+  ],
+  "imports": []
+}

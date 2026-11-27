@@ -1,0 +1,19 @@
+{
+  "id": "L-quadratic-primes-lpf-linear",
+  "statement": "∀ B : ℕ, ∃ n p : ℕ, B < n ∧ Nat.Prime p ∧ p ∣ n ^ 2 + 1 ∧ n ^ 1 < p ^ 1",
+  "plain_statement": {
+    "zh": "对任意自然数 B，存在 n > B，使 n² + 1 有一个大于 n 的素因子。",
+    "en": "For every natural number B there is an n > B such that n² + 1 has a prime divisor greater than n."
+  },
+  "brief": {
+    "zh": "取 m = (B² + 1)! 并选取 m² + 1 的一个素因子 p。用 n = m mod p 证明 B < n < p。",
+    "en": "Take m = (B² + 1)! and a prime divisor p of m² + 1. Set n = m mod p and show B < n < p."
+  },
+  "program": "foundation",
+  "imports": [],
+  "lpf_exponent": "1",
+  "parallel": true,
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/47",
+  "module": "Conjectures.QuadraticPrimes.LpfLinear",
+  "file": "lean/Conjectures/QuadraticPrimes/LpfLinear.lean"
+}

@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-rough-fifth-mass",
+  "statement": "let C := fun N : ℕ => (Finset.range N).filter (fun p => Nat.Prime p ∧ N < 3*p ∧ 3*p < 2*N ∧ 1 < N-p ∧ N < (N-p).minFac^5); ∃ c : ℝ, 0 < c ∧ ∃ N₀ : ℕ, ∀ N : ℕ, N₀ ≤ N → Even N → c*(N:ℝ) ≤ ((C N).card:ℝ)*(Real.log (N:ℝ))^2",
+  "plain_statement": {
+    "zh": "对每个充分大偶数 N，中央三分区间的素数 p 中，至少有 cN/(log N)² 个的补数 N−p 没有不超过 N 的五次方根的素因子。",
+    "en": "For every sufficiently large even N, at least cN/(log N)² central primes p have complement with least prime factor greater than the fifth root of N, for one absolute c>0."
+  },
+  "imports": [],
+  "program": "correlation",
+  "brief": {
+    "zh": "在 p 与 N−p 同时位于开中央三分区间的条件下筛去 N−p 的小素因子。维数一线性下界筛以略低于平方根的分布水平筛到五次方根，保留绝对正常数。此节点只计粗糙补数。",
+    "en": "Sieve the complements of primes in the open middle third. A dimension-one lower-bound sieve at a level just below the square root has sieve parameter strictly above two at this cutoff. This node counts all rough complements."
+  },
+  "source": "https://www.numdam.org/article/AST_1975__24-25__281_0.pdf",
+  "parallel": true,
+  "track": "rough-fifth-parity",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.RoughFifthMass",
+  "file": "lean/Conjectures/Goldbach/RoughFifthMass.lean"
+}

@@ -14,7 +14,10 @@
   "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/quadratic-primes-levent.md#levent-explicit-correlation",
   "program": "correlation",
   "imports": [
-    "PEqualNP.Outside.L_quadratic_primes_residue_invariance"
+    "PEqualNP.Outside.L_quadratic_primes_residue_invariance",
+    "PEqualNP.Outside.L_quadratic_primes_levent_root_phase_reality",
+    "PEqualNP.Outside.L_quadratic_primes_levent_low_mode_energy",
+    "PEqualNP.Outside.L_quadratic_primes_levent_incomplete_phase_bound"
   ],
   "parallel": false,
   "role": "target",

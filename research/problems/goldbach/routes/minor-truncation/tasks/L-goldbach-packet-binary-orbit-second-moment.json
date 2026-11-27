@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-packet-binary-orbit-second-moment",
+  "statement": "let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); ∀ q m : ℕ, 0<q → (∑ a ∈ Finset.range q, ‖∑ j ∈ Finset.range m, E ((((2:ℕ)^(j+1):ℕ):ℝ)*(a:ℝ)/(q:ℝ))‖^2) = (q:ℝ)*(((Finset.range m ×ˢ Finset.range m).filter (fun ij => (2:ℕ)^(ij.1+1)%q = (2:ℕ)^(ij.2+1)%q)).card:ℝ)",
+  "plain_statement": {
+    "zh": "用倍增余数重合次数计算完整二阶矩",
+    "en": "Compute the orbit second moment from modular coincidences"
+  },
+  "brief": {
+    "zh": "对所有分子求和，展开平方模并用有限循环群上的特征正交。结论对偶数分母也适用；偶分母的初始非周期段要保留。",
+    "en": "Sum over all numerators, expand the squared norm, and use orthogonality on the finite cyclic group. The even-denominator transient is retained."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "minor-truncation",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.PacketBinaryOrbitSecondMoment",
+  "file": "lean/Conjectures/Goldbach/PacketBinaryOrbitSecondMoment.lean"
+}

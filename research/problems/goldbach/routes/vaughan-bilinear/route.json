@@ -1,0 +1,14 @@
+{
+  "id": "vaughan-bilinear",
+  "title": {
+    "en": "Vaughan’s identity and bilinear exponential sums",
+    "zh": "沃恩恒等式与双线性指数和"
+  },
+  "description": {
+    "en": "Retain product cutoffs and frequency spacing in the Type I and Type II sums that enter the minor-arc coefficient.",
+    "zh": "在次弧系数的一类和二类指数和中保留乘积截断与频率间距。"
+  },
+  "feeds": [
+    "arc-budget"
+  ]
+}

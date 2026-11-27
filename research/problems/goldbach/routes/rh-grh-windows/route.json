@@ -1,0 +1,14 @@
+{
+  "id": "rh-grh-windows",
+  "title": {
+    "zh": "从 GRH 分布估计到区间主项",
+    "en": "GRH progression estimates on moving windows"
+  },
+  "description": {
+    "zh": "先核对上游任意模数的零点命题，再从本项目 grh-progression-error 的单端点界推导；保留 GRH 前提。",
+    "en": "Check the upstream all-moduli zero statement and derive from the project's grh-progression-error endpoint bound. Keep GRH explicit."
+  },
+  "feeds": [
+    "progressions"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "id": "L-square-packing-seventeen-upper-46755",
+  "statement": "let inside := fun (x y a b X Y : ℝ) => |a*(X-x)+b*(Y-y)| < 1/2 ∧ |(-b)*(X-x)+a*(Y-y)| < 1/2; let fits := fun (n : ℕ) (s : ℝ) => 0 ≤ s ∧ ∃ x y a b : Fin n → ℝ, (∀ i, a i ^ 2 + b i ^ 2 = 1 ∧ |a i| + |b i| ≤ 2*x i ∧ |a i| + |b i| ≤ 2*(s-x i) ∧ |a i| + |b i| ≤ 2*y i ∧ |a i| + |b i| ≤ 2*(s-y i)) ∧ (∀ i j, i ≠ j → ∀ X Y : ℝ, inside (x i) (y i) (a i) (b i) X Y → ¬ inside (x j) (y j) (a j) (b j) X Y); fits 17 (9351/2000)",
+  "plain_statement": {
+    "zh": "在边长 4.6755 的正方形中放入 17 个可独立旋转的单位正方形，允许边界接触，内部互不重叠。",
+    "en": "Pack 17 independently rotatable unit squares in a square of side 4.6755, allowing boundary contact and forbidding overlap of interiors."
+  },
+  "brief": {
+    "zh": "公开基准为 Bidwell 的约 4.6755300936。尝试改变接触关系或旋转分组，再搜索中心坐标与角度。用有理半角参数及分离轴证明候选布局的边界与不相交约束。也请核对同一模型下公开的最优性主张。",
+    "en": "The documented Bidwell layout has side about 4.6755300936. Explore different contact patterns or orientation groups, then search over centers and angles. Verify the candidate with rational half-angle parameters and separating axes. Review published optimality claims under the same packing model."
+  },
+  "source": "https://squaremath.org/cases/17.html",
+  "program": "correlation",
+  "track": "seventeen-square-frontier",
+  "role": "target",
+  "depends_on": [
+    "L-square-packing-rotated-square-containment",
+    "L-square-packing-rational-rotation",
+    "L-square-packing-axis-dot-certificate",
+    "L-square-packing-scaled-box-two-axes"
+  ],
+  "parallel": true,
+  "challenge_only": true,
+  "imports": [
+    "PEqualNP.Outside.L_square_packing_rotated_square_containment",
+    "PEqualNP.Outside.L_square_packing_rational_rotation",
+    "PEqualNP.Outside.L_square_packing_axis_dot_certificate",
+    "PEqualNP.Outside.L_square_packing_scaled_box_two_axes"
+  ]
+}

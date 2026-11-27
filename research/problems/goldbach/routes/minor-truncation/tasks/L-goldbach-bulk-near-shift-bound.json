@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-bulk-near-shift-bound",
+  "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let K := fun (n : ℕ) (d : ℤ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => E ((d:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let T := fun (n H : ℕ) => Finset.sum (Finset.range (n+1)) (fun p => Finset.sum (Finset.range (n+1)) (fun r => let d : ℤ := (p:ℤ)+(r:ℤ)-(n:ℤ); if d ≠ 0 ∧ |d| ≤ (H:ℤ) then (high n p:ℂ)*(high n r:ℂ)*K n d else 0)); let C : ℝ := Real.log 4; ∀ n H : ℕ, 2 ≤ n → 2*(Q n)^2 < n → 1 ≤ H → H ≤ n → ‖T n H‖ ≤ 4*C*(H:ℝ)*(Q n:ℝ)*(1+Real.log (Q n:ℝ))^2*(C+1+Real.log ((n:ℝ)/(H:ℝ))+2*Real.log (Q n:ℝ))",
+  "plain_statement": {
+    "zh": "设 Q=⌊log₂(n+2)⌋²，C=log 4。对 n≥2、2Q²<n、1≤H≤n，原高高次弧积分中 0<|p+r−n|≤H 的有序数对贡献之和，其模至多为 4CHQ(1+log Q)²(C+1+log(n/H)+2log Q)。",
+    "en": "Let Q=⌊log₂(n+2)⌋² and C=log 4. For n≥2, 2Q²<n and 1≤H≤n, the ordered pairs with 0<|p+r−n|≤H contribute at most 4CHQ(1+log Q)²(C+1+log(n/H)+2log Q) in magnitude to the bulk minor-arc integral."
+  },
+  "brief": {
+    "zh": "按分母合并不交主弧，展开 Ramanujan 和，再用等差数列乘积和阶乘控制短区间内的素数对数权。取 H=⌊n/(log n)ᵏ⌋、k>2 可得 o(n)；原题仍需估计远频差的有符号和。",
+    "en": "Group disjoint major arcs by denominator, expand each Ramanujan sum, and compare progression products with factorials to bound short-interval prime weights. Taking H=⌊n/(log n)ᵏ⌋ with k>2 gives o(n). The signed far-shift sum remains open."
+  },
+  "source": "https://www.goldbach.tech/?lemma=L-goldbach-bulk-signed-floor#roadmap",
+  "program": "correlation",
+  "parallel": true,
+  "imports": [],
+  "track": "minor-truncation",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.BulkNearShiftBound",
+  "file": "lean/Conjectures/Goldbach/BulkNearShiftBound.lean"
+}

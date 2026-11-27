@@ -1,0 +1,130 @@
+{
+  "version": 1,
+  "problem": "goldbach",
+  "base_revision": "afb1c3cdad86ce7a6814e4a9c3429b38ac66f6c7",
+  "request_id": "dyadic-reflected-cells-01",
+  "parent": {
+    "id": "L-goldbach-dyadic-central-prime-mass",
+    "statement_sha256": "e55d25428b18c96411d2a09b73ecb98988b0439f264f7ab2ac118932d99ecb86"
+  },
+  "motivation": {
+    "zh": "把一维素数分布和双点算术分开，用中心窗内一段连续子区间给原目标提供下界。",
+    "en": "Separate one-dimensional prime distribution from two-point arithmetic on a subinterval of the central window."
+  },
+  "tasks": [
+    {
+      "id": "L-goldbach-dyadic-cell-mixed-difference",
+      "statement": "∀ (H : ℕ) (a b : Fin H → ℝ), (∑ s, ∑ t, (a s-a t)*(b s-b t)) = 2*((H:ℝ)*(∑ s, a s*b s)-(∑ s, a s)*(∑ t, b t))",
+      "plain_statement": {
+        "zh": "新路线 · 奇特征干涉 · OC-0102 · 单块上的带符号差分恒等式",
+        "en": "New route · Odd-character interference · OC-0102 · Signed mixed differences on one cell"
+      },
+      "brief": {
+        "zh": "将已有平方差恒等式极化，或展开双和。计入两份交叉项。",
+        "en": "Polarize the squared-distance identity or expand the double sum. Count both cross terms."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/afb1c3cdad86ce7a6814e4a9c3429b38ac66f6c7/research/gaps.json",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": [
+        "L-goldbach-cluster-balanced-energy"
+      ],
+      "route": "odd-character-interference"
+    },
+    {
+      "id": "L-goldbach-dyadic-cell-short-prime-floor",
+      "statement": "let w := fun p : ℕ => if Nat.Prime p then Real.log (p : ℝ) else 0; ∃ K : ℕ, ∀ k ≥ K, let n : ℕ := 2^k; let H : ℕ := 2^(k-k/4); ∀ x : ℕ, n ≤ 3*x → 3*x ≤ 2*n → (H:ℝ)/2 ≤ ∑ t ∈ Finset.range H, w (x+t)",
+      "plain_statement": {
+        "zh": "新路线 · 奇特征干涉 · OC-0103 · 每个中心短区间的素数权至少为块长的一半",
+        "en": "New route · Odd-character interference · OC-0103 · Prime weight exceeds half a block length at every central start"
+      },
+      "brief": {
+        "zh": "块长约为 n 的四分之三次方。以一致短区间素数定理为入口，核对半开区间的端点、对数权及对全部 x 有效的共同阈值。",
+        "en": "Apply a uniform short-interval prime theorem at length of order n to the power 3/4. Transfer to the half-open interval and prime log weight with one threshold for all starts."
+      },
+      "source": "https://arxiv.org/abs/2405.20552v2",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": [],
+      "route": "odd-character-interference"
+    },
+    {
+      "id": "L-goldbach-dyadic-cell-window-transfer",
+      "statement": "let w := fun p : ℕ => if Nat.Prime p then Real.log (p : ℝ) else 0; ∀ k : ℕ, 12 ≤ k → let n : ℕ := 2^k; let H : ℕ := 2^(k-k/4); let B : ℕ := 2^(k/4-3); let p := fun j t : ℕ => n/2+j*H+t; let a := fun j t : ℕ => w (p j t); let b := fun j t : ℕ => w (n-p j t); (∀ x : ℕ, n ≤ 3*x → 3*x ≤ 2*n → (H:ℝ)/2 ≤ ∑ t ∈ Finset.range H, w (x+t)) → (n:ℝ)/32 + (∑ j ∈ Finset.range B, (∑ s ∈ Finset.range H, ∑ t ∈ Finset.range H, (a j s-a j t)*(b j s-b j t)) / (2*(H:ℝ))) ≤ (∑ p ∈ (Finset.range (n+1)).filter (fun p => n ≤ 3*p ∧ 3*p ≤ 2*n), w p * w (n-p))",
+      "plain_statement": {
+        "zh": "新路线 · 奇特征干涉 · OC-0104 · 由单块质量把组内差分嵌入中心窗",
+        "en": "New route · Odd-character interference · OC-0104 · Embed within-cell differences into the central window"
+      },
+      "brief": {
+        "zh": "把 [n/2,5n/8) 分为 B 个长度 H 的块，BH=n/8。反射块起点为 n−(n/2+jH+H−1)。块总权乘积除以 H 至少为 H/4；块外项非负。",
+        "en": "Partition [n/2,5n/8) into B cells of H points, with BH=n/8. Reverse each reflected cell starting at n−(n/2+jH+H−1). Each product of block sums divided by H is at least H/4. All omitted terms are nonnegative."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/afb1c3cdad86ce7a6814e4a9c3429b38ac66f6c7/research/gaps.json",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": [
+        "L-goldbach-dyadic-cell-mixed-difference"
+      ],
+      "route": "odd-character-interference"
+    },
+    {
+      "id": "L-goldbach-dyadic-cell-reflected-cancellation",
+      "statement": "let w := fun p : ℕ => if Nat.Prime p then Real.log (p : ℝ) else 0; ∃ K : ℕ, ∀ k ≥ K, let n : ℕ := 2^k; let H : ℕ := 2^(k-k/4); let B : ℕ := 2^(k/4-3); let p := fun j t : ℕ => n/2+j*H+t; let a := fun j t : ℕ => w (p j t); let b := fun j t : ℕ => w (n-p j t); -(n:ℝ)/64 ≤ (∑ j ∈ Finset.range B, (∑ s ∈ Finset.range H, ∑ t ∈ Finset.range H, (a j s-a j t)*(b j s-b j t)) / (2*(H:ℝ)))",
+      "plain_statement": {
+        "zh": "新路线 · 奇特征干涉 · OC-0105 · 反射块内差分的逐尺度单侧下界（开放）",
+        "en": "New route · Odd-character interference · OC-0105 · One-sided cancellation of reflected within-cell differences (open)"
+      },
+      "brief": {
+        "zh": "按位移 t−s 重排，比较两侧素数权增量同号与异号的贡献。保留总和的符号和分母 2H；需要对每个充分大的 k 成立。",
+        "en": "Group by the lag t−s and compare aligned and opposed prime-weight increments. Keep the signed sum and denominator 2H. The bound must hold at every sufficiently large k."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/afb1c3cdad86ce7a6814e4a9c3429b38ac66f6c7/research/gaps.json",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": [],
+      "route": "odd-character-interference"
+    },
+    {
+      "id": "L-goldbach-dyadic-cell-parent-assembly",
+      "statement": "(let w := fun p : ℕ => if Nat.Prime p then Real.log (p : ℝ) else 0; ∃ K : ℕ, ∀ k ≥ K, let n : ℕ := 2^k; let H : ℕ := 2^(k-k/4); ∀ x : ℕ, n ≤ 3*x → 3*x ≤ 2*n → (H:ℝ)/2 ≤ ∑ t ∈ Finset.range H, w (x+t)) → (let w := fun p : ℕ => if Nat.Prime p then Real.log (p : ℝ) else 0; ∀ k : ℕ, 12 ≤ k → let n : ℕ := 2^k; let H : ℕ := 2^(k-k/4); let B : ℕ := 2^(k/4-3); let p := fun j t : ℕ => n/2+j*H+t; let a := fun j t : ℕ => w (p j t); let b := fun j t : ℕ => w (n-p j t); (∀ x : ℕ, n ≤ 3*x → 3*x ≤ 2*n → (H:ℝ)/2 ≤ ∑ t ∈ Finset.range H, w (x+t)) → (n:ℝ)/32 + (∑ j ∈ Finset.range B, (∑ s ∈ Finset.range H, ∑ t ∈ Finset.range H, (a j s-a j t)*(b j s-b j t)) / (2*(H:ℝ))) ≤ (∑ p ∈ (Finset.range (n+1)).filter (fun p => n ≤ 3*p ∧ 3*p ≤ 2*n), w p * w (n-p))) → (let w := fun p : ℕ => if Nat.Prime p then Real.log (p : ℝ) else 0; ∃ K : ℕ, ∀ k ≥ K, let n : ℕ := 2^k; let H : ℕ := 2^(k-k/4); let B : ℕ := 2^(k/4-3); let p := fun j t : ℕ => n/2+j*H+t; let a := fun j t : ℕ => w (p j t); let b := fun j t : ℕ => w (n-p j t); -(n:ℝ)/64 ≤ (∑ j ∈ Finset.range B, (∑ s ∈ Finset.range H, ∑ t ∈ Finset.range H, (a j s-a j t)*(b j s-b j t)) / (2*(H:ℝ)))) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k : ℝ) else 0; ∃ c : ℝ, 0 < c ∧ ∃ k₀ : ℕ, ∀ k ≥ k₀, let n : ℕ := 2^k; c*(n : ℝ) ≤ ∑ p ∈ (Finset.range (n+1)).filter (fun p => n ≤ 3*p ∧ 3*p ≤ 2*n), w p * w (n-p))",
+      "plain_statement": {
+        "zh": "新路线 · 奇特征干涉 · OC-0106 · 以常数 1/64 回到冻结的二次幂父题",
+        "en": "New route · Odd-character interference · OC-0106 · Recover the frozen dyadic target with constant 1/64"
+      },
+      "brief": {
+        "zh": "引入三个前提，取两个阈值与 12 的最大值。在同一 k 代入有限比较，得到 n/32−n/64=n/64。",
+        "en": "Introduce the three hypotheses, take the maximum of 12 and the two eventual thresholds, then combine the inequalities at the same k to obtain n/64."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/afb1c3cdad86ce7a6814e4a9c3429b38ac66f6c7/research/gaps.json",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": [],
+      "route": "odd-character-interference"
+    }
+  ],
+  "links": [
+    {
+      "kind": "sufficient_reduction",
+      "inputs": [
+        "L-goldbach-dyadic-cell-short-prime-floor",
+        "L-goldbach-dyadic-cell-window-transfer",
+        "L-goldbach-dyadic-cell-reflected-cancellation"
+      ],
+      "output": "L-goldbach-dyadic-central-prime-mass",
+      "bridge": "L-goldbach-dyadic-cell-parent-assembly",
+      "explanation": {
+        "zh": "同一 k 上，块基线和组内差分预算合出 n/64。",
+        "en": "At the same k the block baseline and signed budget yield n/64."
+      }
+    }
+  ],
+  "route_note": {
+    "zh": "二次幂中心窗可分块：先估计单侧短区间的素数权，再研究反射块中增量的符号。逐尺度抵消仍待证明。",
+    "en": "On dyadic targets, estimate prime weight in single intervals and then study the signs of reflected within-cell increments. Pointwise cancellation remains open."
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "id": "L-goldbach-exception-four-sevenths-unconditional",
+  "statement": "let bad := fun n : ℕ => 4 ≤ n ∧ Even n ∧ ¬ ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ p+q=n; ∀ e : ℝ, 0 < e → ∃ (C : ℝ) (N : ℕ), 0 < C ∧ ∀ X : ℕ, N ≤ X → ((@Finset.filter ℕ bad (Classical.decPred bad) (Finset.Icc 4 X)).card : ℝ) ≤ C * (X:ℝ) ^ (4/7 + e)",
+  "plain_statement": {
+    "zh": "无条件证明 E(X) ≪ε X^(4/7+ε)。",
+    "en": "Prove E(X) ≪ε X^(4/7+ε) unconditionally."
+  },
+  "brief": {
+    "zh": "对所有偶数 4≤n≤X 计数。公开基准为 Pintz–Althöfer v1 的 7/12；本题证明 4/7，节省 1/84，且不假设统一零点自由半平面。另一路径是直接控制例外集。",
+    "en": "Count all even integers in [4,X] that are not sums of two primes. Save 1/84 in the exponent against Pintz–Althöfer v1, with no zero-free hypothesis. Direct exceptional-set arguments are welcome."
+  },
+  "source": "https://arxiv.org/abs/2610.15559v1",
+  "program": "correlation",
+  "track": "exceptional-set-four-sevenths",
+  "depends_on": [
+    "L-goldbach-exception-four-sevenths-negative-energy",
+    "L-goldbach-exception-four-sevenths-counting-bridge"
+  ],
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true
+}

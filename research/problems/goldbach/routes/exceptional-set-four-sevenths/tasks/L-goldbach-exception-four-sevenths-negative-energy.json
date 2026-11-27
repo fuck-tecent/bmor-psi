@@ -1,0 +1,25 @@
+{
+  "id": "L-goldbach-exception-four-sevenths-negative-energy",
+  "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let major := fun n : ℕ => intervalIntegral (fun t => (arcs n).indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume; let minor := fun n : ℕ => (intervalIntegral (fun t => (arcs n)ᶜ.indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume).re; ∀ e : ℝ, 0 < e → ∃ (C : ℝ) (N : ℕ), 0 < C ∧ ∀ X : ℕ, N ≤ X → (Finset.sum ((Finset.Icc X (2*X)).filter Even) (fun n => (max 0 (-minor n))^2)) ≤ C * (X:ℝ) ^ (18/7 + e)",
+  "plain_statement": {
+    "zh": "在固定二进区间上证明次弧负贡献的平方和为 O(X^(18/7+ε))。",
+    "en": "Bound the squared negative minor-arc contributions on a dyadic interval by O(X^(18/7+ε))."
+  },
+  "brief": {
+    "zh": "只估计负部，允许正贡献。原主弧边界随 n 改变，不能直接对变动的掩码使用固定区间 Parseval。",
+    "en": "Exploit the negative-part restriction. The arc mask moves with n, so fixed-mask Parseval alone does not give the claim."
+  },
+  "source": "https://arxiv.org/abs/2610.15559v1",
+  "program": "correlation",
+  "track": "exceptional-set-four-sevenths",
+  "depends_on": [
+    "L-goldbach-wide-signed-unconditional",
+    "L-goldbach-frontier-uncond-deep-second-moment"
+  ],
+  "role": "lemma",
+  "parallel": true,
+  "challenge_only": false,
+  "imports": [
+    "PEqualNP.Outside.L_goldbach_frontier_uncond_deep_second_moment"
+  ]
+}

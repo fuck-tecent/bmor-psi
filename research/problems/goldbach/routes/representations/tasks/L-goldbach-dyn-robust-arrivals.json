@@ -1,0 +1,26 @@
+{
+  "id": "L-goldbach-dyn-robust-arrivals",
+  "statement": "let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); let P := fun X : ℕ => (Finset.Icc (Nat.sqrt X) (2*Nat.sqrt X)).filter Nat.Prime; let H := fun (X n : ℕ) => ((P X).filter (fun p => p ≤ n ∧ Nat.Prime (n-p))).card; let M := fun X : ℕ => Real.sqrt (X:ℝ) / (Real.log (X:ℝ))^2; ∃ η δ : ℝ, 0 < η ∧ 0 < δ ∧ ∃ X₀ : ℕ, ∀ X ≥ X₀, ∀ D : Finset ℕ, (D.card:ℝ) ≤ η*(X:ℝ)/Real.log (X:ℝ) → δ*(X:ℝ) ≤ (((E X).filter (fun n => ∃ p ∈ P X, p≤n ∧ Nat.Prime (n-p) ∧ n-p ∉ D)).card:ℝ)",
+  "plain_statement": {
+    "zh": "探索猜想：删去一批大素数步长后仍有正比例命中",
+    "en": "Conjecture: positive coverage survives adversarial long-step deletions"
+  },
+  "brief": {
+    "zh": "由富终点下界和删除损失界，结合 |P| 的素数计数上界选 η。允许对手在看过图后选删除集合。",
+    "en": "Use the rich-target threshold, deletion loss and an upper prime count for |P|. The deleted set may depend on the graph."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-dyn-many-rich-targets",
+    "L-goldbach-dyn-deletion-loss"
+  ],
+  "module": "Conjectures.Goldbach.DynRobustArrivals",
+  "file": "lean/Conjectures/Goldbach/DynRobustArrivals.lean",
+  "imports": [
+    "Conjectures.Goldbach.DynDeletionLoss"
+  ],
+  "track": "representations",
+  "role": "lemma"
+}

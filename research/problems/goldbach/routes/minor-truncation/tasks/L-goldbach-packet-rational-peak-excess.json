@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-packet-rational-peak-excess",
+  "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let W := fun (n : ℕ) (p : ℕ → Prop) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ (Q n)^2 ∧ a ≤ q ∧ Nat.Coprime a q ∧ p q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ ((Q n:ℝ)^2)/((q:ℝ)*(n:ℝ))}; let F := fun (n : ℕ) (t : ℝ) => ‖S n (high n) t‖^2; let G := fun (n : ℕ) (t : ℝ) => ∑ q ∈ Finset.Icc 1 ((Q n)^2), ∑ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q), 4*(n:ℝ)^2 / ((Nat.totient q:ℝ)^2 * (1+((n:ℝ)*(t-(a:ℝ)/(q:ℝ)))^2)); let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → m (W n (fun _ => True)) (fun t => max 0 (F n t - G n t)) ≤ (n:ℝ)/4608",
+  "plain_statement": {
+    "zh": "用有理峰包络覆盖素数谱在扩大主弧上的正向超差",
+    "en": "Control the positive excess over a rational-peak envelope on enlarged arcs"
+  },
+  "brief": {
+    "zh": "在 q≤Q² 的小分母附近，以 1/φ(q) 和连续几何和为主项，尝试用算术级数中的素数估计及分部求和控制误差。目标是正部积分，必须保留真实素数权及其低端截断。",
+    "en": "Try progression estimates and partial summation for q≤Q² against the 1/φ(q) geometric profile. Integrate the positive excess with the actual prime-only weight and its low cutoff."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "minor-truncation",
+  "role": "target",
+  "module": "Conjectures.Goldbach.PacketRationalPeakExcess",
+  "file": "lean/Conjectures/Goldbach/PacketRationalPeakExcess.lean"
+}

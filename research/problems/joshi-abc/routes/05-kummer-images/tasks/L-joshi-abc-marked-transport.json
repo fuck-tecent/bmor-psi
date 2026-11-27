@@ -1,0 +1,23 @@
+{
+  "id": "L-joshi-abc-marked-transport",
+  "statement": "∀ (K F : Type) [NontriviallyNormedField K] [NontriviallyNormedField F] [CompleteSpace K] [CompleteSpace F] (e : K ≃+* F), Continuous e → Continuous e.symm → ∀ q u : K, e (∑' n : ℤ, q^(n*(n+1)/2)*u^(2*n+1)) = ∑' n : ℤ, (e q)^(n*(n+1)/2)*(e u)^(2*n+1)",
+  "plain_statement": {
+    "zh": "新路线 · 指定 Kummer 像与 Θ 测试 · JA-0040 · 沿双连续标记同构运输 Theta 级数",
+    "en": "New route · Marked Kummer images and theta tests · JA-0040 · Transport the theta series along a bicontinuous marking"
+  },
+  "brief": {
+    "zh": "先沿同一个保双向连续标记运输整个双边级数，再以域同构的乘除相容运输比值。",
+    "en": "Transport the bilateral series along one bicontinuous marking, then use compatibility with field division to transport the quotient."
+  },
+  "source": "https://arxiv.org/abs/2303.01662",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-joshi-abc-series-symmetry"
+  ],
+  "imports": [],
+  "track": "05-kummer-images",
+  "module": "Conjectures.JoshiAbc.MarkedTransport",
+  "file": "lean/Conjectures/JoshiAbc/MarkedTransport.lean"
+}

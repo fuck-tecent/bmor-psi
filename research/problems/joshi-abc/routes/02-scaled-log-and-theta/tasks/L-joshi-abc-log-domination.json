@@ -1,0 +1,21 @@
+{
+  "id": "L-joshi-abc-log-domination",
+  "statement": "∀ (p n : ℕ), p.Prime → 2 ≤ n → let c : ℕ := if p=2 then 4 else p; multiplicity p n < (n-1)*multiplicity p c",
+  "plain_statement": {
+    "zh": "新路线 · 缩放对数与 Theta 值 · JA-0009 · 在二进和奇素数处统一证明首项严格占优",
+    "en": "New route · Scaled logarithms and theta values · JA-0009 · Show strict first-term dominance at the dyadic and odd places"
+  },
+  "brief": {
+    "zh": "先用 (p−1)vₚ(n)≤n−1；p=2 时 c=4 提供额外的严格性。",
+    "en": "Use (p−1)vₚ(n)≤n−1. The choice c=4 gives strictness at p=2."
+  },
+  "source": "https://arxiv.org/abs/2303.01662",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "02-scaled-log-and-theta",
+  "module": "Conjectures.JoshiAbc.LogDomination",
+  "file": "lean/Conjectures/JoshiAbc/LogDomination.lean"
+}

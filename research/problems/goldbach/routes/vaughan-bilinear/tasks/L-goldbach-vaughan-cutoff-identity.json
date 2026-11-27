@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-vaughan-cutoff-identity",
+  "statement": "let cut (h : ℕ) (f : ArithmeticFunction ℝ) : ArithmeticFunction ℝ := ⟨fun k => if k ≤ h then f k else 0, (ite_eq_left (Nat.zero_le h)).trans f.map_zero⟩; let L := ArithmeticFunction.vonMangoldt; let m : ArithmeticFunction ℝ := ArithmeticFunction.moebius; let z : ArithmeticFunction ℝ := ArithmeticFunction.zeta; ∀ U V : ℕ, let a := cut U m; let b := cut V L; L = b + a * ArithmeticFunction.log - a * b * z + (m-a) * ((L-b) * z)",
+  "plain_statement": {
+    "en": "Four-term Vaughan identity with independent cutoffs",
+    "zh": "两个独立截断下的四项沃恩恒等式"
+  },
+  "brief": {
+    "en": "Use Dirichlet convolution, Möbius inversion and the identity Λ * ζ = log.",
+    "zh": "用狄利克雷卷积、莫比乌斯反演和 Λ * ζ = log 展开。"
+  },
+  "program": "foundation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://personal.science.psu.edu/rcv4/Vol2/Vol2.pdf",
+  "track": "vaughan-bilinear",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.VaughanCutoffIdentity",
+  "file": "lean/Conjectures/Goldbach/VaughanCutoffIdentity.lean"
+}

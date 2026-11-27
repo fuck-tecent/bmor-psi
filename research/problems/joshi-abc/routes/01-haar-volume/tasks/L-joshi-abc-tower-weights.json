@@ -1,0 +1,21 @@
+{
+  "id": "L-joshi-abc-tower-weights",
+  "statement": "∀ (m n : ℕ) (v : Fin n → Fin m) (w : Fin n → ℝ) (d f : Fin m → ℝ), (∀ i, ((Finset.univ : Finset (Fin n)).filter (fun j => v j=i)).sum w = d i) → (∑ j, w j*f (v j)) = ∑ i, d i*f i",
+  "plain_statement": {
+    "zh": "新路线 · 原文反例与 Haar 体积 · JA-0008 · 在局部次数塔下运输带权平均",
+    "en": "New route · Printed comparisons and Haar volume · JA-0008 · Transport the weighted average down a tower of places"
+  },
+  "brief": {
+    "zh": "按下层处聚类，先做纤维内求和；后续标签须用同一次数权重。",
+    "en": "Group by the lower place and sum each fibre before combining the local factors."
+  },
+  "source": "https://arxiv.org/abs/2401.13508v4",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "01-haar-volume",
+  "module": "Conjectures.JoshiAbc.TowerWeights",
+  "file": "lean/Conjectures/JoshiAbc/TowerWeights.lean"
+}

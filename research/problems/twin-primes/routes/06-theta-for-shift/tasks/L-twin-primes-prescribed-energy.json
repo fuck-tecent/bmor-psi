@@ -8,8 +8,8 @@
     "en": "New route · Theta lift for a prescribed shift · TP-0052 · Bound the signed energy of the prescribed gap-two test on unbounded scales"
   },
   "brief": {
-    "zh": "与 TP-0054 等价。由 TP-0050、TP-0051 将正能量化为同窗孪生对；反向取足够大的孪生对 p,p+2，并令 X=p−1。",
-    "en": "This is equivalent to TP-0054. TP-0050 and TP-0051 convert positive energy into a twin pair in the window. For the converse, choose a sufficiently large twin pair p,p+2 and set X=p−1."
+    "zh": "旧声明在检查证明前触发 #2833 报告的辅助声明错误。新任务 L-twin-primes-prescribed-energy-v2 接续，历史记录和原租约仍认此编号。",
+    "en": "The original type triggers the auxiliary declaration error reported in #2833. Use L-twin-primes-prescribed-energy-v2 for new work. The original ID identifies its history and any prior lease."
   },
   "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AutomorphicArithmetic/ThetaCorrespondence/ThetaPairLifts/LocalTypeDictionary/ThetaLiftPeterssonNormEqRallisIntegral.lean#L972",
   "program": "correlation",
@@ -20,6 +20,11 @@
     "L-twin-primes-cosine-plancherel",
     "L-twin-primes-theta-error-budget"
   ],
-  "imports": [],
-  "challenge_only": true
+  "imports": [
+    "PEqualNP.Outside.L_twin_primes_sifted_correlation",
+    "PEqualNP.Outside.L_twin_primes_cosine_plancherel",
+    "PEqualNP.Outside.L_twin_primes_theta_error_budget"
+  ],
+  "challenge_only": true,
+  "claims_closed": true
 }

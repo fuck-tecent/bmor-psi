@@ -1,0 +1,21 @@
+{
+  "id": "L-joshi-abc-radical-support",
+  "statement": "let rad := fun (n : ℕ) => n.primeFactors.prod id; ∀ a b : ℕ, 0<a → 0<b → Nat.Coprime a b → rad (a*b*(a+b)) = rad a * rad b * rad (a+b)",
+  "plain_statement": {
+    "zh": "新路线 · 全局高度与 abc · JA-0057 · 把互素三元组的根基按三个成员拆开",
+    "en": "New route · Global heights and abc · JA-0057 · Split the radical over the three members of a coprime triple"
+  },
+  "brief": {
+    "zh": "由 gcd(a,b)=1 得三者两两互素，然后把素因子集不交并。",
+    "en": "Deduce pairwise coprimality and partition the prime-factor sets."
+  },
+  "source": "https://arxiv.org/abs/2403.10430",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "07-global-heights",
+  "module": "Conjectures.JoshiAbc.RadicalSupport",
+  "file": "lean/Conjectures/JoshiAbc/RadicalSupport.lean"
+}

@@ -1,0 +1,18 @@
+{
+  "id": "L-quadratic-primes-sieve-even-parameter",
+  "statement": "let f := fun k : ℕ => 4*k^2+1; let block := fun x : ℕ => Finset.Ioc (x/2) x; ∀ x : ℕ, 2≤x →\n  ((Finset.Ioc x (2*x)).filter (fun n => (n^2+1).Prime)) =\n    ((block x).filter (fun k => (f k).Prime)).image (fun k => 2*k)",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然扩张 · QP-0072 · 用偶参数精确描述原倍增窗中的全部素数值",
+    "en": "New route · Levent GRH and natural extensions · QP-0072 · Index every prime value in the original window by an even parameter"
+  },
+  "brief": {
+    "zh": "原窗内 n≥3，奇 n 使 n²+1 有因子 2。对 n=2k 逐端点核对 k∈(⌊x/2⌋,x]。该字典供终筛回到冻结的 n 窗。",
+    "en": "In the original window n≥3, an odd n gives the factor 2. Check both endpoints for n=2k and k∈(⌊x/2⌋,x]. Use this dictionary to pass from the final sieve to the frozen window in n."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2487",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

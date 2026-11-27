@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-vinogradov-three-primes",
+  "statement": "∃ N : ℕ, ∀ n : ℕ, N ≤ n → Odd n → ∃ p q r : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ Nat.Prime r ∧ p + q + r = n",
+  "plain_statement": {
+    "en": "Every sufficiently large odd integer is a sum of three primes.",
+    "zh": "每个充分大的奇数都可以表示为三个素数之和。"
+  },
+  "brief": {
+    "en": "A positive lower bound for the ternary Fourier coefficient gives a positive term in the prime-log triple convolution and hence three prime summands.",
+    "zh": "三元傅里叶系数的正下界保证素数对数三重卷积中有正项，从而给出三个素数加数。"
+  },
+  "program": "correlation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://www.mathnet.ru/eng/sm5565",
+  "track": "unconditional-circle-milestones",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.VinogradovThreePrimes",
+  "file": "lean/Conjectures/Goldbach/VinogradovThreePrimes.lean"
+}

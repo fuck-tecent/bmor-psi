@@ -1,0 +1,27 @@
+{
+  "id": "L-joshi-abc-marked-jet-certificate",
+  "statement": "let z : ZMod 29 := 7; let v : Fin 3 → Fin 3 → ZMod 29 := ![![1,0,0],![0,1+z^2,0],![1,0,z^2]]; ∀ (I : Type) (allowed : I → Set (Fin 3 → ZMod 29)) (i : I), (∀ j, v j ∈ allowed i) → Submodule.span (ZMod 29) (allowed i)=⊤",
+  "plain_statement": {
+    "zh": "新路线 · 指定 Kummer 像与 Θ 测试 · JA-0042 · 由已给出的同标签三个成员资格推出满生成",
+    "en": "New route · Marked Kummer images and theta tests · JA-0042 · Deduce full span from the three given memberships at one label"
+  },
+  "brief": {
+    "zh": "线性代数引理。三个向量的同标签成员资格均为前提。实际 ATS/Kummer 映射中能否取得这些见证需要独立证明。",
+    "en": "Use the three membership assumptions at the same label to prove full span. Constructing these witnesses in the actual ATS/Kummer image requires a separate proof."
+  },
+  "source": "https://arxiv.org/abs/2401.13508v4",
+  "program": "correlation",
+  "role": "conditional",
+  "parallel": true,
+  "depends_on": [
+    "L-joshi-abc-three-jet-span",
+    "L-joshi-abc-quotient-jet",
+    "L-joshi-abc-single-jet",
+    "L-joshi-abc-log-jet",
+    "L-joshi-abc-marked-transport"
+  ],
+  "imports": [],
+  "track": "05-kummer-images",
+  "module": "Conjectures.JoshiAbc.MarkedJetCertificate",
+  "file": "lean/Conjectures/JoshiAbc/MarkedJetCertificate.lean"
+}

@@ -1,0 +1,25 @@
+{
+  "id": "L-joshi-abc-height-bridge",
+  "statement": "(let rad := fun (n : ℕ) => n.primeFactors.prod id; let r := fun (a b : ℕ) => Real.log (rad (a*b*(a+b))); ∀ l : ℕ, l.Prime → 7 ≤ l → ∃ K : ℝ, ∀ a b : ℕ, 0<a → 0<b → Nat.Coprime a b → Real.log (16*((a:ℝ)^2+a*b+(b:ℝ)^2))/2 ≤ (1+4*(l:ℝ)/(((l:ℝ)-3)*(l+1)))*r a b+K) → (∀ ε : ℝ, 0 < ε → ∃ l : ℕ, l.Prime ∧ 7 ≤ l ∧ 4*(l:ℝ)/(((l:ℝ)-3)*(l+1)) ≤ ε) → (let h := fun (a b : ℕ) => Real.log ((a:ℝ)+b); ∀ a b : ℕ, 0 < a → 0 < b → 2*h a b + Real.log 12 ≤ Real.log (16*((a:ℝ)^2+a*b+(b:ℝ)^2))) → (let rad := fun (n : ℕ) => n.primeFactors.prod id; let h := fun (a b : ℕ) => Real.log ((a:ℝ)+b); let r := fun (a b : ℕ) => Real.log (rad (a*b*(a+b))); ∀ ε : ℝ, 0 < ε → ∃ C : ℝ, ∀ a b : ℕ, 0<a → 0<b → Nat.Coprime a b → h a b ≤ (1+ε)*r a b+C)",
+  "plain_statement": {
+    "zh": "新路线 · 全局高度与 abc · JA-0063 · 把统一 Frey 界合成为全部 ε 的 abc",
+    "en": "New route · Global heights and abc · JA-0063 · Deduce abc for every ε from a uniform Frey bound"
+  },
+  "brief": {
+    "zh": "先按 ε 固定 ℓ 并取得 K，再对全部三元组用 c₄ 的下界与根基对数非负性。",
+    "en": "Fix ℓ and K for ε before taking triples, then use the c₄ floor and nonnegativity of the log radical."
+  },
+  "source": "https://arxiv.org/abs/2403.10430",
+  "program": "correlation",
+  "role": "conditional",
+  "parallel": true,
+  "depends_on": [
+    "L-joshi-abc-uniform-frey-upper",
+    "L-joshi-abc-auxiliary-coefficient",
+    "L-joshi-abc-frey-height"
+  ],
+  "imports": [],
+  "track": "07-global-heights",
+  "module": "Conjectures.JoshiAbc.HeightBridge",
+  "file": "lean/Conjectures/JoshiAbc/HeightBridge.lean"
+}

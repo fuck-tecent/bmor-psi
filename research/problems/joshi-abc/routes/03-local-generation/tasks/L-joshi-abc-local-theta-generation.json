@@ -1,0 +1,26 @@
+{
+  "id": "L-joshi-abc-local-theta-generation",
+  "statement": "letI : Fact (Nat.Prime 29) := ⟨by decide⟩; ∀ (K : Type) [NontriviallyNormedField K] [NormedAlgebra (Padic 29) K] [CompleteSpace K] [IsUltrametricDist K] [CharZero K], let theta := fun (q u : K) => ∑' n : ℤ, q^(n*(n+1)/2) * u^(2*n+1); let embed := fun (a : PadicInt 29) => algebraMap (Padic 29) K (a:Padic 29); let t := fun (x : K) => (∑' k : ℕ, (-1:K)^k*((29:K)*x)^(k+1)/((k+1:ℕ):K))/(29:K); ∀ (r z : K), r^14=(29:K) → 0 < ‖r‖ → ‖r‖<1 → z^7=1 → ‖z‖=1 → ‖1+z^2‖=1 → (∀ n : ℕ, 0<n → ‖(n:K)‖ = ‖r‖^(14*multiplicity 29 n)) → (∀ u : K, ‖u‖ ≤ 1 → ∃ a : PadicInt 29, ‖u-embed a‖ ≤ ‖r‖) → let ξ := theta (r^14) z / theta (r^14) (r^2*z); let u := theta (r^14) (r*z) / theta (r^14) (r^2*z); ∀ x : K, ‖x‖ ≤ ‖r‖ → ∃ a b c : PadicInt 29, ‖x - (embed a*t r + embed b*t ξ + embed c*t u)‖ ≤ ‖r‖^4",
+  "plain_statement": {
+    "zh": "新路线 · 29 进生成与反例族 · JA-0028 · 在指定 29 进局部模型中用实际 Θ 级数生成一次幂格",
+    "en": "New route · 29-adic generation and counterfamilies · JA-0028 · Generate the first-power lattice in the specified 29-adic model"
+  },
+  "brief": {
+    "zh": "按一、二、三阶消元，余项落到 π⁴。此局部结论使用显式剩余类假设；实际 ATS 标签下的允许像成员资格是独立输入。",
+    "en": "Eliminate the coefficients of degrees one, two and three. The remainder lies in π⁴. The residue hypothesis is explicit. Membership in the allowed image at an ATS label is a separate input."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/joshi-abc.md",
+  "program": "correlation",
+  "role": "target",
+  "parallel": true,
+  "depends_on": [
+    "L-joshi-abc-single-jet",
+    "L-joshi-abc-quotient-jet",
+    "L-joshi-abc-log-jet",
+    "L-joshi-abc-three-jet-span"
+  ],
+  "imports": [],
+  "track": "03-local-generation",
+  "module": "Conjectures.JoshiAbc.LocalThetaGeneration",
+  "file": "lean/Conjectures/JoshiAbc/LocalThetaGeneration.lean"
+}

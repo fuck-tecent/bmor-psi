@@ -1,0 +1,23 @@
+{
+  "id": "L-joshi-abc-frey-fixed-prime",
+  "statement": "∀ p N : ℕ, p.Prime → Odd p → 0 < N → multiplicity p (16*(p^N)^2*(p^N+1)^2) = 2*N",
+  "plain_statement": {
+    "zh": "新路线 · 同一包络与局部 Szpiro · JA-0053 · 在固定奇素数计算 pᴺ,1,pᴺ+1 的判别式阶",
+    "en": "New route · Common hull and local Szpiro · JA-0053 · Compute the discriminant order at the fixed odd prime of the Frey family"
+  },
+  "brief": {
+    "zh": "p 不整除 pᴺ+1，亦不整除 16；该式只计 p。",
+    "en": "The prime divides neither pᴺ+1 nor 16. Compute only its contribution."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/joshi-abc.md",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-joshi-abc-frey-discriminant"
+  ],
+  "imports": [],
+  "track": "06-common-hull-and-szpiro",
+  "module": "Conjectures.JoshiAbc.FreyFixedPrime",
+  "file": "lean/Conjectures/JoshiAbc/FreyFixedPrime.lean"
+}

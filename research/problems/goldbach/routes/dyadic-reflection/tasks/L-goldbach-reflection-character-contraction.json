@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-reflection-character-contraction",
+  "statement": "∀ (m : ℕ) [NeZero m] (N : ZMod m),\n  let H : Matrix (DirichletCharacter ℂ m) (DirichletCharacter ℂ m) ℂ := fun χ ψ =>\n    (∑ x : (ZMod m)ˣ, star (χ (x : ZMod m)) * ψ (N - (x : ZMod m))) / (m.totient : ℂ)\n  H.IsHermitian ∧ ∀ (s : Finset (DirichletCharacter ℂ m)) (v : DirichletCharacter ℂ m → ℂ),\n    (∑ χ ∈ s, ‖∑ ψ ∈ s, H χ ψ * v ψ‖^2) ≤ ∑ χ ∈ s, ‖v χ‖^2",
+  "plain_statement": {
+    "zh": "新路线 · 二进反射与 Levent GRH · DR-0006 · 在任意特征子集上核对反射矩阵的自伴和范数",
+    "en": "New route · Dyadic reflection and Levent GRH · DR-0006 · Verify the character reflection matrix is Hermitian and contractive on any character subset"
+  },
+  "brief": {
+    "zh": "在单位余类上使用 φ(m) 的平方根归一化。先将特征向量零延拓，再用反射的部分置换和有限 Parseval。该范数界控制 DR-0016、DR-0018 的两种替换。",
+    "en": "Normalize characters by the square root of φ(m). Extend the coefficient vector by zero and use the partial permutation and finite Parseval. DR-0016 and DR-0018 use this bound for their replacements."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/FoundationProofs/DirichletCharFiniteFourierTransformProperties.lean#L85",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-reflection-partial-involution"
+  ],
+  "imports": []
+}

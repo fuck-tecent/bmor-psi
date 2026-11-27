@@ -1,0 +1,18 @@
+{
+  "id": "L-quadratic-primes-ap-log-sum-lower",
+  "statement": "∀ η : ℝ, 0 < η → ∃ C : ℝ, 0 ≤ C ∧ ∀ x : ℕ, 2 ≤ x → (1/2 - η) * (Real.log (x:ℝ) - 4) - C ≤ Finset.sum ((Finset.range (x+1)).filter (fun p => Nat.Prime p ∧ p % 4 = 1)) (fun p => Real.log (p:ℝ) / ((p:ℝ) - 1))",
+  "plain_statement": {
+    "zh": "对任意 η>0，存在常数 C≥0，使所有 x≥2 满足：对素数 p≤x 且 p≡1 (mod 4) 的加权和 Σ log p/(p−1) ≥ (1/2−η)(log x−4)−C。",
+    "en": "For every η>0 there is a constant C≥0 such that for all x≥2 the weighted sum of log p/(p−1) over primes p≤x with p ≡ 1 (mod 4) is at least (1/2−η)(log x−4)−C."
+  },
+  "brief": {
+    "zh": "用模 4 余 1 的素数定理（θ 形式）作分部求和：把小素数质量下界所需的加权和统一到此下界，供中段质量分解使用。",
+    "en": "Apply partial summation to the prime number theorem in the progression 1 mod 4 (theta form). This supplies the weighted-sum input needed by the small-prime mass lower bound in the middle-range decomposition."
+  },
+  "program": "correlation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://arxiv.org/abs/1908.08816",
+  "module": "Conjectures.QuadraticPrimes.ApLogSumLower",
+  "file": "lean/Conjectures/QuadraticPrimes/ApLogSumLower.lean"
+}

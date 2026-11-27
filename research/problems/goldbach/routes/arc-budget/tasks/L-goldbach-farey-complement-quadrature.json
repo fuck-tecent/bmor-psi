@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-farey-complement-quadrature",
+  "statement": "∀ (Q : ℕ) (δ : ℝ), 0 < Q → 0 ≤ δ →\n      let A := {x : ℝ | ∃ d c : ℕ, 1 ≤ d ∧ d ≤ Q ∧ c ≤ d ∧ c.Coprime d ∧ |x-(c:ℝ)/d| ≤ δ/d}\n      let D := ((Finset.Icc 1 Q) ×ˢ (Finset.Icc 1 Q)).filter (fun p => Q < p.1+p.2 ∧ p.1.Coprime p.2)\n      (Set.Icc (0:ℝ) 1 ⊆ A ↔ 1 ≤ δ*((Q:ℝ)+1)) ∧\n      MeasureTheory.volume (Aᶜ ∩ Set.Icc (0:ℝ) 1) =\n        ∑ p ∈ D, ENNReal.ofReal ((1-δ*((p.1:ℝ)+p.2))/((p.1:ℝ)*p.2)) ∧\n      ∃ ab : ℕ × ℕ → ℕ × ℕ,\n        (∀ p ∈ D, (ab p).1 ≤ p.1 ∧ (ab p).2 ≤ p.2 ∧ (ab p).2*p.1 = (ab p).1*p.2+1) ∧\n        ∀ f : ℝ → ℂ, MeasureTheory.IntegrableOn f (Set.Icc 0 1) →\n          (∫ x in Aᶜ ∩ Set.Icc (0:ℝ) 1, f x) =\n            ∑ p ∈ D, ∫ x in Set.Ioo ((((ab p).1:ℝ)+δ)/p.1) ((((ab p).2:ℝ)-δ)/p.2), f x",
+  "plain_statement": {
+    "zh": "对半径为 δ/q 的所有既约有理圆弧，精确判定何时覆盖 [0,1]，给出补集的测度，并把任意可积复函数在补集上的积分写成相邻 Farey 分数之间的无交区间积分之和。",
+    "en": "For all reduced rational arcs of radius δ/q up to denominator Q, characterize full coverage of [0,1], compute the exact uncovered measure, and split the integral of any integrable complex function on the exterior into disjoint Farey gaps."
+  },
+  "brief": {
+    "zh": "相邻端点 a/q、b/s 满足 bq−as=1、q+s>Q。补集在该格内恰为 ((a+δ)/q,(b−δ)/s)，允许空区间。全覆盖当且仅当 δ(Q+1)≥1。令 δ=H/n 即可用于宽弧补集，保留原来的复相位；逐偶数的有符号估计仍需另证。",
+    "en": "Consecutive endpoints a/q and b/s satisfy bq−as=1 and q+s>Q. The uncovered portion of that cell is ((a+δ)/q,(b−δ)/s), possibly empty. Full coverage holds exactly when δ(Q+1)≥1. Taking δ=H/n gives a cellwise integral for the wide-arc exterior with its original complex phase. Pointwise signed cancellation remains open."
+  },
+  "source": "https://github.com/34245621/goldbach-proofs/blob/278c494160c30a1c938e2c93aae48c2518d81f3c/lean/PEqualNP/Outside/L_goldbach_farey_complement_quadrature.lean",
+  "program": "correlation",
+  "parallel": true,
+  "imports": [],
+  "track": "arc-budget",
+  "role": "lemma",
+  "depends_on": [],
+  "module": "Conjectures.Goldbach.FareyComplementQuadrature",
+  "file": "lean/Conjectures/Goldbach/FareyComplementQuadrature.lean"
+}

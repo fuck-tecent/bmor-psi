@@ -1,0 +1,24 @@
+{
+  "id": "L-twin-primes-sharp-window-contamination",
+  "statement": "let w := fun (X : ℕ) => (Finset.range (2*X+1)).filter (fun n => X < n ∧ 50*n < 51*X); let Λ := ArithmeticFunction.vonMangoldt; let E := fun (X : ℕ) => ((w X).filter (fun n => ¬ (n.Prime ∧ (n+2).Prime))).sum (fun n => Λ n * Λ (n+2)) / (X:ℝ); ∃ C : ℝ, 0 < C ∧ ∀ X : ℕ, 2 ≤ X → E X ≤ C*Real.log (2+(X:ℝ))^3/Real.sqrt X",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然推广 · TP-0057 · 在旧窄窗将高次幂污染压到 log X/√X",
+    "en": "New route · Levent GRH methods and extensions · TP-0057 · Reduce proper-power contamination in the original window to log X/√X"
+  },
+  "brief": {
+    "zh": "将每一端的坏项由单端 Λ 质量控制，另一端至多贡献一个对数因子。平方根计数和三重对数预算合成 log³ X/√X。用于 TP-0003 的提取及 TP-0015 的双矩转移。",
+    "en": "Bound bad terms using the Λ mass at either endpoint and at most one logarithmic factor at the other endpoint. Combine the square-root count with a log-cubed budget. This supports the extraction and moment transfer in TP-0003 and TP-0015."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/twin-primes.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-square-log-mass",
+    "L-twin-primes-higher-power-log-mass",
+    "L-twin-primes-window-contamination"
+  ],
+  "imports": [
+    "PEqualNP.Outside.L_twin_primes_window_extraction"
+  ]
+}

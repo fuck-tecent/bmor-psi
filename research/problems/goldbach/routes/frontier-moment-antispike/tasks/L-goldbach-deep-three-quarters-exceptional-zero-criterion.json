@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-deep-three-quarters-exceptional-zero-criterion",
+  "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0\nlet E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I)\nlet S := fun (n : ℕ) (u : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (u k:ℂ)*E ((k:ℝ)*t))\nlet Q := fun n : ℕ => (Nat.log 2 (n+2))^2\nlet Q₁ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊\nlet H := fun n : ℕ => 256 * Q₁ n * Q n\nlet wideArcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q₁ n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (H n:ℝ)/((q:ℝ)*(n:ℝ))}\nlet f := fun (q : ℕ) [NeZero q] (χ : DirichletCharacter ℂ q) =>\n  @ite (ℂ → ℂ) (χ = 1) (Classical.propDecidable _) (DirichletCharacter.LFunctionTrivChar₁ q) (DirichletCharacter.LFunction χ)\nlet W := fun (l r : ℕ) (β : ℝ) (z : ℂ) =>\n  mellin (fun x : ℝ => ((max 0 (min (x-(l:ℝ)) (min 1 ((r:ℝ)+1-x))) : ℝ):ℂ) *\n    Complex.exp ((((2*Real.pi*β)*x:ℝ):ℂ)*Complex.I)) z\nlet g := fun (q : ℕ) [NeZero q] (v : ZMod q) (χ : DirichletCharacter ℂ q) =>\n  (starRingEnd ℂ) (∑ r : ZMod q,(starRingEnd ℂ) (ZMod.stdAddChar (v*r))*χ r)/(q.totient:ℂ)\n∃ blocks : ℕ → List (ℕ×ℕ), ∃ zeros : (q : ℕ) → [NeZero q] → DirichletCharacter ℂ q → ℝ → Finset ℂ,\n  (∀ m, blocks m = if m<2 then [] else (m/2+2,m+2)::blocks (m/2)) ∧\n  (∀ (q : ℕ) [NeZero q] (χ : DirichletCharacter ℂ q) (B : ℝ) (z : ℂ),\n    z ∈ zeros q χ B ↔ 1/2 < z.re ∧ |z.im| ≤ B ∧ f q χ z = 0) ∧\n  let R := fun (q : ℕ) [NeZero q] (n a : ℕ) (β : ℝ) =>\n    ((blocks (n-2)).map fun p => ∑ χ : DirichletCharacter ℂ q, g q (a:ZMod q) χ *\n      (∑ z ∈ zeros q χ ((2*(p.1:ℝ))^8), (analyticOrderNatAt (f q χ) z:ℂ)*W p.1 p.2 β z)).sum\n  (∀ η : ℝ, 0 < η → ∃ N : ℕ, ∀ n : ℕ, N ≤ n → ∀ t ∈ Set.Icc (0:ℝ) 1, t ∉ wideArcs n →\n    ∀ (a q : ℕ) [NeZero q], a ≤ q → a.Coprime q → (q:ℝ) ≤ Real.sqrt n →\n      |t-(a:ℝ)/q| ≤ 1/((q:ℝ)*Real.sqrt n) →\n      ‖S n w t + R q n a (t-(a:ℝ)/q)‖ ≤ (n:ℝ)^(3/4+η)) ∧\n  ((∀ η : ℝ, 0 < η → ∃ N : ℕ, ∀ n : ℕ, N ≤ n → ∀ t ∈ Set.Icc (0 : ℝ) 1, t ∉ wideArcs n → ‖S n w t‖ ≤ (n : ℝ) ^ (3 / 4 + η)) ↔\n    (∀ η : ℝ, 0 < η → ∃ N : ℕ, ∀ n : ℕ, N ≤ n → ∀ t ∈ Set.Icc (0:ℝ) 1, t ∉ wideArcs n →\n      ∀ (a q : ℕ) [NeZero q], a ≤ q → a.Coprime q → (q:ℝ) ≤ Real.sqrt n →\n        |t-(a:ℝ)/q| ≤ 1/((q:ℝ)*Real.sqrt n) →\n        ‖R q n a (t-(a:ℝ)/q)‖ ≤ (n:ℝ)^(3/4+η)))",
+  "plain_statement": {
+    "zh": "对深次弧上每个狄利克雷有理近似，将原加权素数和加上一个显式的零点修正后，证明其绝对值至多为 n^(3/4+η)。原题的逐点界等价于同一修正自身满足该界。",
+    "en": "For every Dirichlet approximant on a deep arc, prove the weighted prime sum plus an explicit correction is bounded by n^(3/4+η). The original pointwise bound is equivalent to the same bound for the correction alone."
+  },
+  "brief": {
+    "zh": "对每个 η>0，阈值对深次弧、分子和分母一致。分母至多为 √n。用确定的二进区间分割 [1,n]，在每块左端点 l 取高度 (2l)^8，只计实部严格大于 1/2 的狄利克雷 L 函数零点及其解析重数。相位的有限傅里叶系数保留各零点项的符号。证明控制了全部积分误差，零点和本身的抵消仍需研究。",
+    "en": "For every positive η the threshold is uniform in deep frequency, numerator and denominator up to √n. The blocks and their heights (2l)^8 are fixed by the left endpoints l. Count only Dirichlet zeros strictly right of one half, with analytic multiplicity. Retain the finite Fourier weights and complex phases. The theorem controls all integral errors and leaves cancellation in the signed zero sum open."
+  },
+  "source": "https://github.com/34245621/goldbach-proofs/blob/bc7f93508317f741840aef81674b6888efe41734/lean/PEqualNP/Outside/L_goldbach_deep_three_quarters_exceptional_zero_criterion.lean",
+  "program": "correlation",
+  "parallel": true,
+  "imports": [],
+  "track": "frontier-moment-antispike",
+  "role": "lemma",
+  "depends_on": [],
+  "module": "Conjectures.Goldbach.DeepThreeQuartersExceptionalZeroCriterion",
+  "file": "lean/Conjectures/Goldbach/DeepThreeQuartersExceptionalZeroCriterion.lean"
+}

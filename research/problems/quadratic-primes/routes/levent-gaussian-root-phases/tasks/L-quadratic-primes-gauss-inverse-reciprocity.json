@@ -1,0 +1,20 @@
+{
+  "id": "L-quadratic-primes-gauss-inverse-reciprocity",
+  "statement": "∀ a b p r v : ℕ, 0<a → a≤b → p.Prime → p=a^2+b^2 →\n  r<p → v<b → (b*r)%p=a%p → (a*v)%b=1%b →\n  ∃ j : ℤ, (r : ℝ)/p + (v : ℝ)/b = (j : ℝ) + (a : ℝ)/((b : ℝ)*p)",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然扩张 · QP-0089 · 把模 p 的根比变换成较小模 b 的逆元相位",
+    "en": "New route · Levent GRH and natural extensions · QP-0089 · Transport the root ratio modulo p to the inverse phase modulo the smaller b"
+  },
+  "brief": {
+    "zh": "将恒等式乘以 bp。由 br≡a mod p 和 p≡a² mod b 得 br+pv−a 同时被 b,p 整除，再用互素。b=1 时 v=0。",
+    "en": "Multiply by bp. The congruence br≡a mod p and p≡a² mod b imply that br+pv−a is divisible by both b and p. Use coprimality and include v=0 when b=1."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/FoundationProofs/DirichletCharFiniteFourierTransformProperties.lean#L85",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": false,
+  "depends_on": [
+    "L-quadratic-primes-gauss-two-root-phase"
+  ],
+  "imports": []
+}

@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-finite-sign-balance",
+  "statement": "∀ (n m : ℕ) (b : ℕ → Fin m → ℝ), ∃ s : ℕ → ℝ, (∀ k, s k = 1 ∨ s k = -1) ∧ (∑ j, (∑ k ∈ Finset.range n, s k * b k j)^2) ≤ ∑ j, ∑ k ∈ Finset.range n, (b k j)^2",
+  "plain_statement": {
+    "zh": "给定 n 个 m 维实向量，可为每个向量选择一个共用于所有坐标的正负号，使带符号向量和的平方欧氏范数不超过原向量平方范数之和。",
+    "en": "For every n real vectors in m dimensions, there is one sign per vector, shared across all coordinates, such that the squared Euclidean norm of their signed sum is at most the sum of their squared norms."
+  },
+  "brief": {
+    "zh": "对每一步加入的新向量，比较正负两个候选的平方能量；由平行四边形恒等式选取能量较低者。应用时把每个反射对在有限频率采样点的实部和虚部拼接成向量。本命题仅给出有限采样总能量界，不是逐点傅里叶上界或次弧抵消。",
+    "en": "At each insertion, choose the sign with smaller squared energy using the parallelogram identity. For reflection pairs concatenate the real and imaginary parts at a finite grid of frequencies into each vector. This controls total sampled energy, not a pointwise Fourier supremum or minor-arc cancellation."
+  },
+  "program": "correlation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://github.com/Elm-Forest/goldbach-proofs/blob/1d64198e889b56fcc2906f3ac4a30d99b7e7b577/preflight-proofs/L_goldbach_finite_sign_balance.lean",
+  "track": "arc-perturbation",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.FiniteSignBalance",
+  "file": "lean/Conjectures/Goldbach/FiniteSignBalance.lean"
+}

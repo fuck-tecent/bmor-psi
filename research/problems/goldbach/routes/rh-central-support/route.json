@@ -1,0 +1,14 @@
+{
+  "id": "rh-central-support",
+  "title": {
+    "zh": "中央表示的支撑、重数和逐点缺口",
+    "en": "Central support, multiplicity and pointwise gaps"
+  },
+  "description": {
+    "zh": "在中央窗口做集合计数；将密度输入同真正的逐点配对输入分开。",
+    "en": "Count candidates on the central window. Distinguish marginal density from a pointwise overlap bound."
+  },
+  "feeds": [
+    "arc-budget"
+  ]
+}

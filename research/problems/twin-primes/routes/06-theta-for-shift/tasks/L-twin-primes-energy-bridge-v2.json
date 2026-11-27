@@ -1,0 +1,21 @@
+{
+  "id": "L-twin-primes-energy-bridge-v2",
+  "statement": "(let w := fun (X : ℕ) => (Finset.range (2*X+1)).filter (fun n => X < n ∧ 50*n < 51*X); let N := fun (X : ℕ) => 2*X+5; let f := fun (X n : ℕ) => if n ∈ w X ∧ n.Prime then Real.log n else 0; let energy := fun (X : ℕ) => letI : NeZero (N X) := ⟨Nat.succ_ne_zero _⟩; ∑ k : ZMod (N X), (ZMod.stdAddChar (N:=N X) (2*k)).re * ‖ZMod.dft (fun j : ZMod (N X) => ((f X j.val:ℝ):ℂ)) k‖^2; ∀ B : ℕ, ∃ X : ℕ, B<X ∧ 0<energy X) → (∀ B : ℕ, ∃ p : ℕ, B < p ∧ p.Prime ∧ (p+2).Prime)",
+  "plain_statement": {
+    "zh": "新路线 · 指定平移的 Θ 提升 · TP-0053R · 由指定 Θ 算术测试的正能量抽取孪生素数",
+    "en": "New route · Theta lift for a prescribed shift · TP-0053R · Extract twin primes from positive energy in the prescribed arithmetic test"
+  },
+  "brief": {
+    "zh": "TP-0053 的修正版。dreyeki 在 #2833 报告了声明预检缺陷，并给出了对修正声明的证明。用补零与带符号 Parseval 提取同窗素数对。",
+    "en": "This replaces TP-0053. In #2833 dreyeki diagnosed the statement check and supplied a proof for the corrected type. Use zero padding and signed Parseval to extract a prime pair in the window."
+  },
+  "source": "https://github.com/dreyeki/gold/blob/9ab930d41fb966d670fbc91ba0bae59fe8ee248e/submissions/L_twin_primes_energy_bridge_fixed_statement.lean",
+  "program": "correlation",
+  "role": "conditional",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-prescribed-energy-v2"
+  ],
+  "imports": [],
+  "challenge_only": true
+}

@@ -1,0 +1,18 @@
+{
+  "id": "L-goldbach-farey-coprime-progression-count",
+  "statement": "∀ n d b l h : ℕ, 0 < n → 0 < d → d.Coprime n → b < d → l ≤ h → |((((Finset.Icc l h).filter (fun u => u%d = b ∧ u.Coprime n)).card : ℝ) - ((h-l+1 : ℕ) : ℝ)*(n.totient:ℝ)/((d:ℝ)*n))| ≤ (n.divisors.card:ℝ)",
+  "plain_statement": {
+    "zh": "新路线 · Farey 分母对与逆元筛 · HD-8003 · 给单个筛根计算带互素掩码的完整区间误差",
+    "en": "New route · Farey denominator pairs and inverse sieve · HD-8003 · Count a single sieve root with the coprimality mask in an arbitrary interval"
+  },
+  "brief": {
+    "zh": "用 Möbius 反演展开 u 与 n 互素。对每个 c∣n，用 CRT 把 c∣u 与 u≡b (mod d) 合成一条模 cd 的进程。每个正约数只引入至多 1 的端点误差。",
+    "en": "Expand the coprimality mask by Möbius inversion. For each c dividing n, use CRT to combine the two residue conditions into one progression of modulus cd. Each positive divisor costs at most one endpoint error."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/farey-inverse-sieve/README.md",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

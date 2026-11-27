@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-minor-saving-iff-major-upper",
+  "statement": "(let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let minor := fun n : ℕ => intervalIntegral (fun t => (arcs n)ᶜ.indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume; (∀ e : ℝ, 0<e → ∃ N : ℕ, ∀ n : ℕ, N≤n → Even n → -(e*(n:ℝ)) ≤ (minor n).re)) ↔ (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let major := fun n : ℕ => intervalIntegral (fun t => (arcs n).indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume; let conv := fun (u v : ℕ → ℝ) (n : ℕ) => Finset.sum (Finset.range (n+1)) (fun k => u k*v (n-k)); (∀ e : ℝ, 0<e → ∃ N : ℕ, ∀ n : ℕ, N≤n → Even n → (major n).re ≤ conv w w n + e*(n:ℝ)))",
+  "plain_statement": {
+    "zh": "对每个 ε>0，所有充分大的偶数 n 满足：次弧带符号下界 `−εn ≤ Re(minor n)` 等价于 `Re(major n) ≤ conv n + εn`，其中 `conv n = Σ_{k≤n} w_k·w_{n−k}` 是素数对数权卷积（w(k)=log k 当 k 素数，否则 0）。",
+    "en": "For every ε>0, all sufficiently large even n satisfy: the signed minor-arc lower bound `−εn ≤ Re(minor n)` is equivalent to `Re(major n) ≤ conv n + εn`, where `conv n = Σ_{k≤n} w k · w (n−k)` is the prime-log weighted convolution (w(k)=log k for prime k, else 0)."
+  },
+  "brief": {
+    "zh": "对已接受的 major+minor=conv 恒等式取实部并移项，双向重写目标；这是把目标接到主弧估计与未知计数比较的接口。",
+    "en": "Take real parts in the accepted major+minor identity and rearrange both ways. This exposes the target as a comparison between a major-arc estimate and the unknown weighted prime-pair count."
+  },
+  "program": "correlation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://arxiv.org/abs/2607.27282",
+  "track": "arc-budget",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.MinorSavingIffMajorUpper",
+  "file": "lean/Conjectures/Goldbach/MinorSavingIffMajorUpper.lean"
+}

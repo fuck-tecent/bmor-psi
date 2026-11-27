@@ -29,7 +29,7 @@ services:
     <<: *site-agent
     command: ["-XX:ActiveProcessorCount=4", -jar, /agent.jar, -url, "http://jenkins:8080/", -name, goldbach-isolated-site, -secret, "@/run/agent-secret", -webSocket, -workDir, /workspace]
     mem_limit: 1g
-    pids_limit: 256
+    pids_limit: 512
     volumes:
       - ./agent.jar:/agent.jar:ro
       - /etc/goldbach-ci/jenkins-staging/isolated-site-agent-secret:/run/agent-secret:ro

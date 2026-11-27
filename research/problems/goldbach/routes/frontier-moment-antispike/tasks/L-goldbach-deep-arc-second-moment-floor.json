@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-deep-arc-second-moment-floor",
+  "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (u : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (u k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let Q₁ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊; let H := fun n : ℕ => 256 * Q₁ n * Q n; let wideArcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q₁ n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (H n:ℝ)/((q:ℝ)*(n:ℝ))}; ∃ c : ℝ, 0 < c ∧ ∃ N : ℕ, ∀ n : ℕ, N ≤ n → c * (n : ℝ) * Real.log (n : ℝ) ≤ intervalIntegral (fun t => (wideArcs n)ᶜ.indicator (fun u => ‖S n w u‖ ^ 2) t) (0 : ℝ) 1 MeasureTheory.volume",
+  "plain_statement": {
+    "zh": "对所有充分大的整数 n，立方根截断的宽主弧之外，素数对数权指数和的二阶矩至少为 c n log n，其中 c>0 与 n 无关。",
+    "en": "For every sufficiently large integer n, the second moment of the prime-log exponential sum outside the published cube-root wide arcs is at least c n log n for an absolute c > 0."
+  },
+  "brief": {
+    "zh": "见 research/checkpoint/deep-arc-second-moment.md。在一个二倍区间内，对每个平方自由分母的既约分子使用 Ramanujan 和与柯西不等式，再对所有二倍分母区间求和；不同区间中各分数对应的小窗也互不相交。所得下界衡量取绝对值时的损失，有符号傅里叶系数仍待估计。",
+    "en": "See research/checkpoint/deep-arc-second-moment.md. Average over reduced numerators at each squarefree denominator, use Cauchy–Schwarz, and add disjoint dyadic blocks. This lower bound quantifies the cost of taking absolute values before integration."
+  },
+  "source": "https://arxiv.org/abs/1602.01984",
+  "program": "correlation",
+  "imports": [],
+  "role": "lemma",
+  "track": "frontier-moment-antispike",
+  "parallel": true,
+  "module": "Conjectures.Goldbach.DeepArcSecondMomentFloor",
+  "file": "lean/Conjectures/Goldbach/DeepArcSecondMomentFloor.lean"
+}

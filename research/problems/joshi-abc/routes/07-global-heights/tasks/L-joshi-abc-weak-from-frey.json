@@ -1,0 +1,24 @@
+{
+  "id": "L-joshi-abc-weak-from-frey",
+  "statement": "(let rad := fun (n : ℕ) => n.primeFactors.prod id; let r := fun (a b : ℕ) => Real.log (rad (a*b*(a+b))); ∃ K : ℝ, ∀ a b : ℕ, 0<a → 0<b → Nat.Coprime a b → Real.log (16*((a:ℝ)^2+a*b+(b:ℝ)^2))/2 ≤ (15/8 : ℝ)*r a b+K) → let rad := fun (n : ℕ) => n.primeFactors.prod id; let h := fun (a b : ℕ) => Real.log ((a:ℝ)+b); let r := fun (a b : ℕ) => Real.log (rad (a*b*(a+b))); ∃ C : ℝ, ∀ a b : ℕ, 0<a → 0<b → Nat.Coprime a b → h a b ≤ (15/8)*r a b+C",
+  "plain_statement": {
+    "zh": "新路线 · 全局高度与 abc · JA-0064 · 从 ℓ=7 的高度界推出固定弱指数 15/8",
+    "en": "New route · Global heights and abc · JA-0064 · Deduce the fixed exponent 15/8 from the height bound at ℓ=7"
+  },
+  "brief": {
+    "zh": "仅假设 JA-0066 的单点高度界。用 JA-0058 将 Frey 高度换成 log(a+b) 并吸收常数；在 JA-0059 可取 B=15/8。",
+    "en": "Use the single-prime height bound JA-0066. Apply JA-0058 to pass from the Frey height to log(a+b) and absorb the constant. This gives B=15/8 in JA-0059."
+  },
+  "source": "https://arxiv.org/abs/2403.10430",
+  "program": "correlation",
+  "role": "conditional",
+  "parallel": true,
+  "depends_on": [
+    "L-joshi-abc-frey-upper-at-seven",
+    "L-joshi-abc-frey-height"
+  ],
+  "imports": [],
+  "track": "07-global-heights",
+  "module": "Conjectures.JoshiAbc.WeakFromFrey",
+  "file": "lean/Conjectures/JoshiAbc/WeakFromFrey.lean"
+}

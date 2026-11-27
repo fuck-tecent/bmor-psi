@@ -1,0 +1,22 @@
+{
+  "id": "L-square-packing-seventeen-charge-angle-refutation",
+  "statement": "¬ (let inside := fun (x y a b X Y : ℝ) => |a*(X-x)+b*(Y-y)| < 1/2 ∧ |(-b)*(X-x)+a*(Y-y)| < 1/2; ∀ (k q : ℕ) (X Y : Fin k → ℚ) (w : Fin k → ℕ), (∀ x y a b : ℝ, 0 ≤ b → b ≤ a → (a ^ 2 + b ^ 2 = 1 ∧ |a| + |b| ≤ 2*x ∧ |a| + |b| ≤ 2*((4661/1000:ℝ)-x) ∧ |a| + |b| ≤ 2*y ∧ |a| + |b| ≤ 2*((4661/1000:ℝ)-y)) → q ≤ (∑ j : Fin k, (if inside x y a b (X j) (Y j) then w j else 0))) → ∀ x y a b : ℝ, (a ^ 2 + b ^ 2 = 1 ∧ |a| + |b| ≤ 2*x ∧ |a| + |b| ≤ 2*((4661/1000:ℝ)-x) ∧ |a| + |b| ≤ 2*y ∧ |a| + |b| ≤ 2*((4661/1000:ℝ)-y)) → q ≤ (∑ j : Fin k, (if inside x y a b (X j) (Y j) then w j else 0)))",
+  "plain_statement": {
+    "zh": "否定对任意见证点的 0 至 45 度缩减。",
+    "en": "Refute the 0–45 degree reduction for arbitrary weighted sites."
+  },
+  "brief": {
+    "zh": "取中心 (2,2)、旋转参数 (12/13, −5/13) 的正方形。用其第一局部坐标选取有理格点并赋权。逐个核对所有 0 至 45 度的可行放置均命中一个权重点，而给定正方形的总权重为零。",
+    "en": "Use a square centered at (2,2) with rotation parameters (12/13, −5/13). Choose weighted rational grid sites using its first local coordinate. Verify that each feasible placement with angle from 0 to 45 degrees hits a weighted site and the given square has total charge zero."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/d480e4958e83deb0d36e915ea443443f89dd479f/research/problems/square-packing/routes/seventeen-square-frontier/tasks/L-square-packing-seventeen-charge-angle-symmetry.json",
+  "program": "correlation",
+  "role": "target",
+  "depends_on": [],
+  "parallel": true,
+  "challenge_only": true,
+  "imports": [],
+  "track": "seventeen-square-frontier",
+  "module": "Conjectures.SquarePacking.SeventeenChargeAngleRefutation",
+  "file": "lean/Conjectures/SquarePacking/SeventeenChargeAngleRefutation.lean"
+}

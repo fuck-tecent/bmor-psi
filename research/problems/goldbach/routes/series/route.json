@@ -1,0 +1,14 @@
+{
+  "id": "series",
+  "title": {
+    "zh": "给局部修正乘积建立下界",
+    "en": "Lower-bound the local product"
+  },
+  "description": {
+    "zh": "把有限局部计数归一化，控制乘积截断，以便估计主弧主项。",
+    "en": "Normalize local counts and control truncated products for the major-arc main term."
+  },
+  "feeds": [
+    "arc-budget"
+  ]
+}

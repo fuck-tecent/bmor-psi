@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-binary-shift-cross-band-overlap",
+  "statement": "let J := fun (a b m : ℕ) => ((Finset.Icc a b).filter (fun e => Nat.Prime (m-2^e))).card; ∃ c : ℝ, 0 < c ∧ ∃ X₀ : ℕ, ∀ X ≥ X₀, let L := Nat.log 2 X / 2; c*(X:ℝ) ≤ ∑ m ∈ Finset.Ico X (2*X), (J 1 (L/2) m:ℝ)*(J (L/2+1) L m:ℝ)",
+  "plain_statement": {
+    "zh": "猜想：低、高指数带在素数平移中有正的混合质量",
+    "en": "Conjecture: separated exponent bands have positive mixed prime-translate mass"
+  },
+  "brief": {
+    "zh": "展开成素数差等于 2^f−2^e 的相关和。两个指数带互斥，消除了同一表示的对角项。需要下界，二阶矩上界不足以推出。",
+    "en": "Expand into prime pairs at gaps 2^f−2^e. Disjoint bands remove diagonal representations. An upper second moment alone gives no positive lower bound."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/f4f754c4709c0c1b2dbc67e4c8f74ce2475b8935/research/ROADMAP.md",
+  "program": "exceptions",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "exceptions",
+  "role": "target",
+  "module": "Conjectures.Goldbach.BinaryShiftCrossBandOverlap",
+  "file": "lean/Conjectures/Goldbach/BinaryShiftCrossBandOverlap.lean"
+}

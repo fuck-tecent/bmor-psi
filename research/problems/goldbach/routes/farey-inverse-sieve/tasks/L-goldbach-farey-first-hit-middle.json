@@ -1,0 +1,19 @@
+{
+  "id": "L-goldbach-farey-first-hit-middle",
+  "statement": "let I := fun n : ℕ => Finset.Icc ((n+2)/3) ((2*n)/3); let P := fun z : ℕ => (Finset.Icc 2 z).filter Nat.Prime; let V := fun n z : ℕ => ((I n).card:ℝ)*(n.totient:ℝ)/n * ∏ p ∈ (P z).filter (fun p => ¬ p ∣ n), (1-2/(p:ℝ)); let Z₀ := fun n U : ℕ => ⌊(n:ℝ)^((1:ℝ)/(U:ℝ))⌋₊; let Z₁ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊; let Z₂ := Nat.sqrt; ∃ U₁ : ℕ, 8 ≤ U₁ ∧ ∀ U : ℕ, U₁ ≤ U → ∃ N₀ : ℕ, 64 ≤ N₀ ∧ ∀ n : ℕ, N₀ ≤ n → Even n → let L := ((I n).filter (fun u => u.Coprime n ∧ Z₀ n U < (u*(n-u)).minFac ∧ (u*(n-u)).minFac ≤ Z₁ n)).card; (L:ℝ) ≤ V n (Z₀ n U) - V n (Z₁ n) + V n (Z₂ n)/4",
+  "plain_statement": {
+    "zh": "新路线 · Farey 分母对与逆元筛 · HD-8012 · 挑战 · 中段首次命中的四分之一终筛预算",
+    "en": "New route · Farey denominator pairs and inverse sieve · HD-8012 · Challenge · Cap middle first hits with one quarter of the terminal main term"
+  },
+  "brief": {
+    "zh": "在同一中心全窗保留两分母的全部更小素因子限制。按最小因子和命中一侧重排。需要处理超过可用小除数水平的真实带权和。先取充分大的固定 U，再取该 U 的 n 阈值。",
+    "en": "Retain the least-factor restriction on both denominators in the same full window. Reindex by the first prime and the side it hits. The weighted sum beyond the small-divisor level requires a further estimate. Choose a fixed sufficiently large U before the threshold in n."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/farey-inverse-sieve/README.md",
+  "program": "correlation",
+  "role": "target",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "challenge_only": true
+}

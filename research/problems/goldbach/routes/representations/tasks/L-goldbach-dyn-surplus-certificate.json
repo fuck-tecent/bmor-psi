@@ -1,0 +1,24 @@
+{
+  "id": "L-goldbach-dyn-surplus-certificate",
+  "statement": "let W := fun (A B : Finset ℕ) (n : ℕ) => ((A ×ˢ B).filter (fun t => t.1+t.2=n)).card; ∀ (m n : ℕ) (A B : Finset ℕ), n < m → (∀ a ∈ A, a < m) → (∀ b ∈ B, b < m) → min ((A.filter (fun a => n < a)).card) ((B.filter (fun b => n < b)).card) < ((A ×ˢ B).filter (fun t => (t.1+t.2)%m=n)).card → 0 < W A B n",
+  "plain_statement": {
+    "zh": "模路径数超过伪命中预算时恢复整数命中",
+    "en": "Certify an integer hit from a modular surplus"
+  },
+  "brief": {
+    "zh": "组合进位分层与高端预算。须另行证明素数集合的模计数超过预算，才能用于一个指定偶数。",
+    "en": "Combine the carry split and the tail bound. A prime-set application still needs an independent surplus at its target."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-dyn-carry-split",
+    "L-goldbach-dyn-carry-edge-budget"
+  ],
+  "module": "Conjectures.Goldbach.DynSurplusCertificate",
+  "file": "lean/Conjectures/Goldbach/DynSurplusCertificate.lean",
+  "imports": [],
+  "track": "representations",
+  "role": "lemma"
+}

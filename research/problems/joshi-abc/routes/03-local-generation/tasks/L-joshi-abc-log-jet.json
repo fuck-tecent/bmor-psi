@@ -1,0 +1,23 @@
+{
+  "id": "L-joshi-abc-log-jet",
+  "statement": "∀ (K : Type) [NontriviallyNormedField K] [CompleteSpace K] [IsUltrametricDist K] [CharZero K] (r : K), r^14=(29:K) → 0 < ‖r‖ → ‖r‖<1 → (∀ n : ℕ, 0<n → ‖(n:K)‖ = ‖r‖^(14*multiplicity 29 n)) → ∀ x : K, ‖x‖ ≤ ‖r‖ → ‖(∑' k : ℕ, (-1:K)^k*((29:K)*x)^(k+1)/((k+1:ℕ):K))/(29:K)-x‖ ≤ ‖r‖^4",
+  "plain_statement": {
+    "zh": "新路线 · 29 进生成与反例族 · JA-0024 · 证明缩放 29 进对数保持模 π⁴ 的喷射",
+    "en": "New route · 29-adic generation and counterfamilies · JA-0024 · Show the scaled 29-adic log preserves the jet modulo π⁴"
+  },
+  "brief": {
+    "zh": "写出第二项起各项的阶，计入被 29 整除的分母，再对尾和用强三角不等式。",
+    "en": "Bound every term after the first, including denominators divisible by 29, and use the ultrametric bound for the tail."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/joshi-abc.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-joshi-abc-log-domination"
+  ],
+  "imports": [],
+  "track": "03-local-generation",
+  "module": "Conjectures.JoshiAbc.LogJet",
+  "file": "lean/Conjectures/JoshiAbc/LogJet.lean"
+}

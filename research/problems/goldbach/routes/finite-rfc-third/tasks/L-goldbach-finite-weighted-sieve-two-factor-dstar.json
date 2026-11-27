@@ -1,0 +1,25 @@
+{
+  "id": "L-goldbach-finite-weighted-sieve-two-factor-dstar",
+  "statement": "let W := fun (z y s : ℕ) => let P := (Finset.Ico z y).filter Nat.Prime; (2:ℤ)-((P.filter (fun p => p∣s)).card:ℤ)-((P.filter (fun p => p^2∣s)).card:ℤ); let A := fun (n z : ℕ) => (Finset.range (n+1)).filter (fun p => p.Prime ∧ ¬ (p ∣ n) ∧ ((Finset.Ico 2 z).filter (fun q => Nat.Prime q ∧ q ∣ (n-p))) = ∅); ∀ n : ℕ, 4000000000000000000<n → 30 ∣ n → (n:ℝ)<Real.exp (Real.exp (19/5)) → ∃ z y : ℕ, 2<z ∧ z<y ∧ n≤y^3 ∧ n≤z*y^2 ∧ 0<(∑ p ∈ Finset.filter (fun p => 2≤n-p) (A n z), W z y (n-p))",
+  "plain_statement": {
+    "zh": "新路线 · 小偶数覆盖第三批 · FR-9018 · 在 D* 上用原加权筛寻求最多两个因子的正余量",
+    "en": "New route · Finite-range coverage III · FR-9018 · Seek a positive two-factor margin from the original weighted sieve on D*"
+  },
+  "brief": {
+    "zh": "参数可以随 n 变化。验收为同一筛和扣除余项 1 与重复因子后仍为正。FR-9017 将它转成 D* 中每个偶数的 G₂。",
+    "en": "The parameters may vary with n. Show a positive sum after excluding remainder one and debiting repeated factors with the original weight. FR-9017 then gives G₂ for every even input in D*."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/finite-rfc-third/README.md#weighted-sieve-and-chen-counts",
+  "program": "correlation",
+  "role": "target",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-finite-weighted-sieve-remove-unit",
+    "L-goldbach-finite-weighted-sieve-factor-cap"
+  ],
+  "imports": [
+    "Conjectures.Goldbach.FiniteWeightedSieveRemoveUnit",
+    "Conjectures.Goldbach.FiniteWeightedSieveFactorCap"
+  ],
+  "challenge_only": true
+}

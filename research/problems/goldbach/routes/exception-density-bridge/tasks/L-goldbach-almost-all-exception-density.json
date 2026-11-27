@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-almost-all-exception-density",
+  "statement": "let w (k : ℕ) := if Nat.Prime k then Real.log (k : ℝ) else 0; let E (x : ℝ) := Complex.exp (((2 * Real.pi * x : ℝ) : ℂ) * Complex.I); let S (Y : ℕ) (t : ℝ) := ∑ k ∈ Finset.range (Y+1), (w k : ℂ) * E ((k : ℝ)*t); let D (X : ℕ) := (Finset.Ico X (2*X)).filter (fun n => 4 ≤ n ∧ Even n); let G (n : ℕ) := ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ p + q = n; let bad (X : ℕ) := @Finset.filter ℕ (fun n => ¬ G n) (Classical.decPred _) (D X); ∀ (X : ℕ) (A : Set ℝ) (c U : ℝ), MeasurableSet A → 0 < c → 0 ≤ U → (∀ n ∈ D X, c * (X : ℝ) ≤ (intervalIntegral (A.indicator (fun t => (S (2*X) t)^2 * E (-(n : ℝ)*t))) (0 : ℝ) 1 MeasureTheory.volume).re) → (∀ t ∈ Set.Icc (0 : ℝ) 1, t ∉ A → ‖S (2*X) t‖ ≤ U) → ((bad X).card : ℝ) * (c * (X : ℝ))^2 ≤ U^2 * ∑ k ∈ Finset.range (2*X+1), (w k)^2",
+  "plain_statement": {
+    "en": "In [X,2X), the number of even Goldbach exceptions from 4 onward, multiplied by (cX)², is at most U² times the prime-log squared weight sum through 2X, assuming a major-coefficient floor cX and a minor-arc supremum U.",
+    "zh": "在主弧系数下界为 cX、次弧指数和上界为 U 的假设下，[X,2X) 中不小于 4 的哥德巴赫例外偶数个数乘以 (cX)²，不超过 U² 乘以截至 2X 的素数对数权平方和。"
+  },
+  "brief": {
+    "en": "At a missing prime pair the full Fourier coefficient vanishes, so the two masked coefficients are negatives of one another. Each exception contributes at least (cX)² to the minor-arc second moment at the common cutoff 2X.",
+    "zh": "若某个偶数没有素数对表示，则其完整傅里叶系数为零，主弧与次弧系数互为相反数。因此，在统一截断 2X 下，每个例外对次弧系数平方和至少贡献 (cX)²。"
+  },
+  "program": "exceptions",
+  "imports": [],
+  "parallel": true,
+  "source": "https://arxiv.org/abs/2607.27282",
+  "track": "exception-density-bridge",
+  "role": "conditional",
+  "module": "Conjectures.Goldbach.AlmostAllExceptionDensity",
+  "file": "lean/Conjectures/Goldbach/AlmostAllExceptionDensity.lean"
+}

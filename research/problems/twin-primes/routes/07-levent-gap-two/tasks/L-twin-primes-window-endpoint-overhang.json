@@ -1,0 +1,21 @@
+{
+  "id": "L-twin-primes-window-endpoint-overhang",
+  "statement": "let w := fun (X : ℕ) => (Finset.range (2*X+1)).filter (fun n => X < n ∧ 50*n < 51*X); ∀ (X : ℕ) (f : ℕ → ℝ) (A : ℝ), 2 ≤ X → 0 ≤ A → (∀ n : ℕ, n ≤ 2*X+2 → 0 ≤ f n ∧ f n ≤ A) → 0 ≤ (w X).sum (fun n => f n * f (n+2)) - ((w X).filter (fun n => n+2 ∈ w X)).sum (fun n => f n * f (n+2)) ∧ (w X).sum (fun n => f n * f (n+2)) - ((w X).filter (fun n => n+2 ∈ w X)).sum (fun n => f n * f (n+2)) ≤ 2*A^2",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然推广 · TP-0058 · 量化单端短窗与双端短窗的差二边界误差",
+    "en": "New route · Levent GRH methods and extensions · TP-0058 · Bound the gap-two loss at the right edge of the window"
+  },
+  "brief": {
+    "zh": "严格上界给出的最大整数是 (51X−1)/50。删掉 n+2 超窗的点最多两个。对 Λ 和真素数的对数权都能使用，供 TP-0013 与修正后的 TP-0053R 对照。",
+    "en": "The largest permitted integer is floor((51X−1)/50). At most two starting points lose their translated endpoint. The same estimate applies to Λ and prime log weights when comparing TP-0013 and TP-0053R."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/twin-primes.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-two-moment-identity",
+    "L-twin-primes-no-wrap"
+  ],
+  "imports": []
+}

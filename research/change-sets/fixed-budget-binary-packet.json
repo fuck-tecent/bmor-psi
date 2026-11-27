@@ -1,0 +1,1661 @@
+{
+  "version": 1,
+  "problem": "goldbach",
+  "base_revision": "4c2190575625a6193ee5dbba0c3960e07cd3ce94",
+  "request_id": "fixed-budget-binary-packet",
+  "parent": {
+    "id": "L-goldbach-dyadic-correlation-floor",
+    "statement_sha256": "1359bbab58ccec062accd45ac2d6f08364022ca19cb15638368d631ade33d2bd"
+  },
+  "motivation": {
+    "zh": "以冻结的零移位素数卷积为终点，把全称误差要求放宽到足以覆盖主弧的固定预算。",
+    "en": "Weaken the all-epsilon demand to a fixed budget that yields a positive margin at the frozen, unshifted prime convolution."
+  },
+  "tasks": [
+    {
+      "id": "L-goldbach-major-fixed-144",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let major := fun n : ℕ => intervalIntegral (fun t => (arcs n).indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → (n:ℝ)/144 ≤ (major n).re",
+      "plain_statement": {
+        "zh": "提取已知主弧下界的具体常数 1/144",
+        "en": "Extract the explicit 1/144 in the major-arc proof"
+      },
+      "brief": {
+        "zh": "已有冻结命题只记录存在正常数。核对 #316 收尾处的具体见证并保留相同阈值、弧和频率；这是常数提取任务。",
+        "en": "The accepted catalogue statement hides its witness. Extract the explicit constant from the closing proof of #316 with the same threshold, arcs and frequency."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/316",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": [],
+      "route": "minor-truncation"
+    },
+    {
+      "id": "L-goldbach-bulk-fixed-288",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → -(n:ℝ)/288 ≤ (I n (high n) (high n)).re",
+      "plain_statement": {
+        "zh": "固定预算猜想：高高项在原频率至少为 −n/288",
+        "en": "Fixed-budget conjecture at the original frequency: bulk at least −n/288"
+      },
+      "brief": {
+        "zh": "只要求一个固定斜率。已有逐 ε 高高项目标足以推出它；负的固定斜率示例说明反向推理在一般实序列上失效。仍须逐偶数控制符号。",
+        "en": "The all-epsilon bulk target suffices. A fixed negative slope separates the two requirements for abstract sequences. This input still demands signed, pointwise control."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2325",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": [],
+      "route": "minor-truncation"
+    },
+    {
+      "id": "L-goldbach-bulk-binary-packet",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let J := fun (n : ℕ) (v : ℝ → ℝ) => (intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => (v u:ℂ)*S n (high n) u*S n (high n) u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume).re; ∃ N : ℕ, ∀ n ≥ N, Even n → -(n:ℝ)/576 ≤ J n (K n)",
+      "plain_statement": {
+        "zh": "猜想：冻结筛权与弧后，对称二次幂移频平均守住 n/576 预算",
+        "en": "Conjecture: a symmetric binary frequency packet stays above −n/576"
+      },
+      "brief": {
+        "zh": "余弦给出 n±2^j 的对称平均。固定同一个 n 的素数和、截断和弧，只移动系数频率；不可直接代入邻居各自的表示数。先尝试对稀疏频谱作均方估计。",
+        "en": "Cosines average symmetric frequency shifts. Hold the prime sum, cutoff and arcs fixed at n. Try mean-square estimates for the sparse packet. Neighboring representation counts use different data."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2325",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": [],
+      "route": "minor-truncation"
+    },
+    {
+      "id": "L-goldbach-bulk-binary-defect",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let J := fun (n : ℕ) (v : ℝ → ℝ) => (intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => (v u:ℂ)*S n (high n) u*S n (high n) u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume).re; ∃ N : ℕ, ∀ n ≥ N, Even n → -(n:ℝ)/576 ≤ J n (fun t => 1-K n t)",
+      "plain_statement": {
+        "zh": "开放瓶颈：移频平均回原频率的带符号修正",
+        "en": "Open bottleneck: signed correction back to the original frequency"
+      },
+      "brief": {
+        "zh": "权 1−K 在相位一致处变小。在这些频段用已有高段能量界；其余频段仍需单侧抵消。此权的非负性不能决定复被积函数实部的符号。",
+        "en": "Use the accepted bulk energy cap where the phases align and 1−K is small. Elsewhere one-sided cancellation remains. The sign of the real part is not determined by this nonnegative weight."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2325",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": [],
+      "route": "minor-truncation"
+    },
+    {
+      "id": "L-goldbach-bulk-binary-partition",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let J := fun (n : ℕ) (v : ℝ → ℝ) => (intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => (v u:ℂ)*S n (high n) u*S n (high n) u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume).re; ∀ n : ℕ, (I n (high n) (high n)).re = J n (K n) + J n (fun t => 1-K n t)",
+      "plain_statement": {
+        "zh": "证明冻结次弧上的二项积分分割",
+        "en": "Split the frozen minor-arc integral into its two packet terms"
+      },
+      "brief": {
+        "zh": "检验指示函数在区间上的可积性，再用线性和 K+(1−K)=1。这个精确恒等式是两个分析输入与原高高项之间的接口。",
+        "en": "Establish interval integrability of the masked continuous factors, then apply linearity and the partition of unity. This exact identity connects the two inputs to the original bulk term."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2325",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": [],
+      "route": "minor-truncation"
+    },
+    {
+      "id": "L-goldbach-bulk-binary-recombine",
+      "statement": "(let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let J := fun (n : ℕ) (v : ℝ → ℝ) => (intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => (v u:ℂ)*S n (high n) u*S n (high n) u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume).re; ∃ N : ℕ, ∀ n ≥ N, Even n → -(n:ℝ)/576 ≤ J n (K n)) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let J := fun (n : ℕ) (v : ℝ → ℝ) => (intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => (v u:ℂ)*S n (high n) u*S n (high n) u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume).re; ∃ N : ℕ, ∀ n ≥ N, Even n → -(n:ℝ)/576 ≤ J n (fun t => 1-K n t)) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let J := fun (n : ℕ) (v : ℝ → ℝ) => (intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => (v u:ℂ)*S n (high n) u*S n (high n) u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume).re; ∀ n : ℕ, (I n (high n) (high n)).re = J n (K n) + J n (fun t => 1-K n t)) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → -(n:ℝ)/288 ≤ (I n (high n) (high n)).re)",
+      "plain_statement": {
+        "zh": "将二次幂平均和修正项合回原高高项",
+        "en": "Recombine both packet budgets at zero shift"
+      },
+      "brief": {
+        "zh": "在两个阈值的最大值之后相加：两次 −n/576 合为 −n/288。",
+        "en": "Beyond the maximum of the two thresholds, the two lower bounds sum to −n/288."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2325",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": [],
+      "route": "minor-truncation"
+    },
+    {
+      "id": "L-goldbach-fixed-budget-to-dyadic",
+      "statement": "(let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let major := fun n : ℕ => intervalIntegral (fun t => (arcs n).indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume; let minor := fun n : ℕ => intervalIntegral (fun t => (arcs n)ᶜ.indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume; let conv := fun (u v : ℕ → ℝ) (n : ℕ) => Finset.sum (Finset.range (n+1)) (fun k => u k*v (n-k)); ∀ n, major n+minor n=(conv w w n:ℂ)) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let major := fun n : ℕ => intervalIntegral (fun t => (arcs n).indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → (n:ℝ)/144 ≤ (major n).re) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; ∀ n:ℕ,I n w w=I n (low n) (low n)+2*I n (low n) (high n)+I n (high n) (high n)) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; ∀ e:ℝ, 0<e → ∃ N:ℕ, ∀ n≥N, ‖I n (low n) (low n)‖≤e*(n:ℝ)) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; ∀ e:ℝ, 0<e → ∃ N:ℕ, ∀ n≥N, ‖I n (low n) (high n)‖≤e*(n:ℝ)) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → -(n:ℝ)/288 ≤ (I n (high n) (high n)).re) → (∃ (c : ℝ) (N : ℕ), 0 < c ∧ ∀ X n : ℕ, N ≤ X → X ≤ n → n < 2 * X → Even n → let w : ℕ → ℝ := fun k => if Nat.Prime k then Real.log (k : ℝ) else 0; c * (n : ℝ) ≤ Finset.sum (Finset.range (n + 1)) (fun p => w p * w (n - p)))",
+      "plain_statement": {
+        "zh": "从固定主次弧预算推出原偶数的线性素数对质量",
+        "en": "Deduce a linear prime-pair mass at the original even target"
+      },
+      "brief": {
+        "zh": "两个小项用 ε=1/2304，混合项出现两次。主弧减去所有损失后至少余 n/576。取所有阈值的最大值。",
+        "en": "Take epsilon=1/2304 for the low terms, counting the mixed term twice. The remaining margin is at least n/576 beyond the common threshold."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2325",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": [],
+      "route": "minor-truncation"
+    },
+    {
+      "id": "L-goldbach-bulk-clipped-defect-cap",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let J := fun (n : ℕ) (v : ℝ → ℝ) => (intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => (v u:ℂ)*S n (high n) u*S n (high n) u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume).re; let τ := fun n : ℕ => 1/(2304*(1+(Real.log (n:ℝ))^2)); let small := fun (n : ℕ) (t : ℝ) => max (-(τ n)) (min (τ n) (1-K n t)); ∀ n : ℕ, 2 ≤ n → |J n (small n)| ≤ (n:ℝ)/1152",
+      "plain_statement": {
+        "zh": "截断相位修正的绝对贡献最多为 n/1152",
+        "en": "The clipped phase correction costs at most n/1152"
+      },
+      "brief": {
+        "zh": "在全部次弧上将修正权截到 ±τ。用已核验的高段二阶能量，逐频率控制绝对值。",
+        "en": "Clip the multiplier to ±τ on all minor arcs. Apply the accepted bulk energy bound after pointwise domination."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-bulk-off-coherence",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let J := fun (n : ℕ) (v : ℝ → ℝ) => (intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => (v u:ℂ)*S n (high n) u*S n (high n) u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume).re; let τ := fun n : ℕ => 1/(2304*(1+(Real.log (n:ℝ))^2)); let small := fun (n : ℕ) (t : ℝ) => max (-(τ n)) (min (τ n) (1-K n t)); ∃ N : ℕ, ∀ n ≥ N, Even n → -(n:ℝ)/1152 ≤ J n (fun t => 1-K n t-small n t)",
+      "plain_statement": {
+        "zh": "开放：控制相位偏差超过阈值处的带符号余项",
+        "en": "Open: control the signed residual beyond the phase threshold"
+      },
+      "brief": {
+        "zh": "已证余项在 |1−K|≤τ 处逐点为零。仅余超出阈值的幅度，仍须对每个偶数证明下界。直接取绝对值会丢失所需抵消。",
+        "en": "The residual vanishes wherever |1−K|≤τ and retains only the excess elsewhere. A signed bound at every sufficiently large even target remains open."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-bulk-energy-to-clipped",
+      "statement": "(let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; ∀ n:ℕ,2≤n → intervalIntegral (fun t => ‖S n (high n) t‖^2) (0:ℝ) 1 MeasureTheory.volume≤((n:ℝ)+1)*(Real.log (n:ℝ))^2) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let J := fun (n : ℕ) (v : ℝ → ℝ) => (intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => (v u:ℂ)*S n (high n) u*S n (high n) u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume).re; let τ := fun n : ℕ => 1/(2304*(1+(Real.log (n:ℝ))^2)); let small := fun (n : ℕ) (t : ℝ) => max (-(τ n)) (min (τ n) (1-K n t)); ∀ n : ℕ, 2 ≤ n → |J n (small n)| ≤ (n:ℝ)/1152)",
+      "plain_statement": {
+        "zh": "从原高段能量界推出截断预算",
+        "en": "Derive the clipped budget from the original energy cap"
+      },
+      "brief": {
+        "zh": "阈值取 1/[2304(1+log² n)]，直接乘以已有能量上界。该推论有 Lean 参考证明。",
+        "en": "Multiply the cap by 1/[2304(1+log² n)]. A Lean proof accompanies the reduction."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-bulk-off-coherence-transfer",
+      "statement": "(let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let J := fun (n : ℕ) (v : ℝ → ℝ) => (intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => (v u:ℂ)*S n (high n) u*S n (high n) u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume).re; let τ := fun n : ℕ => 1/(2304*(1+(Real.log (n:ℝ))^2)); let small := fun (n : ℕ) (t : ℝ) => max (-(τ n)) (min (τ n) (1-K n t)); ∀ n : ℕ, 2 ≤ n → |J n (small n)| ≤ (n:ℝ)/1152) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let J := fun (n : ℕ) (v : ℝ → ℝ) => (intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => (v u:ℂ)*S n (high n) u*S n (high n) u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume).re; let τ := fun n : ℕ => 1/(2304*(1+(Real.log (n:ℝ))^2)); let small := fun (n : ℕ) (t : ℝ) => max (-(τ n)) (min (τ n) (1-K n t)); ∃ N : ℕ, ∀ n ≥ N, Even n → -(n:ℝ)/1152 ≤ J n (fun t => 1-K n t-small n t)) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let J := fun (n : ℕ) (v : ℝ → ℝ) => (intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => (v u:ℂ)*S n (high n) u*S n (high n) u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume).re; ∃ N : ℕ, ∀ n ≥ N, Even n → -(n:ℝ)/576 ≤ J n (fun t => 1-K n t))",
+      "plain_statement": {
+        "zh": "将超阈值估计接回原修正项",
+        "en": "Transfer the off-coherence estimate to the full correction"
+      },
+      "brief": {
+        "zh": "将截断部分和余项在同一频率相加。两个 n/1152 的预算恰好合为 n/576。",
+        "en": "Add the clipped component and residual at the same frequency. The two n/1152 budgets give n/576."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-doubling-tilt",
+      "statement": "∀ (s : ℝ) (g : ℝ → ℝ), Continuous g → Function.Periodic g 1 → (∀ t, 0 ≤ g t) → intervalIntegral (fun t => Real.exp (s*Real.cos (2*Real.pi*t))*g (2*t)) (0:ℝ) 1 MeasureTheory.volume ≤ Real.cosh s * intervalIntegral (g) (0:ℝ) 1 MeasureTheory.volume",
+      "plain_statement": {
+        "zh": "倍增映射下，剥去一层余弦指数权",
+        "en": "Remove one exponential cosine weight under doubling"
+      },
+      "brief": {
+        "zh": "把周期分成两半。两支上的余弦互为相反数，指数权平均为 cosh(s cos x)，再用 |cos x|≤1。",
+        "en": "Pair the two inverse branches. Their exponential weights average to cosh(s cos x), bounded by cosh s. The remaining weight may be any nonnegative continuous periodic function."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-exponential-moment",
+      "statement": "let T := fun (m : ℕ) (t : ℝ) => ∑ j ∈ Finset.range m, Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t); ∀ (m : ℕ) (s : ℝ), intervalIntegral (fun t => Real.exp (s*T m t)) (0:ℝ) 1 MeasureTheory.volume ≤ (Real.cosh s)^m",
+      "plain_statement": {
+        "zh": "所有层数的余弦和指数矩",
+        "en": "Exponential moments for every packet length"
+      },
+      "brief": {
+        "zh": "沿倍增映射归纳剥去最低频。频率从 2 开始，先用周期性把 x 换成 2x。",
+        "en": "Iterate the transfer inequality from the lowest frequency. Use invariance of the period integral under doubling for the initial frequency 2."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-upper-tail-half",
+      "statement": "let T := fun (m : ℕ) (t : ℝ) => ∑ j ∈ Finset.range m, Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t); ∀ m : ℕ, 0 < m → intervalIntegral (fun t => if (m:ℝ)/2 < T m t then (1:ℝ) else 0) (0:ℝ) 1 MeasureTheory.volume ≤ Real.exp (-(m:ℝ)/8)",
+      "plain_statement": {
+        "zh": "超过一半高度的频率集合的显式面积界",
+        "en": "Explicit area bound above half the packet height"
+      },
+      "brief": {
+        "zh": "对实部的单侧尾取指数参数 1/2，证明 cosh(s)≤exp(s²/2)。这个阈值用于实际截断。",
+        "en": "Apply exponential Markov with s=1/2 and prove cosh(s)≤exp(s²/2). The real one-sided threshold is the one used by the capped packet."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-mask-log-decay",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let U := fun (n : ℕ) (a : ℕ → ℝ) => intervalIntegral ((B n).indicator (fun t => ‖S n a t‖^2)) (0:ℝ) 1 MeasureTheory.volume; ∀ d : ℕ, ∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ n ≥ N, (1+Real.log (n:ℝ))^d * (intervalIntegral ((B n).indicator (fun _ => (1:ℝ))) (0:ℝ) 1 MeasureTheory.volume) ≤ ε",
+      "plain_statement": {
+        "zh": "实际次弧异常集的面积胜过任意固定对数幂",
+        "en": "The masked exceptional set beats fixed logarithmic powers"
+      },
+      "brief": {
+        "zh": "把二进制层数代回指数尾界，处理自然数对数取整。这个结论给后续低间距估计支付对数损失。",
+        "en": "Convert the exponential tail at the actual integer length into decay against any fixed logarithmic loss; the minor-arc intersection only decreases area."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-short-lag-envelope",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let U := fun (n : ℕ) (a : ℕ → ℝ) => intervalIntegral ((B n).indicator (fun t => ‖S n a t‖^2)) (0:ℝ) 1 MeasureTheory.volume; let V := fun (n h : ℕ) => intervalIntegral ((B n).indicator (fun t => Real.cos (2*Real.pi*(h:ℝ)*t))) (0:ℝ) 1 MeasureTheory.volume; let A := fun (n h : ℕ) (a : ℕ → ℝ) => ∑ k ∈ Finset.range (n+1-h), a k * a (k+h); let model := fun k : ℕ => if Nat.Coprime k 30 then (30:ℝ)/8 else 0; let short := fun (n : ℕ) (a : ℕ → ℝ) => A n 0 a * V n 0 + 2*(∑ h ∈ Finset.Icc 1 (min n ((L n)^2)), A n h a * V n h); let long := fun (n : ℕ) (a : ℕ → ℝ) => 2*(∑ h ∈ Finset.Icc ((L n)^2+1) n, A n h a * V n h); ∀ (n : ℕ) (a : ℕ → ℝ) (M : ℝ), 0 ≤ M → (∀ k ≤ n, |a k| ≤ M) → |short n a| ≤ (1+2*((L n:ℝ)^2))*((n:ℝ)+1)*M^2*V n 0",
+      "plain_statement": {
+        "zh": "用异常集面积统一控制任意有界权的短间距部分",
+        "en": "A uniform short-lag envelope for arbitrary bounded weights"
+      },
+      "brief": {
+        "zh": "包含对角项。用 |V(h)|≤V(0)，每个自相关至多有 n+1 项，截断点取 min(n,L²)。同一界可同时用于素数权与模型权。",
+        "en": "Include the diagonal, bound each mask coefficient by its mass, and count at most n+1 products per lag. The same bound applies to both weights."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-short-wheel-error",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let U := fun (n : ℕ) (a : ℕ → ℝ) => intervalIntegral ((B n).indicator (fun t => ‖S n a t‖^2)) (0:ℝ) 1 MeasureTheory.volume; let V := fun (n h : ℕ) => intervalIntegral ((B n).indicator (fun t => Real.cos (2*Real.pi*(h:ℝ)*t))) (0:ℝ) 1 MeasureTheory.volume; let A := fun (n h : ℕ) (a : ℕ → ℝ) => ∑ k ∈ Finset.range (n+1-h), a k * a (k+h); let model := fun k : ℕ => if Nat.Coprime k 30 then (30:ℝ)/8 else 0; let short := fun (n : ℕ) (a : ℕ → ℝ) => A n 0 a * V n 0 + 2*(∑ h ∈ Finset.Icc 1 (min n ((L n)^2)), A n h a * V n h); let long := fun (n : ℕ) (a : ℕ → ℝ) => 2*(∑ h ∈ Finset.Icc ((L n)^2+1) n, A n h a * V n h); ∃ N : ℕ, ∀ n ≥ N, Even n → |short n (high n) - short n model| ≤ (n:ℝ)/2304",
+      "plain_statement": {
+        "zh": "真素数与周期模型的短间距误差",
+        "en": "Short-lag discrepancy between primes and the periodic model"
+      },
+      "brief": {
+        "zh": "分别使用有界权估计，以面积的对数衰减吸收 L² 和 log² n。两种权不需要逐点接近。",
+        "en": "Bound the two short-lag pieces separately. Logarithmic area decay absorbs the number of lags and squared prime weights."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-wheel-geometric",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let U := fun (n : ℕ) (a : ℕ → ℝ) => intervalIntegral ((B n).indicator (fun t => ‖S n a t‖^2)) (0:ℝ) 1 MeasureTheory.volume; let V := fun (n h : ℕ) => intervalIntegral ((B n).indicator (fun t => Real.cos (2*Real.pi*(h:ℝ)*t))) (0:ℝ) 1 MeasureTheory.volume; let A := fun (n h : ℕ) (a : ℕ → ℝ) => ∑ k ∈ Finset.range (n+1-h), a k * a (k+h); let model := fun k : ℕ => if Nat.Coprime k 30 then (30:ℝ)/8 else 0; let short := fun (n : ℕ) (a : ℕ → ℝ) => A n 0 a * V n 0 + 2*(∑ h ∈ Finset.Icc 1 (min n ((L n)^2)), A n h a * V n h); let long := fun (n : ℕ) (a : ℕ → ℝ) => 2*(∑ h ∈ Finset.Icc ((L n)^2+1) n, A n h a * V n h); ∀ (n : ℕ) (t : ℝ), S n model t = ((30:ℝ)/8:ℂ)*(∑ r ∈ (Finset.range 30).filter (fun r => Nat.Coprime r 30 ∧ r ≤ n), E ((r:ℝ)*t)*(∑ j ∈ Finset.range ((n-r)/30+1), E ((30:ℝ)*(j:ℝ)*t)))",
+      "plain_statement": {
+        "zh": "把模 30 模型频谱写成八个几何级数",
+        "en": "Resolve the modulus-30 model into geometric sums"
+      },
+      "brief": {
+        "zh": "按 k mod 30 唯一分组。对 n<30 保留 r≤n，保证自然数截断不多算一项。可直接估计频谱在小分母有理点以外的尾部。",
+        "en": "Group indices by residue, retaining r≤n even for small n. This gives an explicit spectrum away from the model resonances."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-wheel-minor-leakage",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let U := fun (n : ℕ) (a : ℕ → ℝ) => intervalIntegral ((B n).indicator (fun t => ‖S n a t‖^2)) (0:ℝ) 1 MeasureTheory.volume; let V := fun (n h : ℕ) => intervalIntegral ((B n).indicator (fun t => Real.cos (2*Real.pi*(h:ℝ)*t))) (0:ℝ) 1 MeasureTheory.volume; let A := fun (n h : ℕ) (a : ℕ → ℝ) => ∑ k ∈ Finset.range (n+1-h), a k * a (k+h); let model := fun k : ℕ => if Nat.Coprime k 30 then (30:ℝ)/8 else 0; let short := fun (n : ℕ) (a : ℕ → ℝ) => A n 0 a * V n 0 + 2*(∑ h ∈ Finset.Icc 1 (min n ((L n)^2)), A n h a * V n h); let long := fun (n : ℕ) (a : ℕ → ℝ) => 2*(∑ h ∈ Finset.Icc ((L n)^2+1) n, A n h a * V n h); ∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ n ≥ N, intervalIntegral ((arcs n)ᶜ.indicator (fun t => ‖S n model t‖^2)) (0:ℝ) 1 MeasureTheory.volume ≤ ε*(n:ℝ)",
+      "plain_statement": {
+        "zh": "模 30 模型落在全部次弧的能量为 o(n)",
+        "en": "Sublinear minor-arc energy leakage of the modulus-30 model"
+      },
+      "brief": {
+        "zh": "模型频率集中在 a/30。约分后分母至多 30，充分大 n 的主弧覆盖每个峰的邻域。对几何级数尾的距离倒数平方积分。",
+        "en": "The finitely many peaks a/30 have reduced denominator at most 30. Integrate the inverse-square distance bound outside their major-arc neighborhoods."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-wheel-masked-budget",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let U := fun (n : ℕ) (a : ℕ → ℝ) => intervalIntegral ((B n).indicator (fun t => ‖S n a t‖^2)) (0:ℝ) 1 MeasureTheory.volume; let V := fun (n h : ℕ) => intervalIntegral ((B n).indicator (fun t => Real.cos (2*Real.pi*(h:ℝ)*t))) (0:ℝ) 1 MeasureTheory.volume; let A := fun (n h : ℕ) (a : ℕ → ℝ) => ∑ k ∈ Finset.range (n+1-h), a k * a (k+h); let model := fun k : ℕ => if Nat.Coprime k 30 then (30:ℝ)/8 else 0; let short := fun (n : ℕ) (a : ℕ → ℝ) => A n 0 a * V n 0 + 2*(∑ h ∈ Finset.Icc 1 (min n ((L n)^2)), A n h a * V n h); let long := fun (n : ℕ) (a : ℕ → ℝ) => 2*(∑ h ∈ Finset.Icc ((L n)^2+1) n, A n h a * V n h); ∃ N : ℕ, ∀ n ≥ N, Even n → U n model ≤ (n:ℝ)/2304",
+      "plain_statement": {
+        "zh": "异常集上模 30 模型的能量预算",
+        "en": "Masked energy budget for the modulus-30 model"
+      },
+      "brief": {
+        "zh": "也可直接在异常集上积分；全部次弧的 o(n) 界足以提供这个具体常数。",
+        "en": "Use nonnegativity and containment in the minor arcs with epsilon=1/2304, or estimate the restricted model integral directly."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-lag-energy-identity",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let U := fun (n : ℕ) (a : ℕ → ℝ) => intervalIntegral ((B n).indicator (fun t => ‖S n a t‖^2)) (0:ℝ) 1 MeasureTheory.volume; let V := fun (n h : ℕ) => intervalIntegral ((B n).indicator (fun t => Real.cos (2*Real.pi*(h:ℝ)*t))) (0:ℝ) 1 MeasureTheory.volume; let A := fun (n h : ℕ) (a : ℕ → ℝ) => ∑ k ∈ Finset.range (n+1-h), a k * a (k+h); let model := fun k : ℕ => if Nat.Coprime k 30 then (30:ℝ)/8 else 0; let short := fun (n : ℕ) (a : ℕ → ℝ) => A n 0 a * V n 0 + 2*(∑ h ∈ Finset.Icc 1 (min n ((L n)^2)), A n h a * V n h); let long := fun (n : ℕ) (a : ℕ → ℝ) => 2*(∑ h ∈ Finset.Icc ((L n)^2+1) n, A n h a * V n h); ∀ (n : ℕ) (a : ℕ → ℝ), U n a = short n a + long n a",
+      "plain_statement": {
+        "zh": "将异常集能量精确展开成对角项与有序间距和",
+        "en": "Exact lag expansion of masked energy"
+      },
+      "brief": {
+        "zh": "在冻结的同一个集合上展开模平方。共轭的两项合成 2cos；正间距按 L² 分段。适用于任意实权，可分别代入两种权。",
+        "en": "Expand the finite squared norm on the same mask. Pair conjugates into twice the cosine moment. Separate positive lags at L² for arbitrary real weights."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-even-lag-support",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let U := fun (n : ℕ) (a : ℕ → ℝ) => intervalIntegral ((B n).indicator (fun t => ‖S n a t‖^2)) (0:ℝ) 1 MeasureTheory.volume; let V := fun (n h : ℕ) => intervalIntegral ((B n).indicator (fun t => Real.cos (2*Real.pi*(h:ℝ)*t))) (0:ℝ) 1 MeasureTheory.volume; let A := fun (n h : ℕ) (a : ℕ → ℝ) => ∑ k ∈ Finset.range (n+1-h), a k * a (k+h); let model := fun k : ℕ => if Nat.Coprime k 30 then (30:ℝ)/8 else 0; let short := fun (n : ℕ) (a : ℕ → ℝ) => A n 0 a * V n 0 + 2*(∑ h ∈ Finset.Icc 1 (min n ((L n)^2)), A n h a * V n h); let long := fun (n : ℕ) (a : ℕ → ℝ) => 2*(∑ h ∈ Finset.Icc ((L n)^2+1) n, A n h a * V n h); ∀ n : ℕ, 8 ≤ n → ∀ h : ℕ, Odd h → A n h (high n) = 0 ∧ A n h model = 0",
+      "plain_statement": {
+        "zh": "排除两种权的全部奇间距",
+        "en": "Eliminate odd lags in both autocorrelations"
+      },
+      "brief": {
+        "zh": "当 n≥8，素数 2 已在低段；模 30 互素类也全为奇数。相差奇数的两个指标中有一个为偶数。",
+        "en": "At n≥8 the low cutoff has removed 2, and all reduced residues mod 30 are odd. Each odd-lag product contains an even index."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-even-mask-primitive",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let U := fun (n : ℕ) (a : ℕ → ℝ) => intervalIntegral ((B n).indicator (fun t => ‖S n a t‖^2)) (0:ℝ) 1 MeasureTheory.volume; let V := fun (n h : ℕ) => intervalIntegral ((B n).indicator (fun t => Real.cos (2*Real.pi*(h:ℝ)*t))) (0:ℝ) 1 MeasureTheory.volume; let A := fun (n h : ℕ) (a : ℕ → ℝ) => ∑ k ∈ Finset.range (n+1-h), a k * a (k+h); let model := fun k : ℕ => if Nat.Coprime k 30 then (30:ℝ)/8 else 0; let short := fun (n : ℕ) (a : ℕ → ℝ) => A n 0 a * V n 0 + 2*(∑ h ∈ Finset.Icc 1 (min n ((L n)^2)), A n h a * V n h); let long := fun (n : ℕ) (a : ℕ → ℝ) => 2*(∑ h ∈ Finset.Icc ((L n)^2+1) n, A n h a * V n h); ∀ (n a m : ℕ), |∑ j ∈ Finset.range m, V n (2*(a+j))| ≤ intervalIntegral ((B n).indicator (fun t => if Real.sin (2*Real.pi*t) = 0 then (m:ℝ) else min (m:ℝ) (1/|Real.sin (2*Real.pi*t)|))) (0:ℝ) 1 MeasureTheory.volume",
+      "plain_statement": {
+        "zh": "在异常集上控制连续偶间距的傅里叶系数和",
+        "en": "Control consecutive even-lag Fourier coefficients on the mask"
+      },
+      "brief": {
+        "zh": "先合并余弦再积分。有限几何和给出与起点无关的正弦分母，可用于对自相关作分部求和；真实自相关的变差仍需估计。",
+        "en": "Sum cosines before integrating, using the even-frequency geometric sum with arbitrary starting phase. Abel summation would also need variation estimates for arithmetic coefficients."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-long-wheel-excess",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let U := fun (n : ℕ) (a : ℕ → ℝ) => intervalIntegral ((B n).indicator (fun t => ‖S n a t‖^2)) (0:ℝ) 1 MeasureTheory.volume; let V := fun (n h : ℕ) => intervalIntegral ((B n).indicator (fun t => Real.cos (2*Real.pi*(h:ℝ)*t))) (0:ℝ) 1 MeasureTheory.volume; let A := fun (n h : ℕ) (a : ℕ → ℝ) => ∑ k ∈ Finset.range (n+1-h), a k * a (k+h); let model := fun k : ℕ => if Nat.Coprime k 30 then (30:ℝ)/8 else 0; let short := fun (n : ℕ) (a : ℕ → ℝ) => A n 0 a * V n 0 + 2*(∑ h ∈ Finset.Icc 1 (min n ((L n)^2)), A n h a * V n h); let long := fun (n : ℕ) (a : ℕ → ℝ) => 2*(∑ h ∈ Finset.Icc ((L n)^2+1) n, A n h a * V n h); ∃ N : ℕ, ∀ n ≥ N, Even n → long n (high n) - long n model ≤ (n:ℝ)/1152",
+      "plain_statement": {
+        "zh": "中间猜想：长间距素数对相对模 30 模型的带符号超额",
+        "en": "Conjecture: signed long-lag prime-pair excess over the wheel"
+      },
+      "brief": {
+        "zh": "只对 h>L² 的加权总和求一个上界。保留 V(h) 的符号，可先研究偶间距的区块和。周期模型仅消除部分局部结构，偏差仍属开放问题。",
+        "en": "Seek an upper bound for a signed sum over h>L². Study even-lag blocks without replacing the Fourier coefficients by absolute values. The wheel removes only part of the local structure."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-resonant-prime-energy",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let U := fun (n : ℕ) (a : ℕ → ℝ) => intervalIntegral ((B n).indicator (fun t => ‖S n a t‖^2)) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → U n (high n) ≤ (n:ℝ)/576",
+      "plain_statement": {
+        "zh": "中间猜想：高段素数在正共振次弧上的能量预算",
+        "en": "Conjecture: bulk-prime energy on resonant minor arcs"
+      },
+      "brief": {
+        "zh": "只在 K>1/2 的次弧积分，目标不含移频相位。可尝试长短间距路线，也可直接限制素数频谱在该集合的集中。",
+        "en": "Restrict the squared norm to minor arcs with K>1/2. This removes the target phase. Try lag correlations or a direct concentration estimate."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-capped-signed-floor",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let J := fun (n : ℕ) (v : ℝ → ℝ) => (intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => (v u:ℂ)*S n (high n) u*S n (high n) u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume).re; ∃ N : ℕ, ∀ n ≥ N, Even n → -(n:ℝ)/1152 ≤ J n (fun t => min (K n t) (1/2))",
+      "plain_statement": {
+        "zh": "中间猜想：削平正峰后，移频积分的单侧下界",
+        "en": "Conjecture: signed packet floor after clipping positive peaks"
+      },
+      "brief": {
+        "zh": "仅在 K>1/2 将权替换为 1/2，其余频率精确保留。需要对每个充分大偶数控制带符号积分，这一支可与异常集能量估计同时攻。",
+        "en": "Replace the weight by 1/2 only above that level. Pointwise signed control for large even n remains an arithmetic challenge independent of the energy task."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-cap-comparison",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let J := fun (n : ℕ) (v : ℝ → ℝ) => (intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => (v u:ℂ)*S n (high n) u*S n (high n) u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume).re; let B :=  fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let U := fun (n : ℕ) (a : ℕ → ℝ) => intervalIntegral ((B n).indicator (fun t => ‖S n a t‖^2)) (0:ℝ) 1 MeasureTheory.volume; ∀ n : ℕ, J n (fun t => min (K n t) (1/2)) - U n (high n)/2 ≤ J n (K n)",
+      "plain_statement": {
+        "zh": "以异常集上的能量控制削峰损失",
+        "en": "Bound the signed clipping loss by localized energy"
+      },
+      "brief": {
+        "zh": "差权 (K−1/2)₊ 只在异常集出现，最大为 1/2。先验证实部下界和区间可积性，再对平方模积分。",
+        "en": "The excess weight is supported where K>1/2 and bounded by 1/2. Establish integrability and dominate the signed loss by half the localized squared norm."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-energy-from-lags",
+      "statement": "(let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let U := fun (n : ℕ) (a : ℕ → ℝ) => intervalIntegral ((B n).indicator (fun t => ‖S n a t‖^2)) (0:ℝ) 1 MeasureTheory.volume; let V := fun (n h : ℕ) => intervalIntegral ((B n).indicator (fun t => Real.cos (2*Real.pi*(h:ℝ)*t))) (0:ℝ) 1 MeasureTheory.volume; let A := fun (n h : ℕ) (a : ℕ → ℝ) => ∑ k ∈ Finset.range (n+1-h), a k * a (k+h); let model := fun k : ℕ => if Nat.Coprime k 30 then (30:ℝ)/8 else 0; let short := fun (n : ℕ) (a : ℕ → ℝ) => A n 0 a * V n 0 + 2*(∑ h ∈ Finset.Icc 1 (min n ((L n)^2)), A n h a * V n h); let long := fun (n : ℕ) (a : ℕ → ℝ) => 2*(∑ h ∈ Finset.Icc ((L n)^2+1) n, A n h a * V n h); ∀ (n : ℕ) (a : ℕ → ℝ), U n a = short n a + long n a) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let U := fun (n : ℕ) (a : ℕ → ℝ) => intervalIntegral ((B n).indicator (fun t => ‖S n a t‖^2)) (0:ℝ) 1 MeasureTheory.volume; let V := fun (n h : ℕ) => intervalIntegral ((B n).indicator (fun t => Real.cos (2*Real.pi*(h:ℝ)*t))) (0:ℝ) 1 MeasureTheory.volume; let A := fun (n h : ℕ) (a : ℕ → ℝ) => ∑ k ∈ Finset.range (n+1-h), a k * a (k+h); let model := fun k : ℕ => if Nat.Coprime k 30 then (30:ℝ)/8 else 0; let short := fun (n : ℕ) (a : ℕ → ℝ) => A n 0 a * V n 0 + 2*(∑ h ∈ Finset.Icc 1 (min n ((L n)^2)), A n h a * V n h); let long := fun (n : ℕ) (a : ℕ → ℝ) => 2*(∑ h ∈ Finset.Icc ((L n)^2+1) n, A n h a * V n h); ∃ N : ℕ, ∀ n ≥ N, Even n → U n model ≤ (n:ℝ)/2304) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let U := fun (n : ℕ) (a : ℕ → ℝ) => intervalIntegral ((B n).indicator (fun t => ‖S n a t‖^2)) (0:ℝ) 1 MeasureTheory.volume; let V := fun (n h : ℕ) => intervalIntegral ((B n).indicator (fun t => Real.cos (2*Real.pi*(h:ℝ)*t))) (0:ℝ) 1 MeasureTheory.volume; let A := fun (n h : ℕ) (a : ℕ → ℝ) => ∑ k ∈ Finset.range (n+1-h), a k * a (k+h); let model := fun k : ℕ => if Nat.Coprime k 30 then (30:ℝ)/8 else 0; let short := fun (n : ℕ) (a : ℕ → ℝ) => A n 0 a * V n 0 + 2*(∑ h ∈ Finset.Icc 1 (min n ((L n)^2)), A n h a * V n h); let long := fun (n : ℕ) (a : ℕ → ℝ) => 2*(∑ h ∈ Finset.Icc ((L n)^2+1) n, A n h a * V n h); ∃ N : ℕ, ∀ n ≥ N, Even n → |short n (high n) - short n model| ≤ (n:ℝ)/2304) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let U := fun (n : ℕ) (a : ℕ → ℝ) => intervalIntegral ((B n).indicator (fun t => ‖S n a t‖^2)) (0:ℝ) 1 MeasureTheory.volume; let V := fun (n h : ℕ) => intervalIntegral ((B n).indicator (fun t => Real.cos (2*Real.pi*(h:ℝ)*t))) (0:ℝ) 1 MeasureTheory.volume; let A := fun (n h : ℕ) (a : ℕ → ℝ) => ∑ k ∈ Finset.range (n+1-h), a k * a (k+h); let model := fun k : ℕ => if Nat.Coprime k 30 then (30:ℝ)/8 else 0; let short := fun (n : ℕ) (a : ℕ → ℝ) => A n 0 a * V n 0 + 2*(∑ h ∈ Finset.Icc 1 (min n ((L n)^2)), A n h a * V n h); let long := fun (n : ℕ) (a : ℕ → ℝ) => 2*(∑ h ∈ Finset.Icc ((L n)^2+1) n, A n h a * V n h); ∃ N : ℕ, ∀ n ≥ N, Even n → long n (high n) - long n model ≤ (n:ℝ)/1152) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let U := fun (n : ℕ) (a : ℕ → ℝ) => intervalIntegral ((B n).indicator (fun t => ‖S n a t‖^2)) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → U n (high n) ≤ (n:ℝ)/576)",
+      "plain_statement": {
+        "zh": "由两种自相关的差恢复真素数能量预算",
+        "en": "Recover the prime-energy budget from the two autocorrelations"
+      },
+      "brief": {
+        "zh": "对同一个 n 分别展开素数与模型；预算为 1/2304+1/2304+1/1152=1/576。",
+        "en": "Apply the exact expansion twice at a common threshold and add the three budgets."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-from-capped-energy",
+      "statement": "(let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let J := fun (n : ℕ) (v : ℝ → ℝ) => (intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => (v u:ℂ)*S n (high n) u*S n (high n) u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume).re; ∃ N : ℕ, ∀ n ≥ N, Even n → -(n:ℝ)/1152 ≤ J n (fun t => min (K n t) (1/2))) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let U := fun (n : ℕ) (a : ℕ → ℝ) => intervalIntegral ((B n).indicator (fun t => ‖S n a t‖^2)) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → U n (high n) ≤ (n:ℝ)/576) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let J := fun (n : ℕ) (v : ℝ → ℝ) => (intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => (v u:ℂ)*S n (high n) u*S n (high n) u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume).re; let B :=  fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let U := fun (n : ℕ) (a : ℕ → ℝ) => intervalIntegral ((B n).indicator (fun t => ‖S n a t‖^2)) (0:ℝ) 1 MeasureTheory.volume; ∀ n : ℕ, J n (fun t => min (K n t) (1/2)) - U n (high n)/2 ≤ J n (K n)) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let J := fun (n : ℕ) (v : ℝ → ℝ) => (intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => (v u:ℂ)*S n (high n) u*S n (high n) u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume).re; ∃ N : ℕ, ∀ n ≥ N, Even n → -(n:ℝ)/576 ≤ J n (K n))",
+      "plain_statement": {
+        "zh": "由削峰下界和异常集能量恢复原移频预算",
+        "en": "Recover the original packet from the capped floor and masked energy"
+      },
+      "brief": {
+        "zh": "削峰损失至多是异常集能量的一半，与削峰后下界相加得到 −n/576。",
+        "en": "Half the energy budget covers the signed clipping loss. Combine with the capped floor at the larger threshold."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-sparse-lag-budget",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let U := fun (n : ℕ) (a : ℕ → ℝ) => intervalIntegral ((B n).indicator (fun t => ‖S n a t‖^2)) (0:ℝ) 1 MeasureTheory.volume; let V := fun (n h : ℕ) => intervalIntegral ((B n).indicator (fun t => Real.cos (2*Real.pi*(h:ℝ)*t))) (0:ℝ) 1 MeasureTheory.volume; let A := fun (n h : ℕ) (a : ℕ → ℝ) => ∑ k ∈ Finset.range (n+1-h), a k * a (k+h); ∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ n ≥ N, ∀ (F : Finset ℕ) (a : ℕ → ℝ), (F.card:ℝ) ≤ Real.exp ((L n:ℝ)/16) → (∀ k ≤ n, |a k| ≤ 4*(1+Real.log (n:ℝ))) → (∑ h ∈ F, |A n h a * V n h|) ≤ ε*(n:ℝ)",
+      "plain_statement": {
+        "zh": "任意位置的稀疏间距集只贡献 o(n)",
+        "en": "Arbitrarily located sparse lag sets contribute sublinearly"
+      },
+      "brief": {
+        "zh": "间距集与权可以随 n 改变。用指数面积界证明 |F|² 乘以异常集面积至多为一，再以四次对数的面积衰减吸收平方后的权。可剔除分散的例外间距，仍需估计剩下的稠密偶间距。",
+        "en": "The set and weights may depend on n. The exponential area bound pays for the squared cardinality. Logarithmic area decay absorbs the remaining squared weight. This controls scattered exceptions while leaving the dense even-lag sum open."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-wheel-smooth-envelope",
+      "statement": "let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let model := fun k : ℕ => if Nat.Coprime k 30 then (30:ℝ)/8 else 0; let D := fun (n : ℕ) (t : ℝ) => ((n:ℝ)+1)^2/(1+((n:ℝ)+1)^2*‖E (30*t)-1‖^2); ∀ (n : ℕ) (t : ℝ), ‖S n model t‖^2 ≤ 3616*D n t",
+      "plain_statement": {
+        "zh": "用光滑的模 30 周期函数控制模型频谱平方",
+        "en": "Dominate the model spectrum by a smooth period-1/30 envelope"
+      },
+      "brief": {
+        "zh": "八个几何和分别乘上相位差后至多为 2。用全局平凡上界覆盖精确共振点，得到处处有限的显式函数。",
+        "en": "Multiply each geometric sum by its phase difference, then combine the resulting cap with the global size bound. The envelope is finite at the exact resonances."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-wheel-grid-tail",
+      "statement": "let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let D := fun (n : ℕ) (t : ℝ) => ((n:ℝ)+1)^2/(1+((n:ℝ)+1)^2*‖E (30*t)-1‖^2); ∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ n ≥ N, intervalIntegral ((arcs n)ᶜ.indicator (D n)) (0:ℝ) 1 MeasureTheory.volume ≤ ε*(n:ℝ)",
+      "plain_statement": {
+        "zh": "模 30 有理网格在冻结次弧上的积分尾部",
+        "en": "Integrate the smooth rational-grid tail on the frozen minor arcs"
+      },
+      "brief": {
+        "zh": "只含显式余弦相位和实际弧宽。充分大 n 时，每个 a/30 约分后分母至多 30，主弧包含宽度至少 Q/(30n) 的邻域。可按最近网格点分区，利用正弦下界并积分距离的倒数平方。",
+        "en": "The task contains no prime weights. For large n each reduced a/30 has a major-arc neighborhood of radius at least Q/(30n). Partition by the nearest grid point and integrate an inverse-square distance estimate."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-wheel-envelope-transfer",
+      "statement": "(let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let model := fun k : ℕ => if Nat.Coprime k 30 then (30:ℝ)/8 else 0; let D := fun (n : ℕ) (t : ℝ) => ((n:ℝ)+1)^2/(1+((n:ℝ)+1)^2*‖E (30*t)-1‖^2); ∀ (n : ℕ) (t : ℝ), ‖S n model t‖^2 ≤ 3616*D n t) → (let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let D := fun (n : ℕ) (t : ℝ) => ((n:ℝ)+1)^2/(1+((n:ℝ)+1)^2*‖E (30*t)-1‖^2); ∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ n ≥ N, intervalIntegral ((arcs n)ᶜ.indicator (D n)) (0:ℝ) 1 MeasureTheory.volume ≤ ε*(n:ℝ)) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let U := fun (n : ℕ) (a : ℕ → ℝ) => intervalIntegral ((B n).indicator (fun t => ‖S n a t‖^2)) (0:ℝ) 1 MeasureTheory.volume; let V := fun (n h : ℕ) => intervalIntegral ((B n).indicator (fun t => Real.cos (2*Real.pi*(h:ℝ)*t))) (0:ℝ) 1 MeasureTheory.volume; let A := fun (n h : ℕ) (a : ℕ → ℝ) => ∑ k ∈ Finset.range (n+1-h), a k * a (k+h); let model := fun k : ℕ => if Nat.Coprime k 30 then (30:ℝ)/8 else 0; let short := fun (n : ℕ) (a : ℕ → ℝ) => A n 0 a * V n 0 + 2*(∑ h ∈ Finset.Icc 1 (min n ((L n)^2)), A n h a * V n h); let long := fun (n : ℕ) (a : ℕ → ℝ) => 2*(∑ h ∈ Finset.Icc ((L n)^2+1) n, A n h a * V n h); ∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ n ≥ N, intervalIntegral ((arcs n)ᶜ.indicator (fun t => ‖S n model t‖^2)) (0:ℝ) 1 MeasureTheory.volume ≤ ε*(n:ℝ))",
+      "plain_statement": {
+        "zh": "由网格尾部恢复周期模型的次弧估计",
+        "en": "Transfer the grid estimate back to model leakage"
+      },
+      "brief": {
+        "zh": "对同一个次弧作单调积分，网格预算取 ε/3616。",
+        "en": "Integrate the pointwise majorant on the same arcs with grid budget ε/3616."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-progression-leakage",
+      "statement": "let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let P := fun (d M : ℕ) (t : ℝ) => ∑ j ∈ Finset.range M, (E ((d:ℝ)*t))^(j+1); let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∀ n d M : ℕ, 0<n → 0<d → d ≤ Q n → m (arcs n)ᶜ (fun t => ‖P d M t‖^2) ≤ 2*Real.pi*(n:ℝ)/(Q n:ℝ)",
+      "plain_statement": {
+        "zh": "所有小模数的等差指数和共享一个次弧能量上界",
+        "en": "Uniform minor-arc leakage for every short denominator"
+      },
+      "brief": {
+        "zh": "长度 M 任意，1≤d≤Q。取最邻近的 k/d 并约分；将几何和尾部积分，常数与 d、M 无关。",
+        "en": "For any length and 1≤d≤Q, reduce the nearest fraction k/d and integrate a geometric-sum tail. The constant is independent of d and M."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-divisor-mixture-leakage",
+      "statement": "let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let P := fun (d M : ℕ) (t : ℝ) => ∑ j ∈ Finset.range M, (E ((d:ℝ)*t))^(j+1); let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∀ (n R : ℕ) (c : ℕ → ℝ) (M : ℕ → ℕ), 0<n → R ≤ Q n → m (arcs n)ᶜ (fun t => ‖∑ d ∈ Finset.Icc 1 R, (c d:ℂ)*P d (M d) t‖^2) ≤ (2*Real.pi*(n:ℝ)/(Q n:ℝ))*(∑ d ∈ Finset.Icc 1 R, |c d|)^2",
+      "plain_statement": {
+        "zh": "控制带符号系数的小除数混合谱",
+        "en": "Control mixtures of small-divisor spectra with signed coefficients"
+      },
+      "brief": {
+        "zh": "可取 M(d)=⌊n/d⌋。加权柯西不等式把代价限制在系数绝对值总和的平方；该总和为 o(√Q) 时贡献为 o(n)。",
+        "en": "Take M(d)=floor(n/d) for multiples. Weighted Cauchy–Schwarz charges the squared ℓ¹ norm. Coefficient mass o(√Q) gives leakage o(n)."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-short-order-shell",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let W := fun (n : ℕ) (p : ℕ → Prop) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ (Q n)^2 ∧ a ≤ q ∧ Nat.Coprime a q ∧ p q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ ((Q n:ℝ)^2)/((q:ℝ)*(n:ℝ))}; let o := fun n q : ℕ => Odd q ∧ ∃ j : ℕ, 1 ≤ j ∧ j ≤ (Nat.log 2 (Q n)+1)^2 ∧ q ∣ 2^j-1; let F := fun (n : ℕ) (t : ℝ) => ‖S n (high n) t‖^2; let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → m ((B n ∩ (W n (fun _ => True))) ∩ W n (o n)) (F n) ≤ (n:ℝ)/2304",
+      "plain_statement": {
+        "zh": "短二进制周期有理窗口内的素数能量",
+        "en": "Prime energy around short binary-period rationals"
+      },
+      "brief": {
+        "zh": "在扩大的窗口中只看邻近奇分母 q 且 q 整除某个 2ʲ−1（j≤(log₂Q+1)²）的点。可按周期分组，研究共振峰聚集。",
+        "en": "Group eligible odd denominators by short multiplicative order of 2 and study resonant peak clustering."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-remaining-rational-shell",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let W := fun (n : ℕ) (p : ℕ → Prop) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ (Q n)^2 ∧ a ≤ q ∧ Nat.Coprime a q ∧ p q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ ((Q n:ℝ)^2)/((q:ℝ)*(n:ℝ))}; let o := fun n q : ℕ => Odd q ∧ ∃ j : ℕ, 1 ≤ j ∧ j ≤ (Nat.log 2 (Q n)+1)^2 ∧ q ∣ 2^j-1; let F := fun (n : ℕ) (t : ℝ) => ‖S n (high n) t‖^2; let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → m ((B n ∩ (W n (fun _ => True))) \\ W n (o n)) (F n) ≤ (n:ℝ)/2304",
+      "plain_statement": {
+        "zh": "其余有理窗口内的素数能量",
+        "en": "Prime energy in the remaining rational windows"
+      },
+      "brief": {
+        "zh": "扣除所有短周期窗口的并集。偶分母也在考虑范围；尝试沿倍增轨道控制共振掩码。",
+        "en": "Subtract the entire short-period union. Include even denominators and study the mask along doubling orbits."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-deep-spike-energy",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let W := fun (n : ℕ) (p : ℕ → Prop) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ (Q n)^2 ∧ a ≤ q ∧ Nat.Coprime a q ∧ p q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ ((Q n:ℝ)^2)/((q:ℝ)*(n:ℝ))}; let F := fun (n : ℕ) (t : ℝ) => ‖S n (high n) t‖^2; let T := fun n : ℕ => (n:ℝ)*(1+Real.log (n:ℝ))^4; let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → m ((B n \\ (W n (fun _ => True))) ∩ {t : ℝ | T n < F n t}) (F n) ≤ (n:ℝ)/2304",
+      "plain_statement": {
+        "zh": "深次弧上超过截断线的素数峰值总能量",
+        "en": "Total large-value energy on deep minor arcs"
+      },
+      "brief": {
+        "zh": "只研究扩大有理窗口外、落入共振掩码且平方振幅超过 n(1+log n)⁴ 的点。可按幅度分层；普通振幅的费用已有独立证明。",
+        "en": "Restrict to the exceptional mask outside enlarged windows and squared amplitudes above n(1+log n)⁴. Bin by amplitude; the ordinary-amplitude cost is controlled separately."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-deep-moderate-values",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let W := fun (n : ℕ) (p : ℕ → Prop) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ (Q n)^2 ∧ a ≤ q ∧ Nat.Coprime a q ∧ p q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ ((Q n:ℝ)^2)/((q:ℝ)*(n:ℝ))}; let F := fun (n : ℕ) (t : ℝ) => ‖S n (high n) t‖^2; let T := fun n : ℕ => (n:ℝ)*(1+Real.log (n:ℝ))^4; let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ n ≥ N, m ((B n \\ (W n (fun _ => True))) \\ {t : ℝ | T n < F n t}) (F n) ≤ ε*(n:ℝ)",
+      "plain_statement": {
+        "zh": "深次弧上的普通振幅只贡献 o(n)",
+        "en": "Moderate deep-minor amplitudes cost o(n)"
+      },
+      "brief": {
+        "zh": "用截断线上界乘以共振掩码面积，调用已形式化的任意对数幂面积衰减。",
+        "en": "Multiply the ceiling by the masked area and use its established arbitrary-log-power decay."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-energy-from-rational-regions",
+      "statement": "(let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let W := fun (n : ℕ) (p : ℕ → Prop) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ (Q n)^2 ∧ a ≤ q ∧ Nat.Coprime a q ∧ p q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ ((Q n:ℝ)^2)/((q:ℝ)*(n:ℝ))}; let o := fun n q : ℕ => Odd q ∧ ∃ j : ℕ, 1 ≤ j ∧ j ≤ (Nat.log 2 (Q n)+1)^2 ∧ q ∣ 2^j-1; let F := fun (n : ℕ) (t : ℝ) => ‖S n (high n) t‖^2; let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → m ((B n ∩ (W n (fun _ => True))) ∩ W n (o n)) (F n) ≤ (n:ℝ)/2304) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let W := fun (n : ℕ) (p : ℕ → Prop) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ (Q n)^2 ∧ a ≤ q ∧ Nat.Coprime a q ∧ p q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ ((Q n:ℝ)^2)/((q:ℝ)*(n:ℝ))}; let o := fun n q : ℕ => Odd q ∧ ∃ j : ℕ, 1 ≤ j ∧ j ≤ (Nat.log 2 (Q n)+1)^2 ∧ q ∣ 2^j-1; let F := fun (n : ℕ) (t : ℝ) => ‖S n (high n) t‖^2; let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → m ((B n ∩ (W n (fun _ => True))) \\ W n (o n)) (F n) ≤ (n:ℝ)/2304) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let W := fun (n : ℕ) (p : ℕ → Prop) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ (Q n)^2 ∧ a ≤ q ∧ Nat.Coprime a q ∧ p q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ ((Q n:ℝ)^2)/((q:ℝ)*(n:ℝ))}; let F := fun (n : ℕ) (t : ℝ) => ‖S n (high n) t‖^2; let T := fun n : ℕ => (n:ℝ)*(1+Real.log (n:ℝ))^4; let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → m ((B n \\ (W n (fun _ => True))) ∩ {t : ℝ | T n < F n t}) (F n) ≤ (n:ℝ)/2304) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let U := fun (n : ℕ) (a : ℕ → ℝ) => intervalIntegral ((B n).indicator (fun t => ‖S n a t‖^2)) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → U n (high n) ≤ (n:ℝ)/576)",
+      "plain_statement": {
+        "zh": "从三个独立区域恢复素数共振能量界",
+        "en": "Recover resonant prime energy from three disjoint regions"
+      },
+      "brief": {
+        "zh": "三项各取 n/2304；剩余的普通振幅取同一预算，四项相加即得 n/576。",
+        "en": "Allocate n/2304 to each region and use the same allowance for the proved moderate-amplitude estimate."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-rational-peak-excess",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let W := fun (n : ℕ) (p : ℕ → Prop) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ (Q n)^2 ∧ a ≤ q ∧ Nat.Coprime a q ∧ p q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ ((Q n:ℝ)^2)/((q:ℝ)*(n:ℝ))}; let F := fun (n : ℕ) (t : ℝ) => ‖S n (high n) t‖^2; let G := fun (n : ℕ) (t : ℝ) => ∑ q ∈ Finset.Icc 1 ((Q n)^2), ∑ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q), 4*(n:ℝ)^2 / ((Nat.totient q:ℝ)^2 * (1+((n:ℝ)*(t-(a:ℝ)/(q:ℝ)))^2)); let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → m (W n (fun _ => True)) (fun t => max 0 (F n t - G n t)) ≤ (n:ℝ)/4608",
+      "plain_statement": {
+        "zh": "用有理峰包络覆盖素数谱在扩大主弧上的正向超差",
+        "en": "Control the positive excess over a rational-peak envelope on enlarged arcs"
+      },
+      "brief": {
+        "zh": "在 q≤Q² 的小分母附近，以 1/φ(q) 和连续几何和为主项，尝试用算术级数中的素数估计及分部求和控制误差。目标是正部积分，必须保留真实素数权及其低端截断。",
+        "en": "Try progression estimates and partial summation for q≤Q² against the 1/φ(q) geometric profile. Integrate the positive excess with the actual prime-only weight and its low cutoff."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-short-order-peak-overlap",
+      "statement": "let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let W := fun (n : ℕ) (p : ℕ → Prop) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ (Q n)^2 ∧ a ≤ q ∧ Nat.Coprime a q ∧ p q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ ((Q n:ℝ)^2)/((q:ℝ)*(n:ℝ))}; let o := fun n q : ℕ => Odd q ∧ ∃ j : ℕ, 1 ≤ j ∧ j ≤ (Nat.log 2 (Q n)+1)^2 ∧ q ∣ 2^j-1; let G := fun (n : ℕ) (t : ℝ) => ∑ q ∈ Finset.Icc 1 ((Q n)^2), ∑ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q), 4*(n:ℝ)^2 / ((Nat.totient q:ℝ)^2 * (1+((n:ℝ)*(t-(a:ℝ)/(q:ℝ)))^2)); let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → m ((B n ∩ (W n (fun _ => True))) ∩ W n (o n)) (G n) ≤ (n:ℝ)/4608",
+      "plain_statement": {
+        "zh": "短周期有理峰和共振掩码的重合质量",
+        "en": "Overlap of short-order rational windows with the peak model"
+      },
+      "brief": {
+        "zh": "此题不含素数指数和。可先控制短周期分母的倒欧拉函数平方和，再估计偏离中心时倍增轨道何时离开掩码。",
+        "en": "No prime exponential sum appears. Bound short-order denominators with totient weights and track the mask away from rational centers."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-short-order-shell-from-model",
+      "statement": "(let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let W := fun (n : ℕ) (p : ℕ → Prop) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ (Q n)^2 ∧ a ≤ q ∧ Nat.Coprime a q ∧ p q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ ((Q n:ℝ)^2)/((q:ℝ)*(n:ℝ))}; let F := fun (n : ℕ) (t : ℝ) => ‖S n (high n) t‖^2; let G := fun (n : ℕ) (t : ℝ) => ∑ q ∈ Finset.Icc 1 ((Q n)^2), ∑ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q), 4*(n:ℝ)^2 / ((Nat.totient q:ℝ)^2 * (1+((n:ℝ)*(t-(a:ℝ)/(q:ℝ)))^2)); let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → m (W n (fun _ => True)) (fun t => max 0 (F n t - G n t)) ≤ (n:ℝ)/4608) → (let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let W := fun (n : ℕ) (p : ℕ → Prop) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ (Q n)^2 ∧ a ≤ q ∧ Nat.Coprime a q ∧ p q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ ((Q n:ℝ)^2)/((q:ℝ)*(n:ℝ))}; let o := fun n q : ℕ => Odd q ∧ ∃ j : ℕ, 1 ≤ j ∧ j ≤ (Nat.log 2 (Q n)+1)^2 ∧ q ∣ 2^j-1; let G := fun (n : ℕ) (t : ℝ) => ∑ q ∈ Finset.Icc 1 ((Q n)^2), ∑ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q), 4*(n:ℝ)^2 / ((Nat.totient q:ℝ)^2 * (1+((n:ℝ)*(t-(a:ℝ)/(q:ℝ)))^2)); let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → m ((B n ∩ (W n (fun _ => True))) ∩ W n (o n)) (G n) ≤ (n:ℝ)/4608) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let W := fun (n : ℕ) (p : ℕ → Prop) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ (Q n)^2 ∧ a ≤ q ∧ Nat.Coprime a q ∧ p q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ ((Q n:ℝ)^2)/((q:ℝ)*(n:ℝ))}; let o := fun n q : ℕ => Odd q ∧ ∃ j : ℕ, 1 ≤ j ∧ j ≤ (Nat.log 2 (Q n)+1)^2 ∧ q ∣ 2^j-1; let F := fun (n : ℕ) (t : ℝ) => ‖S n (high n) t‖^2; let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → m ((B n ∩ (W n (fun _ => True))) ∩ W n (o n)) (F n) ≤ (n:ℝ)/2304)",
+      "plain_statement": {
+        "zh": "由模型重合和素数超差推出区域预算",
+        "en": "Recover the regional budget from overlap and prime excess"
+      },
+      "brief": {
+        "zh": "真实能量逐点至多为模型加超差正部，区域包含于扩大窗口。合并两个 n/4608 预算。",
+        "en": "Pointwise density is bounded by the model plus positive excess. The region lies inside the enlarged windows; add the two n/4608 budgets."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-remaining-peak-overlap",
+      "statement": "let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let W := fun (n : ℕ) (p : ℕ → Prop) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ (Q n)^2 ∧ a ≤ q ∧ Nat.Coprime a q ∧ p q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ ((Q n:ℝ)^2)/((q:ℝ)*(n:ℝ))}; let o := fun n q : ℕ => Odd q ∧ ∃ j : ℕ, 1 ≤ j ∧ j ≤ (Nat.log 2 (Q n)+1)^2 ∧ q ∣ 2^j-1; let G := fun (n : ℕ) (t : ℝ) => ∑ q ∈ Finset.Icc 1 ((Q n)^2), ∑ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q), 4*(n:ℝ)^2 / ((Nat.totient q:ℝ)^2 * (1+((n:ℝ)*(t-(a:ℝ)/(q:ℝ)))^2)); let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → m ((B n ∩ (W n (fun _ => True))) \\ W n (o n)) (G n) ≤ (n:ℝ)/4608",
+      "plain_statement": {
+        "zh": "剩余有理窗口中的模型峰质量",
+        "en": "Model peak mass in the remaining rational windows"
+      },
+      "brief": {
+        "zh": "此题不含素数指数和。对普通分母与偶分母分别分析倍增轨道，并保留所有有理中心的峰尾。",
+        "en": "Analyze ordinary and even denominators along doubling orbits, retaining tails from every rational center. No prime exponential sum appears."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-remaining-rational-shell-from-model",
+      "statement": "(let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let W := fun (n : ℕ) (p : ℕ → Prop) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ (Q n)^2 ∧ a ≤ q ∧ Nat.Coprime a q ∧ p q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ ((Q n:ℝ)^2)/((q:ℝ)*(n:ℝ))}; let F := fun (n : ℕ) (t : ℝ) => ‖S n (high n) t‖^2; let G := fun (n : ℕ) (t : ℝ) => ∑ q ∈ Finset.Icc 1 ((Q n)^2), ∑ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q), 4*(n:ℝ)^2 / ((Nat.totient q:ℝ)^2 * (1+((n:ℝ)*(t-(a:ℝ)/(q:ℝ)))^2)); let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → m (W n (fun _ => True)) (fun t => max 0 (F n t - G n t)) ≤ (n:ℝ)/4608) → (let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let W := fun (n : ℕ) (p : ℕ → Prop) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ (Q n)^2 ∧ a ≤ q ∧ Nat.Coprime a q ∧ p q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ ((Q n:ℝ)^2)/((q:ℝ)*(n:ℝ))}; let o := fun n q : ℕ => Odd q ∧ ∃ j : ℕ, 1 ≤ j ∧ j ≤ (Nat.log 2 (Q n)+1)^2 ∧ q ∣ 2^j-1; let G := fun (n : ℕ) (t : ℝ) => ∑ q ∈ Finset.Icc 1 ((Q n)^2), ∑ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q), 4*(n:ℝ)^2 / ((Nat.totient q:ℝ)^2 * (1+((n:ℝ)*(t-(a:ℝ)/(q:ℝ)))^2)); let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → m ((B n ∩ (W n (fun _ => True))) \\ W n (o n)) (G n) ≤ (n:ℝ)/4608) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let W := fun (n : ℕ) (p : ℕ → Prop) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ (Q n)^2 ∧ a ≤ q ∧ Nat.Coprime a q ∧ p q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ ((Q n:ℝ)^2)/((q:ℝ)*(n:ℝ))}; let o := fun n q : ℕ => Odd q ∧ ∃ j : ℕ, 1 ≤ j ∧ j ≤ (Nat.log 2 (Q n)+1)^2 ∧ q ∣ 2^j-1; let F := fun (n : ℕ) (t : ℝ) => ‖S n (high n) t‖^2; let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → m ((B n ∩ (W n (fun _ => True))) \\ W n (o n)) (F n) ≤ (n:ℝ)/2304)",
+      "plain_statement": {
+        "zh": "由模型重合和素数超差推出区域预算",
+        "en": "Recover the regional budget from overlap and prime excess"
+      },
+      "brief": {
+        "zh": "真实能量逐点至多为模型加超差正部，区域包含于扩大窗口。合并两个 n/4608 预算。",
+        "en": "Pointwise density is bounded by the model plus positive excess. The region lies inside the enlarged windows; add the two n/4608 budgets."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-deep-weak-levels",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let W := fun (n : ℕ) (p : ℕ → Prop) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ (Q n)^2 ∧ a ≤ q ∧ Nat.Coprime a q ∧ p q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ ((Q n:ℝ)^2)/((q:ℝ)*(n:ℝ))}; let F := fun (n : ℕ) (t : ℝ) => ‖S n (high n) t‖^2; let T := fun n : ℕ => (n:ℝ)*(1+Real.log (n:ℝ))^4; let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → ∀ j : ℕ, let y := (2:ℝ)^j*T n; y * m ((B n \\ (W n (fun _ => True))) ∩ {t : ℝ | y < F n t ∧ F n t ≤ 2*y}) (fun _ => (1:ℝ)) ≤ (n:ℝ)/(100000*(1+Real.log (n:ℝ))^2)",
+      "plain_statement": {
+        "zh": "深次弧大峰值的分层面积猜想",
+        "en": "Dyadic level-set conjecture for large values on deep minor arcs"
+      },
+      "brief": {
+        "zh": "这是较强的单层面积猜想。可从大筛的采样点间距入手，也可寻找违反界的层。限制到有效层后可推出深次弧大峰值总预算。",
+        "en": "This stronger conjecture bounds each height bin. Try large-sieve spacing or identify a violating bin. Restriction to surviving heights suffices for the integrated spike budget."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-rational-center-stability",
+      "statement": "let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); ∃ N : ℕ, ∀ n ≥ N, ∀ x y : ℝ, |x-y| ≤ (Q n:ℝ)^2/(n:ℝ) → (1:ℝ)/2 < K n x → (1:ℝ)/3 < K n y",
+      "plain_statement": {
+        "zh": "共振峰在有理中心邻域保持可检测",
+        "en": "Detect resonances from a nearby rational center"
+      },
+      "brief": {
+        "zh": "对余弦和逐项应用 Lipschitz 界，最大频率为 2ᴸ。n≥2²⁵⁶ 时 Q²/n 邻域内的变化至多 1/6，连续共振可在有理中心检测。",
+        "en": "Bound the cosine variation term by term at top frequency 2ᴸ. For n≥2²⁵⁶ the change across Q²/n is at most 1/6, allowing detection at the rational center."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-binary-orbit-second-moment",
+      "statement": "let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); ∀ q m : ℕ, 0<q → (∑ a ∈ Finset.range q, ‖∑ j ∈ Finset.range m, E ((((2:ℕ)^(j+1):ℕ):ℝ)*(a:ℝ)/(q:ℝ))‖^2) = (q:ℝ)*(((Finset.range m ×ˢ Finset.range m).filter (fun ij => (2:ℕ)^(ij.1+1)%q = (2:ℕ)^(ij.2+1)%q)).card:ℝ)",
+      "plain_statement": {
+        "zh": "用倍增余数重合次数计算完整二阶矩",
+        "en": "Compute the orbit second moment from modular coincidences"
+      },
+      "brief": {
+        "zh": "对所有分子求和，展开平方模并用有限循环群上的特征正交。结论对偶数分母也适用；偶分母的初始非周期段要保留。",
+        "en": "Sum over all numerators, expand the squared norm, and use orthogonality on the finite cyclic group. The even-denominator transient is retained."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-short-order-center-count",
+      "statement": "let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let o := fun n q : ℕ => q % 2 = 1 ∧ ((Finset.Icc 1 ((Nat.log 2 (Q n)+1)^2)).filter (fun j => q ∣ 2^j-1)).Nonempty; ∀ ε : ℝ, 0<ε → ∃ N : ℕ, ∀ n ≥ N, (∑ q ∈ (Finset.Icc 1 ((Q n)^2)).filter (fun q => o n q), min (1:ℝ) ((q:ℝ)/(Q n:ℝ)) * (((Finset.range (q+1)).filter (fun a => Nat.Coprime a q ∧ (1:ℝ)/3 < K n ((a:ℝ)/(q:ℝ)))).card:ℝ) / (Nat.totient q:ℝ)^2) ≤ ε",
+      "plain_statement": {
+        "zh": "短周期分母的加权共振分子密度趋零",
+        "en": "Vanishing weighted density of short-period resonant centers"
+      },
+      "brief": {
+        "zh": "将 q 按最短倍增周期分组。周期很短时不能假设分子均匀；可将 q 限制到 2ʲ−1 的除数，结合每个分母的实际共振分子数。",
+        "en": "Group q by least period. For short periods, restrict denominators to divisors of 2ʲ−1 and retain the actual count of resonant numerators."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-remaining-center-count",
+      "statement": "let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let o := fun n q : ℕ => q % 2 = 1 ∧ ((Finset.Icc 1 ((Nat.log 2 (Q n)+1)^2)).filter (fun j => q ∣ 2^j-1)).Nonempty; ∀ ε : ℝ, 0<ε → ∃ N : ℕ, ∀ n ≥ N, (∑ q ∈ (Finset.Icc 1 ((Q n)^2)).filter (fun q => ¬ o n q), min (1:ℝ) ((q:ℝ)/(Q n:ℝ)) * (((Finset.range (q+1)).filter (fun a => Nat.Coprime a q ∧ (1:ℝ)/3 < K n ((a:ℝ)/(q:ℝ)))).card:ℝ) / (Nat.totient q:ℝ)^2) ≤ ε",
+      "plain_statement": {
+        "zh": "一般分母及偶分母的加权共振分子密度趋零",
+        "en": "Vanishing weighted density for remaining and even denominators"
+      },
+      "brief": {
+        "zh": "奇分母长周期可从二阶矩入手。偶分母写成 2ᵛr，分别处理初始 v 步和奇数部分；权重中的 q/Q 记录旧主弧剔除的峰心。",
+        "en": "Use the second moment for long odd periods. For q=2ᵛr separate the transient from the odd orbit. The q/Q factor accounts for the removed original core."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-rational-peak-far-tails",
+      "statement": "let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∀ ε : ℝ, 0<ε → ∃ N : ℕ, ∀ n ≥ N, (∑ q ∈ Finset.Icc 1 ((Q n)^2), ∑ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q), m {t : ℝ | (Q n:ℝ)^2/(n:ℝ) < |t-(a:ℝ)/(q:ℝ)|} (fun t => 4*(n:ℝ)^2 / ((Nat.totient q:ℝ)^2*(1+((n:ℝ)*(t-(a:ℝ)/(q:ℝ)))^2)))) ≤ ε*(n:ℝ)",
+      "plain_statement": {
+        "zh": "同时截去全部有理峰远端，误差为 o(n)",
+        "en": "Cut all rational-peak tails simultaneously at sublinear cost"
+      },
+      "brief": {
+        "zh": "共同半径为 Q²/n。用洛伦兹尾积分、每个分母至多 2φ(q) 个分子，以及 ∑_{q≤Q²}1/φ(q)≤4Q，得到全体尾部至多 64πn/Q。包括 q=1 的两个端点。",
+        "en": "At common radius Q²/n, Lorentz integration, at most 2φ(q) centers and a reciprocal-totient sum ≤4Q give total leakage ≤64πn/Q. Both endpoints for q=1 are included."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-deep-late-levels",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let W := fun (n : ℕ) (p : ℕ → Prop) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ (Q n)^2 ∧ a ≤ q ∧ Nat.Coprime a q ∧ p q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ ((Q n:ℝ)^2)/((q:ℝ)*(n:ℝ))}; let F := fun (n : ℕ) (t : ℝ) => ‖S n (high n) t‖^2; let T := fun n : ℕ => (n:ℝ)*(1+Real.log (n:ℝ))^4; let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → ∀ j : ℕ, L n / 16 ≤ j → j < Nat.log 2 n + 3 → let y := (2:ℝ)^j*T n; y * m ((B n \\ (W n (fun _ => True))) ∩ {t : ℝ | y < F n t ∧ F n t ≤ 2*y}) (fun _ => (1:ℝ)) ≤ (n:ℝ)/(100000*(1+Real.log (n:ℝ))^2)",
+      "plain_statement": {
+        "zh": "只控制能消耗预算的深次弧峰高层",
+        "en": "Bound only the deep-minor height bins that can consume the budget"
+      },
+      "brief": {
+        "zh": "只估计 ⌊L/16⌋≤j<⌊log₂ n⌋+3 的层，门槛 y=2ʲn(1+log n)⁴ 为平方振幅。可研究超过门槛的大值点间距，或寻找使单层过密的共振结构。下方所有层的能量之和已有 o(n) 界，上方各层为空。",
+        "en": "For squared amplitude y=2ʲn(1+log n)⁴, estimate only floor(L/16)≤j<floor(log₂ n)+3. Study spacing of large values, or look for structures that overfill a bin. All lower levels together cost o(n); higher bins are empty."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-resonant-low-peaks",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let F := fun (n : ℕ) (t : ℝ) => ‖S n (high n) t‖^2; let T := fun n : ℕ => (n:ℝ)*(1+Real.log (n:ℝ))^4; let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ n ≥ N, m (B n ∩ {t : ℝ | F n t ≤ (2:ℝ)^(L n / 16)*T n}) (F n) ≤ ε*(n:ℝ)",
+      "plain_statement": {
+        "zh": "共振区内低于增长门槛的全部素数能量为 o(n)",
+        "en": "All resonant prime energy below a growing cutoff is o(n)"
+      },
+      "brief": {
+        "zh": "同时利用掩码面积的指数界和带八次对数权的面积界，吸收 2^⌊L/16⌋。结论在整个共振区成立，无偶数或算术分布假设。",
+        "en": "Combine the exponential area bound with decay after eight logarithmic powers to absorb 2^floor(L/16). This holds on the full resonant mask, for either parity, without arithmetic hypotheses."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-spikes-from-late-levels",
+      "statement": "(let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let W := fun (n : ℕ) (p : ℕ → Prop) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ (Q n)^2 ∧ a ≤ q ∧ Nat.Coprime a q ∧ p q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ ((Q n:ℝ)^2)/((q:ℝ)*(n:ℝ))}; let F := fun (n : ℕ) (t : ℝ) => ‖S n (high n) t‖^2; let T := fun n : ℕ => (n:ℝ)*(1+Real.log (n:ℝ))^4; let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → ∀ j : ℕ, L n / 16 ≤ j → j < Nat.log 2 n + 3 → let y := (2:ℝ)^j*T n; y * m ((B n \\ (W n (fun _ => True))) ∩ {t : ℝ | y < F n t ∧ F n t ≤ 2*y}) (fun _ => (1:ℝ)) ≤ (n:ℝ)/(100000*(1+Real.log (n:ℝ))^2)) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let W := fun (n : ℕ) (p : ℕ → Prop) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ (Q n)^2 ∧ a ≤ q ∧ Nat.Coprime a q ∧ p q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ ((Q n:ℝ)^2)/((q:ℝ)*(n:ℝ))}; let F := fun (n : ℕ) (t : ℝ) => ‖S n (high n) t‖^2; let T := fun n : ℕ => (n:ℝ)*(1+Real.log (n:ℝ))^4; let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → m ((B n \\ (W n (fun _ => True))) ∩ {t : ℝ | T n < F n t}) (F n) ≤ (n:ℝ)/2304)",
+      "plain_statement": {
+        "zh": "从有限个高峰层推出深次弧预算",
+        "en": "Deduce the deep-minor spike budget from the surviving height bins"
+      },
+      "brief": {
+        "zh": "每层上端纳入本层，下端归入前层。有限望远镜求和后给高层与低层各留 n/4608。高层总数最多 ⌊log₂ n⌋+3，系数 100000 足以守住预算。",
+        "en": "Use open lower and closed upper bin boundaries. Telescope the finite sum and allocate n/4608 to each of the low and high ranges. There are at most floor(log₂ n)+3 bins, within the numerical allowance."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-mangoldt-uniform-spectral-error",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let d := fun (n : ℕ) (t : ℝ) => ‖S n (fun k => ArithmeticFunction.vonMangoldt k) t - S n (high n) t‖; ∀ n : ℕ, 1 ≤ n → ∀ t : ℝ, d n t ≤ 4*Real.sqrt (n:ℝ)*Real.log (n:ℝ)",
+      "plain_statement": {
+        "zh": "所有频率上换成完整冯·芒戈尔特权的显式误差",
+        "en": "Uniform cost of replacing the upper prime spectrum by full von Mangoldt weights"
+      },
+      "brief": {
+        "zh": "对高次素数幂，Mathlib 的 ψ−θ ≤ 2√n log n 控制系数绝对值和。补回的小素数满足 k³≤n，粗略计到 √n 已足够；任意相位均适用。",
+        "en": "Bound the added prime powers by the Chebyshev ψ−θ estimate. Restored low primes satisfy k³≤n and lie below √n. Both costs are uniform in the phase."
+      },
+      "source": "https://github.com/leanprover-community/mathlib4/blob/fc4f59e577feb1a4956671bc04ac18aaaf8cd842/Mathlib/NumberTheory/Chebyshev.lean",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-mangoldt-masked-error",
+      "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; let d := fun (n : ℕ) (t : ℝ) => ‖S n (fun k => ArithmeticFunction.vonMangoldt k) t - S n (high n) t‖; ∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ n ≥ N, m (B n) (fun t => (d n t)^2) ≤ ε*(n:ℝ)",
+      "plain_statement": {
+        "zh": "素数幂与低端素数的换权误差在共振区上为 o(n)",
+        "en": "The masked squared cost of the full Mangoldt substitution is o(n)"
+      },
+      "brief": {
+        "zh": "逐点误差平方至多 16n log² n，乘以带对数权趋零的掩码面积。结论关于谱差的平方，尚需处理与主谱的交叉项。",
+        "en": "Square the uniform error and use masked-area decay after two logarithmic powers. The estimate concerns the squared difference; the eventual energy transfer also controls the mixed term."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-mangoldt-resonant-energy",
+      "statement": "let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → m (B n) (fun t => ‖S n (fun k => ArithmeticFunction.vonMangoldt k) t‖^2) ≤ (n:ℝ)/640",
+      "plain_statement": {
+        "zh": "完整冯·芒戈尔特指数和的共振能量预算",
+        "en": "Resonant energy budget for the complete von Mangoldt exponential sum"
+      },
+      "brief": {
+        "zh": "该算术猜想针对所有正素数幂，不带 k³>n 截断，可直接使用 Λ 的狄利克雷卷积恒等式。尝试 Vaughan 分解后分别控制小因子项和双线性项；必须在同一共振掩码上给出算术估计。",
+        "en": "This arithmetic conjecture uses all prime powers without a lower prime cutoff. Try Vaughan’s identity to expose small-divisor and bilinear terms. The estimate must apply to this exact resonant mask."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-energy-from-mangoldt",
+      "statement": "(let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → m (B n) (fun t => ‖S n (fun k => ArithmeticFunction.vonMangoldt k) t‖^2) ≤ (n:ℝ)/640) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let U := fun (n : ℕ) (a : ℕ → ℝ) => intervalIntegral ((B n).indicator (fun t => ‖S n a t‖^2)) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → U n (high n) ≤ (n:ℝ)/576)",
+      "plain_statement": {
+        "zh": "从完整 Λ 谱返回真实素数的共振能量",
+        "en": "Return from the full Mangoldt spectrum to resonant prime energy"
+      },
+      "brief": {
+        "zh": "逐点用 (a+b)²≤(17/16)a²+17b² 控制交叉项。主谱取 n/640，平方误差取 n/10⁶；相加守住 n/576。",
+        "en": "Control the mixed term by (a+b)²≤(17/16)a²+17b². The main-spectrum allowance n/640 and squared-error allowance n/10⁶ fit within n/576."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-all-rational-model-mass",
+      "statement": "let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let G := fun (n : ℕ) (t : ℝ) => ∑ q ∈ Finset.Icc 1 ((Q n)^2), ∑ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q), 4*(n:ℝ)^2 / ((Nat.totient q:ℝ)^2 * (1+((n:ℝ)*(t-(a:ℝ)/(q:ℝ)))^2)); let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∀ ε : ℝ, 0<ε → ∃ N : ℕ, ∀ n ≥ N, m (B n) (G n) ≤ ε*(n:ℝ)",
+      "plain_statement": {
+        "zh": "整个共振区上全部有理峰的质量为 o(n)",
+        "en": "All rational peaks have sublinear mass on the full resonant mask"
+      },
+      "brief": {
+        "zh": "较强的共同目标。切去所有峰远尾；每个检测到的中心只收费一次。对原主弧分母保留中心切口 q/Q，并计入区间端点。",
+        "en": "A shared stronger target. Discard the combined far tails and charge each detected center once. Retain the q/Q core discount for original major-arc denominators, including endpoints."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-model-from-center-counts",
+      "statement": "(let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let o := fun n q : ℕ => q % 2 = 1 ∧ ((Finset.Icc 1 ((Nat.log 2 (Q n)+1)^2)).filter (fun j => q ∣ 2^j-1)).Nonempty; ∀ ε : ℝ, 0<ε → ∃ N : ℕ, ∀ n ≥ N, (∑ q ∈ (Finset.Icc 1 ((Q n)^2)).filter (fun q => o n q), min (1:ℝ) ((q:ℝ)/(Q n:ℝ)) * (((Finset.range (q+1)).filter (fun a => Nat.Coprime a q ∧ (1:ℝ)/3 < K n ((a:ℝ)/(q:ℝ)))).card:ℝ) / (Nat.totient q:ℝ)^2) ≤ ε) → (let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let o := fun n q : ℕ => q % 2 = 1 ∧ ((Finset.Icc 1 ((Nat.log 2 (Q n)+1)^2)).filter (fun j => q ∣ 2^j-1)).Nonempty; ∀ ε : ℝ, 0<ε → ∃ N : ℕ, ∀ n ≥ N, (∑ q ∈ (Finset.Icc 1 ((Q n)^2)).filter (fun q => ¬ o n q), min (1:ℝ) ((q:ℝ)/(Q n:ℝ)) * (((Finset.range (q+1)).filter (fun a => Nat.Coprime a q ∧ (1:ℝ)/3 < K n ((a:ℝ)/(q:ℝ)))).card:ℝ) / (Nat.totient q:ℝ)^2) ≤ ε) → (let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let G := fun (n : ℕ) (t : ℝ) => ∑ q ∈ Finset.Icc 1 ((Q n)^2), ∑ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q), 4*(n:ℝ)^2 / ((Nat.totient q:ℝ)^2 * (1+((n:ℝ)*(t-(a:ℝ)/(q:ℝ)))^2)); let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∀ ε : ℝ, 0<ε → ∃ N : ℕ, ∀ n ≥ N, m (B n) (G n) ≤ ε*(n:ℝ))",
+      "plain_statement": {
+        "zh": "由两类离散中心计数推出整个模型质量界",
+        "en": "Recover total model mass from two discrete center counts"
+      },
+      "brief": {
+        "zh": "将两个分母族的加权计数相加。近场的非零贡献要求中心处 K>1/3，单峰代价至多 8πn min(1,q/Q)/φ(q)²；其余收费归入已经控制的远尾。",
+        "en": "Sum the two weighted counts. A contributing near field requires K>1/3 at its center, costing at most 8πn min(1,q/Q)/φ(q)² per center. The remaining contributions are covered by the proved far-tail estimate."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-short-order-peak-overlap-from-full",
+      "statement": "(let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let G := fun (n : ℕ) (t : ℝ) => ∑ q ∈ Finset.Icc 1 ((Q n)^2), ∑ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q), 4*(n:ℝ)^2 / ((Nat.totient q:ℝ)^2 * (1+((n:ℝ)*(t-(a:ℝ)/(q:ℝ)))^2)); let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∀ ε : ℝ, 0<ε → ∃ N : ℕ, ∀ n ≥ N, m (B n) (G n) ≤ ε*(n:ℝ)) → (let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let W := fun (n : ℕ) (p : ℕ → Prop) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ (Q n)^2 ∧ a ≤ q ∧ Nat.Coprime a q ∧ p q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ ((Q n:ℝ)^2)/((q:ℝ)*(n:ℝ))}; let o := fun n q : ℕ => Odd q ∧ ∃ j : ℕ, 1 ≤ j ∧ j ≤ (Nat.log 2 (Q n)+1)^2 ∧ q ∣ 2^j-1; let G := fun (n : ℕ) (t : ℝ) => ∑ q ∈ Finset.Icc 1 ((Q n)^2), ∑ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q), 4*(n:ℝ)^2 / ((Nat.totient q:ℝ)^2 * (1+((n:ℝ)*(t-(a:ℝ)/(q:ℝ)))^2)); let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → m ((B n ∩ (W n (fun _ => True))) ∩ W n (o n)) (G n) ≤ (n:ℝ)/4608)",
+      "plain_statement": {
+        "zh": "由全模型质量取得该窗口的预算",
+        "en": "Restrict the full model mass to this class of windows"
+      },
+      "brief": {
+        "zh": "模型非负，积分区域包含于共振区，取 ε=1/4608。",
+        "en": "Restrict the nonnegative integrand to the regional subset and take ε=1/4608."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-remaining-peak-overlap-from-full",
+      "statement": "(let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let G := fun (n : ℕ) (t : ℝ) => ∑ q ∈ Finset.Icc 1 ((Q n)^2), ∑ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q), 4*(n:ℝ)^2 / ((Nat.totient q:ℝ)^2 * (1+((n:ℝ)*(t-(a:ℝ)/(q:ℝ)))^2)); let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∀ ε : ℝ, 0<ε → ∃ N : ℕ, ∀ n ≥ N, m (B n) (G n) ≤ ε*(n:ℝ)) → (let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let B := fun n : ℕ => {t : ℝ | t ∉ arcs n ∧ (1:ℝ)/2 < K n t}; let W := fun (n : ℕ) (p : ℕ → Prop) => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ (Q n)^2 ∧ a ≤ q ∧ Nat.Coprime a q ∧ p q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ ((Q n:ℝ)^2)/((q:ℝ)*(n:ℝ))}; let o := fun n q : ℕ => Odd q ∧ ∃ j : ℕ, 1 ≤ j ∧ j ≤ (Nat.log 2 (Q n)+1)^2 ∧ q ∣ 2^j-1; let G := fun (n : ℕ) (t : ℝ) => ∑ q ∈ Finset.Icc 1 ((Q n)^2), ∑ a ∈ (Finset.range (q+1)).filter (fun a => Nat.Coprime a q), 4*(n:ℝ)^2 / ((Nat.totient q:ℝ)^2 * (1+((n:ℝ)*(t-(a:ℝ)/(q:ℝ)))^2)); let m := fun (s : Set ℝ) (f : ℝ → ℝ) => intervalIntegral (s.indicator f) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → m ((B n ∩ (W n (fun _ => True))) \\ W n (o n)) (G n) ≤ (n:ℝ)/4608)",
+      "plain_statement": {
+        "zh": "由全模型质量取得该窗口的预算",
+        "en": "Restrict the full model mass to this class of windows"
+      },
+      "brief": {
+        "zh": "模型非负，积分区域包含于共振区，取 ε=1/4608。",
+        "en": "Restrict the nonnegative integrand to the regional subset and take ε=1/4608."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-smooth-moduli-weight",
+      "statement": "let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let smooth := fun n q : ℕ => ∀ p ∈ q.primeFactors, p ≤ (1+Nat.log 2 (Q n))^8; ∀ ε : ℝ, 0<ε → ∃ N : ℕ, ∀ n ≥ N, (∑ q ∈ (Finset.Icc 1 ((Q n)^2)).filter (fun q => smooth n q), min (1:ℝ) ((q:ℝ)/(Q n:ℝ))/(Nat.totient q:ℝ)) ≤ ε",
+      "plain_statement": {
+        "zh": "所有小素因子分母的加权总量趋零",
+        "en": "Vanishing weight of smooth denominators"
+      },
+      "brief": {
+        "zh": "算术猜想，允许全部 (1+log₂ Q)⁸ 光滑分母。先用 q/Q 控制小分母，再尝试用 Rankin 界估计较大光滑数及其 1/φ(q) 权重。",
+        "en": "Allow every denominator whose prime factors are at most (1+log₂ Q)⁸. Use q/Q for small q and try a Rankin bound for the weighted smooth-number tail."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-short-period-large-prime-weight",
+      "statement": "let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let o := fun n q : ℕ => q % 2 = 1 ∧ ((Finset.Icc 1 ((Nat.log 2 (Q n)+1)^2)).filter (fun j => q ∣ 2^j-1)).Nonempty; let smooth := fun n q : ℕ => ∀ p ∈ q.primeFactors, p ≤ (1+Nat.log 2 (Q n))^8; ∀ ε : ℝ, 0<ε → ∃ N : ℕ, ∀ n ≥ N, (∑ q ∈ (Finset.Icc 1 ((Q n)^2)).filter (fun q => o n q ∧ ¬smooth n q), min (1:ℝ) ((q:ℝ)/(Q n:ℝ))/(Nat.totient q:ℝ)) ≤ ε",
+      "plain_statement": {
+        "zh": "短周期且含大素因子的分母总权趋零",
+        "en": "Vanishing weight of short-period moduli with a large prime factor"
+      },
+      "brief": {
+        "zh": "每个大素因子 p 必整除某个 2ʲ−1。对 j≤H 的所有候选大素数按重数求和，1/(p−1) 的总价至多 H²/Y。用 φ 的超乘性向余因子收费，再以 (⌊log₂ X⌋+2)² 控制余因子倒欧拉函数和。",
+        "en": "Every large prime factor divides some 2ʲ−1. Summing even with period multiplicities costs ≤H²/Y in reciprocal (p−1) weight. Charge the cofactor by supermultiplicativity of φ and use the bound (floor(log₂ X)+2)² for its reciprocal-totient sum."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    },
+    {
+      "id": "L-goldbach-packet-short-centers-from-moduli",
+      "statement": "(let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let smooth := fun n q : ℕ => ∀ p ∈ q.primeFactors, p ≤ (1+Nat.log 2 (Q n))^8; ∀ ε : ℝ, 0<ε → ∃ N : ℕ, ∀ n ≥ N, (∑ q ∈ (Finset.Icc 1 ((Q n)^2)).filter (fun q => smooth n q), min (1:ℝ) ((q:ℝ)/(Q n:ℝ))/(Nat.totient q:ℝ)) ≤ ε) → (let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let o := fun n q : ℕ => q % 2 = 1 ∧ ((Finset.Icc 1 ((Nat.log 2 (Q n)+1)^2)).filter (fun j => q ∣ 2^j-1)).Nonempty; let smooth := fun n q : ℕ => ∀ p ∈ q.primeFactors, p ≤ (1+Nat.log 2 (Q n))^8; ∀ ε : ℝ, 0<ε → ∃ N : ℕ, ∀ n ≥ N, (∑ q ∈ (Finset.Icc 1 ((Q n)^2)).filter (fun q => o n q ∧ ¬smooth n q), min (1:ℝ) ((q:ℝ)/(Q n:ℝ))/(Nat.totient q:ℝ)) ≤ ε) → (let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let L := fun n : ℕ => max 1 (Nat.log 2 n / 2); let K := fun (n : ℕ) (t : ℝ) => (∑ j ∈ Finset.range (L n), Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t))/(L n:ℝ); let o := fun n q : ℕ => q % 2 = 1 ∧ ((Finset.Icc 1 ((Nat.log 2 (Q n)+1)^2)).filter (fun j => q ∣ 2^j-1)).Nonempty; ∀ ε : ℝ, 0<ε → ∃ N : ℕ, ∀ n ≥ N, (∑ q ∈ (Finset.Icc 1 ((Q n)^2)).filter (fun q => o n q), min (1:ℝ) ((q:ℝ)/(Q n:ℝ)) * (((Finset.range (q+1)).filter (fun a => Nat.Coprime a q ∧ (1:ℝ)/3 < K n ((a:ℝ)/(q:ℝ)))).card:ℝ) / (Nat.totient q:ℝ)^2) ≤ ε)",
+      "plain_statement": {
+        "zh": "两类分母估计足以控制短周期中心",
+        "en": "Bound short-order centers from two denominator populations"
+      },
+      "brief": {
+        "zh": "对每个 q，候选分子最多 2φ(q)，包含 q=1 的两个端点。光滑与非光滑分母分别给 ε/4；无须假设短周期轨道均匀分布。",
+        "en": "At most 2φ(q) numerators occur, including both endpoints at q=1. Allocate ε/4 to each denominator family without assuming that short orbits are equidistributed."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+      "route": "minor-truncation",
+      "program": "correlation",
+      "parallel": true,
+      "assumptions": [],
+      "depends_on": []
+    }
+  ],
+  "links": [
+    {
+      "kind": "sufficient_reduction",
+      "inputs": [
+        "L-goldbach-bulk-binary-packet",
+        "L-goldbach-bulk-binary-defect",
+        "L-goldbach-bulk-binary-partition"
+      ],
+      "output": "L-goldbach-bulk-fixed-288",
+      "bridge": "L-goldbach-bulk-binary-recombine",
+      "explanation": {
+        "zh": "在两个阈值的最大值之后相加：两次 −n/576 合为 −n/288。",
+        "en": "Beyond the maximum of the two thresholds, the two lower bounds sum to −n/288."
+      }
+    },
+    {
+      "kind": "sufficient_reduction",
+      "inputs": [
+        "L-goldbach-arc-coefficient-sum",
+        "L-goldbach-major-fixed-144",
+        "L-goldbach-minor-bilinear-split",
+        "L-goldbach-small-small-saving",
+        "L-goldbach-small-bulk-saving",
+        "L-goldbach-bulk-fixed-288"
+      ],
+      "output": "L-goldbach-dyadic-correlation-floor",
+      "bridge": "L-goldbach-fixed-budget-to-dyadic",
+      "explanation": {
+        "zh": "两个小项用 ε=1/2304，混合项出现两次。主弧减去所有损失后至少余 n/576。取所有阈值的最大值。",
+        "en": "Take epsilon=1/2304 for the low terms, counting the mixed term twice. The remaining margin is at least n/576 beyond the common threshold."
+      }
+    },
+    {
+      "kind": "sufficient_reduction",
+      "inputs": [
+        "L-goldbach-bulk-energy-cap"
+      ],
+      "output": "L-goldbach-bulk-clipped-defect-cap",
+      "bridge": "L-goldbach-bulk-energy-to-clipped",
+      "explanation": {
+        "zh": "阈值取 1/[2304(1+log² n)]，直接乘以已有能量上界。该推论有 Lean 参考证明。",
+        "en": "Multiply the cap by 1/[2304(1+log² n)]. A Lean proof accompanies the reduction."
+      }
+    },
+    {
+      "kind": "sufficient_reduction",
+      "inputs": [
+        "L-goldbach-bulk-clipped-defect-cap",
+        "L-goldbach-bulk-off-coherence"
+      ],
+      "output": "L-goldbach-bulk-binary-defect",
+      "bridge": "L-goldbach-bulk-off-coherence-transfer",
+      "explanation": {
+        "zh": "将截断部分和余项在同一频率相加。两个 n/1152 的预算恰好合为 n/576。",
+        "en": "Add the clipped component and residual at the same frequency. The two n/1152 budgets give n/576."
+      }
+    },
+    {
+      "kind": "sufficient_reduction",
+      "inputs": [
+        "L-goldbach-packet-lag-energy-identity",
+        "L-goldbach-packet-wheel-masked-budget",
+        "L-goldbach-packet-short-wheel-error",
+        "L-goldbach-packet-long-wheel-excess"
+      ],
+      "output": "L-goldbach-packet-resonant-prime-energy",
+      "explanation": {
+        "zh": "对同一个 n 分别展开素数与模型；预算为 1/2304+1/2304+1/1152=1/576。",
+        "en": "Apply the exact expansion twice at a common threshold and add the three budgets."
+      },
+      "bridge": "L-goldbach-packet-energy-from-lags"
+    },
+    {
+      "kind": "sufficient_reduction",
+      "inputs": [
+        "L-goldbach-packet-capped-signed-floor",
+        "L-goldbach-packet-resonant-prime-energy",
+        "L-goldbach-packet-cap-comparison"
+      ],
+      "output": "L-goldbach-bulk-binary-packet",
+      "explanation": {
+        "zh": "削峰损失至多是异常集能量的一半，与削峰后下界相加得到 −n/576。",
+        "en": "Half the energy budget covers the signed clipping loss. Combine with the capped floor at the larger threshold."
+      },
+      "bridge": "L-goldbach-packet-from-capped-energy"
+    },
+    {
+      "kind": "input",
+      "inputs": [
+        "L-goldbach-packet-doubling-tilt"
+      ],
+      "output": "L-goldbach-packet-exponential-moment",
+      "explanation": {
+        "zh": "逐层剥去指数权。",
+        "en": "Iterate the one-step transfer."
+      }
+    },
+    {
+      "kind": "input",
+      "inputs": [
+        "L-goldbach-packet-exponential-moment"
+      ],
+      "output": "L-goldbach-packet-upper-tail-half",
+      "explanation": {
+        "zh": "在单侧尾使用指数 Markov 界。",
+        "en": "Use the one-sided exponential Markov inequality."
+      }
+    },
+    {
+      "kind": "input",
+      "inputs": [
+        "L-goldbach-packet-upper-tail-half"
+      ],
+      "output": "L-goldbach-packet-mask-log-decay",
+      "explanation": {
+        "zh": "取冻结层数并限制到次弧。",
+        "en": "Use the frozen length and restrict to minor arcs."
+      }
+    },
+    {
+      "kind": "input",
+      "inputs": [
+        "L-goldbach-packet-mask-log-decay",
+        "L-goldbach-packet-short-lag-envelope"
+      ],
+      "output": "L-goldbach-packet-short-wheel-error",
+      "explanation": {
+        "zh": "面积衰减吸收两种权的短间距损失。",
+        "en": "Area decay absorbs both short-lag envelopes."
+      }
+    },
+    {
+      "kind": "input",
+      "inputs": [
+        "L-goldbach-packet-wheel-geometric"
+      ],
+      "output": "L-goldbach-packet-wheel-minor-leakage",
+      "explanation": {
+        "zh": "积分各个周期峰以外的尾部。",
+        "en": "Integrate the geometric tails away from resonances."
+      }
+    },
+    {
+      "kind": "input",
+      "inputs": [
+        "L-goldbach-packet-wheel-minor-leakage"
+      ],
+      "output": "L-goldbach-packet-wheel-masked-budget",
+      "explanation": {
+        "zh": "取固定预算并缩小积分集合。",
+        "en": "Restrict to the mask at the fixed budget."
+      }
+    },
+    {
+      "kind": "exploration",
+      "inputs": [
+        "L-goldbach-packet-even-lag-support",
+        "L-goldbach-packet-even-mask-primitive"
+      ],
+      "output": "L-goldbach-packet-long-wheel-excess",
+      "explanation": {
+        "zh": "探索对偶间距分组的分部求和；还缺素数自相关的算术控制。",
+        "en": "Explore summation by parts on even lags; arithmetic correlation control is still required."
+      }
+    },
+    {
+      "kind": "input",
+      "inputs": [
+        "L-goldbach-packet-sparse-lag-budget"
+      ],
+      "output": "L-goldbach-packet-long-wheel-excess",
+      "explanation": {
+        "zh": "分别对素数权与模型权应用；从长间距和剔除可随 n 选取的一组稀疏间距，两者的总损失可做到任意小的线性量。剩余带符号和仍需独立控制。",
+        "en": "Apply separately to prime and wheel weights to discard any selected sparse family of long lags at arbitrarily small linear cost. The complementary signed sum needs independent control."
+      }
+    },
+    {
+      "kind": "input",
+      "inputs": [
+        "L-goldbach-packet-wheel-geometric"
+      ],
+      "output": "L-goldbach-packet-wheel-smooth-envelope",
+      "explanation": {
+        "zh": "对每个余数类使用有限几何和公式。",
+        "en": "Apply the finite geometric-sum formula in each class."
+      }
+    },
+    {
+      "kind": "sufficient_reduction",
+      "inputs": [
+        "L-goldbach-packet-wheel-smooth-envelope",
+        "L-goldbach-packet-wheel-grid-tail"
+      ],
+      "output": "L-goldbach-packet-wheel-minor-leakage",
+      "bridge": "L-goldbach-packet-wheel-envelope-transfer",
+      "explanation": {
+        "zh": "逐点上界和次弧网格积分预算在相同的 n 与截断上合成。",
+        "en": "Combine the pointwise envelope and its masked integral at the same n and cutoff."
+      }
+    },
+    {
+      "kind": "input",
+      "inputs": [
+        "L-goldbach-packet-progression-leakage"
+      ],
+      "output": "L-goldbach-packet-divisor-mixture-leakage",
+      "explanation": {
+        "zh": "积分前作加权柯西估计。",
+        "en": "Apply weighted Cauchy–Schwarz before integration."
+      }
+    },
+    {
+      "kind": "sufficient_reduction",
+      "inputs": [
+        "L-goldbach-packet-short-order-shell",
+        "L-goldbach-packet-remaining-rational-shell",
+        "L-goldbach-packet-deep-spike-energy"
+      ],
+      "output": "L-goldbach-packet-resonant-prime-energy",
+      "explanation": {
+        "zh": "三项各取 n/2304；剩余的普通振幅取同一预算，四项相加即得 n/576。",
+        "en": "Allocate n/2304 to each region and use the same allowance for the proved moderate-amplitude estimate."
+      },
+      "bridge": "L-goldbach-packet-energy-from-rational-regions"
+    },
+    {
+      "kind": "input",
+      "inputs": [
+        "L-goldbach-packet-deep-moderate-values"
+      ],
+      "output": "L-goldbach-packet-energy-from-rational-regions",
+      "explanation": {
+        "zh": "为组合证明补足第四块。",
+        "en": "Supply the fourth region of the combination proof."
+      }
+    },
+    {
+      "kind": "sufficient_reduction",
+      "inputs": [
+        "L-goldbach-packet-rational-peak-excess",
+        "L-goldbach-packet-short-order-peak-overlap"
+      ],
+      "output": "L-goldbach-packet-short-order-shell",
+      "explanation": {
+        "zh": "真实能量逐点至多为模型加超差正部，区域包含于扩大窗口。合并两个 n/4608 预算。",
+        "en": "Pointwise density is bounded by the model plus positive excess. The region lies inside the enlarged windows; add the two n/4608 budgets."
+      },
+      "bridge": "L-goldbach-packet-short-order-shell-from-model"
+    },
+    {
+      "kind": "sufficient_reduction",
+      "inputs": [
+        "L-goldbach-packet-rational-peak-excess",
+        "L-goldbach-packet-remaining-peak-overlap"
+      ],
+      "output": "L-goldbach-packet-remaining-rational-shell",
+      "explanation": {
+        "zh": "真实能量逐点至多为模型加超差正部，区域包含于扩大窗口。合并两个 n/4608 预算。",
+        "en": "Pointwise density is bounded by the model plus positive excess. The region lies inside the enlarged windows; add the two n/4608 budgets."
+      },
+      "bridge": "L-goldbach-packet-remaining-rational-shell-from-model"
+    },
+    {
+      "kind": "exploration",
+      "inputs": [
+        "L-goldbach-packet-divisor-mixture-leakage"
+      ],
+      "output": "L-goldbach-packet-rational-peak-excess",
+      "explanation": {
+        "zh": "可剥离短除数筛项；真实素数权的剩余项和交叉项还需估计。",
+        "en": "Small-divisor mixtures can be isolated; prime residuals and cross terms still need estimates."
+      }
+    },
+    {
+      "kind": "input",
+      "inputs": [
+        "L-goldbach-packet-binary-orbit-second-moment"
+      ],
+      "output": "L-goldbach-packet-short-order-center-count",
+      "explanation": {
+        "zh": "从有限群二阶矩估计越过 1/3 阈值的分子数；加权求和另需数论输入。",
+        "en": "Use the finite-group second moment for threshold counts; the weighted denominator sum still needs arithmetic input."
+      }
+    },
+    {
+      "kind": "input",
+      "inputs": [
+        "L-goldbach-packet-binary-orbit-second-moment"
+      ],
+      "output": "L-goldbach-packet-remaining-center-count",
+      "explanation": {
+        "zh": "从有限群二阶矩估计越过 1/3 阈值的分子数；加权求和另需数论输入。",
+        "en": "Use the finite-group second moment for threshold counts; the weighted denominator sum still needs arithmetic input."
+      }
+    },
+    {
+      "kind": "input",
+      "inputs": [
+        "L-goldbach-packet-rational-peak-far-tails"
+      ],
+      "output": "L-goldbach-packet-short-order-peak-overlap",
+      "explanation": {
+        "zh": "切除远尾以便把近峰与同一有理中心对应。",
+        "en": "Remove far tails before matching near-peak mass to its own center."
+      }
+    },
+    {
+      "kind": "input",
+      "inputs": [
+        "L-goldbach-packet-rational-peak-far-tails"
+      ],
+      "output": "L-goldbach-packet-remaining-peak-overlap",
+      "explanation": {
+        "zh": "切除远尾以便把近峰与同一有理中心对应。",
+        "en": "Remove far tails before matching near-peak mass to its own center."
+      }
+    },
+    {
+      "inputs": [
+        "L-goldbach-packet-deep-weak-levels"
+      ],
+      "output": "L-goldbach-packet-deep-late-levels",
+      "kind": "input",
+      "explanation": {
+        "zh": "限制分层指标即可，冻结的全层猜想也能推出父题。",
+        "en": "Restrict the index range; the original all-level conjecture also implies the parent."
+      }
+    },
+    {
+      "inputs": [
+        "L-goldbach-packet-mask-log-decay",
+        "L-goldbach-packet-upper-tail-half"
+      ],
+      "output": "L-goldbach-packet-resonant-low-peaks",
+      "kind": "input",
+      "explanation": {
+        "zh": "带对数面积与指数面积合并，得到提高门槛后的能量预算。",
+        "en": "Use both logarithmic and exponential area estimates at the raised cutoff."
+      }
+    },
+    {
+      "inputs": [
+        "L-goldbach-packet-resonant-low-peaks"
+      ],
+      "output": "L-goldbach-packet-spikes-from-late-levels",
+      "kind": "input",
+      "explanation": {
+        "zh": "以 ε=1/4608 控制未交给高层估计的整个低峰区。",
+        "en": "Apply ε=1/4608 to all discarded heights at once."
+      }
+    },
+    {
+      "inputs": [
+        "L-goldbach-packet-deep-late-levels"
+      ],
+      "output": "L-goldbach-packet-deep-spike-energy",
+      "kind": "sufficient_reduction",
+      "explanation": {
+        "zh": "低峰预算与带上界的分层求和相加。",
+        "en": "Add the low-peak allowance and the finite upper sum."
+      },
+      "bridge": "L-goldbach-packet-spikes-from-late-levels"
+    },
+    {
+      "inputs": [
+        "L-goldbach-packet-mangoldt-uniform-spectral-error",
+        "L-goldbach-packet-mask-log-decay"
+      ],
+      "output": "L-goldbach-packet-mangoldt-masked-error",
+      "kind": "input",
+      "explanation": {
+        "zh": "对统一谱误差平方再用带对数的面积衰减。",
+        "en": "Square the uniform spectral error and apply logarithmically weighted area decay."
+      }
+    },
+    {
+      "inputs": [
+        "L-goldbach-packet-mangoldt-masked-error"
+      ],
+      "output": "L-goldbach-packet-energy-from-mangoldt",
+      "kind": "input",
+      "explanation": {
+        "zh": "为加权平方不等式提供可任意收紧的误差。",
+        "en": "Supply an arbitrarily small squared-error budget for the quadratic inequality."
+      }
+    },
+    {
+      "inputs": [
+        "L-goldbach-packet-mangoldt-resonant-energy"
+      ],
+      "output": "L-goldbach-packet-resonant-prime-energy",
+      "kind": "sufficient_reduction",
+      "explanation": {
+        "zh": "用已证换权误差把完整 Λ 能量接回高端素数谱。",
+        "en": "Transfer the full Mangoldt energy bound to the upper prime spectrum using the proved perturbation bound."
+      },
+      "bridge": "L-goldbach-packet-energy-from-mangoldt"
+    },
+    {
+      "inputs": [
+        "L-goldbach-packet-short-order-center-count",
+        "L-goldbach-packet-remaining-center-count"
+      ],
+      "output": "L-goldbach-packet-all-rational-model-mass",
+      "kind": "sufficient_reduction",
+      "explanation": {
+        "zh": "将两个分母族的加权计数相加。近场的非零贡献要求中心处 K>1/3，单峰代价至多 8πn min(1,q/Q)/φ(q)²；其余收费归入已经控制的远尾。",
+        "en": "Sum the two weighted counts. A contributing near field requires K>1/3 at its center, costing at most 8πn min(1,q/Q)/φ(q)² per center. The remaining contributions are covered by the proved far-tail estimate."
+      },
+      "bridge": "L-goldbach-packet-model-from-center-counts"
+    },
+    {
+      "inputs": [
+        "L-goldbach-packet-rational-peak-far-tails"
+      ],
+      "output": "L-goldbach-packet-model-from-center-counts",
+      "kind": "input",
+      "explanation": {
+        "zh": "用于同一中心在窗口外的估计或窗口内的检测。",
+        "en": "Controls its tail outside the window or detects its center inside the window."
+      }
+    },
+    {
+      "inputs": [
+        "L-goldbach-packet-rational-center-stability"
+      ],
+      "output": "L-goldbach-packet-model-from-center-counts",
+      "kind": "input",
+      "explanation": {
+        "zh": "用于同一中心在窗口外的估计或窗口内的检测。",
+        "en": "Controls its tail outside the window or detects its center inside the window."
+      }
+    },
+    {
+      "inputs": [
+        "L-goldbach-packet-all-rational-model-mass"
+      ],
+      "output": "L-goldbach-packet-short-order-peak-overlap",
+      "kind": "sufficient_reduction",
+      "explanation": {
+        "zh": "模型非负，积分区域包含于共振区，取 ε=1/4608。",
+        "en": "Restrict the nonnegative integrand to the regional subset and take ε=1/4608."
+      },
+      "bridge": "L-goldbach-packet-short-order-peak-overlap-from-full"
+    },
+    {
+      "inputs": [
+        "L-goldbach-packet-all-rational-model-mass"
+      ],
+      "output": "L-goldbach-packet-remaining-peak-overlap",
+      "kind": "sufficient_reduction",
+      "explanation": {
+        "zh": "模型非负，积分区域包含于共振区，取 ε=1/4608。",
+        "en": "Restrict the nonnegative integrand to the regional subset and take ε=1/4608."
+      },
+      "bridge": "L-goldbach-packet-remaining-peak-overlap-from-full"
+    },
+    {
+      "inputs": [
+        "L-goldbach-packet-smooth-moduli-weight",
+        "L-goldbach-packet-short-period-large-prime-weight"
+      ],
+      "output": "L-goldbach-packet-short-order-center-count",
+      "kind": "sufficient_reduction",
+      "explanation": {
+        "zh": "对每个 q，候选分子最多 2φ(q)，包含 q=1 的两个端点。光滑与非光滑分母分别给 ε/4；无须假设短周期轨道均匀分布。",
+        "en": "At most 2φ(q) numerators occur, including both endpoints at q=1. Allocate ε/4 to each denominator family without assuming that short orbits are equidistributed."
+      },
+      "bridge": "L-goldbach-packet-short-centers-from-moduli"
+    }
+  ],
+  "route_note": {
+    "zh": "可用 1/144 主弧见证换取固定的高高项损失预算。检验对称二次幂移频与回到原频率的修正能否各自守住一半预算。",
+    "en": "Use the 1/144 major-arc witness to allow a fixed bulk loss. Test separate half-budgets for symmetric binary shifts and the correction to the original frequency."
+  }
+}

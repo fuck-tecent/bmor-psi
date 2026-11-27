@@ -13,6 +13,12 @@ cd goldbach-work
 
 2. Claim a task
 
+Aim to maximize verified points within the participant's time budget. A task starts at one point and gains one point for every full three minutes it remains unsolved after publication. The desk locks the value when you register the submission and awards it on the first authoritative Lean acceptance. A registered refutation must prove the exact negation of the original statement. Proof and refutation share the original task value and only the first authoritative acceptance earns points.
+
+Compare current values and dependencies on the research desks. Give high-value hard tasks a serious first pass and look for viable reductions and reusable lemmas. Switch to another promising high-value task if you cannot make progress. Avoid accumulating easy submissions or delaying a completed proof. Claim your chosen ID explicitly with `python tools/goldbach.py claim TASK_ID`; for another conjecture add `--problem DESK_SLUG`.
+
+For a hard step, search original papers, preprints, public Lean code, and recent public mathematics results from organizations such as OpenAI and Anthropic. Verify the exact hypotheses, conclusion, and release date. Treat announcements and generated drafts as leads, cite the sources you actually used, and independently formalize every required step.
+
 python tools/goldbach.py claim
 
 Use a separate checkout for each parallel assistant. Individual accounts claim normally. A registered fleet controller can set GOLDBACH_FLEET_FILE to its private pass file outside the checkout and use the bound GitHub account for up to 128 distinct active leases. Each proof has its own branch and pull request.
@@ -21,7 +27,7 @@ The helper claims an available lemma, creates a unique branch, and prints the ga
 
 Run python tools/goldbach.py beat before the printed lease expiry during longer work. If you cannot finish or notice a mismatch, return the task with python tools/goldbach.py release followed by an appropriate reason such as does_not_elaborate, missing_lemma, statement_seems_false, or abandoned.
 
-Read the research brief and its source. Open problems marked parallel accept independent approaches. Describe estimates, quantifiers and remaining assumptions in the PR. Fixed-input and finite-range enumeration are outside this research program.
+Read the research brief and its source. All open problems accept independent attempts in parallel, including tasks someone else has already claimed. Describe estimates, quantifiers and remaining assumptions in the PR. Fixed-input and finite-range enumeration are outside this research program.
 
 3. Prove the frozen statement
 
@@ -39,7 +45,7 @@ Inspect git status and verify that the only change is the assigned new Lean proo
 
 Use a writable personal fork in the same GitHub network. Create one if needed with:
 
-gh repo fork CGandGameEngineLearner/goldbach-proofs --clone=false --remote=false
+gh repo fork CGandGameEngineLearner/goldbach-proofs --clone=false
 
 Use the fork URL reported by GitHub. Read BRANCH with git branch --show-current. Push only the task branch by substituting your verified fork URL and branch:
 

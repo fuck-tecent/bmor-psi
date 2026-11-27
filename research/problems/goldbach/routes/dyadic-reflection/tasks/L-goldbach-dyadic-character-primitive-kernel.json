@@ -1,0 +1,18 @@
+{
+  "id": "L-goldbach-dyadic-character-primitive-kernel",
+  "statement": "∀ (k : ℕ) (χ : DirichletCharacter ℂ (2^(k+1))), 1 ≤ k →\n  (χ.IsPrimitive ↔ χ ((1 + 2^k : ℕ) : ZMod (2^(k+1))) = -1)",
+  "plain_statement": {
+    "zh": "新路线 · 二进反射与 Levent GRH · DR-0003 · 用约化核筛出二幂模数的全部本原特征",
+    "en": "New route · Dyadic reflection and Levent GRH · DR-0003 · Select all primitive characters at a power of two using the reduction kernel"
+  },
+  "brief": {
+    "zh": "模 2^(k+1) 约化到模 2^k 的单位核恰为 1 与 1+2^k。本原条件等价于后一个元素取值 −1。最低的比较是模 4 与模 2。",
+    "en": "The kernel of unit reduction from 2^(k+1) to 2^k consists of 1 and 1+2^k. Primitivity means the latter evaluates to −1. The first comparison is modulus 4 with modulus 2."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/FoundationProofs/DirichletCharFiniteFourierTransformProperties.lean#L85",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": []
+}

@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-dyadic-carry-telescope",
+  "statement": "∀ (N K : ℕ) (w : ℕ → ℝ), N < 2^K →\n  let M : ℕ := 2^K\n  let A := fun (d r : ℕ) => ∑ n ∈ (Finset.range (N+1)).filter (fun n => n % d = r), w n\n  let C := fun k : ℕ =>\n    let q : ℕ := 2^k\n    let D := fun r : ℕ => A (2*q) r - A (2*q) (r+q)\n    (q : ℝ) / M * ∑ r ∈ Finset.range q,\n      (if (N+2*q-r)%(2*q) < q then (1 : ℝ) else -1) * D r * D ((N+q-r)%q)\n  (∑ n ∈ Finset.range (N+1), w n * w (N-n)) =\n    (∑ n ∈ Finset.range (N+1), w n)^2 / M + ∑ k ∈ Finset.range K, C k",
+  "plain_statement": {
+    "zh": "新路线 · 二进反射与 Levent GRH · DR-0002 · 从逐层反射增量还原指定整数的卷积",
+    "en": "New route · Dyadic reflection and Levent GRH · DR-0002 · Recover the convolution at a fixed integer from its reflected increments"
+  },
+  "brief": {
+    "zh": "令 M=2^K>N。顶层上两个非零权的整数和必须等于 N，底层为总质量的平方除以 M。N 本身是二次幂时取严格更大的 M。",
+    "en": "Take M=2^K>N. Two surviving weights on the top level have integer sum N. The bottom level is the mass squared divided by M. The modulus is strictly larger even when N is a power of two."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/dyadic-reflection/README.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-dyadic-carry-increment"
+  ],
+  "imports": []
+}

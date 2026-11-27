@@ -1,0 +1,15 @@
+{
+  "id": "rough-fifth-parity",
+  "title": {
+    "zh": "在固定偶数上区分素数与三因子补数",
+    "en": "Distinguish primes from triple products at a fixed even target"
+  },
+  "description": {
+    "zh": "在同一粗筛候选集上估计三因子项数和反射的刘维尔函数和，以恢复中央素数对的下界。",
+    "en": "Control triple products and the reflected Liouville sum on the same sifted support to recover central prime pairs."
+  },
+  "feeds": [
+    "representations",
+    "arc-budget"
+  ]
+}

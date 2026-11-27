@@ -104,8 +104,8 @@ class DeskScaleTest(unittest.TestCase):
             self.assertEqual(latest["lemma_id"], gap["id"])
             self.assertEqual(status["results"][0]["agent"], {**agent, "source": "self_reported"})
             self.assertEqual(status["desk"]["agent_rankings"], {
-                "models": [{"name": "model-test-v1", "accepted": 1}],
-                "harnesses": [{"name": "codex", "accepted": 1}], "proofs": 1})
+                "models": [{"name": "model-test-v1", "accepted": 1, "points": 1}],
+                "harnesses": [{"name": "codex", "accepted": 1, "points": 1}], "proofs": 1})
             self.assertEqual(status["desk"]["rankings"]["proofs"], 1)
             for lang in ("zh", "en"):
                 page = self.request(path + "/?lang=" + lang, text=True)
@@ -125,12 +125,26 @@ class DeskScaleTest(unittest.TestCase):
         first = self.request(api + "records")
         self.assertEqual(len(first["results"]), 12)
         self.assertEqual(first["next"], "101-2")
+        self.assertEqual(first["total"], 14)
         publish(113, 1)
         last = self.request(api + "records?before=" + first["next"])
         self.assertEqual([r["run_id"] for r in last["results"]], [101, 100])
         self.assertIsNone(last["next"])
+        self.assertEqual(last["total"], 15)
+        paged = self.request(api + "records?page=2&limit=5")
+        self.assertEqual(paged["page"], 2)
+        self.assertEqual(paged["limit"], 5)
+        self.assertEqual(paged["total"], 15)
+        self.assertEqual(paged["pages"], 3)
+        self.assertEqual([r["run_id"] for r in paged["results"]], [108, 107, 106, 105, 104])
+        clamped = self.request(api + "records?page=99&limit=5")
+        self.assertEqual(clamped["page"], 3)
+        self.assertEqual([r["run_id"] for r in clamped["results"]], [103, 102, 101, 101, 100])
         self.assertEqual(self.request("/problems/log-rank/api/records")["results"], [])
         self.request(api + "records?before=invalid", expected=400)
+        self.request(api + "records?page=0&limit=5", expected=400)
+        self.request(api + "records?page=1&limit=50", expected=400)
+        self.request(api + "records?before=101-2&page=1", expected=400)
 
     def test_page_views_count_only_successful_page_gets(self):
         def total():
@@ -365,9 +379,9 @@ class DeskScaleTest(unittest.TestCase):
                              ip="192.0.2.11", expected=201)
         gap = next(g for g in self.request(path + "/api/status")["gaps"] if g["id"] == claim["gap"]["id"])
         self.assertEqual(claim["route_id"], gap["route_id"])
-        self.assertIn(f"Lean verified 0/{total} · {total - 1} available",
+        self.assertIn(f"Lean verified 0/{total} · {total} available",
                       self.request("/problems/?lang=en", text=True))
-        self.assertIn(f"Lean 已核验 0/{total} · {total - 1} 条可领取",
+        self.assertIn(f"Lean 已核验 0/{total} · {total} 条可领取",
                       self.request("/problems/?lang=zh", text=True))
         for lang, suffix in (("en", ""), ("zh", "-zh")):
             gap = problem["gaps"][0]["id"]

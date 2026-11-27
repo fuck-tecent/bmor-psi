@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-frontier-type2-b1-b1-phase-quadruple-expansion",
+  "statement": "let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (u : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (u k:ℂ)*E ((k:ℝ)*t)); let U := fun n : ℕ => ⌊(n:ℝ)^(1/16:ℝ)⌋₊; let B₁ := fun n : ℕ => ⌊(n:ℝ)^(1/4:ℝ)⌋₊; let μ := fun d : ℕ => ((ArithmeticFunction.moebius d : ℤ) : ℝ); let c := fun (n a : ℕ) => ∑ d ∈ (Nat.divisors a).filter (fun d => U n < d), μ d; let τ₁ := fun (n m : ℕ) => ∑ a ∈ (Nat.divisors m).filter (fun a => U n < a ∧ a ≤ B₁ n ∧ U n < m / a), c n a * ArithmeticFunction.vonMangoldt (m / a); ∀ (n : ℕ) (t : ℝ), S n (τ₁ n) t * S n (τ₁ n) t * E (-(n:ℝ)*t) = ∑ a ∈ Finset.Icc (U n + 1) (B₁ n), ∑ b ∈ Finset.Icc (U n + 1) (B₁ n), c n a * c n b * ∑ r ∈ Finset.Icc (U n + 1) (n / a), ∑ s ∈ Finset.Icc (U n + 1) (n / b), ArithmeticFunction.vonMangoldt r * ArithmeticFunction.vonMangoldt s * E ((((a*r:ℕ):ℝ)+((b*s:ℕ):ℝ)-(n:ℝ))*t)",
+  "plain_statement": {
+    "zh": "τ₁ 的平方相位展开为四重 Type-II 指数和。",
+    "en": "Expand the squared phase of τ₁ into a quadruple Type-II exponential sum."
+  },
+  "brief": {
+    "zh": "把两个双线性展开相乘，合并指数相位；积分前先把父题写成对频率 ar+bs−n 的显式和。",
+    "en": "Multiply the two bilinear expansions and combine the exponential phases; this writes the parent integrand as an explicit sum over frequencies ar+bs−n before integration."
+  },
+  "source": "https://www.goldbach.tech/?lemma=L-goldbach-frontier-type2-b1-b1#roadmap",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "frontier-type2-dyadic-matrix",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.FrontierType2B1B1PhaseQuadrupleExpansion",
+  "file": "lean/Conjectures/Goldbach/FrontierType2B1B1PhaseQuadrupleExpansion.lean"
+}

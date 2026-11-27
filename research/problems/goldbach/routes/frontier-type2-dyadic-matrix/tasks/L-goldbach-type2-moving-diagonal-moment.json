@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-type2-moving-diagonal-moment",
+  "statement": "let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (u : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (u k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let Q₁ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊; let H := fun n : ℕ => 256 * Q₁ n * Q n; let wideArcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q₁ n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (H n:ℝ)/((q:ℝ)*(n:ℝ))}; let Λ := ArithmeticFunction.vonMangoldt; let μ := fun d : ℕ => ((ArithmeticFunction.moebius d : ℤ) : ℝ); let U := fun n : ℕ => ⌊(n:ℝ)^(1/16:ℝ)⌋₊; let B₁ := fun n : ℕ => ⌊(n:ℝ)^(1/4:ℝ)⌋₊; let B₂ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊; let τ₂ := fun (n m : ℕ) => ∑ a ∈ (Nat.divisors m).filter (fun a => B₁ n < a ∧ a ≤ B₂ n ∧ U n < m / a), (∑ d ∈ (Nat.divisors a).filter (fun d => U n < d), μ d) * Λ (m / a); let Jdeep := fun (n : ℕ) (u v : ℕ → ℝ) => intervalIntegral (fun t => (wideArcs n)ᶜ.indicator (fun x => S n u x * S n v x * E (-(n:ℝ)*x)) t) (0:ℝ) 1 MeasureTheory.volume; ∃ C : ℝ, 0 < C ∧ ∀ X : ℕ, 2^96 ≤ X → (∑ n ∈ Finset.Icc X (2*X), ‖Jdeep n (τ₂ n) (τ₂ n)‖^2) ≤ C*(X:ℝ)^(761/256:ℝ)",
+  "plain_statement": {
+    "zh": "对每个 X ≥ 2^96，(2,2) 深次弧积分在 [X,2X] 全部整数上的平方和至多为 C X^(761/256)。每一项的权重、弧和频率都按本项的 n 取值。",
+    "en": "For every X ≥ 2^96 the sum of squared norms of the Type II (2,2) integral over all n in [X,2X] is at most C X^(761/256). Each summand uses the weights, arcs and Fourier frequency for that same n."
+  },
+  "brief": {
+    "zh": "按单调截断参数分组，估计改变系数的倍数集合；把每组的代表频谱截到深次弧逐点界。利用有理中心分离，把随 n 移动的弧写成分母与距离秩的双截断，使用二维极大 Bessel 估计。可推出范数至少为 n^(255/256) 的偶数只有 O(X^(251/256)) 个；逐一排除仍需新估计。",
+    "en": "Group targets by their monotone cutoffs and count the multiples whose coefficients change. Clip one representative spectrum to the deep-arc bound in each class. Separation of rational centers gives two moving cutoffs, denominator and distance rank, to which a two-parameter maximal Bessel estimate applies. At most O(X^(251/256)) even targets have norm at least n^(255/256); eliminating the individual exceptions remains open."
+  },
+  "source": "https://www.movan.tech/goldbach/?lemma=L-goldbach-frontier-type2-b2-b2",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "role": "lemma",
+  "track": "frontier-type2-dyadic-matrix",
+  "module": "Conjectures.Goldbach.Type2MovingDiagonalMoment",
+  "file": "lean/Conjectures/Goldbach/Type2MovingDiagonalMoment.lean"
+}

@@ -1,0 +1,21 @@
+{
+  "id": "L-quadratic-primes-sieve-terminal-gaussian",
+  "statement": "∀ n p : ℕ, 0<n → p.Prime → 2<p → p ∣ n^2+1 →\n  ∃ a b c d : ℤ, a^2+b^2=(p : ℤ) ∧ 0<a ∧ b≠0 ∧\n    (n : ℤ)=a*c-b*d ∧ 1=a*d+b*c ∧ c^2+d^2=((n^2+1)/p : ℕ)",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然扩张 · QP-0085 · 把末段大素因子切换为高斯整数的一次方程",
+    "en": "New route · Levent GRH and natural extensions · QP-0085 · Switch a terminal prime factor to a linear equation over the Gaussian integers"
+  },
+  "brief": {
+    "zh": "用 p=a²+b² 的两种方向选出整除 n+i 的一个因子。将 (n+i)(a−bi)/p 展开，并通过范数乘法保留余因子。",
+    "en": "Use the two orientations of p=a²+b² to choose a factor of n+i. Expand (n+i)(a−bi)/p and keep the cofactor via the multiplicative norm."
+  },
+  "source": "https://github.com/leanprover-community/mathlib4/blob/fc4f59e577feb1a4956671bc04ac18aaaf8cd842/Mathlib/NumberTheory/SumTwoSquares.lean",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-quadratic-primes-gauss-split-representation",
+    "L-quadratic-primes-gauss-two-root-phase"
+  ],
+  "imports": []
+}

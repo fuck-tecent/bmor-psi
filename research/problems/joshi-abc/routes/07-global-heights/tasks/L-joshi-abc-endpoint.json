@@ -1,0 +1,24 @@
+{
+  "id": "L-joshi-abc-endpoint",
+  "statement": "let rad := fun (n : ℕ) => n.primeFactors.prod id; let h := fun (a b : ℕ) => Real.log ((a:ℝ)+b); let r := fun (a b : ℕ) => Real.log (rad (a*b*(a+b))); ∀ ε : ℝ, 0 < ε → ∃ C : ℝ, ∀ a b : ℕ, 0<a → 0<b → Nat.Coprime a b → h a b ≤ (1+ε)*r a b+C",
+  "plain_statement": {
+    "zh": "新路线 · 全局高度与 abc · JA-0065 · 对每个 ε 证明统一的有理 abc 不等式",
+    "en": "New route · Global heights and abc · JA-0065 · Prove a uniform rational abc inequality for every ε"
+  },
+  "brief": {
+    "zh": "常数只依赖 ε，每一互素正整数对都需满足同一界。",
+    "en": "The constant depends only on ε and must work for every coprime pair of positive integers."
+  },
+  "source": "https://arxiv.org/abs/2403.10430",
+  "program": "correlation",
+  "role": "endpoint",
+  "parallel": true,
+  "depends_on": [
+    "L-joshi-abc-height-bridge"
+  ],
+  "imports": [],
+  "challenge_only": true,
+  "track": "07-global-heights",
+  "module": "Conjectures.JoshiAbc.Endpoint",
+  "file": "lean/Conjectures/JoshiAbc/Endpoint.lean"
+}

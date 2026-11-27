@@ -1,0 +1,31 @@
+import Mathlib
+
+theorem PEqualNP.Outside.L_hash_collision_lab_cert_7_14 :
+    ∀ (q:ℕ) (b:Fin q→ℕ), (q*3432)+3003*(∑ i,b i)≤(∑ i,Nat.choose (b i) 7)+q*42042 := by
+  have small : ∀ x, x < 14 → 3432 + 3003*x ≤ x.descFactorial 7 / Nat.factorial 7 + 42042 := by
+    decide +kernel
+  have base1 : 3003 ≤ Nat.choose 14 6 := by
+    rw [Nat.choose_eq_descFactorial_div_factorial]; decide +kernel
+  have base2 : 3432 + 3003*14 ≤ Nat.choose 14 7 + 42042 := by
+    rw [Nat.choose_eq_descFactorial_div_factorial]; decide +kernel
+  have pt : ∀ x : ℕ, 3432 + 3003*x ≤ Nat.choose x 7 + 42042 := by
+    intro x
+    rcases Nat.lt_or_ge x 14 with hx | hx
+    · rw [Nat.choose_eq_descFactorial_div_factorial]; exact small x hx
+    · induction x, hx using Nat.le_induction with
+      | base => exact base2
+      | succ m hm ih =>
+        have e : Nat.choose (m+1) 7 = Nat.choose m 6 + Nat.choose m 7 :=
+          Nat.choose_succ_succ' m 6
+        have hc : 3003 ≤ Nat.choose m 6 := le_trans base1 (Nat.choose_le_choose 6 hm)
+        generalize Nat.choose (m+1) 7 = A at e ⊢
+        generalize Nat.choose m 6 = B at e hc
+        generalize Nat.choose m 7 = C at e ih
+        linarith
+  intro q b
+  have h := Finset.sum_le_sum (fun i (_ : i ∈ (Finset.univ : Finset (Fin q))) => pt (b i))
+  simp only [Finset.sum_add_distrib, Finset.sum_const, Finset.card_univ, Fintype.card_fin,
+    smul_eq_mul, ← Finset.mul_sum] at h
+  generalize (∑ i, Nat.choose (b i) 7) = A at h ⊢
+  generalize (∑ i, b i) = B at h ⊢
+  omega

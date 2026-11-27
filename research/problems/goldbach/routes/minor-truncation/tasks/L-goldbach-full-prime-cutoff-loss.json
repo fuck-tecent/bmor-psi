@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-full-prime-cutoff-loss",
+  "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k : ℝ) else 0; let high := fun m k : ℕ => if k ≤ m then 0 else w k; let R := fun (a : ℕ → ℝ) (n : ℕ) => Finset.sum (Finset.range (n + 1)) (fun k => a k * a (n - k)); ∀ n m : ℕ, 2 * m < n → R w n - R (high m) n = 2 * Finset.sum (Finset.range (m + 1)) (fun k => w k * w (n - k)) ∧ 0 ≤ R w n - R (high m) n ∧ R w n - R (high m) n ≤ 2 * Real.log 4 * (m : ℝ) * Real.log (n : ℝ)",
+  "plain_statement": {
+    "zh": "对满足 2m<n 的自然数 n、m，删去不超过 m 的素数后，完整对数权卷积的损失恰为首端小素数贡献的两倍，介于零和 2 log(4) m log(n) 之间。",
+    "en": "For natural n,m with 2m<n, removing primes at most m costs exactly twice the low-end contribution to the full logarithmic convolution. This loss lies between zero and 2 log(4) m log(n)."
+  },
+  "imports": [],
+  "program": "correlation",
+  "brief": {
+    "zh": "用 k ↦ n−k 配对两个不相交的端点区间。用 log(n) 控制另一素数的权重，再对小端使用切比雪夫 θ 的显式线性上界。",
+    "en": "Reflect k about n/2 to match the two disjoint endpoint ranges. Bound the partner weight by log(n) and use the explicit linear Chebyshev theta bound at the small end."
+  },
+  "source": "https://github.com/leanprover-community/mathlib4/blob/fc4f59e577feb1a4956671bc04ac18aaaf8cd842/Mathlib/NumberTheory/Chebyshev.lean",
+  "parallel": true,
+  "track": "minor-truncation",
+  "role": "lemma",
+  "depends_on": [],
+  "module": "Conjectures.Goldbach.FullPrimeCutoffLoss",
+  "file": "lean/Conjectures/Goldbach/FullPrimeCutoffLoss.lean"
+}

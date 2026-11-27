@@ -1,0 +1,469 @@
+{
+  "version": 1,
+  "problem": "goldbach",
+  "base_revision": "d1c8d76b8c18363e6e5eb82beb51c8240b9fd47a",
+  "request_id": "dynamical-hitting-window",
+  "parent": {
+    "id": "L-goldbach-binary-pointwise-positivity",
+    "statement_sha256": "e14f2af0ceebde21345816fb72044035c2eff2be922b02234078a77003be19b1"
+  },
+  "motivation": {
+    "zh": "在素数对计数路线中检验轨道闭包、整数进位及平方根窗口两步路径的分布。平均覆盖允许漏点。",
+    "en": "Study orbit closure, modular carries and two-step arrivals with a square-root-sized first prime. Average coverage allows exceptions."
+  },
+  "tasks": [
+    {
+      "id": "L-goldbach-dyn-window-trap",
+      "statement": "∀ (A B : Set ℤ), (∀ x ∈ A, 0 < x) → (∀ x ∈ B, x < 0) → ∀ i j k : ℤ, i+k ∈ A → j+k ∈ B → -i < k ∧ k < -j",
+      "plain_statement": {
+        "zh": "混合柱集把平移时间锁进有限区间",
+        "en": "Trap mixed-cylinder hitting times in a finite interval"
+      },
+      "brief": {
+        "zh": "把两个非零坐标的支撑条件同时写出。得到的区间只依赖窗口位置，后续可用于轨道闭包。",
+        "en": "Use the opposite support signs at the two observed coordinates. The bounds depend only on the window."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "route": "representations",
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-dyn-closure-rigidity",
+      "statement": "∀ (A B : Set ℤ), (∀ x ∈ A, 0 < x) → (∀ x ∈ B, x < 0) → ∀ (P Q : Set ℤ), P.Nonempty → Q.Nonempty → (∀ F : Finset ℤ, ∃ k : ℤ, ∀ i ∈ F, (i ∈ P ↔ i+k ∈ A) ∧ (i ∈ Q ↔ i+k ∈ B)) → ∃ k : ℤ, ∀ i : ℤ, (i ∈ P ↔ i+k ∈ A) ∧ (i ∈ Q ↔ i+k ∈ B)",
+      "plain_statement": {
+        "zh": "有限窗口可匹配的混合极限必为原轨道点",
+        "en": "Recover mixed orbit limits from finite-window matches"
+      },
+      "brief": {
+        "zh": "固定两个命中坐标，把平移限制到有限候选。若每个候选都失败，取各自一个反证坐标并合成一个窗口。",
+        "en": "Anchor one hit in each coordinate. Exclude each of the finitely many shifts with one witness and combine witnesses in a single window."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-dyn-window-trap"
+      ],
+      "route": "representations",
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-dyn-modular-mirage",
+      "statement": "∀ N : ℕ, Even N → 4 ≤ N → ∃ A : Set ℕ, (∀ a ∈ A, Odd a) ∧ (∀ m : ℕ, 0 < m → ∃ a ∈ A, ∃ b ∈ A, (a+b)%m=N%m) ∧ ¬ (∃ a ∈ A, ∃ b ∈ A, a+b=N)",
+      "plain_statement": {
+        "zh": "所有模数两步可达仍可漏掉指定整数",
+        "en": "Construct a target missed despite reachability at every modulus"
+      },
+      "brief": {
+        "zh": "取大于目标的所有奇数，同时平移两个加数的偶数模数倍。用它检查任何局部到整体的推理。",
+        "en": "Take all odd steps above the target and translate both summands by even multiples of the modulus."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "route": "representations",
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-dyn-carry-split",
+      "statement": "let W := fun (A B : Finset ℕ) (n : ℕ) => ((A ×ˢ B).filter (fun t => t.1+t.2=n)).card; ∀ (m n : ℕ) (A B : Finset ℕ), n < m → (∀ a ∈ A, a < m) → (∀ b ∈ B, b < m) → ((A ×ˢ B).filter (fun t => (t.1+t.2)%m=n)).card = W A B n + W A B (n+m)",
+      "plain_statement": {
+        "zh": "模图的两步路径精确分成无进位与进位两层",
+        "en": "Split modular two-step paths into two exact carry layers"
+      },
+      "brief": {
+        "zh": "用 a+b<2m 列出两个可能的整数终点，再划分有序路径。后续估计必须扣除第二层。",
+        "en": "Use a+b<2m to partition ordered paths by their two possible integer endpoints."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "route": "representations",
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-dyn-carry-reflection",
+      "statement": "let W := fun (A B : Finset ℕ) (n : ℕ) => ((A ×ˢ B).filter (fun t => t.1+t.2=n)).card; ∀ (m n : ℕ) (A B : Finset ℕ), 2 ≤ m → n+2 ≤ m → (∀ a ∈ A, a < m) → (∀ b ∈ B, b < m) → W A B (n+m) = W (A.image (fun a => m-1-a)) (B.image (fun b => m-1-b)) (m-2-n)",
+      "plain_statement": {
+        "zh": "把进位层反射成低端整数的路径计数",
+        "en": "Reflect wrapped paths into a low-end integer count"
+      },
+      "brief": {
+        "zh": "两个坐标分别关于 m−1 作反射，用反射的自逆性保持路径重数。可用低端的支撑或筛界估计伪命中。",
+        "en": "Reflect both coordinates about the endpoints of [0,m−1]. An involution preserves multiplicity and gives access to low-end bounds."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "route": "representations",
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-dyn-carry-edge-budget",
+      "statement": "let W := fun (A B : Finset ℕ) (n : ℕ) => ((A ×ˢ B).filter (fun t => t.1+t.2=n)).card; ∀ (m n : ℕ) (A B : Finset ℕ), n < m → (∀ a ∈ A, a < m) → (∀ b ∈ B, b < m) → W A B (n+m) ≤ min ((A.filter (fun a => n < a)).card) ((B.filter (fun b => n < b)).card)",
+      "plain_statement": {
+        "zh": "用高端步长数限制伪命中的重数",
+        "en": "Bound wrapped multiplicity by the smaller upper tail"
+      },
+      "brief": {
+        "zh": "在进位层两个坐标都大于 n。固定一个坐标后另一个惟一，分别向两个高端集合单射。",
+        "en": "Both summands exceed n on the wrapped layer. Project injectively onto each upper tail."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "route": "representations",
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-dyn-surplus-certificate",
+      "statement": "let W := fun (A B : Finset ℕ) (n : ℕ) => ((A ×ˢ B).filter (fun t => t.1+t.2=n)).card; ∀ (m n : ℕ) (A B : Finset ℕ), n < m → (∀ a ∈ A, a < m) → (∀ b ∈ B, b < m) → min ((A.filter (fun a => n < a)).card) ((B.filter (fun b => n < b)).card) < ((A ×ˢ B).filter (fun t => (t.1+t.2)%m=n)).card → 0 < W A B n",
+      "plain_statement": {
+        "zh": "模路径数超过伪命中预算时恢复整数命中",
+        "en": "Certify an integer hit from a modular surplus"
+      },
+      "brief": {
+        "zh": "组合进位分层与高端预算。须另行证明素数集合的模计数超过预算，才能用于一个指定偶数。",
+        "en": "Combine the carry split and the tail bound. A prime-set application still needs an independent surplus at its target."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-dyn-carry-split",
+        "L-goldbach-dyn-carry-edge-budget"
+      ],
+      "route": "representations",
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-dyn-incidence-first",
+      "statement": "let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); let P := fun X : ℕ => (Finset.Icc (Nat.sqrt X) (2*Nat.sqrt X)).filter Nat.Prime; let H := fun (X n : ℕ) => ((P X).filter (fun p => p ≤ n ∧ Nat.Prime (n-p))).card; ∀ X : ℕ, ∑ n ∈ E X, H X n = ∑ p ∈ P X, ((E X).filter (fun n => p≤n ∧ Nat.Prime (n-p))).card",
+      "plain_statement": {
+        "zh": "将两步路径的一阶矩换成逐个小素数求和",
+        "en": "Double-count first arrivals by their small prime step"
+      },
+      "brief": {
+        "zh": "交换终点和第一步的求和顺序，使不同小素数可以共用长区间素数下界。",
+        "en": "Count the same incidences in the opposite order so each small prime can use a common long-interval estimate."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "route": "representations",
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-dyn-interior-box",
+      "statement": "let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); let P := fun X : ℕ => (Finset.Icc (Nat.sqrt X) (2*Nat.sqrt X)).filter Nat.Prime; let H := fun (X n : ℕ) => ((P X).filter (fun p => p ≤ n ∧ Nat.Prime (n-p))).card; ∀ X : ℕ, 64 ≤ X → (P X).card * ((Finset.Icc X (3*X/2)).filter Nat.Prime).card ≤ ∑ n ∈ E X, H X n",
+      "plain_statement": {
+        "zh": "用一个完整素数矩形给路径总量下界",
+        "en": "Embed an interior prime rectangle into the path count"
+      },
+      "brief": {
+        "zh": "取小素数 p 和区间 [X,3X/2] 中的素数 q。证明 p+q 落在目标偶数区间，并保留第一步以免合并重数。",
+        "en": "Map the pair to its endpoint and first step. Bound endpoints and check parity before counting."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "route": "representations",
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-dyn-first-mass",
+      "statement": "let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); let P := fun X : ℕ => (Finset.Icc (Nat.sqrt X) (2*Nat.sqrt X)).filter Nat.Prime; let H := fun (X n : ℕ) => ((P X).filter (fun p => p ≤ n ∧ Nat.Prime (n-p))).card; let M := fun X : ℕ => Real.sqrt (X:ℝ) / (Real.log (X:ℝ))^2; ∃ c : ℝ, 0 < c ∧ ∃ X₀ : ℕ, ∀ X ≥ X₀, c*(X:ℝ)*M X ≤ ∑ n ∈ E X, (H X n:ℝ)",
+      "plain_statement": {
+        "zh": "平方根步长窗口内的一阶矩下界",
+        "en": "Lower-bound total arrivals with a square-root-scale first prime"
+      },
+      "brief": {
+        "zh": "用素数定理分别估计矩形的两边。只控制路径总量，允许部分偶数没有路径。",
+        "en": "Apply interval prime counts to each side of the interior rectangle. This total permits missed endpoints."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-dyn-interior-box"
+      ],
+      "route": "representations",
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-dyn-factorial-collisions",
+      "statement": "let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); let P := fun X : ℕ => (Finset.Icc (Nat.sqrt X) (2*Nat.sqrt X)).filter Nat.Prime; let H := fun (X n : ℕ) => ((P X).filter (fun p => p ≤ n ∧ Nat.Prime (n-p))).card; let K := fun (X p q : ℕ) => ((E X).filter (fun n => p≤n ∧ q≤n ∧ Nat.Prime (n-p) ∧ Nat.Prime (n-q))).card; ∀ X : ℕ, (∑ n ∈ E X, H X n * (H X n - 1)) = ∑ p ∈ P X, ∑ q ∈ (P X).erase p, K X p q",
+      "plain_statement": {
+        "zh": "把碰撞矩分解成不同小素数对的共同终点",
+        "en": "Resolve factorial collisions into shared endpoints"
+      },
+      "brief": {
+        "zh": "数同一终点的两条不同路径。排除相同第一步，避免把对角线送进两素数筛。",
+        "en": "Count ordered distinct paths arriving together and remove the diagonal before applying a two-prime sieve."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "route": "representations",
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-dyn-shift-sieve",
+      "statement": "let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); let P := fun X : ℕ => (Finset.Icc (Nat.sqrt X) (2*Nat.sqrt X)).filter Nat.Prime; let H := fun (X n : ℕ) => ((P X).filter (fun p => p ≤ n ∧ Nat.Prime (n-p))).card; let K := fun (X p q : ℕ) => ((E X).filter (fun n => p≤n ∧ q≤n ∧ Nat.Prime (n-p) ∧ Nat.Prime (n-q))).card; let S := fun d : ℕ => ∏ l ∈ d.primeFactors.filter (fun l => 2 < l), (((l:ℝ)-1)/((l:ℝ)-2)); ∃ C : ℝ, 0 < C ∧ ∃ X₀ : ℕ, ∀ X ≥ X₀, ∀ p ∈ P X, ∀ q ∈ P X, p < q → (K X p q:ℝ) ≤ C*(X:ℝ)*S (q-p)/(Real.log (X:ℝ))^2",
+      "plain_statement": {
+        "zh": "统一控制两个小素数平移的共同邻点",
+        "en": "Sieve the shared neighbors of two distinct small primes"
+      },
+      "brief": {
+        "zh": "在长区间对 n−p,n−q 作二维上界筛。区分整除位移的素数，常数须对 p,q 一致。",
+        "en": "Use an upper-bound sieve for two linear forms, separating primes dividing the shift and tracking uniform constants."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "route": "representations",
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-dyn-shift-factor-mean",
+      "statement": "let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); let P := fun X : ℕ => (Finset.Icc (Nat.sqrt X) (2*Nat.sqrt X)).filter Nat.Prime; let H := fun (X n : ℕ) => ((P X).filter (fun p => p ≤ n ∧ Nat.Prime (n-p))).card; let S := fun d : ℕ => ∏ l ∈ d.primeFactors.filter (fun l => 2 < l), (((l:ℝ)-1)/((l:ℝ)-2)); ∃ C : ℝ, 0 < C ∧ ∃ X₀ : ℕ, ∀ X ≥ X₀, (∑ p ∈ P X, ∑ q ∈ (P X).filter (fun q => p < q), S (q-p)) ≤ C*((P X).card:ℝ)^2",
+      "plain_statement": {
+        "zh": "控制小素数对的位移奇异因子均值",
+        "en": "Bound the mean singular weight over small prime pairs"
+      },
+      "brief": {
+        "zh": "将乘积按平方自由约数展开。小约数估计同余素数对，尾部需控制重模数；对单个位移的最大值会损失常数。",
+        "en": "Expand over squarefree divisors, count congruent prime pairs for small divisors and control the large-divisor tail."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "route": "representations",
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-dyn-path-second-moment",
+      "statement": "let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); let P := fun X : ℕ => (Finset.Icc (Nat.sqrt X) (2*Nat.sqrt X)).filter Nat.Prime; let H := fun (X n : ℕ) => ((P X).filter (fun p => p ≤ n ∧ Nat.Prime (n-p))).card; let M := fun X : ℕ => Real.sqrt (X:ℝ) / (Real.log (X:ℝ))^2; ∃ C : ℝ, 0 < C ∧ ∃ X₀ : ℕ, ∀ X ≥ X₀, (∑ n ∈ E X, (H X n:ℝ)^2) ≤ C*(X:ℝ)*(M X)^2",
+      "plain_statement": {
+        "zh": "平方根步长窗口内的路径二阶矩",
+        "en": "Bound the square-root-window path second moment"
+      },
+      "brief": {
+        "zh": "用碰撞恒等式、共同邻点筛界与位移权重均值。对角项单独用每个终点至多有 |P| 条路径。",
+        "en": "Combine the collision identity with the two sieve inputs; bound diagonal arrivals separately by |E||P|."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-dyn-factorial-collisions",
+        "L-goldbach-dyn-shift-sieve",
+        "L-goldbach-dyn-shift-factor-mean"
+      ],
+      "route": "representations",
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-dyn-many-rich-targets",
+      "statement": "let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); let P := fun X : ℕ => (Finset.Icc (Nat.sqrt X) (2*Nat.sqrt X)).filter Nat.Prime; let H := fun (X n : ℕ) => ((P X).filter (fun p => p ≤ n ∧ Nat.Prime (n-p))).card; let M := fun X : ℕ => Real.sqrt (X:ℝ) / (Real.log (X:ℝ))^2; ∃ c δ : ℝ, 0 < c ∧ 0 < δ ∧ ∃ X₀ : ℕ, ∀ X ≥ X₀, δ*(X:ℝ) ≤ (((E X).filter (fun n => c*M X ≤ (H X n:ℝ))).card:ℝ)",
+      "plain_statement": {
+        "zh": "正比例的偶数拥有许多小步长表示",
+        "en": "Find a positive proportion of endpoints with many witnesses"
+      },
+      "brief": {
+        "zh": "先扣除低于阈值的终点贡献，再对余下终点用柯西不等式。结论允许有正比例的例外。",
+        "en": "Subtract the contribution below a small threshold and use Cauchy–Schwarz on the rest. Exceptions are still allowed."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-dyn-first-mass",
+        "L-goldbach-dyn-path-second-moment"
+      ],
+      "route": "representations",
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-dyn-thin-window-exceptions",
+      "statement": "let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); let P := fun X : ℕ => (Finset.Icc (Nat.sqrt X) (2*Nat.sqrt X)).filter Nat.Prime; let H := fun (X n : ℕ) => ((P X).filter (fun p => p ≤ n ∧ Nat.Prime (n-p))).card; ∀ ε : ℝ, 0 < ε → ∃ X₀ : ℕ, ∀ X ≥ X₀, (((E X).filter (fun n => H X n=0)).card:ℝ) ≤ ε*(X:ℝ)",
+      "plain_statement": {
+        "zh": "探索猜想：平方根步长窗口的漏点密度趋零",
+        "en": "Conjecture: vanishing density of missed square-root-window targets"
+      },
+      "brief": {
+        "zh": "这比正比例命中更强。尝试针对小素数区间建立均方误差，对照局部同余主项；仅有二阶矩上界尚不够。",
+        "en": "Try a mean-square approximation with a residue-sensitive main term for the short prime factor. A bounded second moment alone leaves exceptions."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "route": "representations",
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-dyn-deletion-loss",
+      "statement": "∀ (A B D E : Finset ℕ) (t : ℕ), let r := fun (B' : Finset ℕ) (n : ℕ) => (A.filter (fun p => p≤n ∧ n-p ∈ B')).card; t * (E.filter (fun n => t ≤ r B n ∧ r (B \\ D) n = 0)).card ≤ A.card * (B ∩ D).card",
+      "plain_statement": {
+        "zh": "删除大步长后有多少富终点会完全失去路径",
+        "en": "Bound rich endpoints destroyed by deleting long steps"
+      },
+      "brief": {
+        "zh": "每个失去全部路径的富终点消耗至少 t 个被删有序对，而每个小步长和被删大步长只能配成一对。",
+        "en": "Charge each destroyed rich target at least t distinct removed pairs; bound total pairs by the product of the two step counts."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "route": "representations",
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-dyn-robust-arrivals",
+      "statement": "let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); let P := fun X : ℕ => (Finset.Icc (Nat.sqrt X) (2*Nat.sqrt X)).filter Nat.Prime; let H := fun (X n : ℕ) => ((P X).filter (fun p => p ≤ n ∧ Nat.Prime (n-p))).card; let M := fun X : ℕ => Real.sqrt (X:ℝ) / (Real.log (X:ℝ))^2; ∃ η δ : ℝ, 0 < η ∧ 0 < δ ∧ ∃ X₀ : ℕ, ∀ X ≥ X₀, ∀ D : Finset ℕ, (D.card:ℝ) ≤ η*(X:ℝ)/Real.log (X:ℝ) → δ*(X:ℝ) ≤ (((E X).filter (fun n => ∃ p ∈ P X, p≤n ∧ Nat.Prime (n-p) ∧ n-p ∉ D)).card:ℝ)",
+      "plain_statement": {
+        "zh": "探索猜想：删去一批大素数步长后仍有正比例命中",
+        "en": "Conjecture: positive coverage survives adversarial long-step deletions"
+      },
+      "brief": {
+        "zh": "由富终点下界和删除损失界，结合 |P| 的素数计数上界选 η。允许对手在看过图后选删除集合。",
+        "en": "Use the rich-target threshold, deletion loss and an upper prime count for |P|. The deleted set may depend on the graph."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-dyn-many-rich-targets",
+        "L-goldbach-dyn-deletion-loss"
+      ],
+      "route": "representations",
+      "assumptions": []
+    },
+    {
+      "id": "L-goldbach-dyn-exception-energy",
+      "statement": "∀ (E : Finset ℕ) (r b : ℕ → ℝ) (L : ℝ), 0 < L → (∀ n ∈ E, L ≤ b n) → ((E.filter (fun n => r n=0)).card:ℝ)*L^2 ≤ ∑ n ∈ E, (r n-b n)^2",
+      "plain_statement": {
+        "zh": "用局部预测的均方误差约束漏点数",
+        "en": "Charge each missed endpoint to local prediction error"
+      },
+      "brief": {
+        "zh": "每个漏点的误差平方至少 L²。b 可随剩余类变化。后续若要推出漏点密度趋零，还须建立相应的小量误差。",
+        "en": "At each miss the squared error is at least L². The predictor may vary by residue; a little-o error estimate is still needed."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+      "program": "correlation",
+      "parallel": true,
+      "depends_on": [],
+      "route": "representations",
+      "assumptions": []
+    }
+  ],
+  "links": [
+    {
+      "kind": "exploration",
+      "inputs": [
+        "L-goldbach-dyn-closure-rigidity"
+      ],
+      "output": "L-goldbach-binary-pointwise-positivity",
+      "explanation": {
+        "zh": "固定两个命中坐标，把平移限制到有限候选。若每个候选都失败，取各自一个反证坐标并合成一个窗口。",
+        "en": "Anchor one hit in each coordinate. Exclude each of the finitely many shifts with one witness and combine witnesses in a single window."
+      }
+    },
+    {
+      "kind": "exploration",
+      "inputs": [
+        "L-goldbach-dyn-modular-mirage"
+      ],
+      "output": "L-goldbach-binary-pointwise-positivity",
+      "explanation": {
+        "zh": "取大于目标的所有奇数，同时平移两个加数的偶数模数倍。用它检查任何局部到整体的推理。",
+        "en": "Take all odd steps above the target and translate both summands by even multiples of the modulus."
+      }
+    },
+    {
+      "kind": "exploration",
+      "inputs": [
+        "L-goldbach-dyn-carry-reflection"
+      ],
+      "output": "L-goldbach-binary-pointwise-positivity",
+      "explanation": {
+        "zh": "两个坐标分别关于 m−1 作反射，用反射的自逆性保持路径重数。可用低端的支撑或筛界估计伪命中。",
+        "en": "Reflect both coordinates about the endpoints of [0,m−1]. An involution preserves multiplicity and gives access to low-end bounds."
+      }
+    },
+    {
+      "kind": "exploration",
+      "inputs": [
+        "L-goldbach-dyn-surplus-certificate"
+      ],
+      "output": "L-goldbach-binary-pointwise-positivity",
+      "explanation": {
+        "zh": "组合进位分层与高端预算。须另行证明素数集合的模计数超过预算，才能用于一个指定偶数。",
+        "en": "Combine the carry split and the tail bound. A prime-set application still needs an independent surplus at its target."
+      }
+    },
+    {
+      "kind": "exploration",
+      "inputs": [
+        "L-goldbach-dyn-incidence-first"
+      ],
+      "output": "L-goldbach-binary-pointwise-positivity",
+      "explanation": {
+        "zh": "交换终点和第一步的求和顺序，使不同小素数可以共用长区间素数下界。",
+        "en": "Count the same incidences in the opposite order so each small prime can use a common long-interval estimate."
+      }
+    },
+    {
+      "kind": "exploration",
+      "inputs": [
+        "L-goldbach-dyn-thin-window-exceptions"
+      ],
+      "output": "L-goldbach-binary-pointwise-positivity",
+      "explanation": {
+        "zh": "这比正比例命中更强。尝试针对小素数区间建立均方误差，对照局部同余主项；仅有二阶矩上界尚不够。",
+        "en": "Try a mean-square approximation with a residue-sensitive main term for the short prime factor. A bounded second moment alone leaves exceptions."
+      }
+    },
+    {
+      "kind": "exploration",
+      "inputs": [
+        "L-goldbach-dyn-robust-arrivals"
+      ],
+      "output": "L-goldbach-binary-pointwise-positivity",
+      "explanation": {
+        "zh": "由富终点下界和删除损失界，结合 |P| 的素数计数上界选 η。允许对手在看过图后选删除集合。",
+        "en": "Use the rich-target threshold, deletion loss and an upper prime count for |P|. The deleted set may depend on the graph."
+      }
+    },
+    {
+      "kind": "exploration",
+      "inputs": [
+        "L-goldbach-dyn-exception-energy"
+      ],
+      "output": "L-goldbach-binary-pointwise-positivity",
+      "explanation": {
+        "zh": "每个漏点的误差平方至少 L²。b 可随剩余类变化。后续若要推出漏点密度趋零，还须建立相应的小量误差。",
+        "en": "At each miss the squared error is at least L². The predictor may vary by residue; a little-o error estimate is still needed."
+      }
+    }
+  ],
+  "route_note": {
+    "zh": "在素数对计数路线中检验轨道闭包、整数进位及平方根窗口两步路径的分布。平均覆盖允许漏点。",
+    "en": "Study orbit closure, modular carries and two-step arrivals with a square-root-sized first prime. Average coverage allows exceptions."
+  }
+}

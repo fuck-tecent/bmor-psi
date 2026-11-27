@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-switching-sieve-edge-integrals",
+  "statement": "8 * Real.log (10 / 9) ≤ (0.84289 : ℝ) ∧ 8 * ∫ t in (2 : ℝ)..(8 / 3 : ℝ), Real.log (t - 1) / t ≤ (0.60962 : ℝ)",
+  "plain_statement": {
+    "zh": "新路线 · Li-Liu 1+1.9 加权筛 · SW-7001 · 交换筛的两个单边积分界",
+    "en": "New route · Li-Liu 1+1.9 weighted sieve · SW-7001 · Edge-integral bounds for the switching sieve"
+  },
+  "brief": {
+    "zh": "对应 Li–Liu 1+1.9 筛法的 g3、g8 系数解析上界：利用 exp 的泰勒下界给出 8 log(10/9) ≤ 0.84289，利用 log(1+u) 的奇次泰勒上界、精确长除与 log(4/3) 偶次下界给出 8 ∫_2^{8/3} log(t-1)/t dt ≤ 0.60962。",
+    "en": "Certify the analytic upper bounds for g3 and g8 in the Li–Liu 1+1.9 weighted sieve: 8 log(10/9) ≤ 0.84289 via Taylor lower bounds for exp, and 8 ∫_2^{8/3} log(t-1)/t dt ≤ 0.60962 via odd-degree Taylor upper bounds, exact division by 2+u, and an even-degree lower bound for log(4/3)."
+  },
+  "source": "https://www.goldbach.tech/?lemma=L-goldbach-binary-pointwise-positivity",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "representations",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.SwitchingSieveEdgeIntegrals",
+  "file": "lean/Conjectures/Goldbach/SwitchingSieveEdgeIntegrals.lean"
+}

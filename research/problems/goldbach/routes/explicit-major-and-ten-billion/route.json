@@ -1,0 +1,16 @@
+{
+  "id": "explicit-major-and-ten-billion",
+  "title": {
+    "en": "Explicit major arcs and the ten-billion certificate",
+    "zh": "显式主弧估计与百亿验证"
+  },
+  "description": {
+    "en": "Give the modeled major arcs a numerical lower bound, bound their approximation error by discrepancies in arithmetic progressions, and certify prime-log positivity through ten billion.",
+    "zh": "给出主弧模型的数值下界，用等差数列的偏差控制逼近误差，并验证至一百亿的素数对数卷积正性。"
+  },
+  "feeds": [
+    "rational-model",
+    "arc-budget",
+    "representations"
+  ]
+}

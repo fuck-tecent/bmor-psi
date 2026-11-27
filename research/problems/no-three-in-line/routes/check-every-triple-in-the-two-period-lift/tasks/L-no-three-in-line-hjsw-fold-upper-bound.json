@@ -1,0 +1,18 @@
+{
+  "id": "L-no-three-in-line-hjsw-fold-upper-bound",
+  "statement": "∀ (p : ℕ) [NeZero p] (hp : Nat.Prime p), p ≠ 2 →\n  (let det3 : ℤ × ℤ → ℤ × ℤ → ℤ × ℤ → ℤ :=\n     fun P Q R => (Q.1 - P.1) * (R.2 - P.2) - (Q.2 - P.2) * (R.1 - P.1)\n   let cap : ZMod p → ZMod p → ZMod p × ZMod p := fun t x => (x + t, x⁻¹)\n   let lift : ZMod p → ZMod p → Fin 2 → Fin 2 → ℤ × ℤ :=\n     fun t x i j =>\n       (((cap t x).1.val : ℤ) + (i.val : ℤ) * (p : ℤ),\n        ((cap t x).2.val : ℤ) + (j.val : ℤ) * (p : ℤ))\n   let Mask : Type := ZMod p → Finset (Fin 2 × Fin 2)\n   let points : ZMod p → Mask → Finset (ℤ × ℤ) :=\n     fun t R =>\n       (Finset.univ.filter (fun x : ZMod p => x ≠ 0)).biUnion\n         (fun x => (R x).image (fun ij => lift t x ij.1 ij.2))\n   let NoThreeCollinear : Finset (ℤ × ℤ) → Prop :=\n     fun S => ∀ a ∈ S, ∀ b ∈ S, ∀ c ∈ S, a ≠ b → a ≠ c → b ≠ c → det3 a b c ≠ 0\n   ∀ (t : ZMod p) (R : Mask), NoThreeCollinear (points t R) →\n     (∑ x ∈ Finset.univ.filter (fun x : ZMod p => x ≠ 0), (R x).card) ≤ 3 * (p - 1))",
+  "plain_statement": {
+    "zh": "对任意奇素数 p、任意平移 t 与任意每剩余 mask：若平移双曲线 cap 的 2-周期提升点无三点共线，则总点数不超过 3(p−1)。即 HJSW 的 3(p−1) 是该折叠族的上界，该族无净增。",
+    "en": "For every odd prime p, every shift t and every mask: if the 2-period lift of the shifted hyperbola cap has no three collinear points, the total number of points is at most 3(p−1). Thus HJSW's 3(p−1) is an upper bound within this fold family, which admits no net gain."
+  },
+  "brief": {
+    "zh": "平移双曲线 cap 的 2-周期折叠族的 3(p−1) 最优性（对一切奇素数 p）。先用行列式展开与模 p 条件把纤维对约束刻画为 xx'≡±1，再证边对 S=6、约束图是 C2/C4 之并，最后用独立集/邻域计数得 Σ≤3(p−1)。",
+    "en": "Optimality of 3(p−1) for the 2-period fold family of the shifted hyperbola cap (all odd primes). Fibre-pair constraints are characterised by xx'≡±1 via a determinant expansion; edge pairs have S=6; the constraint graph is a union of C2/C4; an independent-set/neighbour count gives Σ≤3(p−1)."
+  },
+  "program": "correlation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://doi.org/10.1016/0097-3165(75)90043-6",
+  "module": "Conjectures.NoThreeInLine.HjswFoldUpperBound",
+  "file": "lean/Conjectures/NoThreeInLine/HjswFoldUpperBound.lean"
+}

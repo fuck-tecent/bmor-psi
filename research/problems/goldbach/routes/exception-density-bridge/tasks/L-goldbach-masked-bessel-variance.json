@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-masked-bessel-variance",
+  "statement": "let E (x : ℝ) := Complex.exp (((2 * Real.pi * x : ℝ) : ℂ) * Complex.I); let S (X : ℕ) (u : ℕ → ℝ) (t : ℝ) := ∑ k ∈ Finset.range (X+1), (u k : ℂ) * E ((k : ℝ)*t); ∀ (X M : ℕ) (u : ℕ → ℝ) (A : Set ℝ), MeasurableSet A → (∑ m ∈ Finset.range M, ‖intervalIntegral (A.indicator (fun t => (S X u t)^2 * E (-(m : ℝ)*t))) (0 : ℝ) 1 MeasureTheory.volume‖^2) ≤ intervalIntegral (A.indicator (fun t => ‖S X u t‖^4)) (0 : ℝ) 1 MeasureTheory.volume",
+  "plain_statement": {
+    "en": "For the square of a trigonometric sum restricted to any measurable set A, the sum of the first M squared Fourier coefficient norms is at most the integral of |S|⁴ on A within [0,1].",
+    "zh": "将三角和的平方限制在任意可测集 A 上，其前 M 个傅里叶系数的模平方和不超过 |S|⁴ 在 A 与 [0,1] 交集上的积分。"
+  },
+  "brief": {
+    "en": "Apply interval Parseval to the square multiplied by the indicator of A. The chosen natural frequencies embed injectively into the integers, so their nonnegative terms form a finite subsum.",
+    "zh": "对乘以 A 的指示函数的三角和平方应用区间帕塞瓦尔恒等式。所选自然数频率单射到整数频率中，相应的非负项构成有限子和。"
+  },
+  "program": "exceptions",
+  "imports": [],
+  "parallel": true,
+  "source": "https://github.com/leanprover-community/mathlib4/blob/fc4f59e577feb1a4956671bc04ac18aaaf8cd842/Mathlib/Analysis/Fourier/AddCircle.lean#L457-L475",
+  "track": "exception-density-bridge",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.MaskedBesselVariance",
+  "file": "lean/Conjectures/Goldbach/MaskedBesselVariance.lean"
+}

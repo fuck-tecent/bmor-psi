@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-finite-post-boundary-through-32768",
+  "statement": "∀ j : ℕ, 65 ≤ j → j ≤ 16384 → let n : ℕ := 4000000000000000000 + 2*j; ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ p+q=n",
+  "plain_statement": {
+    "zh": "新路线 · 小偶数覆盖第三批 · FR-9002 · 核验从已发表端点加 130 到加 32768 的素数对",
+    "en": "New route · Finite-range coverage III · FR-9002 · Verify prime pairs from 130 to 32768 above the published cutoff"
+  },
+  "brief": {
+    "zh": "回放脚本生成共享 Lucas 节点和全部 16320 行的两个见证。可按相邻锚点把偶数转为小偏移，再按表核验。FR-8001 覆盖 j=1 至 64，本题从 j=65 开始。",
+    "en": "The replay script produces shared Lucas nodes and witnesses for all 16,320 rows. Convert each even target to an offset from its nearest earlier anchor and verify it against the table. FR-8001 covers j=1 through 64. This block starts at j=65."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/finite-rfc-third/README.md#prime-pair-certificates",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-finite-shared-lucas-certificates",
+    "L-goldbach-finite-witness-translate-bitset"
+  ],
+  "imports": []
+}

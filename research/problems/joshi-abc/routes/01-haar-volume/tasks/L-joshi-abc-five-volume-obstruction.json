@@ -1,0 +1,24 @@
+{
+  "id": "L-joshi-abc-five-volume-obstruction",
+  "statement": "∀ (V : ℤ → ℝ), ¬ (V 5 = (1:ℝ)/5 ∧ V 5 = (1:ℝ)/25)",
+  "plain_statement": {
+    "zh": "新路线 · 原文反例与 Haar 体积 · JA-0005 · 检验同一个格若被赋予两种体积会产生矛盾",
+    "en": "New route · Printed comparisons and Haar volume · JA-0005 · Check the contradiction from two values assigned to the same lattice"
+  },
+  "brief": {
+    "zh": "此声明只检查 1/5 与 1/25 不等。两个槽是否给出同一个实际格及其次数权重，须由 JA-0002、JA-0004 和局部格构造核对。",
+    "en": "This checks the numerical contradiction between 1/5 and 1/25. Use JA-0002, JA-0004 and the local lattice construction to verify the identification and the weights."
+  },
+  "source": "https://arxiv.org/abs/2401.13508v4",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-joshi-abc-tensor-balancing",
+    "L-joshi-abc-five-factorization"
+  ],
+  "imports": [],
+  "track": "01-haar-volume",
+  "module": "Conjectures.JoshiAbc.FiveVolumeObstruction",
+  "file": "lean/Conjectures/JoshiAbc/FiveVolumeObstruction.lean"
+}

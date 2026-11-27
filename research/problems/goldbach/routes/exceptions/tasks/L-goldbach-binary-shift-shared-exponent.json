@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-binary-shift-shared-exponent",
+  "statement": "let G := fun m : ℕ => ((Finset.range (m+1)).filter (fun p => Nat.Prime p ∧ Nat.Prime (m-p))).card; ∃ N : ℕ, ∀ n ≥ N, Even n → ∃ e : ℕ, 2 ≤ e ∧ (2^e)^2 ≤ n ∧ 0 < G (n-2^e) ∧ 0 < G (n+2-2^e)",
+  "plain_statement": {
+    "zh": "猜想：相邻偶目标能共用一个非零移位",
+    "en": "Conjecture: adjacent even targets admit a common nonzero shift"
+  },
+  "brief": {
+    "zh": "将两个目标的失败指数集取并，尝试证明不能覆盖全部候选指数。两边允许各自选素数。共同指数比两个各自存在的指数更难。",
+    "en": "Compare the two sets of failing exponents and try to leave one uncovered. The prime pairs may differ; separate witnesses do not give a common exponent."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/f4f754c4709c0c1b2dbc67e4c8f74ce2475b8935/research/ROADMAP.md",
+  "program": "exceptions",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "exceptions",
+  "role": "target",
+  "module": "Conjectures.Goldbach.BinaryShiftSharedExponent",
+  "file": "lean/Conjectures/Goldbach/BinaryShiftSharedExponent.lean"
+}

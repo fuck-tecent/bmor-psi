@@ -1,0 +1,21 @@
+{
+  "id": "L-twin-primes-cofactor-two-linear-sieve",
+  "statement": "∃ C : ℝ, 0 < C ∧ ∀ (Y r : ℕ), 3 ≤ Y → r.Prime → 2 < r → ((((Finset.Ioc Y (2*Y)).filter (fun s => s.Prime ∧ (r*s-2).Prime)).card:ℕ):ℝ) ≤ C*(Y:ℝ)/(Real.log Y)^2",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然推广 · TP-0062 · 给固定素数余因子的双线性式筛出统一上界",
+    "en": "New route · Levent GRH methods and extensions · TP-0062 · Give a uniform upper sieve bound for the two forms with a fixed prime cofactor"
+  },
+  "brief": {
+    "zh": "已知的二维 Selberg 上界筛移植。对每个固定 r 在长度 Y 的窗使用 TP-0061，异常 Euler 因子的相对放大至多 2。CRT 余项逐坏类最多一项，常数须对奇素数 r 一致。选低次幂筛界后两个实际素数值皆大于筛界。",
+    "en": "Formalize a two-dimensional Selberg upper sieve in an interval of length Y. TP-0061 shows that the exceptional Euler factor changes the constant by at most 2. Count each CRT class with error at most one. The constant is uniform in the odd prime r, and both prime values exceed a small power of Y."
+  },
+  "source": "https://doi.org/10.1090/coll/057",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-cofactor-sieve-root-count"
+  ],
+  "imports": [],
+  "challenge_only": true
+}

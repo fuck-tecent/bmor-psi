@@ -1,0 +1,22 @@
+{
+  "id": "L-goldbach-dyadic-coarse-reflection-budget",
+  "statement": "∀ (N K : ℕ) (Q C : ℝ), 4 ≤ N → Even N → N < 2^K → 0 ≤ Q → 2*Q ≤ N → 0 ≤ C →\n  (∀ k : ℕ, 1 ≤ k → k < K → (2^k : ℝ) ≤ Q →\n    ∀ χ : DirichletCharacter ℂ (2^(k+1)), χ.IsPrimitive →\n      ‖∑ n ∈ (Finset.range (N+1)).filter Nat.Prime,\n        (Real.log (n : ℝ) : ℂ) * star (χ (n : ZMod (2^(k+1))))‖ ≤\n          C * Real.sqrt (N : ℝ) * (Real.log (2*N : ℝ))^2) →\n  let w := fun n : ℕ => if n.Prime then Real.log (n : ℝ) else 0\n  let A := fun (d r : ℕ) => ∑ n ∈ (Finset.range (N+1)).filter (fun n => n%d=r), w n\n  let S := (Finset.range K).filter (fun k => 1 ≤ k ∧ (2^k : ℝ) ≤ Q)\n  (∑ k ∈ S,\n    let q : ℕ := 2^k\n    let D := fun r : ℕ => A (2*q) r - A (2*q) (r+q)\n    |(q : ℝ) / ((2^K : ℕ) : ℝ) * ∑ r ∈ Finset.range q,\n      (if (N+2*q-r)%(2*q) < q then (1 : ℝ) else -1) * D r * D ((N+q-r)%q)|) ≤\n    4 * C^2 * Q * (Real.log (2*N : ℝ))^4 + (Real.log 2)^2",
+  "plain_statement": {
+    "zh": "新路线 · 二进反射与 Levent GRH · DR-0017 · 用真素数扭曲和控制二进粗层的逐点总误差",
+    "en": "New route · Dyadic reflection and Levent GRH · DR-0017 · Use the twisted prime sum to control the coarse layers at each target"
+  },
+  "brief": {
+    "zh": "逐层用本原 Parseval，再按 q 的几何和求总误差。冻结前提仅需所用模数 m=2q 的扭曲界和 2Q≤N，符合 #2829 所用的模数上限。",
+    "en": "Use primitive Parseval on each layer and sum the geometric weights q. The declared premise uses only the twisted bounds at m=2q and 2Q≤N, which meets the modulus limit of PR #2829."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/cfde193e18afc4e0ffac53868d514142e908cd36/research/goldbach-skirts/LowSkirtGRHSingle.lean#L8704",
+  "program": "correlation",
+  "role": "conditional",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-dyadic-primitive-energy",
+    "L-goldbach-dyadic-reflected-prime-two",
+    "L-goldbach-dyadic-carry-increment"
+  ],
+  "imports": []
+}

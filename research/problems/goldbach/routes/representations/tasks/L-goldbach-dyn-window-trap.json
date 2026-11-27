@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-dyn-window-trap",
+  "statement": "∀ (A B : Set ℤ), (∀ x ∈ A, 0 < x) → (∀ x ∈ B, x < 0) → ∀ i j k : ℤ, i+k ∈ A → j+k ∈ B → -i < k ∧ k < -j",
+  "plain_statement": {
+    "zh": "混合柱集把平移时间锁进有限区间",
+    "en": "Trap mixed-cylinder hitting times in a finite interval"
+  },
+  "brief": {
+    "zh": "把两个非零坐标的支撑条件同时写出。得到的区间只依赖窗口位置，后续可用于轨道闭包。",
+    "en": "Use the opposite support signs at the two observed coordinates. The bounds depend only on the window."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "module": "Conjectures.Goldbach.DynWindowTrap",
+  "file": "lean/Conjectures/Goldbach/DynWindowTrap.lean",
+  "imports": [],
+  "track": "representations",
+  "role": "lemma"
+}

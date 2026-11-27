@@ -1,0 +1,27 @@
+{
+  "id": "L-goldbach-dyn-path-second-moment",
+  "statement": "let E := fun X : ℕ => (Finset.Icc X (2*X)).filter (fun n => Even n); let P := fun X : ℕ => (Finset.Icc (Nat.sqrt X) (2*Nat.sqrt X)).filter Nat.Prime; let H := fun (X n : ℕ) => ((P X).filter (fun p => p ≤ n ∧ Nat.Prime (n-p))).card; let M := fun X : ℕ => Real.sqrt (X:ℝ) / (Real.log (X:ℝ))^2; ∃ C : ℝ, 0 < C ∧ ∃ X₀ : ℕ, ∀ X ≥ X₀, (∑ n ∈ E X, (H X n:ℝ)^2) ≤ C*(X:ℝ)*(M X)^2",
+  "plain_statement": {
+    "zh": "平方根步长窗口内的路径二阶矩",
+    "en": "Bound the square-root-window path second moment"
+  },
+  "brief": {
+    "zh": "用碰撞恒等式、共同邻点筛界与位移权重均值。对角项单独用每个终点至多有 |P| 条路径。",
+    "en": "Combine the collision identity with the two sieve inputs; bound diagonal arrivals separately by |E||P|."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/representations/dynamical-hitting.md",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-dyn-factorial-collisions",
+    "L-goldbach-dyn-shift-sieve",
+    "L-goldbach-dyn-shift-factor-mean"
+  ],
+  "module": "Conjectures.Goldbach.DynPathSecondMoment",
+  "file": "lean/Conjectures/Goldbach/DynPathSecondMoment.lean",
+  "imports": [
+    "Conjectures.Goldbach.DynFactorialCollisions"
+  ],
+  "track": "representations",
+  "role": "lemma"
+}

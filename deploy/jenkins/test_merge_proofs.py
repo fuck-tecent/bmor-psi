@@ -37,11 +37,14 @@ class MergeProofTests(unittest.TestCase):
 
     def test_merge_uses_verified_head_and_squash(self):
         app = Mock()
+        current_main = {"object": {"sha": "4" * 40}}
         app.request.side_effect = [[{"filename": self.file, "status": "added"}],
+                                   current_main, current_main,
                                    {"merged": True, "sha": self.merged}]
         # GitHub may still be computing mergeability. The SHA-bound merge endpoint
         # can decide after the worker has checked the files and dependency hashes.
         with patch("merge_proofs.pull_request", return_value=self.pr | {"mergeable": None}), \
+             patch("merge_proofs.revision_tree", return_value={}) as tree, \
              patch("merge_proofs.verify_dependency"), \
              patch("merge_proofs.metadata", return_value={"sha": git_blob(self.proof)}), \
              patch("merge_proofs.proven_content", return_value=self.proof):
@@ -49,6 +52,17 @@ class MergeProofTests(unittest.TestCase):
                              (self.merged, self.file, self.proof))
         app.request.assert_called_with("PUT", REPO + "/pulls/55/merge",
                                        {"sha": self.head, "merge_method": "squash"})
+        tree.assert_called_once_with(app, current_main["object"]["sha"])
+
+    def test_existing_path_on_main_blocks_old_pull_request(self):
+        app = Mock()
+        app.request.side_effect = [[{"filename": self.file, "status": "added"}],
+                                   {"object": {"sha": "4" * 40}}]
+        with patch("merge_proofs.pull_request", return_value=self.pr), \
+             patch("merge_proofs.revision_tree", return_value={self.file: {}}), \
+             self.assertRaisesRegex(SkipMerge, "already exists on main"):
+            merge(app, 55, self.head, self.record, self.base)
+        self.assertTrue(all(call.args[0] == "GET" for call in app.request.call_args_list))
 
     def test_changed_head_and_extra_files_never_merge(self):
         for pr, extra_files in ((self.pr | {"head": {"sha": self.merged}}, []),

@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-packet-upper-tail-half",
+  "statement": "let T := fun (m : ℕ) (t : ℝ) => ∑ j ∈ Finset.range m, Real.cos (2*Real.pi*(2:ℝ)^(j+1)*t); ∀ m : ℕ, 0 < m → intervalIntegral (fun t => if (m:ℝ)/2 < T m t then (1:ℝ) else 0) (0:ℝ) 1 MeasureTheory.volume ≤ Real.exp (-(m:ℝ)/8)",
+  "plain_statement": {
+    "zh": "超过一半高度的频率集合的显式面积界",
+    "en": "Explicit area bound above half the packet height"
+  },
+  "brief": {
+    "zh": "对实部的单侧尾取指数参数 1/2，证明 cosh(s)≤exp(s²/2)。这个阈值用于实际截断。",
+    "en": "Apply exponential Markov with s=1/2 and prove cosh(s)≤exp(s²/2). The real one-sided threshold is the one used by the capped packet."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/2327",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "minor-truncation",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.PacketUpperTailHalf",
+  "file": "lean/Conjectures/Goldbach/PacketUpperTailHalf.lean"
+}

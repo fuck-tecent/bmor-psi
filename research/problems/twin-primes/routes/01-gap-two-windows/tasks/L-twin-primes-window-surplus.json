@@ -15,7 +15,11 @@
   "program": "foundation",
   "role": "target",
   "parallel": true,
-  "depends_on": [],
-  "imports": [],
+  "depends_on": [
+    "L-twin-primes-sharp-window-contamination"
+  ],
+  "imports": [
+    "Conjectures.TwinPrimes.SharpWindowContamination"
+  ],
   "challenge_only": true
 }

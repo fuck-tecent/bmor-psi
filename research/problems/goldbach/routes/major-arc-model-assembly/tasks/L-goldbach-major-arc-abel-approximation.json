@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-major-arc-abel-approximation",
+  "statement": "let w (k : ℕ) := if Nat.Prime k then Real.log (k : ℝ) else 0; let E (x : ℝ) := Complex.exp (((2 * Real.pi * x : ℝ) : ℂ) * Complex.I); let S (n : ℕ) (t : ℝ) := ∑ k ∈ Finset.range (n + 1), (w k : ℂ) * E ((k : ℝ) * t); let ap (q r m : ℕ) := ∑ k ∈ (Finset.range (m + 1)).filter (fun k => k % q = r), w k; let K1 (n : ℕ) (b : ℝ) := ∑ k ∈ Finset.Icc 1 n, E ((k : ℝ) * b); ∀ (n q a : ℕ) (β e : ℝ), 1 ≤ q → Nat.Coprime a q → 0 ≤ e → (∀ m : ℕ, 1 ≤ m → m ≤ n → ∀ r < q, Nat.Coprime r q → |ap q r m - (m : ℝ) / (Nat.totient q : ℝ)| ≤ e) → ‖S n ((a : ℝ) / q + β) - ((ArithmeticFunction.moebius q : ℂ) / (Nat.totient q : ℂ)) * K1 n β‖ ≤ Real.log (q : ℝ) + (Nat.totient q : ℝ) * e * (1 + 2 * Real.pi * (n : ℝ) * |β|)",
+  "plain_statement": {
+    "en": "If every reduced residue class has prime-log discrepancy at most e through n, then the error in the μ(q)/φ(q) Dirichlet model at a/q + β is at most log q + φ(q)e(1 + 2πn|β|).",
+    "zh": "若直到 n 的每个前缀上，各简化剩余类的素数对数权偏差都至多为 e，则 a/q + β 处的 μ(q)/φ(q) 狄利克雷模型误差至多为 log q + φ(q)e(1 + 2πn|β|)。"
+  },
+  "brief": {
+    "en": "Apply discrete Abel summation in each reduced class. Primes in the other classes divide q, so their total log weight is bounded by log q independently of β.",
+    "zh": "逐个简化剩余类应用离散阿贝尔求和。其余类中的素数均整除 q，故它们的对数权之和至多为 log q，与 β 无关。"
+  },
+  "program": "correlation",
+  "imports": [],
+  "parallel": true,
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/7f44a36351316045d58882f5e9cfe4eeeeb826e3/research/gaps.json#L1545-L1624",
+  "track": "major-arc-model-assembly",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.MajorArcAbelApproximation",
+  "file": "lean/Conjectures/Goldbach/MajorArcAbelApproximation.lean"
+}

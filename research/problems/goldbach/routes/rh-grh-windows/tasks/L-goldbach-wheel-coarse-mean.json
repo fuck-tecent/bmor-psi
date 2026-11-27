@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-wheel-coarse-mean",
+  "statement": "(∀ (Q : ℕ) [NeZero Q] (χ : DirichletCharacter ℂ Q) (s : ℂ), 0 < s.re → s.re < 1 → DirichletCharacter.LFunction χ s = 0 → s.re = 1 / 2) → let w : ℕ → ℝ := fun k => if Nat.Prime k then Real.log (k : ℝ) else 0; let R := fun n : ℕ => Finset.sum (Finset.range (n + 1)) (fun p => w p * w (n - p)); let U := fun W n : ℕ => (Finset.range W).filter (fun a => Nat.Coprime a W ∧ Nat.Coprime (n + W - a) W); ∃ N₀ : ℕ, ∀ N W H : ℕ, N₀ ≤ N → Even N → 2 ≤ W → Even W → Squarefree W → W ^ 12 ≤ N → N ^ 2 ≤ H ^ 3 → W * H ≤ N → (N : ℝ) * H * W * ((U W N).card : ℝ) ≤ 16 * (Nat.totient W : ℝ) ^ 2 * (Finset.sum (Finset.range H) (fun h => R (N + h * W)))",
+  "plain_statement": {
+    "zh": "假设 GRH。对每个充分大的偶数 N，在偶平方自由轮模 W 上，若 W¹²≤N、N²≤H³ 且 WH≤N，则 N,N+W,…,N+(H−1)W 的素数对数权表示数之和至少为 NHW·#U/(16φ(W)²)。U 是两端对 W 均互素的允许剩余类。",
+    "en": "Assume GRH. For every sufficiently large even N, even squarefree W with W¹²≤N, and H with N²≤H³ and WH≤N, the prime-log representation counts at N+hW for 0≤h<H sum to at least NHW·#U/(16φ(W)²), where U counts admissible residue classes for the two summands."
+  },
+  "imports": [],
+  "program": "grh",
+  "brief": {
+    "zh": "分别在 N/4 至 N/2 的左素数和其补数所在的同一个剩余类中使用 GRH 的算术级数估计。扣除真素数幂的误差后，两端主项相乘，再对全部允许类求和。",
+    "en": "Apply the GRH progression estimate first to left primes between N/4 and N/2, then to their complements in a single residue class over an interval of length WH. Remove proper prime powers, multiply the lower bounds and sum over admissible classes."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/gaps.json#:~:text=L-goldbach-grh-progression-error",
+  "parallel": true,
+  "track": "rh-grh-windows",
+  "role": "conditional",
+  "module": "Conjectures.Goldbach.WheelCoarseMean",
+  "file": "lean/Conjectures/Goldbach/WheelCoarseMean.lean"
+}

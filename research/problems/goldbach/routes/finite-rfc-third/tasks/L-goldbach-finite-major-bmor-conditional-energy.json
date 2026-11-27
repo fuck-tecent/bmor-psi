@@ -1,0 +1,23 @@
+{
+  "id": "L-goldbach-finite-major-bmor-conditional-energy",
+  "statement": "(∀ (q a m : ℕ), 3 ≤ q → q ≤ 105 → a < q → Nat.Coprime a q → 8000000000 ≤ m → |(∑ k ∈ (Finset.range (m+1)).filter (fun k => k % q = a % q), ArithmeticFunction.vonMangoldt k) - (m:ℝ)/Nat.totient q| ≤ (m:ℝ)/(840*Real.log (m:ℝ))) → let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let _J := fun (h : ℝ) (f : ℝ → ℂ) => intervalIntegral f (-h) h MeasureTheory.volume; let Jr := fun (h : ℝ) (f : ℝ → ℝ) => intervalIntegral f (-h) h MeasureTheory.volume; let V := fun (n : ℕ) (β : ℝ) => ∑ k ∈ Finset.Icc 1 n, E ((k:ℝ)*β); let S := fun (n : ℕ) (α : ℝ) => ∑ k ∈ Finset.Icc 1 n, (ArithmeticFunction.vonMangoldt k:ℂ)*E ((k:ℝ)*α); let M := fun (n q : ℕ) (β : ℝ) => ((ArithmeticFunction.moebius q:ℤ):ℂ)/(Nat.totient q:ℂ)*V n β; let H := fun (n q : ℕ) => (105:ℝ)/((q:ℝ)*(n:ℝ)); let Q := Finset.Icc (1:ℕ) 105; let A := fun (q : ℕ) => (Finset.range q).filter (fun a => Nat.Coprime a q); let U := fun (n : ℕ) => ∑ q ∈ Q, ∑ a ∈ A q, Jr (H n q) (fun β => ‖S n ((a:ℝ)/q+β)-M n q β‖^2); let c := fun (q : ℕ) => if q≤2 then (2:ℝ) else 1; let a := fun (q : ℕ) => c q/(840*42) + 1/(10^8:ℝ); let d := fun (q : ℕ) => c q*105*22/(7*840*34*(q:ℝ)); ∀ n : ℕ, 4000000000000000000≤n → (n:ℝ)<Real.exp (Real.exp (19/5)) → U n ≤ (n:ℝ) * ∑ q ∈ Q, 210*(Nat.totient q:ℝ) * ((a q)^2+a q*d q+(d q)^2/3) ∧ (∑ q ∈ Q, 210*(Nat.totient q:ℝ) * ((a q)^2+a q*d q+(d q)^2/3)) < (3/40:ℝ)",
+  "plain_statement": {
+    "zh": "新路线 · 小偶数覆盖第三批 · FR-9013 · 在 BMOR 前提下给出固定主弧累计能量小于 3n/40 的逐模预算",
+    "en": "New route · Finite-range coverage III · FR-9013 · Bound the fixed-arc energy by 3n/40 under the BMOR premise"
+  },
+  "brief": {
+    "zh": "用 FR-9011 的仿射误差和 FR-9012 的平方和上界。用模 4 的两支处理 q=1,2，单列非单位 Mangoldt 质量。按缩放偏移积分，再核验脚本的有理数总和。",
+    "en": "Apply the affine error bound in FR-9011 and the squared-sum bound in FR-9012. Use the two unit classes modulo 4 for q=1 and q=2. Include the nonunit Mangoldt mass. Integrate in the scaled offset and verify the rational sum in the replay."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/finite-rfc-third/README.md#fixed-major-arcs",
+  "program": "correlation",
+  "role": "conditional",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-finite-major-phase-bmor-three-ranges",
+    "L-goldbach-finite-major-phase-reduced-parseval",
+    "L-goldbach-finite-fixed-nonunit-mangoldt",
+    "L-goldbach-finite-fixed-chi-constant-mode"
+  ],
+  "imports": []
+}

@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-dyadic-truncation-form-budget",
+  "statement": "∀ (N K : ℕ) (S : Finset ℕ) (w : ℕ → ℝ)\n    (z : (k : ℕ) → DirichletCharacter ℂ (2^(k+1)) → ℂ) (E : ℝ),\n  N < 2^K → 0 ≤ E → (∀ k ∈ S, 1 ≤ k ∧ k < K) →\n  let s := fun k : ℕ => (Finset.univ : Finset (DirichletCharacter ℂ (2^(k+1)))).filter (fun χ => χ.conductor = 2^(k+1))\n  let v := fun (k : ℕ) (χ : DirichletCharacter ℂ (2^(k+1))) =>\n    (∑ n ∈ Finset.range (N+1), (w n : ℂ) * star (χ (n : ZMod (2^(k+1))))) /\n      (Real.sqrt (((2^(k+1) : ℕ).totient) : ℝ) : ℂ)\n  let R := fun (k : ℕ) (a : DirichletCharacter ℂ (2^(k+1)) → ℂ) =>\n    (∑ χ ∈ s k, ∑ ψ ∈ s k, star (a χ) *\n      ((∑ x : (ZMod (2^(k+1)))ˣ, star (χ (x : ZMod (2^(k+1)))) * ψ ((N : ZMod (2^(k+1))) - (x : ZMod (2^(k+1))))) /\n        (((2^(k+1) : ℕ).totient) : ℂ)) * a ψ).re\n  (∀ k ∈ S, (∑ χ ∈ s k, ‖v k χ-z k χ‖^2) ≤ E^2) →\n    |∑ k ∈ S, ((2^(k+1) : ℕ) : ℝ) / ((2^K : ℕ) : ℝ) * (R k (v k) - R k (z k))| ≤\n      10 * E * Real.sqrt (∑ n ∈ Finset.range (N+1), (w n)^2) + 2*E^2",
+  "plain_statement": {
+    "zh": "新路线 · 二进反射与 Levent GRH · DR-0018 · 控制二幂层上归一化二次型的总替换误差",
+    "en": "New route · Dyadic reflection and Levent GRH · DR-0018 · Control the total replacement error of normalized forms on dyadic layers"
+  },
+  "brief": {
+    "zh": "给统一坐标向量误差 E，在任意选定的层上保留原权 m/M。两项几何和分别控制混合项和误差的平方，可接真实零点向量。",
+    "en": "Given one vector error E, retain m/M on any selected layers. Two geometric sums control the mixed term and the squared error. The formula can use the actual zero vector."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/dyadic-reflection/README.md",
+  "program": "correlation",
+  "role": "conditional",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-reflection-character-contraction",
+    "L-goldbach-character-window-fiber-energy"
+  ],
+  "imports": []
+}

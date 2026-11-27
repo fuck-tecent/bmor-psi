@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-finite-major-phase-bmor-three-ranges",
+  "statement": "(∀ (q a m : ℕ), 3 ≤ q → q ≤ 105 → a < q → Nat.Coprime a q → 8000000000 ≤ m → |(∑ k ∈ (Finset.range (m+1)).filter (fun k => k % q = a % q), ArithmeticFunction.vonMangoldt k) - (m:ℝ)/Nat.totient q| ≤ (m:ℝ)/(840*Real.log (m:ℝ))) → let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); ∀ (q a n : ℕ) (β : ℝ), 3≤q → q≤105 → a<q → Nat.Coprime a q → 4000000000000000000≤n → |β|≤105/(n:ℝ) → ‖∑ k ∈ Finset.Icc 1 n, (((if k%q=a then ArithmeticFunction.vonMangoldt k else 0) - 1/(Nat.totient q:ℝ):ℝ):ℂ)*E ((k:ℝ)*β)‖ ≤ (n:ℝ)*(1/(10^9:ℝ)+1/(840*42)) + Real.pi * |β| * (n:ℝ)^2/(840*34)",
+  "plain_statement": {
+    "zh": "新路线 · 小偶数覆盖第三批 · FR-9011 · 用三段 Abel 估计保留主弧相位误差对 β 的依赖",
+    "en": "New route · Finite-range coverage III · FR-9011 · Keep the phase dependence in the major-arc error using three Abel ranges"
+  },
+  "brief": {
+    "zh": "显式传入 BMOR。将前缀在 8×10^9、6×10^14 切开，末段用 log m>34，端点用 log n>42。整个范围允许 |β|≤105/n，以便用模 4 的两条单位类处理 q=1,2。",
+    "en": "Take the BMOR bound as a premise. Split the prefixes at 8×10^9 and 6×10^14. Use log m>34 in the last range and log n>42 for the endpoint. The range |β|≤105/n lets the two unit classes modulo 4 handle q=1 and q=2."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/finite-rfc-third/README.md#fixed-major-arcs",
+  "program": "correlation",
+  "role": "conditional",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-finite-phase-abel-two-ranges",
+    "L-goldbach-finite-phase-early-prefix-cost"
+  ],
+  "imports": []
+}

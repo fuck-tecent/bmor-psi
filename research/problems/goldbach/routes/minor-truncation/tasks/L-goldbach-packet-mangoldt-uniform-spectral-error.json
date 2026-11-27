@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-packet-mangoldt-uniform-spectral-error",
+  "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let d := fun (n : ℕ) (t : ℝ) => ‖S n (fun k => ArithmeticFunction.vonMangoldt k) t - S n (high n) t‖; ∀ n : ℕ, 1 ≤ n → ∀ t : ℝ, d n t ≤ 4*Real.sqrt (n:ℝ)*Real.log (n:ℝ)",
+  "plain_statement": {
+    "zh": "所有频率上换成完整冯·芒戈尔特权的显式误差",
+    "en": "Uniform cost of replacing the upper prime spectrum by full von Mangoldt weights"
+  },
+  "brief": {
+    "zh": "对高次素数幂，Mathlib 的 ψ−θ ≤ 2√n log n 控制系数绝对值和。补回的小素数满足 k³≤n，粗略计到 √n 已足够；任意相位均适用。",
+    "en": "Bound the added prime powers by the Chebyshev ψ−θ estimate. Restored low primes satisfy k³≤n and lie below √n. Both costs are uniform in the phase."
+  },
+  "source": "https://github.com/leanprover-community/mathlib4/blob/fc4f59e577feb1a4956671bc04ac18aaaf8cd842/Mathlib/NumberTheory/Chebyshev.lean",
+  "program": "correlation",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "minor-truncation",
+  "role": "lemma",
+  "module": "Conjectures.Goldbach.PacketMangoldtUniformSpectralError",
+  "file": "lean/Conjectures/Goldbach/PacketMangoldtUniformSpectralError.lean"
+}

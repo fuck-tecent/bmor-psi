@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-reflection-character-crt",
+  "statement": "let H := fun (m : ℕ) [NeZero m] (N : ℕ) (χ ψ : DirichletCharacter ℂ m) =>\n  (∑ x : (ZMod m)ˣ, star (χ (x : ZMod m)) * ψ ((N : ZMod m) - (x : ZMod m))) / (m.totient : ℂ)\n∀ (m d : ℕ) [NeZero m] [NeZero d] (N : ℕ), m.Coprime d →\n  ∀ (χ ψ : DirichletCharacter ℂ m) (ξ η : DirichletCharacter ℂ d),\n    H (m*d) N\n      (χ.changeLevel (Nat.dvd_mul_right m d) * ξ.changeLevel (Nat.dvd_mul_left d m))\n      (ψ.changeLevel (Nat.dvd_mul_right m d) * η.changeLevel (Nat.dvd_mul_left d m)) =\n      H m N χ ψ * H d N ξ η",
+  "plain_statement": {
+    "zh": "新路线 · 二进反射与 Levent GRH · DR-0010 · 分解互素模数上的反射特征交叉项",
+    "en": "New route · Dyadic reflection and Levent GRH · DR-0010 · Factor reflection cross terms across coprime moduli"
+  },
+  "brief": {
+    "zh": "通过模环约化组合两侧特征。CRT 将单位与反射同时分解，欧拉函数相乘，故归一化系数也是两系数的乘积。",
+    "en": "Pull back the two characters by reduction. CRT splits both the units and the reflection and the totients multiply. The normalized entry is the product of the two entries."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/FoundationProofs/DirichletCharFiniteFourierTransformProperties.lean#L148",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-coset-unit-crt"
+  ],
+  "imports": []
+}

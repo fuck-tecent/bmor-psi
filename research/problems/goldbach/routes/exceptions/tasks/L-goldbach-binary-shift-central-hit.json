@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-binary-shift-central-hit",
+  "statement": "∃ N : ℕ, ∀ n ≥ N, Even n → ∃ e p q : ℕ, 1 ≤ e ∧ (2^e)^2 ≤ n ∧ Nat.Prime p ∧ Nat.Prime q ∧ n = p+q+2^e ∧ p+q ≤ 3*p ∧ 3*p ≤ 2*(p+q)",
+  "plain_statement": {
+    "zh": "猜想：一次小移位可命中中心素数对",
+    "en": "Conjecture: one small binary shift hits a central prime pair"
+  },
+  "brief": {
+    "zh": "可选约 log n 个非零移位，要求其中一次在中心窗命中。先给这些移位的空窗数量做上界。全局例外个数本身无法保证指定 n 命中。",
+    "en": "Bound the number of missed central windows among the nonzero shifts at one n. A global exceptional count alone does not control this sparse sample."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/f4f754c4709c0c1b2dbc67e4c8f74ce2475b8935/research/ROADMAP.md",
+  "program": "exceptions",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "exceptions",
+  "role": "target",
+  "module": "Conjectures.Goldbach.BinaryShiftCentralHit",
+  "file": "lean/Conjectures/Goldbach/BinaryShiftCentralHit.lean"
+}

@@ -1,0 +1,21 @@
+{
+  "id": "L-joshi-abc-five-factorization",
+  "statement": "(Polynomial.X^3-2 : Polynomial (ZMod 5)) = (Polynomial.X-3)*(Polynomial.X^2+3*Polynomial.X+4) ∧ ∀ x : ZMod 5, x^2+3*x+4 ≠ 0",
+  "plain_statement": {
+    "zh": "新路线 · 原文反例与 Haar 体积 · JA-0002 · 核对反例曲线的两个 5 进剩余次数",
+    "en": "New route · Printed comparisons and Haar volume · JA-0002 · Check the two residue degrees at five in the curve example"
+  },
+  "brief": {
+    "zh": "因式分解 X³−2，枚举五个余类检查二次因子无根。",
+    "en": "Factor X³−2 and check the quadratic on all five residue classes."
+  },
+  "source": "https://arxiv.org/abs/2401.13508v4",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "01-haar-volume",
+  "module": "Conjectures.JoshiAbc.FiveFactorization",
+  "file": "lean/Conjectures/JoshiAbc/FiveFactorization.lean"
+}

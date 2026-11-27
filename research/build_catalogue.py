@@ -8,6 +8,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 SLUG = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
 MARK = "route_source"
+COMMUNITY_PROOF = re.compile(
+    r"(?:Conjectures\.[A-Z][A-Za-z0-9]*\.[A-Z][A-Za-z0-9]*|PEqualNP\.Outside\.L_[a-z0-9_]+)"
+)
 
 
 def proof_location(slug, ident):
@@ -108,6 +111,7 @@ def build(root):
             seen.add(ident)
             consumed.add(task)
             g.update(track=route, route_source=route)
+            g.setdefault("imports", [])
             desk["gaps"].append(g)
             if slug != "goldbach":
                 existing["tasks"].append({"id": ident, **g["plain_statement"], MARK: route})
@@ -135,18 +139,56 @@ def build(root):
     return {"gaps.json": gold, "problems.json": others}
 
 
+def register_community_imports(root, catalogue, *, proof_available=None):
+    """Persist available direct dependencies without changing frozen statements."""
+    gaps = catalogue["gaps.json"]["gaps"] + [
+        gap for desk in catalogue["problems.json"].values() for gap in desk["gaps"]
+    ]
+    sources = {path.stem: path for path in (root / "problems").glob("*/routes/*/tasks/*.json")}
+    available = {}
+    for gap in gaps:
+        module = gap.get("module", "")
+        file = f"lean/{module.replace('.', '/')}.lean"
+        proof = root.parent / file
+        exists = (proof.is_file() and not proof.is_symlink() if proof_available is None
+                  else proof_available(file))
+        if COMMUNITY_PROOF.fullmatch(module) and gap.get("file") == file and exists:
+            available[gap["id"]] = module
+    for gap in gaps:
+        if gap["id"] in available:
+            continue
+        imports = list(dict.fromkeys([
+            *gap.get("imports", []),
+            *(available[dep] for dep in gap.get("depends_on", []) if dep in available),
+        ]))
+        gap["imports"] = imports
+        if gap["id"] in sources and imports:
+            path = sources[gap["id"]]
+            source = read(path)
+            if source.get("imports") != imports:
+                source["imports"] = imports
+                write(path, source)
+
+
+def write(path, data):
+    path.write_bytes((json.dumps(data, ensure_ascii=False, indent=2) + "\n").encode())
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--write", action="store_true")
+    parser.add_argument("--write", action="store_true",
+                        help="regenerate the catalogue and register available community dependencies")
     args = parser.parse_args()
     compiled = build(ROOT)
+    if args.write:
+        register_community_imports(ROOT, compiled)
     for name, data in compiled.items():
         path = ROOT / name
         if data == read(path):
             continue
         if not args.write:
             parser.exit(1, f"{name} needs regeneration: python research/build_catalogue.py --write\n")
-        path.write_bytes((json.dumps(data, ensure_ascii=False, indent=2) + "\n").encode())
+        write(path, data)
 
 
 if __name__ == "__main__":

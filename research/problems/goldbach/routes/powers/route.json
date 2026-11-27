@@ -1,0 +1,14 @@
+{
+  "id": "powers",
+  "title": {
+    "zh": "剔除真素数幂",
+    "en": "Remove higher prime powers"
+  },
+  "description": {
+    "zh": "将 Λ 卷积换回只含素数的卷积，并定量控制误差。",
+    "en": "Convert the Mangoldt correlation to primes and bound the correction."
+  },
+  "feeds": [
+    "progressions"
+  ]
+}

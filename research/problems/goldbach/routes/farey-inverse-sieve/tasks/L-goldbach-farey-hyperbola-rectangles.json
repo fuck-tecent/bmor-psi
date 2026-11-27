@@ -1,0 +1,19 @@
+{
+  "id": "L-goldbach-farey-hyperbola-rectangles",
+  "statement": "∀ ε : ℝ, 0 < ε → ∃ C : ℝ, 0 < C ∧ ∀ n : ℕ, 1 < n → ∀ c l h a b : ℕ, c.Coprime n → h < n → b < n → let I := Finset.Icc l h; let J := Finset.Icc a b; |((((I.product J).filter (fun (x : ℕ × ℕ) => (x.1*x.2)%n = c%n)).card : ℝ) - (I.card:ℝ)*(J.card:ℝ)*(n.totient:ℝ)/(n:ℝ)^2)| ≤ C*(n:ℝ)^((1/2:ℝ)+ε)",
+  "plain_statement": {
+    "zh": "新路线 · Farey 分母对与逆元筛 · HD-8006 · 形式化互素常数项的模双曲线矩形计数界",
+    "en": "New route · Farey denominator pairs and inverse sieve · HD-8006 · Formalize the modular hyperbola rectangle bound for a unit right-hand side"
+  },
+  "brief": {
+    "zh": "Shparlinski 综述定理 13 及式 (10) 给出文献入口。保持合数模 n、统一的矩形端点与可逆常数项。证明需要合数模 Kloosterman 和界，单点或空区间可直接计数。",
+    "en": "Use Theorem 13 and equation (10) of Shparlinski’s survey. Keep composite moduli, uniform rectangle endpoints and a unit right-hand side. The proof uses a composite-modulus Kloosterman bound. Count singleton and empty intervals directly."
+  },
+  "source": "https://arxiv.org/abs/1103.2879",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "challenge_only": true
+}

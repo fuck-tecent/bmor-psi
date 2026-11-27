@@ -1,0 +1,21 @@
+{
+  "id": "L-joshi-abc-kummer-quotient",
+  "statement": "((1+5*(5:ℚ))/(1+5*25)) ≠ 1+5*((5:ℚ)/25)",
+  "plain_statement": {
+    "zh": "新路线 · 缩放对数与 Theta 值 · JA-0017 · 检查主单位之商与商的主单位不同",
+    "en": "New route · Scaled logarithms and theta values · JA-0017 · Distinguish the quotient of principal units from the unit of the quotient"
+  },
+  "brief": {
+    "zh": "在 Q 中使用相同标量验证，两边也嵌入 Q₅。跨标签的 Kummer 实现须另给构造。",
+    "en": "Check the rational expressions and embed them into Q₅. Realization across labels requires a separate construction."
+  },
+  "source": "https://arxiv.org/abs/2303.01662",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [],
+  "imports": [],
+  "track": "02-scaled-log-and-theta",
+  "module": "Conjectures.JoshiAbc.KummerQuotient",
+  "file": "lean/Conjectures/JoshiAbc/KummerQuotient.lean"
+}

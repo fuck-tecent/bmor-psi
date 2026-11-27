@@ -1,0 +1,24 @@
+{
+  "id": "L-joshi-abc-uniform-frey-upper",
+  "statement": "let rad := fun (n : ℕ) => n.primeFactors.prod id; let r := fun (a b : ℕ) => Real.log (rad (a*b*(a+b))); ∀ l : ℕ, l.Prime → 7 ≤ l → ∃ K : ℝ, ∀ a b : ℕ, 0<a → 0<b → Nat.Coprime a b → Real.log (16*((a:ℝ)^2+a*b+(b:ℝ)^2))/2 ≤ (1+4*(l:ℝ)/(((l:ℝ)-3)*(l+1)))*r a b+K",
+  "plain_statement": {
+    "zh": "新路线 · 全局高度与 abc · JA-0061 · 为每个辅助素数取得统一的 Frey 高度上界",
+    "en": "New route · Global heights and abc · JA-0061 · Obtain a uniform Frey-height bound at each auxiliary prime"
+  },
+  "brief": {
+    "zh": "与完整有理 abc 等价。正向用 JA-0062、JA-0058、JA-0063；反向固定 ℓ 并在 abc 取 ε=kℓ，用 H≤log(a+b)+log 4。",
+    "en": "This is equivalent to rational abc. The forward direction uses JA-0062, JA-0058 and JA-0063. For the converse, fix ℓ, apply abc with ε=kℓ, and use H≤log(a+b)+log 4."
+  },
+  "source": "https://arxiv.org/abs/2403.10430",
+  "program": "correlation",
+  "role": "target",
+  "parallel": true,
+  "depends_on": [
+    "L-joshi-abc-frey-hull-transfer"
+  ],
+  "imports": [],
+  "challenge_only": true,
+  "track": "07-global-heights",
+  "module": "Conjectures.JoshiAbc.UniformFreyUpper",
+  "file": "lean/Conjectures/JoshiAbc/UniformFreyUpper.lean"
+}

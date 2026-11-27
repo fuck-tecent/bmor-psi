@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-farey-inverse-full-weight",
+  "statement": "∀ (n : ℕ) (w : ℕ → ℝ), 1 < n → (∑ a ∈ Finset.Ico 1 n, ∑ u ∈ (Finset.Ico 1 n).filter (fun u => (a*u)%n = 1), w u) = (∑ u ∈ (Finset.Ico 1 n).filter (fun u => u.Coprime n), w u)",
+  "plain_statement": {
+    "zh": "新路线 · Farey 分母对与逆元筛 · HD-8002 · 合并全部逆元窗的任意分母权",
+    "en": "New route · Farey denominator pairs and inverse sieve · HD-8002 · Recover the unrestricted coprime weight by summing all inverse labels"
+  },
+  "brief": {
+    "zh": "交换分母与分子的求和顺序。对每个 u，逆元纤维恰有一项当且仅当 u 与 n 互素。代入真素数对数权，再用 TH-0012 添回对角项。",
+    "en": "Swap the numerator and denominator sums. Exactly one inverse label contributes when u is a unit. Substitute prime log weights and apply TH-0012 to restore the diagonal term."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/farey-inverse-sieve/README.md",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-farey-insertion-inverse"
+  ],
+  "imports": []
+}

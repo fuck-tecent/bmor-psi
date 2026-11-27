@@ -1,0 +1,21 @@
+{
+  "id": "L-goldbach-farey-sieve-terminal-floor",
+  "statement": "let I := fun n : ℕ => Finset.Icc ((n+2)/3) ((2*n)/3); let P := fun z : ℕ => (Finset.Icc 2 z).filter Nat.Prime; let M := fun z : ℕ => ∏ p ∈ P z, (1-(p:ℝ)⁻¹); let V := fun n z : ℕ => ((I n).card:ℝ)*(n.totient:ℝ)/n * ∏ p ∈ (P z).filter (fun p => ¬ p ∣ n), (1-2/(p:ℝ)); ∀ n : ℕ, 12 ≤ n → Even n → (2/3:ℝ)*((I n).card:ℝ)*(M (Nat.sqrt n))^2 ≤ V n (Nat.sqrt n)",
+  "plain_statement": {
+    "zh": "新路线 · Farey 分母对与逆元筛 · HD-8009 · 控制终筛主项中的大坏素数尾",
+    "en": "New route · Farey denominator pairs and inverse sieve · HD-8009 · Bound the large bad-prime factors in the terminal sieve main term"
+  },
+  "brief": {
+    "zh": "在平方根以上至多一个 n 的素因子，末尾乘积至少 2/3。将其余坏素数与局部 Euler 因子配对，单列 p=2，再用 TH-0072 或整数有限乘积下界。",
+    "en": "There is at most one prime divisor of n above its square root, so the tail product is at least 2/3. Pair the other bad-prime factors with their local factors, compute the factor at 2 and use TH-0072 or the finite product lower bound."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/farey-inverse-sieve/README.md",
+  "program": "foundation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-coset-normalized-euler",
+    "L-goldbach-coset-euler-lower"
+  ],
+  "imports": []
+}

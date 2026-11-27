@@ -1,0 +1,14 @@
+{
+  "id": "progressions",
+  "title": {
+    "zh": "从同余类到主弧指数和",
+    "en": "From progressions to rational frequencies"
+  },
+  "description": {
+    "zh": "先组织剩余类上的 Λ 质量，再通过分部求和传递误差。若采用 GRH，各结论保留该假设。",
+    "en": "Organize Mangoldt mass by residue and transport errors by partial summation. Keep GRH explicit where used."
+  },
+  "feeds": [
+    "rational-model"
+  ]
+}

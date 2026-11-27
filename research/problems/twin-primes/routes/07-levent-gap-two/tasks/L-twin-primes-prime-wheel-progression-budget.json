@@ -1,0 +1,25 @@
+{
+  "id": "L-twin-primes-prime-wheel-progression-budget",
+  "statement": "(∀ (q : ℕ) [NeZero q] (χ : DirichletCharacter ℂ q) (s : ℂ), 0 < s.re → s.re < 1 → DirichletCharacter.LFunction χ s = 0 → s.re = 1/2) → (let w := fun (X : ℕ) => (Finset.range (2*X+1)).filter (fun n => X < n ∧ 50*n < 51*X); let S := fun (X q : ℕ) => ((w X).filter (fun p => p.Prime ∧ Nat.Coprime (p+2) q)).sum (fun p => Real.log p); let V := fun (q : ℕ) => q.primeFactors.prod (fun r => 1-1/((r:ℝ)-1)); ∃ C : ℝ, 0 < C ∧ ∀ (X q : ℕ), 2 ≤ X → q ≤ X → Odd q → Squarefree q → |S X q-(X:ℝ)/50*V q| ≤ C*(q.divisors.card:ℝ)*Real.sqrt X*(Real.log (2*(q:ℝ)*X))^2)",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然推广 · TP-0065 · 计算同窗真素数乘差二轮筛的主项与误差",
+    "en": "New route · Levent GRH methods and extensions · TP-0065 · Compute the main term and error for a gap-two wheel on actual primes in the window"
+  },
+  "brief": {
+    "zh": "只在第二端施加 q 的互素遮罩。用 Möbius 容斥，TP-0030 给每个 d∣q 的实际 −2 类进程误差。有限乘积的局部因子是 1−1/(r−1)，保留 q=1 和绝对误差。可给 Θ 测试的真素数端一阶归一化。",
+    "en": "Apply the coprimality mask only to the translated endpoint. Use Möbius inclusion and exclusion with the actual −2 progression bound TP-0030 for each d∣q. The finite product has factors 1−1/(r−1), including the empty product at q=1. This gives a first-moment normalization on the prime side of the theta test."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/GlobalInterpolation/TruncatedExplicitFormula.lean#L607",
+  "program": "correlation",
+  "role": "conditional",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-ap-short-error",
+    "L-twin-primes-crt-mask",
+    "L-twin-primes-unit-class"
+  ],
+  "imports": [
+    "PEqualNP.Outside.L_twin_primes_ap_short_error",
+    "PEqualNP.Outside.L_twin_primes_unit_class"
+  ]
+}

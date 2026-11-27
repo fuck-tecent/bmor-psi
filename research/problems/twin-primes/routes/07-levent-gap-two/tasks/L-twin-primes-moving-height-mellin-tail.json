@@ -1,0 +1,23 @@
+{
+  "id": "L-twin-primes-moving-height-mellin-tail",
+  "statement": "∀ C : ℝ, 0 ≤ C → ∃ K : ℝ, 0 ≤ K ∧ ∀ (t : ℝ) (L : ℕ) (m : ℤ → ℝ), (∀ j : ℤ, 0 ≤ m j ∧ m j ≤ C*Real.log (2+|(Int.floor t : ℝ)+(j:ℝ)|)) → (∑' j : ℤ, if L ≤ j.natAbs then m j/(1+(j.natAbs:ℝ))^6 else 0) ≤ K*Real.log (2+|t|+(L:ℝ))/(1+(L:ℝ))^5",
+  "plain_statement": {
+    "zh": "新路线 · Levent GRH 与自然推广 · TP-0070 · 按重数控制以任意 t 为中心的截断零点尾",
+    "en": "New route · Levent GRH methods and extensions · TP-0070 · Bound the zero tail with multiplicity uniformly about a moving height"
+  },
+  "brief": {
+    "zh": "给以 floor t 为原点、有正负向的单位窗分配重数。用 log(2+|t|+L+k)≤log(2+|t|+L)+log(1+k/(1+L))，或分二进壳求和。TP-0022 给单侧模型。新界保留 t 及 L 的依赖，供 TP-0026 的移动截尾。",
+    "en": "Use unit windows in both directions about floor t. Separate the log at scale 1+L, or sum over dyadic shells. TP-0022 gives the one-sided model. Keep the dependence on t and L to bound the moving truncation in TP-0026."
+  },
+  "source": "https://github.com/leanprover-community/riemann-hypothesis/blob/fcb6eac7534875d32d68030967e2deae6d686151/src/Development/AbelianVarietyTheory/Proofs/GlobalInterpolation/TruncatedExplicitFormula.lean#L607",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-twin-primes-mellin-tail",
+    "L-twin-primes-ordered-indices"
+  ],
+  "imports": [
+    "PEqualNP.Outside.L_twin_primes_mellin_tail"
+  ]
+}

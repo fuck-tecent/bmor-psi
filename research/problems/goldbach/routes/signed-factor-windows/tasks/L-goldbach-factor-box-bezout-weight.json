@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-factor-box-bezout-weight",
+  "statement": "∀ (a b n l r u v : ℤ) (w : ℤ → ℤ → ℝ), 0 < a → 0 < b →\nlet g : ℤ := Int.gcd a b\nlet h := b / g\nlet k := a / g\nlet x := (n / g) * Int.gcdA a b\nlet y := (n / g) * Int.gcdB a b\nlet lo := max (-((x-l) / h)) (-((v-y) / k))\nlet hi := min ((r-x) / h) ((y-u) / k)\nlet box := ((Finset.Icc l r).product (Finset.Icc u v)).filter (fun z => a*z.1 + b*z.2 = n)\n(∑ z ∈ box, w z.1 z.2) = if g ∣ n then ∑ i ∈ Finset.Icc lo hi, w (x+h*i) (y-k*i) else 0",
+  "plain_statement": {
+    "zh": "新路线 · 有符号因子与移位窗 · FW-9001 · 把截断因子线的实际权送到精确的整数区间",
+    "en": "New route · Signed factors and shift windows · FW-9001 · Transport a weighted factor box to its exact Bézout interval"
+  },
+  "brief": {
+    "zh": "对 gcd 整除的纤维用 Bézout 解定位原点，把两个闭区间分别取整并求交。权可取截断 Möbius 除数和与两份 Mangoldt 权的乘积，取常数 1 得到实际纤维数。FW-9002 使用同一组端点。",
+    "en": "Use a Bézout solution on each compatible fiber. Intersect both integer ranges using floor division. Weight one gives the actual multiplicity. The same interval transports truncated Möbius and Mangoldt weights into FW-9002."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/blob/main/research/problems/goldbach/routes/signed-factor-windows/split-3.md",
+  "program": "correlation",
+  "role": "lemma",
+  "parallel": true,
+  "imports": [],
+  "depends_on": [
+    "L-goldbach-factor-line-fiber-param"
+  ]
+}
