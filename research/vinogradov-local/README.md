@@ -1046,3 +1046,40 @@ for a `1/(2q)`-separated set on the circle,
 
 That estimate (for `K = 1`, i.e. `|β| ≤ 1/q²`) is the classical Type-I
 minor-arc saving `n/√q`-type input; it is the next target.
+
+### Wide major arcs and the two-parameter minor-arc split
+
+The narrow Type-I major arcs (`radius 1/(16 q U²)`, cutoff `Q`) only imply
+that a Farey denominator on the minor arcs satisfies `|β| > 1/(16 q U²)`;
+they do **not** force `q` to be large, which is what the `1/q` factors in
+the Type-I estimates need.
+
+`assembly.lean` now has the classical two-parameter split:
+
+```lean
+typeIMajorArcsWide Q0 Q   -- centres a/q, q ≤ Q0, radius 1/(qQ)
+typeIMinorArcsWide Q0 Q   -- complement
+lt_of_not_mem_typeIMajorArcsWide :
+  α ∉ wide major arcs → |α - a/q| ≤ 1/(qQ) → Q0 < q
+exists_farey_approx_minorWide :
+  α ∈ [0,1] \ wide major arcs → ∃ a q, Q0 < q ≤ Q, |α - a/q| ≤ 1/(qQ)
+```
+
+The point is that the *radius* is `1/(qQ)` with the Farey cutoff `Q`, while
+the *denominator cutoff* is the smaller `Q0`; the two roles of the
+single parameter `Q` in the narrow definition are now separated.
+
+`norm_expSum_vaughan_typeI_le_wideMinorArc` combines this with the
+Farey-regime Type-I estimate: on the wide minor arcs (with `Q ≥ 16U`)
+one obtains `q` with `Q0 < q ≤ Q` and
+
+```text
+‖S_I(α)‖ ≤ (U+1) log n
+  + 2QU log n + n log n (1+log n)/Q0
+  + 2QU log n (1+log U) + n log n (1+log U)^2
+  + n log(U²)(1+log(U²))/Q0.
+```
+
+Compared with `norm_expSum_vaughan_typeI_le_uniform_threshold`, every
+`n log n (1+log n)/q` and `n log(U²)(1+log(U²))/q` term now carries the
+minor-arc lower bound `q > Q0` instead of `q ≥ 1`.

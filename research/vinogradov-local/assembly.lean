@@ -653,6 +653,136 @@ lemma norm_expSum_vaughan_typeI_le_uniform_threshold (n U Q : ℕ) (α : ℝ)
   refine hbase.trans ?_
   linarith [hm1, hm2, hm3, hm5]
 
+/-- Wide Type-I major arcs: rational centres `a/q` with `q ≤ Q0` and the
+radius `1/(qQ)` used by the disjoint-arc circle method. -/
+def typeIMajorArcsWide (Q0 Q : ℕ) : Set ℝ :=
+  {t | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ Q0 ∧ a ≤ q ∧ Nat.Coprime a q ∧
+    |t - (a:ℝ)/(q:ℝ)| ≤ 1 / ((q:ℝ) * (Q:ℝ))}
+
+/-- The wide Type-I minor arcs are the complement of the wide major arcs. -/
+def typeIMinorArcsWide (Q0 Q : ℕ) : Set ℝ := (typeIMajorArcsWide Q0 Q)ᶜ
+
+/-- Every wide major-arc point has the `a/q + β` form with `q ≤ Q0`. -/
+lemma exists_wideMajorArc_representation (Q0 Q : ℕ) {t : ℝ}
+    (ht : t ∈ typeIMajorArcsWide Q0 Q) :
+    ∃ q a : ℕ, ∃ β : ℝ, 1 ≤ q ∧ q ≤ Q0 ∧ a ≤ q ∧ Nat.Coprime a q ∧
+      t = (a:ℝ)/(q:ℝ) + β ∧ |β| ≤ 1 / ((q:ℝ) * (Q:ℝ)) := by
+  obtain ⟨q, a, hq1, hqQ, ha, hcop, hβ⟩ := ht
+  exact ⟨q, a, t - (a:ℝ)/(q:ℝ), hq1, hqQ, ha, hcop, by ring, by simpa using hβ⟩
+
+/-- On the wide minor arcs every Farey approximation with radius `1/(qQ)`
+has denominator strictly bigger than `Q0`. -/
+lemma lt_of_not_mem_typeIMajorArcsWide {Q0 Q : ℕ} {t : ℝ} {q a : ℕ}
+    (ht : t ∉ typeIMajorArcsWide Q0 Q) (hq1 : 1 ≤ q) (ha : a ≤ q)
+    (hcop : Nat.Coprime a q)
+    (hβ : |t - (a:ℝ)/(q:ℝ)| ≤ 1 / ((q:ℝ) * (Q:ℝ))) :
+    Q0 < q := by
+  by_contra h
+  exact ht ⟨q, a, hq1, by omega, ha, hcop, hβ⟩
+
+/-- Farey approximation on the wide minor arcs: the denominator satisfies
+`Q0 < q ≤ Q`. -/
+lemma exists_farey_approx_minorWide (α : ℝ) (hα0 : 0 ≤ α) (hα1 : α ≤ 1)
+    (Q0 Q : ℕ) (hQ : 0 < Q) (hminor : α ∉ typeIMajorArcsWide Q0 Q) :
+    ∃ a q : ℕ, 1 ≤ q ∧ q ≤ Q ∧ Q0 < q ∧ a ≤ q ∧ Nat.Coprime a q ∧
+      |α - (a:ℝ)/(q:ℝ)| ≤ 1 / ((q:ℝ) * (Q:ℝ)) := by
+  obtain ⟨a, q, hq1, hqQ, ha, hcop, hβ⟩ := exists_farey_approx α hα0 hα1 Q hQ
+  exact ⟨a, q, hq1, hqQ,
+    lt_of_not_mem_typeIMajorArcsWide hminor hq1 ha hcop hβ, ha, hcop, hβ⟩
+
+set_option maxHeartbeats 1000000 in
+/-- Type-I estimate on the wide minor arcs in the regime `Q ≥ 16 U`, with the
+denominator `q` controlled from below by `Q0`: all `1/q` factors are relaxed
+to `1/Q0`. -/
+theorem norm_expSum_vaughan_typeI_le_wideMinorArc (n U Q0 Q : ℕ) (α : ℝ)
+    (hn : 1 ≤ n) (hUn : U ≤ n) (hU1 : 1 ≤ U) (hlarge : 16 * U ≤ Q)
+    (hQ0 : 1 ≤ Q0) (hQpos : 0 < Q) (hα0 : 0 ≤ α) (hα1 : α ≤ 1)
+    (hminor : α ∉ typeIMajorArcsWide Q0 Q) :
+    ∃ q : ℕ, Q0 < q ∧ q ≤ Q ∧
+      ‖expSum n Λ α - expSum n (high U (μ : ArithmeticFunction ℝ) *
+        (ζ : ArithmeticFunction ℝ) * high U (Λ : ArithmeticFunction ℝ)) α‖ ≤
+        ((U:ℝ) + 1) * Real.log (n:ℝ)
+          + (2 * (Q:ℝ) * (U:ℝ) * Real.log (n:ℝ)
+              + (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) / (Q0:ℝ))
+          + (2 * (Q:ℝ) * (Real.log (n:ℝ) * ((U:ℝ) * (1 + Real.log (U:ℝ))))
+              + (n:ℝ) * (Real.log (n:ℝ) * (1 + Real.log (U:ℝ)) *
+                  (1 + Real.log (U:ℝ)))
+              + (n:ℝ) * (Real.log (((U * U : ℕ)) : ℝ) *
+                  (1 + Real.log (((U * U : ℕ)) : ℝ))) / (Q0:ℝ)) := by
+  obtain ⟨a, q, hq1, hqQ, hQ0q, ha, hcop, hβ⟩ :=
+    exists_farey_approx_minorWide α hα0 hα1 Q0 Q hQpos hminor
+  have hq : 0 < q := by omega
+  let β : ℝ := α - (a:ℝ)/(q:ℝ)
+  have hβ' : |β| ≤ 1 / ((q:ℝ) * (Q:ℝ)) := by simpa [β] using hβ
+  have hαeq : α = (a:ℝ)/(q:ℝ) + β := by simp [β]
+  have hlog : 0 ≤ Real.log (n:ℝ) := Real.log_natCast_nonneg n
+  have hlogU : 0 ≤ Real.log (U:ℝ) := Real.log_natCast_nonneg U
+  have hqR : (0:ℝ) < (q:ℝ) := by exact_mod_cast hq
+  have hQ0R : (0:ℝ) < (Q0:ℝ) := by exact_mod_cast hQ0
+  have hqQ' : (q:ℝ) ≤ (Q:ℝ) := by exact_mod_cast hqQ
+  have hQ0q' : (Q0:ℝ) ≤ (q:ℝ) := by exact_mod_cast le_of_lt hQ0q
+  have hlogU2 : 0 ≤ Real.log (((U * U : ℕ)) : ℝ) := Real.log_natCast_nonneg (U * U)
+  refine ⟨q, hQ0q, hqQ, ?_⟩
+  rw [hαeq]
+  have hbase := norm_expSum_vaughan_typeI_le_farey_large n q U Q a β
+    hn hUn hq hcop hU1 hlarge hβ'
+  -- Replace the `1/q` factors by `1/Q0`.
+  have hm2 : (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) / (q:ℝ) ≤
+      (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) / (Q0:ℝ) := by
+    apply div_le_div_of_nonneg_left (by positivity) hQ0R hQ0q'
+  have hm5 : (n:ℝ) * (Real.log (((U * U : ℕ)) : ℝ) *
+        ((1 / (q:ℝ)) * (1 + Real.log ((((U * U) / q : ℕ)) : ℝ))))
+      ≤ (n:ℝ) * (Real.log (((U * U : ℕ)) : ℝ) *
+          (1 + Real.log (((U * U : ℕ)) : ℝ))) / (Q0:ℝ) := by
+    have hfac : (1 / (q:ℝ)) * (1 + Real.log ((((U * U) / q : ℕ)) : ℝ)) ≤
+        (1 / (Q0:ℝ)) * (1 + Real.log (((U * U : ℕ)) : ℝ)) := by
+      apply mul_le_mul
+      · exact one_div_le_one_div_of_le hQ0R hQ0q'
+      · have hdivle : ((U * U) / q : ℕ) ≤ U * U := Nat.div_le_self _ _
+        have hmono : Real.log ((((U * U) / q : ℕ)) : ℝ) ≤
+            Real.log (((U * U : ℕ)) : ℝ) := by
+          rcases Nat.eq_zero_or_pos ((U * U) / q) with h0 | hpos
+          · rw [h0]
+            simpa using hlogU2
+          · exact Real.log_le_log (by exact_mod_cast hpos) (by exact_mod_cast hdivle)
+        linarith
+      · positivity
+      · positivity
+    calc (n:ℝ) * (Real.log (((U * U : ℕ)) : ℝ) *
+          ((1 / (q:ℝ)) * (1 + Real.log ((((U * U) / q : ℕ)) : ℝ))))
+        ≤ (n:ℝ) * (Real.log (((U * U : ℕ)) : ℝ) *
+            ((1 / (Q0:ℝ)) * (1 + Real.log (((U * U : ℕ)) : ℝ)))) := by
+          apply mul_le_mul_of_nonneg_left _ (by positivity)
+          exact mul_le_mul_of_nonneg_left hfac hlogU2
+      _ = (n:ℝ) * (Real.log (((U * U : ℕ)) : ℝ) *
+            (1 + Real.log (((U * U : ℕ)) : ℝ))) / (Q0:ℝ) := by ring
+  have hm1 : 2 * (q:ℝ) * (U:ℝ) * Real.log (n:ℝ) ≤
+      2 * (Q:ℝ) * (U:ℝ) * Real.log (n:ℝ) := by
+    apply mul_le_mul_of_nonneg_right _ hlog
+    nlinarith [hqQ', hqR, show (0:ℝ) ≤ (U:ℝ) by positivity]
+  have hm3 : 2 * (q:ℝ) * (Real.log (n:ℝ) * ((U:ℝ) * (1 + Real.log (U:ℝ)))) ≤
+      2 * (Q:ℝ) * (Real.log (n:ℝ) * ((U:ℝ) * (1 + Real.log (U:ℝ)))) := by
+    apply mul_le_mul_of_nonneg_right _ (by positivity)
+    nlinarith [hqQ', hqR]
+  have hstep1 : ((U:ℝ) + 1) * Real.log (n:ℝ) +
+        (2 * (q:ℝ) * (U:ℝ) * Real.log (n:ℝ) +
+          (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) / (q:ℝ)) +
+        (2 * (q:ℝ) * (Real.log (n:ℝ) * ((U:ℝ) * (1 + Real.log (U:ℝ)))) +
+          (n:ℝ) * (Real.log (n:ℝ) * (1 + Real.log (U:ℝ)) *
+            (1 + Real.log (U:ℝ))) +
+          (n:ℝ) * (Real.log (((U * U : ℕ)) : ℝ) *
+            ((1 / (q:ℝ)) * (1 + Real.log ((((U * U) / q : ℕ)) : ℝ)))))
+      ≤ ((U:ℝ) + 1) * Real.log (n:ℝ) +
+        (2 * (Q:ℝ) * (U:ℝ) * Real.log (n:ℝ) +
+          (n:ℝ) * Real.log (n:ℝ) * (1 + Real.log (n:ℝ)) / (Q0:ℝ)) +
+        (2 * (Q:ℝ) * (Real.log (n:ℝ) * ((U:ℝ) * (1 + Real.log (U:ℝ)))) +
+          (n:ℝ) * (Real.log (n:ℝ) * (1 + Real.log (U:ℝ)) *
+            (1 + Real.log (U:ℝ))) +
+          (n:ℝ) * (Real.log (((U * U : ℕ)) : ℝ) *
+            (1 + Real.log (((U * U : ℕ)) : ℝ))) / (Q0:ℝ)) := by
+    linarith [hm1, hm2, hm3, hm5]
+  exact hbase.trans hstep1
+
 end
 
 end PEqualNP.Outside.Vaughan

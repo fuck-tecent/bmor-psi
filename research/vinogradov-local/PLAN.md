@@ -421,3 +421,17 @@ Remaining for the classical Type-I minor-arc estimate:
 This would replace the trivial `n log² n/q` multiples-of-`q` estimate by
 the classical `n/q` Type-I saving, which is `o(n)` once `q` is large
 (the minor-arc regime).
+
+## Wide major arcs (two parameters)
+
+`typeIMajorArcsWide Q0 Q` (radius `1/(qQ)`, denominator cutoff `Q0`) and
+`exists_farey_approx_minorWide` give, on the complement, a Farey
+denominator `Q0 < q ≤ Q`.  `norm_expSum_vaughan_typeI_le_wideMinorArc`
+then relaxes all `1/q` factors to `1/Q0`.
+
+This removes the `q ≥ 1` loss in the `n log² n/q` terms.  What remains
+before a Type-I minor-arc saving:
+- the `2QU` terms (these need the residue/block refinement of the sine
+  separation, replacing `2q` per `d` by the varying residues `r_d/q`);
+- the third-term `2qM` term (the bilinear analogue), which still needs
+  the block/counting argument.
