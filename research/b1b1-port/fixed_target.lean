@@ -440,4 +440,134 @@ theorem frozen_iff_inverseResidual :
       ‖Jdeep n (τ₁ n) (τ₁ n)‖ ≤ e * (n : ℝ)) ↔ smallEven inverseResidual := by
   exact fullCell_iff_inverseResidual
 
+/-! ### Milestone 55: symmetric reciprocal-residue form -/
+
+/-- For `n ≥ 16`, twice the first-band cutoff is below `√n`. -/
+theorem twice_cutoffL_le_sqrt {n : ℕ} (hn : 16 ≤ n) : 2 * cutoffL n ≤ n.sqrt := by
+  have hnR : (1 : ℝ) ≤ n := by exact_mod_cast (by omega : 1 ≤ n)
+  have hB : (cutoffL n : ℝ) ≤ (n : ℝ) ^ (1 / 4 : ℝ) := Nat.floor_le (by positivity)
+  have hfourth : cutoffL n ^ 4 ≤ n := by
+    have h := pow_le_pow_left₀ (Nat.cast_nonneg (cutoffL n) (α := ℝ)) hB 4
+    have hrt : ((n : ℝ) ^ (1 / 4 : ℝ)) ^ 4 = n := by
+      simpa only [one_div, Nat.cast_ofNat] using
+        Real.rpow_inv_natCast_pow (Nat.cast_nonneg n) (by decide : (4 : ℕ) ≠ 0)
+    rw [hrt] at h
+    exact_mod_cast h
+  have htwo : 2 ≤ cutoffL n := by
+    apply Nat.le_floor
+    have h16 : ((2 : ℝ) ^ 4) ^ ((4 : ℝ)⁻¹) = 2 := by
+      simpa using Real.pow_rpow_inv_natCast (by norm_num : (0 : ℝ) ≤ 2)
+        (by decide : (4 : ℕ) ≠ 0)
+    have hh : (2 : ℝ) ^ 4 ≤ n := by norm_num; exact_mod_cast hn
+    norm_num only [Nat.cast_ofNat]
+    calc
+      (2 : ℝ) = _ := h16.symm
+      _ ≤ _ := by
+        rw [show (4 : ℝ)⁻¹ = 1 / 4 by norm_num]
+        exact Real.rpow_le_rpow (by norm_num) hh (by positivity)
+  apply Nat.le_sqrt'.mpr
+  calc
+    (2 * cutoffL n) ^ 2 = (cutoffL n) ^ 2 * 4 := by ring
+    _ ≤ (cutoffL n) ^ 2 * (cutoffL n) ^ 2 := by
+      apply Nat.mul_le_mul_left
+      nlinarith
+    _ = cutoffL n ^ 4 := by ring
+    _ ≤ n := hfourth
+
+/-- If both inverse residues are short, their displayed sum is exactly `n`. -/
+theorem short_pair_forces_eq {n p q B : ℕ} (hp : p.Prime) (hq : q.Prime) (hpq : p ≠ q)
+    (hn : n < p * q) (hbq : 2 * B < q) (hbp : 2 * B < p)
+    (ha : inverseResidue n p q ≤ B) (hb : inverseResidue n q p ≤ B) :
+    inverseResidue n p q * p + inverseResidue n q p * q = n := by
+  let r := inverseResidue n p q
+  let s := inverseResidue n q p
+  have hr : 2 * r < q := lt_of_le_of_lt (Nat.mul_le_mul_left _ ha) hbq
+  have hs : 2 * s < p := lt_of_le_of_lt (Nat.mul_le_mul_left _ hb) hbp
+  have hl : r * p + s * q < p * q := by
+    have h1 := Nat.mul_lt_mul_of_pos_right hr hp.pos
+    have h2 := Nat.mul_lt_mul_of_pos_right hs hq.pos
+    nlinarith
+  have h := inverse_reciprocity (n := n) hp hq hpq
+  change (r * p + s * q) % (p * q) = n % (p * q) at h
+  rwa [Nat.mod_eq_of_lt hl, Nat.mod_eq_of_lt hn] at h
+
+/-- Symmetric form of an inverse pair when both primes are large compared with `B`. -/
+theorem inversePair_symmetric {n B p q : ℕ} (hp : p.Prime) (hq : q.Prime) (hpq : p ≠ q)
+    (hn : n < p * q) (hbq : 2 * B < q) (hbp : 2 * B < p)
+    (c : ℕ → ℕ → ℂ) (h0 : ∀ r a, B < a → c r a = 0) :
+    inversePair n B c p q = c p (inverseResidue n p q) * c q (inverseResidue n q p) := by
+  let a := inverseResidue n p q
+  let b := inverseResidue n q p
+  let b' := partnerFactor n p q
+  change (if a ≤ B ∧ b' ≤ B ∧ a * p + b' * q = n then c p a * c q b' else 0) =
+    c p a * c q b
+  by_cases h : a ≤ B ∧ b' ≤ B ∧ a * p + b' * q = n
+  · rw [if_pos h]
+    have hb := (resonance_inverse hq hp hpq.symm (show b' < p by omega)
+      (by rw [add_comm]; exact h.2.2 : b' * q + a * p = n)).1
+    rw [show b' = b from hb]
+  · rw [if_neg h]
+    by_cases ha : a ≤ B
+    · by_cases hb : b ≤ B
+      · have he := short_pair_forces_eq hp hq hpq hn hbq hbp ha hb
+        have hb' := (resonance_inverse hp hq hpq (show a < q by omega) he).2
+        exact (h ⟨ha, by rwa [← show b = b' from hb'], by rwa [← show b = b' from hb']⟩).elim
+      · rw [h0 q b (by omega), mul_zero]
+    · rw [h0 p a (by omega), zero_mul]
+
+/-- Fully symmetric reciprocal sum over distant prime pairs. -/
+def reciprocalTotal (n : ℕ) : ℂ :=
+  let c := primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n)
+  ∑ pq ∈ farPairs (bigPrimes n) (cutoffL n),
+    c pq.1 (inverseResidue n pq.1 pq.2) * c pq.2 (inverseResidue n pq.2 pq.1)
+
+/-- The asymmetric inverse-pair sum equals the symmetric reciprocal sum. -/
+theorem distantInverseTotal_eq_reciprocal (n : ℕ) (hn : 16 ≤ n) :
+    distantInverseTotal n = reciprocalTotal n := by
+  classical
+  let c := primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n)
+  unfold distantInverseTotal reciprocalTotal
+  refine Finset.sum_congr rfl fun pq hpq => ?_
+  obtain ⟨hm, hout⟩ := Finset.mem_sdiff.mp hpq
+  obtain ⟨hp, hq⟩ := Finset.mem_product.mp hm
+  have hne : pq.1 ≠ pq.2 := by
+    intro heq
+    apply hout
+    exact Finset.mem_filter.mpr ⟨hm, by simp [heq]⟩
+  have hpsqrt := (Finset.mem_filter.mp hp).2.1
+  have hqsqrt := (Finset.mem_filter.mp hq).2.1
+  have hnq : n < pq.1 * pq.2 :=
+    (Nat.lt_succ_sqrt n).trans_le (Nat.mul_le_mul hpsqrt hqsqrt)
+  apply inversePair_symmetric (Finset.mem_filter.mp hp).2.2 (Finset.mem_filter.mp hq).2.2 hne hnq
+    ((twice_cutoffL_le_sqrt hn).trans_lt hqsqrt) ((twice_cutoffL_le_sqrt hn).trans_lt hpsqrt)
+  intro p a ha
+  have hnot : (p, a) ∉ rowSupport n (cutoffU n) (cutoffU n) (cutoffL n) := by
+    intro h
+    have hmem := (Finset.mem_filter.mp h).1
+    have haB : a ≤ cutoffL n := Nat.le_of_lt_succ
+      (Finset.mem_range.mp (Finset.mem_product.mp hmem).2)
+    omega
+  simp [c, primeRowCoeff, hnot]
+
+/-- The residual in symmetric reciprocal form. -/
+def reciprocalResidual (n : ℕ) : ℂ := reciprocalTotal n - widePrimePairs n
+
+/-- The two residual normal forms are eventually equal. -/
+theorem inverseResidual_eq_reciprocalResidual (n : ℕ) (hn : 16 ≤ n) :
+    inverseResidual n = reciprocalResidual n := by
+  unfold inverseResidual reciprocalResidual
+  rw [distantInverseTotal_eq_reciprocal n hn]
+
+/-- **Symmetric fixed-target equivalence.** -/
+theorem fullCell_iff_reciprocalResidual : smallEven fullCell ↔ smallEven reciprocalResidual := by
+  rw [fullCell_iff_inverseResidual]
+  have transform {f g : ℕ → ℂ} (h : ∀ n, 16 ≤ n → f n = g n) : smallEven f → smallEven g := by
+    intro hf e he
+    obtain ⟨N, hN⟩ := hf e he
+    refine ⟨max 16 N, fun n hn heven => ?_⟩
+    rw [← h n ((le_max_left ..).trans hn)]
+    exact hN n ((le_max_right ..).trans hn) heven
+  exact ⟨transform inverseResidual_eq_reciprocalResidual,
+    transform (fun n hn => (inverseResidual_eq_reciprocalResidual n hn).symm)⟩
+
 end B1B1Fixed

@@ -3230,5 +3230,42 @@ of **all** prime pairs.  This is a signed fixed-target estimate; no new uncondit
 for it is claimed.  The verified contribution here is the complete reduction with explicit
 sublinear errors, not a solution of that residual.
 
-Both `fixed_target.lean` and the modified fixed-target library pass Lean 4.36.0 with the
+Both `fixed_target.lean` and the pristine fixed-target library pass Lean 4.36.0 with the
 locked Mathlib cache; no `sorry` is used.
+
+## Milestone 55: symmetric reciprocal-residue residual
+
+The asymmetric `partnerFactor` has now been eliminated.  For distant prime pairs, write
+
+```text
+a = (n p⁻¹ mod q).val ,   b = (n q⁻¹ mod p).val .
+```
+
+The existing `inverse_reciprocity` gives `a p + b q ≡ n (mod p q)`.  If both residues are
+at most `B₁`, the sum is `< p q` while `n < p q`; hence the congruence is an equality.  This
+proves the symmetric form of `inversePair`.  The cutoff lemma used here is
+`twice_cutoffL_le_sqrt` for `n ≥ 16`.
+
+The new normal form is
+
+```lean
+def reciprocalTotal (n) :=
+  ∑ pq ∈ farPairs (bigPrimes n) B₁,
+    c pq.1 (inverseResidue n pq.1 pq.2) *
+    c pq.2 (inverseResidue n pq.2 pq.1)
+
+def reciprocalResidual := reciprocalTotal - widePrimePairs
+
+distantInverseTotal_eq_reciprocal (n ≥ 16) :
+  distantInverseTotal = reciprocalTotal
+
+fullCell_iff_reciprocalResidual :
+  smallEven fullCell ↔ smallEven reciprocalResidual
+```
+
+So b1-b1 is reduced to signed cancellation between this fully symmetric reciprocal sum and
+the same prime-row family on the wide arcs.  Any further analytic step must act jointly on
+the two primes and their two inverse residues.  Re-expanding into divisor sums or applying
+per-prime absolute-value estimates would only return to the previously quantified barriers.
+
+`fixed_target.lean` passes the full Lean 4.36.0 check after M55, with no `sorry`.
