@@ -2904,4 +2904,53 @@ theorem integral_bot_norm_sq_le_cutoffU (n V : ℕ) (hV : lowCut n * V ≤ n)
   integral_bot_norm_sq_le n V hV (by positivity)
     (fun a hUa _ => lowMoebiusWeight_abs_le_cutoffU (cutoffU n) a (by omega))
 
+/-! ### Milestone 43 (step 1): the exponent-versus-prime-power estimate
+
+The core of `d(n) = n^o(1)`: every factor `e + 1` of the divisor count is dominated by
+`p^(δ e)` times a constant depending only on `δ`:
+
+```text
+e + 1  ≤  (2 / (δ log 2)) · p^(δ e)          (p ≥ 2, e ≥ 1)
+```
+
+Proof: `2^δ = exp(δ log 2) ≥ 1 + δ log 2`, so `(p^δ)^e ≥ (1 + δ log 2)^e ≥ 1 + e δ log 2`
+by Bernoulli, and `(2 / (δ log 2))·(1 + e δ log 2) = 2/(δ log 2) + 2e ≥ 2e ≥ e + 1`. -/
+
+/-- **The core estimate**: `e + 1 ≤ C_δ · p^(δ e)`, uniformly in `p ≥ 2` and `e ≥ 1`. -/
+theorem add_one_le_rpow_mul (δ : ℝ) (hδ : 0 < δ) (p : ℕ) (hp : 2 ≤ p) (e : ℕ) (he : 1 ≤ e) :
+    (e : ℝ) + 1 ≤ (2 / (δ * Real.log 2)) * (p : ℝ) ^ (δ * (e : ℝ)) := by
+  have hlog2 : 0 < Real.log 2 := Real.log_pos (by norm_num)
+  have hc : 0 < δ * Real.log 2 := mul_pos hδ hlog2
+  have hppos : (0 : ℝ) < (p : ℝ) := by
+    have : (0:ℕ) < p := by omega
+    exact_mod_cast this
+  -- `2^δ ≥ 1 + δ log 2`
+  have h2d : 1 + δ * Real.log 2 ≤ (2 : ℝ) ^ δ := by
+    rw [Real.rpow_def_of_pos (by norm_num : (0:ℝ) < 2)]
+    rw [show Real.log 2 * δ = δ * Real.log 2 by ring]
+    linarith [Real.add_one_le_exp (δ * Real.log 2)]
+  -- `p^δ ≥ 2^δ`
+  have hpd : (2 : ℝ) ^ δ ≤ (p : ℝ) ^ δ :=
+    Real.rpow_le_rpow (by norm_num) (by exact_mod_cast hp) hδ.le
+  have hbase : 1 + δ * Real.log 2 ≤ (p : ℝ) ^ δ := h2d.trans hpd
+  -- rewrite `p^(δ e) = (p^δ)^e`
+  have hrpow : (p : ℝ) ^ (δ * (e : ℝ)) = ((p : ℝ) ^ δ) ^ e := by
+    rw [Real.rpow_mul hppos.le, Real.rpow_natCast]
+  rw [hrpow]
+  -- Bernoulli
+  have hbern : 1 + (e : ℝ) * (δ * Real.log 2) ≤ ((p : ℝ) ^ δ) ^ e := by
+    refine (one_add_mul_le_pow (by linarith : (-2:ℝ) ≤ δ * Real.log 2) e).trans ?_
+    exact pow_le_pow_left₀ (by linarith) hbase e
+  -- `e + 1 ≤ C · (1 + e (δ log 2))`
+  have hCe : (e : ℝ) + 1 ≤ (2 / (δ * Real.log 2)) * (1 + (e : ℝ) * (δ * Real.log 2)) := by
+    have hne : δ * Real.log 2 ≠ 0 := ne_of_gt hc
+    have he1 : (1:ℝ) ≤ (e : ℝ) := by exact_mod_cast he
+    have hval : (2 / (δ * Real.log 2)) * (1 + (e : ℝ) * (δ * Real.log 2))
+        = 2 / (δ * Real.log 2) + 2 * (e : ℝ) := by
+      field_simp
+    rw [hval]
+    have hnn : 0 ≤ 2 / (δ * Real.log 2) := by positivity
+    linarith
+  exact hCe.trans (mul_le_mul_of_nonneg_left hbern (by positivity))
+
 end B1B1Port

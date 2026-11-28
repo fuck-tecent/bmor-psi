@@ -2582,3 +2582,53 @@ So the peeling is now verified in the two elementary regimes; the third is a cle
 well-scoped open formalisation target rather than an unknown.
 
 Dossier: 2840 -> 2907 lines, no `sorry`.
+
+## Milestone 43: towards `d(n) = n^o(1)` — step 1 of 3
+
+Target (the third peeling regime, `V = n^(3/4−δ)`):
+
+```lean
+∀ ε > 0, ∃ N, ∀ m ≥ N, (m.divisors.card : ℝ) ≤ (m : ℝ) ^ ε
+```
+
+Not in Mathlib.  Plan, in three steps:
+
+1. **exponent-vs-prime-power** (this milestone, done);
+2. product assembly: `d(n) ≤ C_δ^(ω n) · n^δ`;
+3. the `ω`-saving: `ω(n) ≤ ε' log n` eventually, from `(ω n)! ≤ n`.
+
+### 43.1 Step 1 — verified
+
+```lean
+theorem add_one_le_rpow_mul (δ : ℝ) (hδ : 0 < δ) (p : ℕ) (hp : 2 ≤ p)
+    (e : ℕ) (he : 1 ≤ e) :
+  (e : ℝ) + 1 ≤ (2 / (δ * Real.log 2)) * (p : ℝ) ^ (δ * (e : ℝ))
+```
+
+Proof chain (all in Lean):
+
+```text
+2^δ = exp(δ log 2) ≥ 1 + δ log 2                    -- Real.rpow_def_of_pos, Real.add_one_le_exp
+p^δ ≥ 2^δ                                          -- Real.rpow_le_rpow
+(1 + δ log2)^e ≤ (p^δ)^e                            -- Bernoulli: one_add_mul_le_pow
+(2/(δ log2))·(1 + e δ log2) = 2/(δ log2) + 2e ≥ e+1
+p^(δ e) = (p^δ)^e                                   -- Real.rpow_mul, rpow_natCast
+```
+
+So `C_δ := 2/(δ log 2)` is an explicit, usable constant.
+
+### 43.2 What steps 2 and 3 still need
+
+* Step 2: `Nat.card_divisors` (exists: `#n.divisors = ∏_{p ∈ n.primeFactors}(n.factorization p + 1)`),
+  then `∏ (e+1) ≤ ∏ C_δ p^(δ e) = C_δ^(ω n) · (∏ p^e)^δ = C_δ^(ω n) · n^δ`, using
+  `Nat.prod_factorization_pow_eq_self` (exists) and `∏ x_i^δ = (∏ x_i)^δ` for `x_i ≥ 0`
+  (elementary induction with `Real.mul_rpow`).  Estimated ~80 lines.
+* Step 3: `ω! ≤ n` (the product of `ω` distinct primes is at least `ω!`), then
+  `ω log ω ≲ log n`, giving `ω ≤ 2 log n / log log n`, hence `C_δ^ω ≤ n^(ε−δ)` eventually.
+  Needs `Nat.factorial` growth estimates and `Real.log`/`log log` manipulation;
+  estimated ~150–250 lines.
+
+Neither step needs new mathematics; both are length.  Step 1 is the only part with a
+genuine choice of constant.
+
+Dossier: 2907 -> 2970 lines, no `sorry`.
