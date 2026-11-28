@@ -839,4 +839,255 @@ theorem fullCell_iff_reciprocalResidual : smallEven fullCell ↔ smallEven recip
   exact ⟨transform inverseResidual_eq_reciprocalResidual,
     transform (fun n hn => (inverseResidual_eq_reciprocalResidual n hn).symm)⟩
 
+/-! ### Milestone 57: raise the prime lower cutoff to `n^(2/3)` -/
+
+/-- Prime logarithm weight above an arbitrary cutoff. -/
+def highPrimeWeight (V b : ℕ) : ℝ := if V < b then primeWeight b else 0
+
+/-- `topPrime` is the corresponding band coefficient. -/
+theorem topPrime_eq_band (n V m : ℕ) :
+    topPrime n V m = band (cutoffU n) (cutoffU n) (cutoffL n) (highPrimeWeight V) m := by
+  classical
+  unfold topPrime band highPrimeWeight
+  simp only [Finset.sum_filter]
+  refine Finset.sum_congr rfl fun a _ => ?_
+  by_cases hV : V < m / a <;> by_cases hp : (m / a).Prime <;> simp [hV, hp, primeWeight]
+
+theorem abs_highPrimeWeight_le (V b : ℕ) :
+    |highPrimeWeight V b| ≤ ArithmeticFunction.vonMangoldt b := by
+  unfold highPrimeWeight
+  split_ifs
+  · exact abs_primeWeight_le b
+  · simpa using ArithmeticFunction.vonMangoldt_nonneg (n := b)
+
+/-- Full-range `L²` bound for any prime lower cutoff. -/
+theorem topPrime_l2_bound (n V : ℕ) (hn : 1 ≤ n) {T : ℝ}
+    (hdiv : ∀ a ≤ n, (a.divisors.card : ℝ) ≤ T) :
+    ∑ m ∈ range (n + 1), (topPrime n V m) ^ 2 ≤
+      ((n : ℝ) + 1) * (T ^ 2 * Real.log n) ^ 2 := by
+  calc
+    _ ≤ ∑ _m ∈ range (n + 1), (T ^ 2 * Real.log n) ^ 2 := by
+      refine sum_le_sum fun m hm => ?_
+      rw [← sq_abs (topPrime n V m), topPrime_eq_band]
+      exact pow_le_pow_left₀ (abs_nonneg _) (band_uniform_bound n (cutoffU n) (cutoffU n)
+        (cutoffL n) m (Nat.le_of_lt_succ (mem_range.mp hm)) hn hdiv
+        (abs_highPrimeWeight_le V)) 2
+    _ = _ := by simp
+
+/-- Prime weight in the intermediate interval `(√n, D]`. -/
+def middlePrimeWeight (n b : ℕ) : ℝ :=
+  if n.sqrt < b ∧ b ≤ distanceCut n then primeWeight b else 0
+
+/-- The coefficient removed when raising the prime cutoff from `√n` to `D`. -/
+def middlePrimeCoeff (n : ℕ) : ℕ → ℝ :=
+  band (cutoffU n) (cutoffU n) (cutoffL n) (middlePrimeWeight n)
+
+/-- Subtraction of band coefficients. -/
+theorem band_sub (U L B m : ℕ) (v w : ℕ → ℝ) :
+    band U L B (fun b => v b - w b) m = band U L B v m - band U L B w m := by
+  simp only [band, mul_sub, sum_sub_distrib]
+
+/-- Exact difference of the two prime cutoffs. -/
+theorem topPrime_sqrt_sub_distance (n m : ℕ) (hVD : n.sqrt ≤ distanceCut n) :
+    topPrime n n.sqrt m - topPrime n (distanceCut n) m = middlePrimeCoeff n m := by
+  rw [topPrime_eq_band, topPrime_eq_band]
+  unfold middlePrimeCoeff
+  rw [← band_sub]
+  congr 1
+  funext r
+  by_cases hs : n.sqrt < r <;> by_cases hd : distanceCut n < r <;>
+    simp [highPrimeWeight, middlePrimeWeight, hs, hd] <;> omega
+
+theorem topPrime_sqrt_sub_distance_fun (n : ℕ) (hVD : n.sqrt ≤ distanceCut n) :
+    (fun m => topPrime n n.sqrt m - topPrime n (distanceCut n) m) = middlePrimeCoeff n :=
+  funext (fun m => topPrime_sqrt_sub_distance n m hVD)
+
+theorem abs_middlePrimeWeight_le (n b : ℕ) :
+    |middlePrimeWeight n b| ≤ ArithmeticFunction.vonMangoldt b := by
+  unfold middlePrimeWeight
+  split_ifs
+  · exact abs_primeWeight_le b
+  · simpa using ArithmeticFunction.vonMangoldt_nonneg (n := b)
+
+/-- The intermediate coefficients vanish above `B₁·D`. -/
+theorem middlePrimeCoeff_eq_zero (n m : ℕ) (hm : cutoffL n * distanceCut n < m) :
+    middlePrimeCoeff n m = 0 := by
+  unfold middlePrimeCoeff band
+  apply sum_eq_zero
+  intro a ha
+  obtain ⟨hdiv, _, haB, _⟩ := mem_filter.mp ha
+  have hlarge : ¬(n.sqrt < m / a ∧ m / a ≤ distanceCut n) := by
+    rintro ⟨_, hD⟩
+    have hprod := Nat.mul_le_mul haB hD
+    rw [Nat.mul_div_cancel' (Nat.dvd_of_mem_divisors hdiv)] at hprod
+    omega
+  simp [middlePrimeWeight, hlarge]
+
+/-- **Intermediate-prime energy**, localized to `m ≤ B₁·D`. -/
+theorem middlePrimeCoeff_l2 (n : ℕ) (hn : 1 ≤ n) {T : ℝ}
+    (hdiv : ∀ a ≤ n, (a.divisors.card : ℝ) ≤ T) :
+    ∑ m ∈ range (n + 1), (middlePrimeCoeff n m) ^ 2 ≤
+      ((cutoffL n * distanceCut n + 1 : ℕ) : ℝ) * (T ^ 2 * Real.log n) ^ 2 := by
+  let A := (T ^ 2 * Real.log n) ^ 2
+  calc
+    _ ≤ ∑ m ∈ range (n + 1), if m ≤ cutoffL n * distanceCut n then A else 0 := by
+      refine sum_le_sum fun m hm => ?_
+      by_cases h : m ≤ cutoffL n * distanceCut n
+      · simp only [ite_eq_left h, A]
+        rw [← sq_abs (middlePrimeCoeff n m)]
+        exact pow_le_pow_left₀ (abs_nonneg _) (band_uniform_bound n (cutoffU n) (cutoffU n)
+          (cutoffL n) m (Nat.le_of_lt_succ (mem_range.mp hm)) hn hdiv
+          (abs_middlePrimeWeight_le n)) 2
+      · simp [h, middlePrimeCoeff_eq_zero n m (Nat.lt_of_not_ge h)]
+    _ ≤ ∑ _m ∈ range (cutoffL n * distanceCut n + 1), A := by
+      rw [← sum_filter]
+      exact sum_le_sum_of_subset_of_nonneg
+        (fun m hm => mem_range.mpr (by have := (mem_filter.mp hm).2; omega))
+        (fun _ _ _ => sq_nonneg _)
+    _ = _ := by simp [A]
+
+/-- The cell with both prime cofactors above `D = ⌊n^(2/3)⌋`. -/
+def strongPrimeCell (n : ℕ) : ℂ :=
+  pairIntegral (deep n) n (topPrime n (distanceCut n)) (topPrime n (distanceCut n))
+
+/-- Difference of squares in the form needed for the energy estimate. -/
+theorem primeCell_sub_strongPrimeCell (n : ℕ) (hVD : n.sqrt ≤ distanceCut n) :
+    primeCell n - strongPrimeCell n = pairIntegral (deep n) n (middlePrimeCoeff n)
+      (fun m => topPrime n n.sqrt m + topPrime n (distanceCut n) m) := by
+  rw [primeCell, strongPrimeCell, pairIntegral_sub_squares (deep n) (wide_measurable ..).compl,
+    topPrime_sqrt_sub_distance_fun n hVD]
+
+/-- **Explicit error when raising the prime cutoff to `n^(2/3)`.** -/
+theorem primeCell_strongPrimeCell_error :
+    ∃ K : ℝ, 0 < K ∧ ∀ n : ℕ, 1 ≤ n →
+      ‖primeCell n - strongPrimeCell n‖ ≤ K * (n : ℝ) ^ (191 / 192 : ℝ) := by
+  obtain ⟨C, hC, hdiv⟩ := divisor_envelope
+  let A₀ := 384 ^ 2 * C ^ 4
+  let K := 5 * A₀
+  have hA0 : 0 ≤ A₀ := by dsimp [A₀]; positivity
+  refine ⟨K, by dsimp [K]; positivity, fun n hn => ?_⟩
+  have hnR : (1 : ℝ) ≤ n := by exact_mod_cast hn
+  have hn0 : (0 : ℝ) < n := by positivity
+  let X := (n : ℝ) ^ (1 / 384 : ℝ)
+  have hX0 : 0 < X := Real.rpow_pos_of_pos hn0 _
+  have hX1 : 1 ≤ X := Real.one_le_rpow hnR (by norm_num)
+  have hXpow (k : ℕ) : X ^ k = (n : ℝ) ^ ((k : ℝ) / 384) := by
+    dsimp [X]
+    rw [← Real.rpow_natCast, ← Real.rpow_mul (Nat.cast_nonneg n)]
+    congr 1
+    ring
+  have hlog : Real.log n ≤ 384 * X := by
+    have h := Real.log_le_rpow_div (x := (n : ℝ)) (Nat.cast_nonneg n)
+      (by norm_num : (0 : ℝ) < 1 / 384)
+    calc Real.log n ≤ X / (1 / 384 : ℝ) := by simpa only [X] using h
+      _ = 384 * X := by ring
+  have hA : ((C * (n : ℝ) ^ (1 / 128 : ℝ)) ^ 2 * Real.log n) ^ 2 ≤ A₀ * X ^ 14 := by
+    have hn3 : (n : ℝ) ^ (1 / 128 : ℝ) = X ^ 3 := by rw [hXpow]; norm_num
+    rw [hn3]
+    calc
+      _ ≤ ((C * X ^ 3) ^ 2 * (384 * X)) ^ 2 := by gcongr
+      _ = A₀ * X ^ 14 := by dsimp [A₀]; ring
+  have hB : (cutoffL n : ℝ) ≤ X ^ 96 := by
+    rw [hXpow]
+    norm_num
+    exact Nat.floor_le (by positivity)
+  have hD : (distanceCut n : ℝ) ≤ X ^ 256 := by
+    rw [hXpow]
+    norm_num
+    exact Nat.floor_le (by positivity)
+  have hBD1 : ((cutoffL n * distanceCut n + 1 : ℕ) : ℝ) ≤ 2 * X ^ 352 := by
+    push_cast
+    have hprod : (cutoffL n : ℝ) * (distanceCut n : ℝ) ≤ X ^ 352 := by
+      calc
+        _ ≤ X ^ 96 * X ^ 256 := mul_le_mul hB hD (Nat.cast_nonneg _) (by positivity)
+        _ = _ := by ring
+    have h1 : 1 ≤ X ^ 352 := one_le_pow₀ hX1
+    nlinarith
+  have hMid : (∑ m ∈ range (n + 1), (middlePrimeCoeff n m) ^ 2) ≤
+      2 * A₀ * X ^ 366 := by
+    calc
+      _ ≤ ((cutoffL n * distanceCut n + 1 : ℕ) : ℝ) *
+          ((C * (n : ℝ) ^ (1 / 128 : ℝ)) ^ 2 * Real.log n) ^ 2 :=
+        middlePrimeCoeff_l2 n hn (fun m hm => hdiv n m hm)
+      _ ≤ (2 * X ^ 352) * (A₀ * X ^ 14) := by gcongr
+      _ = _ := by ring
+  have htop (V : ℕ) : (∑ m ∈ range (n + 1), (topPrime n V m) ^ 2) ≤
+      2 * A₀ * X ^ 398 := by
+    have hn1 : ((n : ℝ) + 1) ≤ 2 * X ^ 384 := by
+      have h1 : 1 ≤ X ^ 384 := one_le_pow₀ hX1
+      rw [hXpow]
+      norm_num
+      linarith
+    calc
+      _ ≤ ((n : ℝ) + 1) * ((C * (n : ℝ) ^ (1 / 128 : ℝ)) ^ 2 * Real.log n) ^ 2 :=
+        topPrime_l2_bound n V hn (fun m hm => hdiv n m hm)
+      _ ≤ (2 * X ^ 384) * (A₀ * X ^ 14) := by gcongr
+      _ = _ := by ring
+  have hSum : (∑ m ∈ range (n + 1),
+      (topPrime n n.sqrt m + topPrime n (distanceCut n) m) ^ 2) ≤ 8 * A₀ * X ^ 398 := by
+    calc
+      _ ≤ ∑ m ∈ range (n + 1), 2 *
+          (topPrime n n.sqrt m ^ 2 + topPrime n (distanceCut n) m ^ 2) := by
+        refine sum_le_sum fun m _ => ?_
+        nlinarith [sq_nonneg (topPrime n n.sqrt m - topPrime n (distanceCut n) m)]
+      _ = 2 * ((∑ m ∈ range (n + 1), (topPrime n n.sqrt m) ^ 2) +
+          ∑ m ∈ range (n + 1), (topPrime n (distanceCut n) m) ^ 2) := by
+        simp only [Finset.sum_add_distrib, ← Finset.mul_sum]
+      _ ≤ 2 * (2 * A₀ * X ^ 398 + 2 * A₀ * X ^ 398) := by
+        exact mul_le_mul_of_nonneg_left (add_le_add (htop _) (htop _)) (by norm_num)
+      _ = _ := by ring
+  have hVD : n.sqrt ≤ distanceCut n := by
+    rw [← Real.nat_floor_real_sqrt_eq_nat_sqrt]
+    apply Nat.floor_mono
+    rw [Real.sqrt_eq_rpow]
+    exact Real.rpow_le_rpow_of_exponent_le hnR (by norm_num)
+  rw [primeCell_sub_strongPrimeCell n hVD]
+  calc
+    _ ≤ (1 / 2 : ℝ) * ((n : ℝ) ^ (1 / 24 : ℝ) *
+          (∑ m ∈ range (n + 1), (middlePrimeCoeff n m) ^ 2) +
+        ((n : ℝ) ^ (1 / 24 : ℝ))⁻¹ *
+          (∑ m ∈ range (n + 1),
+            (topPrime n n.sqrt m + topPrime n (distanceCut n) m) ^ 2)) :=
+      pairIntegral_le_energy (deep n) (wide_measurable ..).compl n _ _
+        (Real.rpow_pos_of_pos hn0 _)
+    _ ≤ (1 / 2 : ℝ) * ((n : ℝ) ^ (1 / 24 : ℝ) * (2 * A₀ * X ^ 366) +
+        ((n : ℝ) ^ (1 / 24 : ℝ))⁻¹ * (8 * A₀ * X ^ 398)) := by gcongr
+    _ = K * X ^ 382 := by
+      have hscale : (n : ℝ) ^ (1 / 24 : ℝ) = X ^ 16 := by rw [hXpow]; norm_num
+      rw [hscale]
+      dsimp [K]
+      field_simp
+      ring
+    _ = K * (n : ℝ) ^ (191 / 192 : ℝ) := by rw [hXpow]; norm_num
+
+/-- The cutoff-replacement error is `o(n)`. -/
+theorem primeCell_strongPrimeCell_error_eventually (e : ℝ) (he : 0 < e) :
+    ∀ᶠ n : ℕ in atTop, ‖primeCell n - strongPrimeCell n‖ ≤ e * (n : ℝ) := by
+  obtain ⟨K, _, hK⟩ := primeCell_strongPrimeCell_error
+  have hlim : Tendsto (fun n : ℕ => K * (n : ℝ) ^ (-(1 / 192 : ℝ))) atTop (𝓝 0) := by
+    have hp := (tendsto_rpow_neg_atTop (by norm_num : (0 : ℝ) < 1 / 192)).comp
+      (tendsto_natCast_atTop_atTop (R := ℝ))
+    simpa only [Function.comp_def, mul_zero] using (tendsto_const_nhds (x := K)).mul hp
+  filter_upwards [eventually_ge_atTop 1, hlim.eventually_lt_const he] with n hn hsmall
+  have hpos : (0 : ℝ) < n := by exact_mod_cast (show 0 < n by omega)
+  calc
+    _ ≤ K * (n : ℝ) ^ (191 / 192 : ℝ) := hK n hn
+    _ = (K * (n : ℝ) ^ (-(1 / 192 : ℝ))) * (n : ℝ) := by
+      rw [mul_assoc, show (191 / 192 : ℝ) = -(1 / 192 : ℝ) + 1 by norm_num,
+        Real.rpow_add hpos, Real.rpow_one]
+    _ ≤ _ := mul_le_mul_of_nonneg_right hsmall.le hpos.le
+
+/-- **The two prime cutoffs have equivalent deep-minor estimates.** -/
+theorem primeCell_iff_strongPrimeCell : smallEven primeCell ↔ smallEven strongPrimeCell := by
+  constructor
+  · apply smallEven_transfer
+    intro e he
+    filter_upwards [primeCell_strongPrimeCell_error_eventually e he] with n hn
+    simpa only [norm_sub_rev (strongPrimeCell n) (primeCell n)] using hn
+  · exact smallEven_transfer primeCell_strongPrimeCell_error_eventually
+
+/-- **The original cell is equivalent to the cell with both primes above `n^(2/3)`.** -/
+theorem fullCell_iff_strongPrimeCell : smallEven fullCell ↔ smallEven strongPrimeCell :=
+  fullCell_iff_primeCell.trans primeCell_iff_strongPrimeCell
+
 end B1B1Fixed

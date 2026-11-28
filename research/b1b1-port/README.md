@@ -3314,3 +3314,45 @@ equivalences and `frozen_iff_inverseResidual` still compile with the stronger cu
 The remaining reciprocal sum now ranges over `p,q > √n` with `|p-q| > ⌊n^(2/3)⌋`.
 The wide-arc term remains unrestricted.  No estimate for the final signed residual is
 claimed.
+
+## Milestone 57: the prime lower cutoff can also be raised to `n^(2/3)`
+
+The merge did not add a directly applicable fixed-target theorem.  In particular, the B13
+inverse-frequency bounds concern additive-character sums over inverse fibres, not this
+fixed-target prime-pair discrepancy, so they are not used.
+
+There is nevertheless a stronger prime-cofactor reduction.  Define
+
+```lean
+strongPrimeCell n := pairIntegral (deep n) n
+  (topPrime n (distanceCut n)) (topPrime n (distanceCut n)) .
+```
+
+The removed coefficient is supported on products `a·p` with `a ≤ B₁` and
+`√n < p ≤ D = n^(2/3)`, hence on `m ≤ B₁D`.  The general band bound and Parseval give
+
+```text
+middle energy ≤ (B₁D+1) · (C² n^(1/64) log n)² ,
+full prime-row energy ≤ (n+1) · (C² n^(1/64) log n)² .
+```
+
+With `X = n^(1/384)`, these are respectively `O(X^366)` and `O(X^398)` after absorbing
+logarithms.  The existing scaled-Young pair-integral estimate at scale `n^(1/24) = X^16`
+therefore balances both terms at `X^382`.  The verified conclusion is
+
+```lean
+primeCell_strongPrimeCell_error :
+  ∃ K > 0, ∀ n ≥ 1,
+    ‖primeCell n - strongPrimeCell n‖ ≤ K · n^(191/192)
+
+fullCell_iff_strongPrimeCell :
+  smallEven fullCell ↔ smallEven strongPrimeCell .
+```
+
+The necessary cutoff ordering `√n ≤ D` is proved from the natural-floor formula for the
+real square root.  No `sorry` is used.
+
+**Scope.**  This strengthens the prime cell itself.  The reciprocal residual in M55–M56
+still uses the earlier row support based on `bigPrimes n` (`p > √n`); a corresponding
+strong-prime reciprocal residual would require a new row-support reindexing and is not
+claimed here.
