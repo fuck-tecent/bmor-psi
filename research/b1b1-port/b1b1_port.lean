@@ -3840,4 +3840,50 @@ theorem integral_imT_sq_eq_diagonal (n : ℕ) (c : ℕ → ℂ) (hc : ∀ m, (c 
     rw [intervalIntegral_re_eq _ hbase, integral_sq_phase_eq_diagonalOf]
   rw [hsum, hI]
 
+/-- **The doubling identity.**  Reflecting `m ↦ n − m` gives
+`∑ c(m).re·sin(2π(m−n/2)t) = −∑ c(n−m).re·sin(2π(m−n/2)t)`, hence
+
+```text
+2·Im T = ∑_{m ≤ n} ((c m).re − (c (n−m)).re) · sin(2π (m − n/2) t) .
+```
+
+For even `n` the summand is symmetric about `m = n/2`, so this is `2` times the sum over
+`k = 1..n/2` of the antisymmetric differences `(c(n/2+k) − c(n/2−k))`. -/
+theorem imT_two_mul_eq (n : ℕ) (c : ℕ → ℂ) (hc : ∀ m, (c m).im = 0) (t : ℝ) :
+    2 * (plainPolynomial n c t * halfShift n t).im
+      = ∑ m ∈ Finset.range (n + 1),
+          ((c m).re - (c (n - m)).re) * Real.sin (2 * Real.pi * ((m:ℝ) - (n:ℝ)/2) * t) := by
+  rw [imT_eq_sin_sum n c hc t]
+  have hstep : (∑ m ∈ Finset.range (n+1),
+        (c m).re * Real.sin (2*Real.pi*((m:ℝ) - (n:ℝ)/2)*t))
+      = -∑ m ∈ Finset.range (n+1),
+        (c (n-m)).re * Real.sin (2*Real.pi*((m:ℝ) - (n:ℝ)/2)*t) := by
+    conv_lhs => rw [← Finset.sum_range_reflect]
+    rw [← Finset.sum_neg_distrib]
+    refine Finset.sum_congr rfl fun m hm => ?_
+    have hmn : m ≤ n := Nat.lt_succ_iff.mp (Finset.mem_range.mp hm)
+    have hidx : n + 1 - 1 - m = n - m := by omega
+    rw [hidx]
+    have hcast : ((n - m : ℕ) : ℝ) = (n:ℝ) - (m:ℝ) := by
+      rw [Nat.cast_sub hmn]
+    rw [hcast]
+    have harg : (n:ℝ) - (m:ℝ) - (n:ℝ)/2 = -((m:ℝ) - (n:ℝ)/2) := by ring
+    rw [harg]
+    have hsin : Real.sin (2*Real.pi*(-((m:ℝ) - (n:ℝ)/2))*t)
+        = -Real.sin (2*Real.pi*((m:ℝ) - (n:ℝ)/2)*t) := by
+      have harg2 : 2*Real.pi*(-((m:ℝ) - (n:ℝ)/2))*t
+          = -(2*Real.pi*((m:ℝ) - (n:ℝ)/2)*t) := by ring
+      rw [harg2, Real.sin_neg]
+    rw [hsin]
+    ring
+  have h2 : 2 * (∑ m ∈ Finset.range (n+1),
+        (c m).re * Real.sin (2*Real.pi*((m:ℝ) - (n:ℝ)/2)*t))
+      = (∑ m ∈ Finset.range (n+1), (c m).re * Real.sin (2*Real.pi*((m:ℝ) - (n:ℝ)/2)*t))
+        - ∑ m ∈ Finset.range (n+1),
+            (c (n-m)).re * Real.sin (2*Real.pi*((m:ℝ) - (n:ℝ)/2)*t) := by
+    linarith [hstep]
+  rw [h2, ← Finset.sum_sub_distrib]
+  refine Finset.sum_congr rfl fun m _ => ?_
+  ring
+
 end B1B1Port

@@ -3020,24 +3020,33 @@ Note: `integral_re` is **unqualified** (root namespace) in this Mathlib —
 `MeasureTheory.integral_re` and `RCLike.integral_re` are both unknown.  `(f x).re` versus
 `RCLike.re (f x)` also needs a `rfl`-bridge before the rewrite.
 
-### The one piece still missing
+### The antisymmetric-difference form — verified
 
-The **paired / antisymmetric** form
-
-```text
-Im T = ∑_{k=1}^{n/2} d_k · sin(2πkt) ,      d_k = τ₃(n/2 + k) − τ₃(n/2 − k) ,
-```
-
-i.e. reindexing `range (n+1)` as `{n/2} ⊔ {n/2 ± k : 1 ≤ k ≤ n/2}` for even `n` and using
-`sin(−θ) = −sin θ`.  The *unpaired* sine sum (`imT_eq_sin_sum`) and the value identity
-(`integral_imT_sq_eq_diagonal`) are both verified; only the pairing is left.  Statement it
-should take:
+Using `Finset.sum_range_reflect` (reflection `m ↦ n − m`) and
+`sin(2π(n/2 − m)t) = −sin(2π(m − n/2)t)`:
 
 ```lean
-theorem imT_eq_antisymm_sin (n) (hn : Even n) (c) (hc) (t) :
-  (Im T) = ∑ k ∈ Finset.Icc 1 (n/2),
-            ((c (n/2 + k)).re − (c (n/2 - k)).re) * Real.sin (2 * Real.pi * k * t)
+theorem imT_two_mul_eq (n) (c) (hc : ∀ m, (c m).im = 0) (t) :
+  2 * (Im T)
+    = ∑ m ∈ Finset.range (n+1),
+        ((c m).re - (c (n - m)).re) * Real.sin (2 * Real.pi * ((m:ℝ) - n/2) * t)
 ```
+
+This is the antisymmetric difference made explicit: the summand
+`((c m).re − (c(n−m)).re)·sin(2π(m − n/2)t)` is **symmetric about `m = n/2`**, so for even
+`n` the whole thing is twice the `k = 1..n/2` sum of
+`((c(n/2+k)).re − (c(n/2−k)).re)·sin(2πkt)`.
+
+Sign check (this cost one compile): reflection gives
+`∑ c(m).re·sin(m−n/2) = −∑ c(n−m).re·sin(m−n/2)`, i.e. `hstep` carries a **minus**; the
+doubling step is `2Σf = Σf − Σg`, not `Σf + Σg`.
+
+### The last cosmetic step (not done)
+
+The `Icc 1 (n/2)` form needs the symmetric-range split
+`∑_{m ≤ 2a} g m = 2∑_{k=1}^{a} g(a+k) + g(a)` (with `g(n−m) = g(m)` and `g(a) = 0`),
+i.e. `range (2a+1) = {a} ⊔ {a+k} ⊔ {a−k}`.  Pure `Finset` bookkeeping; the mathematical
+content is entirely in `imT_two_mul_eq` above.
 
 ### Landmines
 
@@ -3048,4 +3057,4 @@ theorem imT_eq_antisymm_sin (n) (hn : Even n) (c) (hc) (t) :
   beta-reduce; writing the raw lambdas avoids it entirely.
 * `Finset.card_Icc` is absent in this Mathlib.
 
-Dossier: 3573 → 3843 lines, no `sorry`.
+Dossier: 3573 → 3889 lines, no `sorry`.
