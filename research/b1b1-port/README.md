@@ -2865,4 +2865,4 @@ Where `d(n) = n^o(1)` *does* enter that argument is the value bound
 Mathlib has **no** prime-power counting lemma (only `IsPrimePow` + field-cardinality facts),
 so it would be built from scratch — the 50–80 line estimate is right.
 
-Dossier: 3297 -> 3374 lines, no `sorry`.
+Dossier: 3297 -> 3441 lines, 119 theorems / 24 defs / 9 lemmas, no `sorry`.
