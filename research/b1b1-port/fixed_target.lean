@@ -12,6 +12,7 @@ open Filter Topology Finset MeasureTheory
 open GoldbachTransitionSquare
 
 set_option maxHeartbeats 4000000
+set_option maxRecDepth 4096
 
 noncomputable section
 
@@ -176,14 +177,17 @@ def widePrimePairs (n : ℕ) : ℂ :=
   arcRows (wide n (cutoffB n) (arcHeight n)) (bigPrimes n ×ˢ bigPrimes n)
     (cutoffL n + 1) n (primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n))
 
-/-- Full-circle contribution of pairs at distance greater than `B₁`. -/
+/-- The strengthened close/distant cutoff `D = ⌊n^(2/3)⌋`. -/
+def distanceCut (n : ℕ) : ℕ := ⌊(n : ℝ) ^ (2 / 3 : ℝ)⌋₊
+
+/-- Full-circle contribution of pairs at distance greater than `D = n^(2/3)`. -/
 def distantPrimeFull (n : ℕ) : ℂ :=
-  ∫ t in (0:ℝ)..1, pairRows (farPairs (bigPrimes n) (cutoffL n)) (cutoffL n + 1) n
+  ∫ t in (0:ℝ)..1, pairRows (farPairs (bigPrimes n) (distanceCut n)) (cutoffL n + 1) n
     (primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n)) t
 
-/-- Full-circle contribution of pairs at distance at most `B₁`. -/
+/-- Full-circle contribution of pairs at distance at most `distanceCut n = ⌊n^(2/3)⌋`. -/
 def closePrimeFull (n : ℕ) : ℂ :=
-  ∫ t in (0:ℝ)..1, pairRows (closePairs (bigPrimes n) (cutoffL n)) (cutoffL n + 1) n
+  ∫ t in (0:ℝ)..1, pairRows (closePairs (bigPrimes n) (distanceCut n)) (cutoffL n + 1) n
     (primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n)) t
 
 /-- The remaining residual after discarding close pairs from the full circle only. -/
@@ -194,22 +198,22 @@ theorem full_eq_distant_add_close (n : ℕ) :
     (∫ t in (0:ℝ)..1, pairRows (bigPrimes n ×ˢ bigPrimes n) (cutoffL n + 1) n
       (primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n)) t) =
     distantPrimeFull n + closePrimeFull n := by
-  have hsubset : closePairs (bigPrimes n) (cutoffL n) ⊆ bigPrimes n ×ˢ bigPrimes n :=
+  have hsubset : closePairs (bigPrimes n) (distanceCut n) ⊆ bigPrimes n ×ˢ bigPrimes n :=
     Finset.filter_subset _ _
   have point (t : ℝ) :
       pairRows (bigPrimes n ×ˢ bigPrimes n) (cutoffL n + 1) n
         (primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n)) t =
-      pairRows (farPairs (bigPrimes n) (cutoffL n)) (cutoffL n + 1) n
+      pairRows (farPairs (bigPrimes n) (distanceCut n)) (cutoffL n + 1) n
         (primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n)) t +
-      pairRows (closePairs (bigPrimes n) (cutoffL n)) (cutoffL n + 1) n
+      pairRows (closePairs (bigPrimes n) (distanceCut n)) (cutoffL n + 1) n
         (primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n)) t := by
     unfold pairRows farPairs
     rw [← add_mul, sum_sdiff hsubset]
   simp_rw [point]
   apply intervalIntegral.integral_add
-  · exact (continuous_pairRows (farPairs (bigPrimes n) (cutoffL n)) (cutoffL n + 1) n
+  · exact (continuous_pairRows (farPairs (bigPrimes n) (distanceCut n)) (cutoffL n + 1) n
       (primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n))).intervalIntegrable 0 1
-  · exact (continuous_pairRows (closePairs (bigPrimes n) (cutoffL n)) (cutoffL n + 1) n
+  · exact (continuous_pairRows (closePairs (bigPrimes n) (distanceCut n)) (cutoffL n + 1) n
       (primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n))).intervalIntegrable 0 1
 
 /-- The discrepancy from the distant-pair residual is exactly the close full-circle mass. -/
@@ -219,22 +223,234 @@ theorem primeCell_sub_distantResidual (n : ℕ) :
   rw [primeCell_eq_full_sub_wide, full_eq_distant_add_close]
   ring
 
+/-! The divisor-of-residue counting argument is adapted from the Apache-2.0 reference proof
+in PR 3790, itself building on PR 3253. -/
+
+private def residualSize (n s p : ℕ) : ℕ := ((n : ℤ) - s * p).natAbs
+
+private theorem close_factors {n B D a b p q : ℕ} (ha : 0 < a) (hb : 0 < b)
+    (hbB : b ≤ B) (heq : a * p + b * q = n) (hnear : |(p : ℤ) - q| ≤ D) (hne : p ≠ q) :
+    n / (a + b) - D ≤ p ∧ p ≤ n / (a + b) + D ∧
+    0 < residualSize n (a + b) p ∧ residualSize n (a + b) p ≤ B * D ∧
+    b ∣ residualSize n (a + b) p := by
+  have hgap := abs_le.mp hnear
+  have hpq : p - D ≤ q := by omega
+  have hqp : q ≤ p + D := by omega
+  have hs : 0 < a + b := by omega
+  have hl : p - D ≤ n / (a + b) := by
+    apply (Nat.le_div_iff_mul_le hs).mpr
+    rw [← heq, mul_comm (p - D), add_mul]
+    exact Nat.add_le_add (Nat.mul_le_mul_left _ (Nat.sub_le ..)) (Nat.mul_le_mul_left _ hpq)
+  have hu : n / (a + b) ≤ p + D := by
+    have hu' : n ≤ (a + b) * (p + D) := by
+      rw [← heq, add_mul]
+      exact Nat.add_le_add (Nat.mul_le_mul_left _ (by omega)) (Nat.mul_le_mul_left _ hqp)
+    exact (Nat.div_le_div_right hu').trans_eq (Nat.mul_div_cancel_left _ hs)
+  have hres : residualSize n (a + b) p = b * ((q : ℤ) - p).natAbs := by
+    unfold residualSize
+    rw [← heq]
+    push_cast
+    rw [show (a : ℤ) * p + b * q - (a + b) * p = b * (q - p) by ring,
+      Int.natAbs_mul, Int.natAbs_natCast]
+  have habs : ((q : ℤ) - p).natAbs ≤ D := by
+    exact_mod_cast (show (↑((q : ℤ) - p).natAbs : ℤ) ≤ D by
+      rw [Int.natCast_natAbs, abs_sub_comm]; exact hnear)
+  have hnz : 0 < ((q : ℤ) - p).natAbs := Int.natAbs_pos.mpr (by omega)
+  rw [hres]
+  exact ⟨by omega, by omega, Nat.mul_pos hb hnz, Nat.mul_le_mul hbB habs, dvd_mul_right ..⟩
+
+private theorem offDiagonal_card {n B D T : ℕ} (S : Finset Representation)
+    (hdiv : ∀ m : ℕ, 0 < m → m ≤ B * D → m.divisors.card ≤ T)
+    (hspec : ∀ r ∈ S, 0 < r.a ∧ r.a ≤ B ∧ 0 < r.b ∧ r.b ≤ B ∧
+      r.a * r.p + r.b * r.q = n ∧ |(r.p : ℤ) - r.q| ≤ D ∧ r.p ≠ r.q) :
+    S.card ≤ (2 * B) * (2 * D + 1) * T := by
+  classical
+  let centers (s : ℕ) := Icc (n / s - D) (n / s + D)
+  let divisors (s p : ℕ) := if 0 < residualSize n s p ∧ residualSize n s p ≤ B * D
+    then (residualSize n s p).divisors else ∅
+  let box := (Icc 1 (2 * B)).sigma fun s => (centers s).sigma (divisors s)
+  let code (r : Representation) : Σ _s : ℕ, Σ _p : ℕ, ℕ := ⟨r.a + r.b, ⟨r.p, r.b⟩⟩
+  have into (r : Representation) (hr : r ∈ S) : code r ∈ box := by
+    obtain ⟨ha, ha', hb, hb', heq, hgap, hne⟩ := hspec r hr
+    obtain ⟨hl, hu, hpos, hcap, hdvd⟩ := close_factors ha hb hb' heq hgap hne
+    refine mem_sigma.mpr ⟨mem_Icc.mpr ⟨by dsimp [code]; omega, by dsimp [code]; omega⟩,
+      mem_sigma.mpr ⟨mem_Icc.mpr ⟨hl, hu⟩, ?_⟩⟩
+    change r.b ∈ divisors (r.a + r.b) r.p
+    dsimp only [divisors]
+    rw [ite_eq_left ⟨hpos, hcap⟩]
+    exact Nat.mem_divisors.mpr ⟨hdvd, hpos.ne'⟩
+  have hinj : Set.InjOn code (S : Set Representation) := by
+    intro r hr u hu he
+    obtain ⟨a, b, p, q⟩ := r
+    obtain ⟨a', b', p', q'⟩ := u
+    have hs := congrArg (fun i => i.1) he
+    have hp := congrArg (fun i => i.2.1) he
+    have hb := congrArg (fun i => i.2.2) he
+    change a + b = a' + b' at hs
+    change p = p' at hp
+    change b = b' at hb
+    subst p'; subst b'
+    have ha : a = a' := by omega
+    subst a'
+    have h₁ := hspec _ hr
+    have h₂ := hspec _ hu
+    have hs₁ : a * p + b * q = n := h₁.2.2.2.2.1
+    have hs₂ : a * p + b * q' = n := h₂.2.2.2.2.1
+    have hbpos : 0 < b := h₁.2.2.1
+    have hq : q = q' := Nat.eq_of_mul_eq_mul_left hbpos (Nat.add_left_cancel (hs₁.trans hs₂.symm))
+    subst q'
+    rfl
+  have hcount (s p : ℕ) : (divisors s p).card ≤ T := by
+    unfold divisors
+    split_ifs with h
+    · exact hdiv _ h.1 h.2
+    · simp
+  have hcenters (s : ℕ) : (centers s).card ≤ 2 * D + 1 := by
+    dsimp only [centers]
+    rw [Nat.card_Icc]
+    omega
+  refine (card_le_card_of_injOn code into hinj).trans ?_
+  unfold box
+  rw [card_sigma]
+  calc
+    _ ≤ ∑ s ∈ Icc 1 (2 * B), (2 * D + 1) * T := by
+      apply sum_le_sum
+      intro s _
+      rw [card_sigma]
+      calc
+        _ ≤ ∑ _p ∈ centers s, T := sum_le_sum fun p _ => hcount s p
+        _ = (centers s).card * T := by simp
+        _ ≤ _ := Nat.mul_le_mul_right _ (hcenters s)
+    _ = _ := by simp [Nat.card_Icc, Nat.mul_assoc]
+
+theorem divisor_near_card {n B D T : ℕ} (S : Finset Representation)
+    (hdiv : ∀ m : ℕ, 0 < m → m ≤ B * D → m.divisors.card ≤ T)
+    (hspec : ∀ r ∈ S, 0 < r.a ∧ r.a ≤ B ∧ 0 < r.b ∧ r.b ≤ B ∧
+      r.a * r.p + r.b * r.q = n ∧ |(r.p : ℤ) - r.q| ≤ D) :
+    S.card ≤ min (B ^ 2 * (2 * D + 1)) (B ^ 2 + 2 * B * (2 * D + 1) * T) := by
+  classical
+  refine le_min (representation_card_near S hspec) ?_
+  let diag := S.filter fun r => r.p = r.q
+  let off := S.filter fun r => r.p ≠ r.q
+  have hd : diag.card ≤ B ^ 2 := by
+    have h := representation_card_near (n := n) (B := B) (D := 0) diag (by
+      intro r hr
+      obtain ⟨hm, he⟩ := mem_filter.mp hr
+      obtain ⟨ha, ha', hb, hb', hs, _⟩ := hspec r hm
+      exact ⟨ha, ha', hb, hb', hs, by simp [he]⟩)
+    simpa using h
+  have ho : off.card ≤ 2 * B * (2 * D + 1) * T := by
+    apply offDiagonal_card off hdiv
+    intro r hr
+    obtain ⟨hm, he⟩ := mem_filter.mp hr
+    obtain ⟨ha, ha', hb, hb', hs, hg⟩ := hspec r hm
+    exact ⟨ha, ha', hb, hb', hs, hg, he⟩
+  have heq : diag.card + off.card = S.card := card_filter_add_card_filter_not ..
+  omega
+
+def nearSolutions (n B D : ℕ) (P : Finset ℕ) :=
+  (((P ×ˢ P).filter (fun pq : ℕ × ℕ => |(pq.1 : ℤ) - pq.2| ≤ D)) ×ˢ
+    (Icc 1 B ×ˢ Icc 1 B)).filter (fun z => z.2.1 * z.1.1 + z.2.2 * z.1.2 = n)
+
+private def asRep (z : (ℕ × ℕ) × ℕ × ℕ) : Representation :=
+  ⟨z.2.1, z.2.2, z.1.1, z.1.2⟩
+
+private theorem asRep_injective : Function.Injective asRep := by
+  rintro ⟨⟨p, q⟩, a, b⟩ ⟨⟨u, v⟩, i, j⟩ he
+  simpa [asRep, and_assoc, and_left_comm, and_comm] using he
+
+theorem weighted_near (n B D T : ℕ) (P : Finset ℕ) (c : ℕ → ℕ → ℂ) (M : ℝ)
+    (hdiv : ∀ m : ℕ, 0 < m → m ≤ B * D → m.divisors.card ≤ T)
+    (hweight : ∀ p ∈ P, ∀ a ∈ Icc 1 B, ‖c p a‖ ≤ M) :
+    ‖∑ z ∈ nearSolutions n B D P, c z.1.1 z.2.1 * c z.1.2 z.2.2‖ ≤
+      ((min (B ^ 2 * (2 * D + 1)) (B ^ 2 + 2 * B * (2 * D + 1) * T) : ℕ) : ℝ) * M ^ 2 := by
+  classical
+  let S := nearSolutions n B D P
+  have hcard : S.card ≤ min (B ^ 2 * (2 * D + 1)) (B ^ 2 + 2 * B * (2 * D + 1) * T) := by
+    rw [← card_image_of_injective S asRep_injective]
+    apply divisor_near_card _ hdiv
+    intro r hr
+    obtain ⟨z, hz, rfl⟩ := mem_image.mp hr
+    obtain ⟨hm, he⟩ := mem_filter.mp hz
+    obtain ⟨hpq, hab⟩ := mem_product.mp hm
+    obtain ⟨ha, hb⟩ := mem_product.mp hab
+    exact ⟨(mem_Icc.mp ha).1, (mem_Icc.mp ha).2, (mem_Icc.mp hb).1,
+      (mem_Icc.mp hb).2, he, (mem_filter.mp hpq).2⟩
+  calc
+    _ ≤ ∑ z ∈ S, ‖c z.1.1 z.2.1 * c z.1.2 z.2.2‖ := norm_sum_le ..
+    _ ≤ ∑ _z ∈ S, M ^ 2 := by
+      apply sum_le_sum
+      intro z hz
+      obtain ⟨hpq, hab⟩ := mem_product.mp (mem_filter.mp hz).1
+      obtain ⟨hp, hq⟩ := mem_product.mp (mem_filter.mp hpq).1
+      obtain ⟨ha, hb⟩ := mem_product.mp hab
+      rw [norm_mul, pow_two]
+      exact mul_le_mul (hweight _ hp _ ha) (hweight _ hq _ hb) (norm_nonneg _)
+        ((norm_nonneg _).trans (hweight _ hp _ ha))
+    _ = (S.card : ℝ) * M ^ 2 := by simp
+    _ ≤ _ := mul_le_mul_of_nonneg_right (by exact_mod_cast hcard) (sq_nonneg _)
+
+theorem near_fullCircle (n B D : ℕ) (P : Finset ℕ) (c : ℕ → ℕ → ℂ)
+    (hzero : ∀ p, c p 0 = 0) :
+    (∫ t in (0 : ℝ)..1, pairRows (closePairs P D) (B + 1) n c t) =
+    ∑ z ∈ nearSolutions n B D P, c z.1.1 z.2.1 * c z.1.2 z.2.2 := by
+  classical
+  rw [full_pairRows]
+  let Q := closePairs P D
+  let A := (Q ×ˢ (range (B + 1) ×ˢ range (B + 1))).filter
+    (fun z => z.2.1 * z.1.1 + z.2.2 * z.1.2 = n)
+  change (∑ z ∈ A, c z.1.1 z.2.1 * c z.1.2 z.2.2) = _
+  symm
+  apply sum_subset
+  · intro z hz
+    obtain ⟨hm, he⟩ := mem_filter.mp hz
+    obtain ⟨hpq, hab⟩ := mem_product.mp hm
+    obtain ⟨ha, hb⟩ := mem_product.mp hab
+    exact mem_filter.mpr ⟨mem_product.mpr ⟨hpq, mem_product.mpr
+      ⟨mem_range.mpr (Nat.lt_succ_of_le (mem_Icc.mp ha).2),
+       mem_range.mpr (Nat.lt_succ_of_le (mem_Icc.mp hb).2)⟩⟩, he⟩
+  · intro z hz hout
+    obtain ⟨hm, he⟩ := mem_filter.mp hz
+    obtain ⟨hpq, hab⟩ := mem_product.mp hm
+    obtain ⟨ha, hb⟩ := mem_product.mp hab
+    by_cases haz : z.2.1 = 0
+    · rw [haz, hzero, zero_mul]
+    by_cases hbz : z.2.2 = 0
+    · rw [hbz, hzero, mul_zero]
+    exact (hout (mem_filter.mpr ⟨mem_product.mpr ⟨hpq, mem_product.mpr
+      ⟨mem_Icc.mpr ⟨Nat.pos_of_ne_zero haz, Nat.le_of_lt_succ (mem_range.mp ha)⟩,
+       mem_Icc.mpr ⟨Nat.pos_of_ne_zero hbz, Nat.le_of_lt_succ (mem_range.mp hb)⟩⟩⟩, he⟩)).elim
+
 /-- **Close-pair power saving**, using the existing full-circle counting estimate. -/
 theorem closePrimeFull_bound (n : ℕ) (hn : 1 ≤ n) {C : ℝ} (hC0 : 0 ≤ C)
     (hC : ∀ m ≤ n, (m.divisors.card : ℝ) ≤ C * (n : ℝ) ^ (1 / 128 : ℝ)) :
     ‖closePrimeFull n‖ ≤
-      (cutoffL n : ℝ) ^ 2 * (2 * (cutoffL n : ℝ) + 1) *
+      (cutoffL n : ℝ) ^ 2 * (2 * (distanceCut n : ℝ) + 1) *
         (C * (n : ℝ) ^ (1 / 128 : ℝ) * Real.log n) ^ 2 := by
-  exact closePairs_full (bigPrimes n) (cutoffL n) (cutoffL n) n
+  exact closePairs_full (bigPrimes n) (distanceCut n) (cutoffL n) n
     (primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n)) (primeRowCoeff_zero n)
     (fun p _ a _ => primeRowCoeff_norm_le_envelope n hn hC0 hC p a)
 
-/-- **The distant-pair residual differs from b1-b1's prime cell by an explicit small mass.**
-Its scale is `n^(49/64) (log n)^2`, hence `o(n)`. -/
+/-- Sharper close-pair estimate using a divisor bound for the off-diagonal residual. -/
+theorem closePrimeFull_divisor_bound (n T : ℕ) (M : ℝ)
+    (hdiv : ∀ m : ℕ, 0 < m → m ≤ cutoffL n * distanceCut n → m.divisors.card ≤ T)
+    (hweight : ∀ p ∈ bigPrimes n, ∀ a ∈ Icc 1 (cutoffL n),
+      ‖primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n) p a‖ ≤ M) :
+    ‖closePrimeFull n‖ ≤
+      ((min (cutoffL n ^ 2 * (2 * distanceCut n + 1))
+        (cutoffL n ^ 2 + 2 * cutoffL n * (2 * distanceCut n + 1) * T) : ℕ) : ℝ) * M ^ 2 := by
+  unfold closePrimeFull
+  rw [near_fullCircle _ _ _ _ _ (primeRowCoeff_zero n)]
+  exact weighted_near n (cutoffL n) (distanceCut n) T (bigPrimes n)
+    (primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n)) M hdiv hweight
+
+/-- A crude close-pair bound retained for reference.  At the strengthened cutoff `n^(2/3)`
+this bound is not itself sublinear; the sharper divisor-residue estimate and the eventual
+`o(n)` proof are given by `closePrimeFull_divisor_bound` and `closePrimeFull_eventually`. -/
 theorem primeCell_distantResidual_bound :
     ∃ C : ℝ, 0 < C ∧ ∀ n : ℕ, 1 ≤ n →
       ‖primeCell n - distantResidual n‖ ≤
-        (cutoffL n : ℝ) ^ 2 * (2 * (cutoffL n : ℝ) + 1) *
+        (cutoffL n : ℝ) ^ 2 * (2 * (distanceCut n : ℝ) + 1) *
           (C * (n : ℝ) ^ (1 / 128 : ℝ) * Real.log n) ^ 2 := by
   obtain ⟨C, hC, hdiv⟩ := divisor_envelope
   refine ⟨C, by positivity, fun n hn => ?_⟩
@@ -293,9 +509,9 @@ theorem rowMass_eq_inversePair {n B p q : ℕ} (hp : p.Prime) (hq : q.Prime)
     exact (h ⟨Nat.le_of_lt_succ (Finset.mem_range.mp (Finset.mem_product.mp hm).1),
       Nat.le_of_lt_succ (Finset.mem_range.mp (Finset.mem_product.mp hm).2), heq⟩).elim
 
-/-- Inverse-residue sum over prime pairs at distance greater than `B₁`. -/
+/-- Inverse-residue sum over prime pairs at distance greater than `distanceCut n`. -/
 def distantInverseTotal (n : ℕ) : ℂ :=
-  ∑ pq ∈ farPairs (bigPrimes n) (cutoffL n),
+  ∑ pq ∈ farPairs (bigPrimes n) (distanceCut n),
     inversePair n (cutoffL n)
       (primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n)) pq.1 pq.2
 
@@ -308,7 +524,7 @@ theorem distantPrimeFull_eq_inverseTotal (n : ℕ) (hn : 1 ≤ n) :
   let c := primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n)
   unfold distantPrimeFull distantInverseTotal
   rw [full_pairRows, Finset.sum_filter]
-  change (∑ i ∈ (farPairs (bigPrimes n) (cutoffL n) ×ˢ
+  change (∑ i ∈ (farPairs (bigPrimes n) (distanceCut n) ×ˢ
       (Finset.range (cutoffL n + 1) ×ˢ Finset.range (cutoffL n + 1))),
       if i.2.1 * i.1.1 + i.2.2 * i.1.2 = n then
         primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n) i.1.1 i.2.1 *
@@ -336,48 +552,101 @@ theorem distantResidual_eq_inverse_sub_wide (n : ℕ) (hn : 1 ≤ n) :
 theorem closePrimeFull_eventually (e : ℝ) (he : 0 < e) :
     ∀ᶠ n : ℕ in atTop, ‖closePrimeFull n‖ ≤ e * (n : ℝ) := by
   obtain ⟨C, hC, hdiv⟩ := divisor_envelope
-  let K := 3 * C ^ 2 * 128 ^ 2
-  have hK : 0 ≤ K := by dsimp [K]; positivity
-  have hlim : Tendsto (fun n : ℕ => K * (n : ℝ) ^ (-(7 / 32 : ℝ))) atTop (𝓝 0) := by
-    have hp := (tendsto_rpow_neg_atTop (by norm_num : (0 : ℝ) < 7 / 32)).comp
+  let K := (1 + 6 * C) * (384 * C) ^ 2
+  have hlim : Tendsto (fun n : ℕ => K * (n : ℝ) ^ (-(21 / 384 : ℝ))) atTop (𝓝 0) := by
+    have hp := (tendsto_rpow_neg_atTop (by norm_num : (0 : ℝ) < 21 / 384)).comp
       (tendsto_natCast_atTop_atTop (R := ℝ))
     simpa only [Function.comp_def, mul_zero] using (tendsto_const_nhds (x := K)).mul hp
   filter_upwards [eventually_ge_atTop 1, hlim.eventually_lt_const he] with n hn hsmall
   have hnR : (1 : ℝ) ≤ n := by exact_mod_cast hn
   have hn0 : (0 : ℝ) < n := by positivity
-  let X := (n : ℝ) ^ (1 / 128 : ℝ)
+  let X := (n : ℝ) ^ (1 / 384 : ℝ)
   have hX0 : 0 < X := Real.rpow_pos_of_pos hn0 _
   have hX1 : 1 ≤ X := Real.one_le_rpow hnR (by norm_num)
-  have hXpow (k : ℕ) : X ^ k = (n : ℝ) ^ ((k : ℝ) / 128) := by
+  have hXpow (k : ℕ) : X ^ k = (n : ℝ) ^ ((k : ℝ) / 384) := by
     dsimp [X]
     rw [← Real.rpow_natCast, ← Real.rpow_mul (Nat.cast_nonneg n)]
     congr 1
     ring
-  have hB : (cutoffL n : ℝ) ≤ X ^ 32 := by
+  have hB : (cutoffL n : ℝ) ≤ X ^ 96 := by
     rw [hXpow]
     norm_num
     exact Nat.floor_le (by positivity)
-  have hB2 : 2 * (cutoffL n : ℝ) + 1 ≤ 3 * X ^ 32 := by
-    have h1 : 1 ≤ X ^ 32 := one_le_pow₀ hX1
+  have hD : (distanceCut n : ℝ) ≤ X ^ 256 := by
+    rw [hXpow]
+    norm_num
+    exact Nat.floor_le (by positivity)
+  have hD2 : 2 * (distanceCut n : ℝ) + 1 ≤ 3 * X ^ 256 := by
+    have h1 : 1 ≤ X ^ 256 := one_le_pow₀ hX1
     nlinarith
-  have hlog : Real.log n ≤ 128 * X := by
+  have hlog : Real.log n ≤ 384 * X := by
     have h := Real.log_le_rpow_div (x := (n : ℝ)) (Nat.cast_nonneg n)
-      (by norm_num : (0 : ℝ) < 1 / 128)
-    calc Real.log n ≤ X / (1 / 128 : ℝ) := by simpa only [X] using h
-      _ = 128 * X := by ring
+      (by norm_num : (0 : ℝ) < 1 / 384)
+    calc Real.log n ≤ X / (1 / 384 : ℝ) := by simpa only [X] using h
+      _ = 384 * X := by ring
+  have hBD : cutoffL n * distanceCut n ≤ n := by
+    have hr : ((cutoffL n * distanceCut n : ℕ) : ℝ) ≤ n := by
+      push_cast
+      calc
+        (cutoffL n : ℝ) * (distanceCut n : ℝ) ≤ X ^ 96 * X ^ 256 :=
+          mul_le_mul hB hD (Nat.cast_nonneg _) (by positivity)
+        _ = X ^ 352 := by ring
+        _ ≤ X ^ 384 := pow_le_pow_right₀ hX1 (by decide)
+        _ = n := by rw [hXpow]; norm_num
+    exact_mod_cast hr
+  let T := ⌊C * X ^ 3⌋₊
+  let M := 384 * C * X ^ 4
+  have hT : (T : ℝ) ≤ C * X ^ 3 := Nat.floor_le (by positivity)
+  have hdivNear : ∀ m : ℕ, 0 < m → m ≤ cutoffL n * distanceCut n →
+      m.divisors.card ≤ T := by
+    intro m _ hm
+    apply Nat.le_floor
+    calc
+      (m.divisors.card : ℝ) ≤ C * (n : ℝ) ^ (1 / 128 : ℝ) :=
+        hdiv n m (hm.trans hBD)
+      _ = C * X ^ 3 := by rw [hXpow]; norm_num
+  have hweight : ∀ p ∈ bigPrimes n, ∀ a ∈ Icc 1 (cutoffL n),
+      ‖primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n) p a‖ ≤ M := by
+    intro p hp a ha
+    calc
+      _ ≤ C * (n : ℝ) ^ (1 / 128 : ℝ) * Real.log n :=
+        primeRowCoeff_norm_le_envelope n hn (by positivity) (fun m hm => hdiv n m hm) p a
+      _ ≤ (C * X ^ 3) * (384 * X) := by
+        have hn3 : (n : ℝ) ^ (1 / 128 : ℝ) = X ^ 3 := by rw [hXpow]; norm_num
+        rw [hn3]
+        exact mul_le_mul_of_nonneg_left hlog (by positivity)
+      _ = M := by dsimp [M]; ring
+  have hBsq : (cutoffL n : ℝ) ^ 2 ≤ X ^ 192 := by
+    calc
+      _ ≤ (X ^ 96) ^ 2 := pow_le_pow_left₀ (Nat.cast_nonneg _) hB 2
+      _ = X ^ 192 := by ring
+  have hprod : 2 * (cutoffL n : ℝ) * (2 * (distanceCut n : ℝ) + 1) * (T : ℝ) ≤
+      6 * C * X ^ 355 := by
+    calc
+      _ ≤ 2 * X ^ 96 * (3 * X ^ 256) * (C * X ^ 3) := by gcongr
+      _ = 6 * C * X ^ 355 := by ring
+  have hcount : ((cutoffL n ^ 2 + 2 * cutoffL n * (2 * distanceCut n + 1) * T : ℕ) : ℝ) ≤
+      (1 + 6 * C) * X ^ 355 := by
+    push_cast
+    calc
+      _ ≤ X ^ 192 + 6 * C * X ^ 355 := add_le_add hBsq hprod
+      _ ≤ _ := by
+        have hpow : X ^ 192 ≤ X ^ 355 := pow_le_pow_right₀ hX1 (by decide)
+        nlinarith
   calc
-    _ ≤ (cutoffL n : ℝ) ^ 2 * (2 * (cutoffL n : ℝ) + 1) *
-        (C * (n : ℝ) ^ (1 / 128 : ℝ) * Real.log n) ^ 2 :=
-      closePrimeFull_bound n hn (by positivity) (fun m hm => hdiv n m hm)
-    _ ≤ (X ^ 32) ^ 2 * (3 * X ^ 32) * (C * X * (128 * X)) ^ 2 := by
-      change (cutoffL n : ℝ) ^ 2 * (2 * (cutoffL n : ℝ) + 1) *
-        (C * X * Real.log n) ^ 2 ≤ _
-      gcongr
-    _ = K * X ^ 100 := by dsimp [K]; ring
-    _ = K * (n : ℝ) ^ (100 / 128 : ℝ) := by rw [hXpow]; norm_num
-    _ = (K * (n : ℝ) ^ (-(7 / 32 : ℝ))) * (n : ℝ) := by
+    _ ≤ ((min (cutoffL n ^ 2 * (2 * distanceCut n + 1))
+        (cutoffL n ^ 2 + 2 * cutoffL n * (2 * distanceCut n + 1) * T) : ℕ) : ℝ) * M ^ 2 :=
+      closePrimeFull_divisor_bound n T M hdivNear hweight
+    _ ≤ ((cutoffL n ^ 2 + 2 * cutoffL n * (2 * distanceCut n + 1) * T : ℕ) : ℝ) * M ^ 2 := by
+      apply mul_le_mul_of_nonneg_right _ (sq_nonneg M)
+      exact_mod_cast min_le_right _ _
+    _ ≤ ((1 + 6 * C) * X ^ 355) * M ^ 2 :=
+      mul_le_mul_of_nonneg_right hcount (sq_nonneg M)
+    _ = K * X ^ 363 := by dsimp [K, M]; ring
+    _ = K * (n : ℝ) ^ (363 / 384 : ℝ) := by rw [hXpow]; norm_num
+    _ = (K * (n : ℝ) ^ (-(21 / 384 : ℝ))) * (n : ℝ) := by
       dsimp [K]
-      rw [mul_assoc, show (100 / 128 : ℝ) = -(7 / 32 : ℝ) + 1 by norm_num,
+      rw [mul_assoc, show (363 / 384 : ℝ) = -(21 / 384 : ℝ) + 1 by norm_num,
         Real.rpow_add hn0, Real.rpow_one]
       ring
     _ ≤ _ := mul_le_mul_of_nonneg_right hsmall.le hn0.le
@@ -518,7 +787,7 @@ theorem inversePair_symmetric {n B p q : ℕ} (hp : p.Prime) (hq : q.Prime) (hpq
 /-- Fully symmetric reciprocal sum over distant prime pairs. -/
 def reciprocalTotal (n : ℕ) : ℂ :=
   let c := primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n)
-  ∑ pq ∈ farPairs (bigPrimes n) (cutoffL n),
+  ∑ pq ∈ farPairs (bigPrimes n) (distanceCut n),
     c pq.1 (inverseResidue n pq.1 pq.2) * c pq.2 (inverseResidue n pq.2 pq.1)
 
 /-- The asymmetric inverse-pair sum equals the symmetric reciprocal sum. -/

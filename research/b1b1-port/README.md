@@ -3186,7 +3186,8 @@ The first error is the library's `transition_power_saving`; the asymptotic conve
 ### 54. Close-pair removal and inverse residues
 
 Only the **full-circle** term is restricted to distant pairs; the wide-arc term still
-contains all prime pairs.  With `D = B₁`,
+contains all prime pairs.  The first version used `D = B₁`; M56 below strengthens the
+current definitions to `D = ⌊n^(2/3)⌋`.  With the original cutoff,
 
 ```lean
 primeCell - distantResidual = closePrimeFull
@@ -3225,7 +3226,8 @@ theorem frozen_iff_inverseResidual :
 ```
 
 Thus the remaining mathematical task is precisely the `o(n)` cancellation of the
-inverse-residue sum over prime pairs `p,q > √n`, `|p-q| > B₁`, against the wide-arc integral
+inverse-residue sum over prime pairs `p,q > √n` beyond the current distance cutoff,
+against the wide-arc integral
 of **all** prime pairs.  This is a signed fixed-target estimate; no new unconditional bound
 for it is claimed.  The verified contribution here is the complete reduction with explicit
 sublinear errors, not a solution of that residual.
@@ -3250,7 +3252,7 @@ The new normal form is
 
 ```lean
 def reciprocalTotal (n) :=
-  ∑ pq ∈ farPairs (bigPrimes n) B₁,
+  ∑ pq ∈ farPairs (bigPrimes n) D,
     c pq.1 (inverseResidue n pq.1 pq.2) *
     c pq.2 (inverseResidue n pq.2 pq.1)
 
@@ -3269,3 +3271,46 @@ the two primes and their two inverse residues.  Re-expanding into divisor sums o
 per-prime absolute-value estimates would only return to the previously quantified barriers.
 
 `fixed_target.lean` passes the full Lean 4.36.0 check after M55, with no `sorry`.
+
+## Milestone 56: the distance cutoff increases from `n^(1/4)` to `n^(2/3)`
+
+The original close-pair estimate used only `representation_card_near`, whose count is
+`B²(2D+1)`.  The strengthened argument separates `p = q` and, off the diagonal, writes
+
+```text
+s = a+b ,   r = |n-s p| = b·|q-p| ≠ 0 ,   r ≤ B D ,   b ∣ r .
+```
+
+Once `s` and `p` are fixed, `b` is a divisor of `r`, and then `a,q` are forced.  Consequently
+the off-diagonal count is at most `2B(2D+1)T`, where `T` bounds the divisor function up to
+`BD`.  This is the argument from the Apache-2.0 reference proof in PR 3790, adapted here as
+`close_factors`, `offDiagonal_card`, `divisor_near_card`, `weighted_near`, and
+`near_fullCircle`.
+
+The current residual now uses
+
+```lean
+def distanceCut (n) := ⌊(n:ℝ)^(2/3:ℝ)⌋₊
+```
+
+throughout `distantPrimeFull`, `closePrimeFull`, `distantInverseTotal`, and
+`reciprocalTotal`.  For the asymptotic estimate put `X = n^(1/384)`.  Then
+
+```text
+B₁ ≤ X^96 ,  D ≤ X^256 ,  d(m) ≤ C X³ ,  log n ≤ 384X ,
+#close representations ≤ (1+6C) X^355 ,
+row weight ≤ 384 C X^4 .
+```
+
+Therefore
+
+```text
+‖closePrimeFull n‖ ≤ (1+6C)(384C)² X^363
+                    = C' n^(121/128) = o(n) .
+```
+
+This is fully formalized in `closePrimeFull_eventually`; all downstream `smallEven`
+equivalences and `frozen_iff_inverseResidual` still compile with the stronger cutoff.
+The remaining reciprocal sum now ranges over `p,q > √n` with `|p-q| > ⌊n^(2/3)⌋`.
+The wide-arc term remains unrestricted.  No estimate for the final signed residual is
+claimed.
