@@ -3294,4 +3294,148 @@ theorem integral_bot_norm_sq_le_divisor_bound (n V : ℕ) (hV : lowCut n * V ≤
   obtain ⟨N, hN⟩ := card_divisors_le_rpow_eventually ε hε
   exact ⟨N, integral_bot_norm_sq_le_divisor n V hV hε hN⟩
 
+/-! ### Milestone 47: the exponent `n^(2δ)` improves to `n^δ`
+
+M45 bounded the two half-products separately by `n^δ`, losing a factor `n^δ`.  But
+
+```text
+∏_{small} p^(δ e) · ∏_{large} p^(δ e) = ∏_{all} p^(δ e) = n^δ      (exactly),
+```
+
+so keeping the products until the end gives `d(n) ≤ C_δ^(⌈2^(1/δ)⌉) · n^δ`.  Then `δ = ε/2`
+suffices for `d(n) = n^o(1)` (instead of `ε/4`), and the threshold shrinks accordingly. -/
+
+/-- **The sharpened divisor bound**: `d(n) ≤ B_δ · n^δ` with `B_δ = (max C_δ 1)^⌈2^(1/δ)⌉`. -/
+theorem card_divisors_le_const_mul_rpow_pow (n : ℕ) (δ : ℝ) (hδ : 0 < δ) (hn : 0 < n) :
+    (n.divisors.card : ℝ) ≤
+      (max (2 / (δ * Real.log 2)) 1) ^ (Nat.ceil ((2:ℝ) ^ (1/δ))) * (n : ℝ) ^ δ := by
+  classical
+  have hn0 : n ≠ 0 := by omega
+  set C : ℝ := max (2 / (δ * Real.log 2)) 1 with hC
+  have hC1 : 1 ≤ C := le_max_right _ _
+  set P : ℕ := Nat.ceil ((2:ℝ) ^ (1/δ)) with hP
+  have hPle : ((2:ℝ) ^ (1/δ)) ≤ (P : ℝ) := Nat.le_ceil _
+  have hfact : (∏ p ∈ n.primeFactors, (p : ℝ) ^ (n.factorization p)) = (n : ℝ) := by
+    have hnat : (∏ p ∈ n.primeFactors, p ^ (n.factorization p)) = n := by
+      rw [← Nat.prod_factorization_eq_prod_primeFactors]
+      exact Nat.prod_factorization_pow_eq_self hn0
+    have hcast : ((∏ p ∈ n.primeFactors, p ^ (n.factorization p) : ℕ) : ℝ) = (n : ℝ) := by
+      rw [hnat]
+    push_cast at hcast
+    exact hcast
+  set small := n.primeFactors.filter (fun p => p < P) with hsmall
+  set large := n.primeFactors.filter (fun p => ¬ p < P) with hlarge
+  have hsplitA : (∏ p ∈ n.primeFactors, ((n.factorization p + 1 : ℕ) : ℝ))
+      = (∏ p ∈ small, ((n.factorization p + 1 : ℕ) : ℝ))
+        * (∏ p ∈ large, ((n.factorization p + 1 : ℕ) : ℝ)) := by
+    rw [hsmall, hlarge, ← Finset.prod_filter_mul_prod_filter_not (s := n.primeFactors)
+      (p := fun p => p < P) (f := fun p => ((n.factorization p + 1 : ℕ) : ℝ))]
+  -- exact splitting of the `p^(δ e)` product
+  have hsplitC : (∏ p ∈ n.primeFactors, (p : ℝ) ^ (δ * (n.factorization p : ℝ)))
+      = (∏ p ∈ small, (p : ℝ) ^ (δ * (n.factorization p : ℝ)))
+        * (∏ p ∈ large, (p : ℝ) ^ (δ * (n.factorization p : ℝ))) := by
+    rw [hsmall, hlarge, ← Finset.prod_filter_mul_prod_filter_not (s := n.primeFactors)
+      (p := fun p => p < P) (f := fun p => (p : ℝ) ^ (δ * (n.factorization p : ℝ)))]
+  -- `∏_{all} p^(δ e) = n^δ`
+  have hrpowAll : (∏ p ∈ n.primeFactors, (p : ℝ) ^ (δ * (n.factorization p : ℝ)))
+      = (n : ℝ) ^ δ := by
+    have h1 : ∀ p ∈ n.primeFactors,
+        (p : ℝ) ^ (δ * (n.factorization p : ℝ))
+          = ((p : ℝ) ^ (n.factorization p)) ^ δ := by
+      intro p _
+      rw [show δ * (n.factorization p : ℝ) = (n.factorization p : ℝ) * δ by ring,
+        Real.rpow_mul (by positivity), Real.rpow_natCast]
+    rw [Finset.prod_congr rfl (fun p hp => h1 p hp),
+      prod_rpow_eq_rpow_prod (s := n.primeFactors)
+        (x := fun p => (p : ℝ) ^ (n.factorization p)) (δ := δ)
+        (fun p _ => by positivity),
+      hfact]
+  -- small primes: constant times the *kept* product
+  have hsmallbound : (∏ p ∈ small, ((n.factorization p + 1 : ℕ) : ℝ))
+      ≤ C ^ P * (∏ p ∈ small, (p : ℝ) ^ (δ * (n.factorization p : ℝ))) := by
+    have hpt : ∀ p ∈ small,
+        ((n.factorization p + 1 : ℕ) : ℝ) ≤ C * (p : ℝ) ^ (δ * (n.factorization p : ℝ)) := by
+      intro p hp
+      have hp' := Finset.mem_filter.mp hp
+      have hpp := Nat.prime_of_mem_primeFactors hp'.1
+      have hdvd : p ∣ n := Nat.dvd_of_mem_primeFactors hp'.1
+      have he1 : 1 ≤ n.factorization p :=
+        (Nat.Prime.dvd_iff_one_le_factorization hpp hn0).mp hdvd
+      have hCge : (2 / (δ * Real.log 2)) ≤ C := le_max_left _ _
+      calc ((n.factorization p + 1 : ℕ) : ℝ)
+          ≤ (2 / (δ * Real.log 2)) * (p : ℝ) ^ (δ * (n.factorization p : ℝ)) := by
+            push_cast
+            exact add_one_le_rpow_mul δ hδ p hpp.two_le (n.factorization p) he1
+        _ ≤ C * (p : ℝ) ^ (δ * (n.factorization p : ℝ)) :=
+            mul_le_mul_of_nonneg_right hCge (by positivity)
+    calc (∏ p ∈ small, ((n.factorization p + 1 : ℕ) : ℝ))
+        ≤ ∏ p ∈ small, C * (p : ℝ) ^ (δ * (n.factorization p : ℝ)) :=
+          prod_le_prod_nonneg _ _ _ (fun p _ => by positivity)
+            (fun p _ => by positivity) hpt
+      _ = C ^ small.card * (∏ p ∈ small, (p : ℝ) ^ (δ * (n.factorization p : ℝ))) := by
+          rw [Finset.prod_mul_distrib, Finset.prod_const]
+      _ ≤ C ^ P * (∏ p ∈ small, (p : ℝ) ^ (δ * (n.factorization p : ℝ))) := by
+          have hcard : small.card ≤ P := by
+            have hsub : small ⊆ Finset.range P :=
+              fun p hp => Finset.mem_range.mpr (Finset.mem_filter.mp hp).2
+            calc small.card ≤ (Finset.range P).card := Finset.card_le_card hsub
+              _ = P := Finset.card_range P
+          exact mul_le_mul_of_nonneg_right (pow_le_pow_right₀ hC1 hcard) (by positivity)
+  -- large primes: no constant
+  have hlargebound : (∏ p ∈ large, ((n.factorization p + 1 : ℕ) : ℝ))
+      ≤ ∏ p ∈ large, (p : ℝ) ^ (δ * (n.factorization p : ℝ)) := by
+    have hpt : ∀ p ∈ large,
+        ((n.factorization p + 1 : ℕ) : ℝ) ≤ (p : ℝ) ^ (δ * (n.factorization p : ℝ)) := by
+      intro p hp
+      have hp' := Finset.mem_filter.mp hp
+      have hge : P ≤ p := by omega
+      have hple : ((2:ℝ) ^ (1/δ)) ≤ (p : ℝ) := le_trans hPle (by exact_mod_cast hge)
+      push_cast
+      exact add_one_le_rpow_of_large δ hδ p hple (n.factorization p)
+    exact prod_le_prod_nonneg _ _ _ (fun p _ => by positivity)
+      (fun p _ => by positivity) hpt
+  have h1 : (n.divisors.card : ℝ)
+      = ∏ p ∈ n.primeFactors, ((n.factorization p + 1 : ℕ) : ℝ) := by
+    rw [Nat.card_divisors hn0]
+    push_cast
+    rfl
+  rw [h1, hsplitA]
+  calc (∏ p ∈ small, ((n.factorization p + 1 : ℕ) : ℝ))
+        * (∏ p ∈ large, ((n.factorization p + 1 : ℕ) : ℝ))
+      ≤ (C ^ P * (∏ p ∈ small, (p : ℝ) ^ (δ * (n.factorization p : ℝ))))
+          * (∏ p ∈ large, (p : ℝ) ^ (δ * (n.factorization p : ℝ))) :=
+        mul_le_mul hsmallbound hlargebound (by positivity) (by positivity)
+    _ = C ^ P * ((∏ p ∈ small, (p : ℝ) ^ (δ * (n.factorization p : ℝ)))
+          * (∏ p ∈ large, (p : ℝ) ^ (δ * (n.factorization p : ℝ)))) := by ring
+    _ = C ^ P * (n : ℝ) ^ δ := by rw [← hsplitC, hrpowAll]
+
+/-- **`d(n) = n^o(1)` with the sharpened constant** (`δ = ε/2`, M47). -/
+theorem card_divisors_le_rpow_eventually_pow (ε : ℝ) (hε : 0 < ε) :
+    ∃ N : ℕ, ∀ n : ℕ, N ≤ n → (n.divisors.card : ℝ) ≤ (n : ℝ) ^ ε := by
+  set δ : ℝ := ε / 2 with hδdef
+  have hδ : 0 < δ := by rw [hδdef]; linarith
+  set B : ℝ := (max (2 / (δ * Real.log 2)) 1) ^ (Nat.ceil ((2:ℝ) ^ (1/δ))) with hB
+  have hBone : (1:ℝ) ≤ max (2 / (δ * Real.log 2)) 1 := le_max_right _ _
+  have hBpos : 0 < B := pow_pos (lt_of_lt_of_le zero_lt_one hBone) _
+  refine ⟨Nat.ceil (B ^ (2 / ε)) + 1, ?_⟩
+  intro n hn
+  have hn1 : 0 < n := by omega
+  have hmain := card_divisors_le_const_mul_rpow_pow n δ hδ hn1
+  rw [hδdef] at hmain
+  have hnB : B ≤ (n : ℝ) ^ (ε/2) := by
+    have hceil : B ^ (2/ε) ≤ (n : ℝ) := by
+      have h1 : B ^ (2/ε) ≤ ((Nat.ceil (B ^ (2/ε)) : ℕ) : ℝ) := Nat.le_ceil _
+      have h2 : ((Nat.ceil (B ^ (2/ε)) : ℕ) : ℝ) ≤ (n : ℝ) := by
+        exact_mod_cast (by omega : Nat.ceil (B ^ (2/ε)) ≤ n)
+      exact h1.trans h2
+    have h := Real.rpow_le_rpow (by positivity : (0:ℝ) ≤ B ^ (2/ε)) hceil
+      (by linarith : (0:ℝ) ≤ ε/2)
+    rwa [← Real.rpow_mul (le_of_lt hBpos),
+      show (2/ε) * (ε/2) = 1 by field_simp, Real.rpow_one] at h
+  calc (n.divisors.card : ℝ) ≤ B * (n : ℝ) ^ (ε/2) := hmain
+    _ ≤ (n : ℝ) ^ (ε/2) * (n : ℝ) ^ (ε/2) :=
+        mul_le_mul_of_nonneg_right hnB (by positivity)
+    _ = (n : ℝ) ^ (ε/2 + ε/2) := by rw [Real.rpow_add (by positivity)]
+    _ = (n : ℝ) ^ ε := by rw [show ε/2 + ε/2 = ε by ring]
+
 end B1B1Port

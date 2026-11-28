@@ -2810,3 +2810,59 @@ and since `m ≤ n` forces `m/a ≤ n^(15/16)`, the surviving cofactor window is
   untouched.
 
 Dossier: 3258 -> 3297 lines, 115 theorems / 24 defs / 9 lemmas, no `sorry`.
+
+## Milestone 47: the exponent sharpens from `n^(2δ)` to `n^δ`; the peeling ceiling
+
+### 47.1 (a) is right — the product is exact
+
+M45 bounded the two half-products *separately* by `n^δ`, losing a factor `n^δ`.  But
+
+```text
+∏_{small} p^(δ e) · ∏_{large} p^(δ e) = ∏_{all} p^(δ e) = n^δ      (exact identity)
+```
+
+so keeping the products until the very end gives the sharper bound.  Verified:
+
+```lean
+theorem card_divisors_le_const_mul_rpow_pow (n : ℕ) (δ : ℝ) (hδ : 0 < δ) (hn : 0 < n) :
+  (n.divisors.card : ℝ) ≤
+    (max (2/(δ log 2)) 1) ^ (Nat.ceil (2^(1/δ))) * (n : ℝ) ^ δ        -- was ^(2δ)
+
+theorem card_divisors_le_rpow_eventually_pow (ε : ℝ) (hε : 0 < ε) :
+  ∃ N : ℕ, ∀ n : ℕ, N ≤ n → (n.divisors.card : ℝ) ≤ (n : ℝ) ^ ε      -- δ = ε/2, not ε/4
+```
+
+`δ = ε/2` now suffices (the threshold is `⌈B_(ε/2)^(2/ε)⌉ + 1` instead of
+`⌈B_(ε/4)^(2/ε)⌉ + 1`).  Both earlier versions are kept; the `_pow` ones are the sharp ones.
+
+### 47.2 (b) is right — the peeling has hit its ceiling
+
+`integral_bot_norm_sq_le` carries `hV : lowCut n * V ≤ n`, i.e. `V ≤ n / B₁`.  With
+`B₁ = n^(1/4)` this is `V < n^(3/4)`, so `V = n^(3/4−δ)` is **the optimum of this
+mechanism**, and M46 already attains it.
+
+Cost/benefit of M43–M46 (≈ 300 lines): `V` moved from `n^(5/8)` to `n^(3/4)`, i.e. `n^(1/8)`.
+The divisor bound is a reusable Mathlib-grade lemma, but for b1-b1 the marginal return of
+this line is exhausted.  Recorded and closed.
+
+### 47.3 What the next idea is *not*
+
+The proposed prime-power sparsity
+
+```text
+#{p^k ≤ n^(15/16) : k ≥ 2} = O(n^(15/32) log n)
+```
+
+is **not** `d(n) = n^o(1)`.  It is a *counting* statement over an interval, proved
+elementarily (for each `k`, `#{p : p^k ≤ X} ≤ X^(1/k)`, summed over `k ≤ log₂ X`), and it
+does not use the divisor bound at all.  Conversely the divisor bound says nothing about how
+many perfect powers lie below `X`.
+
+Where `d(n) = n^o(1)` *does* enter that argument is the value bound
+`|τ^Top(m)| ≤ d(m)·log m = n^o(1)`, which turns the *count* of surviving integers
+(`≤ B₁ · n^(15/32) = n^(23/32)`) into an `L²` bound `n^(23/32+o(1)) = o(n)`.
+
+Mathlib has **no** prime-power counting lemma (only `IsPrimePow` + field-cardinality facts),
+so it would be built from scratch — the 50–80 line estimate is right.
+
+Dossier: 3297 -> 3374 lines, no `sorry`.
