@@ -3314,3 +3314,49 @@ equivalences and `frozen_iff_inverseResidual` still compile with the stronger cu
 The remaining reciprocal sum now ranges over `p,q > √n` with `|p-q| > ⌊n^(2/3)⌋`.
 The wide-arc term remains unrestricted.  No estimate for the final signed residual is
 claimed.
+
+## Milestone 57 (branch `research/b1b1-l2`): the `L²` negative result — foundation
+
+Goal: make the `L²` barrier a *constant*, not a slogan.  The claim to be formalised:
+
+```text
+∫₀¹ ‖∑_a c(a)·W_a‖²  =  ∑_a c(a)² · ∑_{B₁ < p ≤ n/a} (log p)²   ←  exactly, no cross terms
+                     ≈  n · ∑_{a prime ∈ band} c(a)²/a  ≈  (log 4)·n ,
+```
+
+so no `L²`, Parseval, or absolute-value estimate can give `o(n)`.
+
+### Verified in `l2_mass.lean` (115 lines, 6 declarations, no `sorry`)
+
+```lean
+def farPrimeWave (n B a : ℕ) (t : ℝ) : ℂ      -- primes p ∈ (B, n/a], weight log p
+def sepPolynomial (n B : ℕ) (t : ℝ) : ℂ        -- ∑_{a ∈ (U,B₁]} c(a)·W_a
+
+/-- **No cross terms.** `a, a' ≤ B`, `p, q > B` primes, `a·p = a'·q` ⟹ `a = a' ∧ p = q`. -/
+theorem prime_mul_eq_of_large
+
+theorem integral_phase_int_local (k : ℤ) :
+  ∫₀¹ phase(k t) dt = if k = 0 then 1 else 0
+theorem conj_phase (x : ℝ) : conj(phase x) = phase (−x)
+theorem integral_phase_mul_conj (m k : ℕ) :
+  ∫₀¹ phase(m t)·conj(phase(k t)) dt = if m = k then 1 else 0
+```
+
+`prime_mul_eq_of_large` is the mathematical heart: a prime cofactor `p > B` cannot divide
+another divisor `a' ≤ B`, so distinct `(a,p)` give distinct frequencies `a·p` — hence the
+cross terms of the `L²` expansion vanish *identically*.
+
+### Remaining (measured, not guessed)
+
+1. **~70–90 lines**: `∫₀¹ W_a · conj(W_{a'}) dt = ∑_{p,q} log p log q · [a·p = a'·q]`
+   (expand the two finset sums, apply `integral_phase_mul_conj`), then the total
+   `l2_sep_eq` by `sum_mul_sum` + `prime_mul_eq_of_large`.
+2. **~250–300 lines** for the numerical constant: `∑_{a prime ∈ (U,B₁]} 1/a → log 4` and
+   `∑_{B₁<p≤x} (log p)² ≈ x`.  Chebyshev's bounds are in Mathlib
+   (`Mathlib/NumberTheory/Chebyshev.lean`: `θ`, `ψ`, `π`), which suffices for a *positive
+   constant* via the dyadic decomposition
+   `∑_{k} 1/log(2^k U) = (1/log 2)·log(log B₁/log U)`, but Mertens' `log log` asymptotic is
+   not.
+
+So the negative result is **reduced to standard classical inputs**, with the object-specific
+part (cross-term vanishing + orthogonality) already verified.
