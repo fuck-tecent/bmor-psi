@@ -2965,3 +2965,62 @@ needs a new residue argument.  So the structural reduction is complete, the anal
 is not.
 
 Dossier: 3500 -> 3573 lines, 121 theorems / 24 defs / 9 lemmas, no `sorry`.
+
+## Milestone 50 (branch `research/b1b1-h33`): the `h33` / `b3-b3-parity` reduction
+
+The parity cell asks for `Re Jdeep ≥ −εn`.  The reduction turns it into an `L²` statement
+about the **imaginary part** of a half-shifted polynomial, with no trigonometry:
+
+```text
+S = ∑ τ₃(m) e(mt),   T = S · e(−(n/2)t),   hence T² = S² e(−nt)  (the deep integrand)
+
+Re(T²) = (Re T)² − (Im T)²  ≥  −(Im T)² ,
+(Im T)² = (‖T‖² − Re T²)/2                    (pointwise algebra)
+∫₀¹‖T‖² = ∫₀¹‖S‖² = ∑ τ₃(m)²                  (Parseval)
+Re ∫₀¹T² = D₃                                 (diagonal identity)
+```
+
+### Verified
+
+```lean
+def tauThreeC (n) : ℕ → ℂ
+theorem plainPolynomial_sq_phase_expand_gen (n) (c) (t)     -- general frequency expansion
+def diagonalSumOf (n) (c) : ℂ
+theorem integral_sq_phase_eq_diagonalOf (n) (c)             -- ∫₀¹ S²e(−n·) = D, any c
+def halfShift (n) (t) : ℂ
+theorem halfShift_sq / T_sq                                 -- T² = S²e(−n·)
+theorem norm_halfShift / im_sq_eq                           -- ‖T‖ = ‖S‖; (Im z)² = (‖z‖²−Re z²)/2
+theorem intervalIntegrable_indicator_real
+theorem integral_imT_sq_eq (n) (c) :
+  ∫₀¹ (Im T)² = (∑‖c m‖² − ∫₀¹ Re(S²e(−n·))) / 2
+
+def deepIntegralThree (n) : ℂ
+theorem re_deepIntegral3_ge_neg_im_sq (n) :
+  −(∫_{Aᶜ} (Im T)²) ≤ ∫_{Aᶜ} Re(S² e(−n·))
+```
+
+So **the `h33` floor is equivalent to an `L²` bound on `Im T`** — a `1`-parameter object
+instead of the quadruple sum.  This is the cut worth having if `goldbach` decomposes the
+task later.
+
+### Three pieces still missing (each is one step)
+
+1. **`∫ Re = Re ∫`** — i.e. converting `∫_{Aᶜ} Re(S²e(−n·))` into `Re Jdeep`.  The lemma is
+   `MeasureTheory.integral_re` (Mathlib `MeasureTheory/Integral/Bochner/ContinuousLinearMap.lean:165`),
+   but the enclosing namespace could not be pinned down in this session (`MeasureTheory.` and
+   `RCLike.` both reported unknown). One grep settles it.
+2. **`∫₀¹(Im T)² = ½(∑τ₃² − D₃)`** — follows from (1) plus `integral_sq_phase_eq_diagonalOf`.
+3. **`Im T = ∑_k d_k sin(2πkt)`** with `d_k = τ₃(n/2+k) − τ₃(n/2−k)` — the antisymmetric
+   form.  Needs `Even n` index reindexing plus `Real.sin` addition formulas; independent of
+   the rest.
+
+### Landmines
+
+* `Complex.sq_abs` does not exist; use `← Complex.normSq_eq_norm_sq` + `Complex.normSq_apply`.
+* `indicator_intervalIntegrable` is `ℂ`-valued, so it coerces real-valued functions; wrote
+  `intervalIntegrable_indicator_real`.
+* `set`-defined functions print as `(fun x => …) x` and `simp only`/`dsimp only` do not always
+  beta-reduce; writing the raw lambdas avoids it entirely.
+* `Finset.card_Icc` is absent in this Mathlib.
+
+Dossier: 3573 → 3789 lines, no `sorry`.

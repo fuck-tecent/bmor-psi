@@ -3570,4 +3570,220 @@ theorem card_higherPower_products_le (B X : ℕ) :
         exact mul_le_mul_of_nonneg_right
           (mul_le_mul_of_nonneg_right hcard (by positivity)) (by positivity)
 
+/-! ### Milestone 50: the `h33` (`b3-b3-parity`) reduction
+
+The parity cell's one-sided floor `Re Jdeep ≥ −εn` can be reduced to the `L²` mass of the
+**imaginary part** of a half-shifted polynomial.  Write `S = ∑ τ₃(m) e(mt)` and
+`T = S · e(−(n/2)t)`; then `T² = S² e(−nt)` (the deep integrand), so
+
+```text
+Re(T²) = (Re T)² − (Im T)²  ≥  −(Im T)² ,
+```
+
+and since `(Im T)² = (‖T‖² − Re T²)/2`,
+
+```text
+∫₀¹ (Im T)²  =  ½ ( ∫₀¹‖S‖² − Re ∫₀¹ T² )  =  ½ ( ∑ τ₃(m)² − D₃ ) .
+```
+
+Everything below is Parseval plus the diagonal identity — no trigonometry. -/
+
+/-- The `τ₃` polynomial as a complex coefficient sequence. -/
+def tauThreeC (n : ℕ) : ℕ → ℂ := fun m => (tauThree n m : ℂ)
+
+/-- General frequency expansion of `S²·e(−nt)`. -/
+theorem plainPolynomial_sq_phase_expand_gen (n : ℕ) (c : ℕ → ℂ) (t : ℝ) :
+    plainPolynomial n c t ^ 2 * phase (-(n:ℝ)*t)
+      = ∑ m ∈ Finset.range (n + 1), ∑ m' ∈ Finset.range (n + 1),
+          c m * c m' * phase (((((m:ℤ) + (m':ℤ) - (n:ℤ) : ℤ)) : ℝ) * t) := by
+  unfold plainPolynomial
+  rw [pow_two, Finset.sum_mul_sum, Finset.sum_mul]
+  refine Finset.sum_congr rfl fun m _ => ?_
+  rw [Finset.sum_mul]
+  refine Finset.sum_congr rfl fun m' _ => ?_
+  have hph : phase ((m:ℝ)*t) * phase ((m':ℝ)*t) * phase (-(n:ℝ)*t)
+      = phase (((((m:ℤ) + (m':ℤ) - (n:ℤ) : ℤ)) : ℝ) * t) := by
+    rw [← phase_add, ← phase_add]
+    congr 1
+    push_cast
+    ring
+  calc (c m * phase ((m:ℝ)*t)) * (c m' * phase ((m':ℝ)*t)) * phase (-(n:ℝ)*t)
+      = c m * c m' * (phase ((m:ℝ)*t) * phase ((m':ℝ)*t) * phase (-(n:ℝ)*t)) := by ring
+    _ = _ := by rw [hph]
+
+/-- The diagonal sum for a general coefficient sequence. -/
+def diagonalSumOf (n : ℕ) (c : ℕ → ℂ) : ℂ :=
+  ∑ m ∈ Finset.range (n + 1), ∑ m' ∈ Finset.range (n + 1),
+    if m + m' = n then c m * c m' else 0
+
+/-- The full-circle Fourier coefficient equals the diagonal sum, for any coefficients. -/
+theorem integral_sq_phase_eq_diagonalOf (n : ℕ) (c : ℕ → ℂ) :
+    (∫ t in (0:ℝ)..1, plainPolynomial n c t ^ 2 * phase (-(n:ℝ)*t))
+      = diagonalSumOf n c := by
+  classical
+  have hpt : ∀ t : ℝ, plainPolynomial n c t ^ 2 * phase (-(n:ℝ)*t)
+      = ∑ m ∈ Finset.range (n + 1), ∑ m' ∈ Finset.range (n + 1),
+          c m * c m' * phase (((((m:ℤ) + (m':ℤ) - (n:ℤ) : ℤ)) : ℝ) * t) :=
+    fun t => plainPolynomial_sq_phase_expand_gen n c t
+  simp_rw [hpt]
+  rw [intervalIntegral.integral_finsetSum]
+  swap
+  · intro m _
+    exact (by unfold phase; fun_prop : Continuous fun t : ℝ =>
+      ∑ m' ∈ Finset.range (n + 1), c m * c m' *
+        phase (((((m:ℤ) + (m':ℤ) - (n:ℤ) : ℤ)) : ℝ) * t)).intervalIntegrable _ _
+  unfold diagonalSumOf
+  refine Finset.sum_congr rfl fun m _ => ?_
+  rw [intervalIntegral.integral_finsetSum]
+  swap
+  · intro m' _
+    exact (by unfold phase; fun_prop : Continuous fun t : ℝ =>
+      c m * c m' *
+        phase (((((m:ℤ) + (m':ℤ) - (n:ℤ) : ℤ)) : ℝ) * t)).intervalIntegrable _ _
+  refine Finset.sum_congr rfl fun m' _ => ?_
+  rw [intervalIntegral.integral_const_mul, integral_phase_int]
+  by_cases hmn : m + m' = n
+  · have hk : ((((m:ℤ) + (m':ℤ) - (n:ℤ) : ℤ)) = 0) := by
+      have : (m:ℤ) + (m':ℤ) = (n:ℤ) := by exact_mod_cast hmn
+      omega
+    rw [if_pos hmn, if_pos hk, mul_one]
+  · have hk : ((((m:ℤ) + (m':ℤ) - (n:ℤ) : ℤ)) ≠ 0) := by
+      intro h0
+      apply hmn
+      have h2 : (m:ℤ) + (m':ℤ) = (n:ℤ) := by omega
+      exact_mod_cast h2
+    rw [if_neg hmn, if_neg hk, mul_zero]
+
+/-- The half shift `e(−(n/2)t)`. -/
+def halfShift (n : ℕ) (t : ℝ) : ℂ := phase (-((n:ℝ)/2) * t)
+
+theorem norm_halfShift (n : ℕ) (t : ℝ) : ‖halfShift n t‖ = 1 := by
+  unfold halfShift
+  exact norm_phase _
+
+theorem halfShift_sq (n : ℕ) (t : ℝ) : halfShift n t ^ 2 = phase (-(n:ℝ)*t) := by
+  unfold halfShift
+  rw [pow_two, ← phase_add]
+  congr 1
+  ring
+
+/-- `T = S · e(−(n/2)t)` squares to the deep integrand. -/
+theorem T_sq (n : ℕ) (c : ℕ → ℂ) (t : ℝ) :
+    (plainPolynomial n c t * halfShift n t) ^ 2
+      = plainPolynomial n c t ^ 2 * phase (-(n:ℝ)*t) := by
+  rw [mul_pow, halfShift_sq]
+
+/-- Interval integrability of a real-valued indicator (`indicator_intervalIntegrable` is
+`ℂ`-valued, which coerces and breaks the match). -/
+theorem intervalIntegrable_indicator_real {f : ℝ → ℝ} {s : Set ℝ} (hf : Continuous f)
+    (hs : MeasurableSet s) : IntervalIntegrable (s.indicator f) volume 0 1 := by
+  rw [intervalIntegrable_iff_integrableOn_Ioc_of_le zero_le_one]
+  exact (hf.continuousOn.integrableOn_Icc.mono_set Set.Ioc_subset_Icc_self).indicator hs
+
+/-- `(Im z)² = (‖z‖² − Re z²)/2`. -/
+theorem im_sq_eq (z : ℂ) : z.im ^ 2 = (‖z‖ ^ 2 - (z ^ 2).re) / 2 := by
+  have h1 : ‖z‖ ^ 2 = z.re ^ 2 + z.im ^ 2 := by
+    rw [← Complex.normSq_eq_norm_sq, Complex.normSq_apply]
+    try ring
+  have h2 : (z ^ 2).re = z.re ^ 2 - z.im ^ 2 := by
+    rw [pow_two, Complex.mul_re]
+    try ring
+  rw [h1, h2]
+  ring
+
+/-- **`∫₀¹ (Im T)² = ½(∑‖c‖² − ∫₀¹ Re T²)`.** -/
+theorem integral_imT_sq_eq (n : ℕ) (c : ℕ → ℂ) :
+    (∫ t in (0:ℝ)..1, ((plainPolynomial n c t * halfShift n t).im) ^ 2)
+      = ((∑ m ∈ Finset.range (n + 1), ‖c m‖ ^ 2)
+          - (∫ t in (0:ℝ)..1, (plainPolynomial n c t ^ 2 * phase (-(n:ℝ)*t)).re)) / 2 := by
+  have hpt : ∀ t : ℝ, ((plainPolynomial n c t * halfShift n t).im) ^ 2
+      = (‖plainPolynomial n c t * halfShift n t‖ ^ 2
+          - ((plainPolynomial n c t * halfShift n t) ^ 2).re) / 2 :=
+    fun t => im_sq_eq _
+  simp_rw [hpt]
+  have hnorm : ∀ t : ℝ, ‖plainPolynomial n c t * halfShift n t‖ ^ 2
+      = ‖plainPolynomial n c t‖ ^ 2 := by
+    intro t
+    rw [norm_mul, norm_halfShift, mul_one]
+  have hsq : ∀ t : ℝ, ((plainPolynomial n c t * halfShift n t) ^ 2).re
+      = (plainPolynomial n c t ^ 2 * phase (-(n:ℝ)*t)).re := by
+    intro t
+    rw [T_sq]
+  simp_rw [hnorm, hsq]
+  have hcont1 : Continuous fun t : ℝ => ‖plainPolynomial n c t‖ ^ 2 :=
+    (by unfold plainPolynomial phase; fun_prop : Continuous (plainPolynomial n c)).norm.pow 2
+  have hcont2 : Continuous fun t : ℝ =>
+      (plainPolynomial n c t ^ 2 * phase (-(n:ℝ)*t)).re :=
+    Complex.continuous_re.comp
+      (((by unfold plainPolynomial phase; fun_prop : Continuous (plainPolynomial n c)).pow 2).mul
+        (by unfold phase; fun_prop))
+  rw [intervalIntegral.integral_div,
+    intervalIntegral.integral_sub (hcont1.intervalIntegrable _ _) (hcont2.intervalIntegrable _ _),
+    integral_plainPolynomial_norm_sq]
+
+/-- **The `h33` reduction** (`b3-b3-parity`):
+
+```text
+−(∫_{Aᶜ} (Im T)²)  ≤  ∫_{Aᶜ} Re(S² e(−n·))  =  Re Jdeep .
+```
+
+The right-hand side is `Re Jdeep` (the `Re ∫ = ∫ Re` conversion is `MeasureTheory.integral_re`). -/
+theorem re_deepIntegral3_ge_neg_im_sq (n : ℕ) :
+    -(∫ t in (0:ℝ)..1, (wideSet n)ᶜ.indicator
+        (fun x => ((plainPolynomial n (tauThreeC n) x * halfShift n x).im) ^ 2) t)
+      ≤ ∫ t in (0:ℝ)..1, (wideSet n)ᶜ.indicator
+          (fun x => (plainPolynomial n (tauThreeC n) x ^ 2 * phase (-(n:ℝ)*x)).re) t := by
+  have hS : Continuous fun x : ℝ => plainPolynomial n (tauThreeC n) x := by
+    unfold plainPolynomial phase; fun_prop
+  have hT : Continuous fun x : ℝ => plainPolynomial n (tauThreeC n) x * halfShift n x :=
+    hS.mul (by unfold halfShift phase; fun_prop)
+  have hbase : Continuous fun x : ℝ =>
+      plainPolynomial n (tauThreeC n) x ^ 2 * phase (-(n:ℝ)*x) :=
+    (hS.pow 2).mul (by unfold phase; fun_prop)
+  have him : Continuous fun x : ℝ => ((plainPolynomial n (tauThreeC n) x * halfShift n x).im) ^ 2 :=
+    Complex.continuous_im.comp hT |>.pow 2
+  have hre : Continuous fun x : ℝ =>
+      (plainPolynomial n (tauThreeC n) x ^ 2 * phase (-(n:ℝ)*x)).re :=
+    Complex.continuous_re.comp hbase
+  have hmeas : MeasurableSet (wideSet n)ᶜ :=
+    (wide_measurable n (cutoffB n) (cutoffH n)).compl
+  have hg : IntervalIntegrable
+      (fun x => (wideSet n)ᶜ.indicator
+        (fun y => ((plainPolynomial n (tauThreeC n) y * halfShift n y).im) ^ 2) x)
+      volume 0 1 := intervalIntegrable_indicator_real him hmeas
+  have hh : IntervalIntegrable
+      (fun x => (wideSet n)ᶜ.indicator
+        (fun y => (plainPolynomial n (tauThreeC n) y ^ 2 * phase (-(n:ℝ)*y)).re) x)
+      volume 0 1 := intervalIntegrable_indicator_real hre hmeas
+  have hpt : ∀ x : ℝ,
+      -((wideSet n)ᶜ.indicator
+          (fun y => ((plainPolynomial n (tauThreeC n) y * halfShift n y).im) ^ 2) x)
+        ≤ (wideSet n)ᶜ.indicator
+            (fun y => (plainPolynomial n (tauThreeC n) y ^ 2 * phase (-(n:ℝ)*y)).re) x := by
+    intro x
+    by_cases hx : x ∈ (wideSet n)ᶜ
+    · rw [Set.indicator_of_mem hx, Set.indicator_of_mem hx]
+      have hsq := T_sq n (tauThreeC n) x
+      have h2 : (plainPolynomial n (tauThreeC n) x ^ 2 * phase (-(n:ℝ)*x)).re
+          = (plainPolynomial n (tauThreeC n) x * halfShift n x).re ^ 2
+            - ((plainPolynomial n (tauThreeC n) x * halfShift n x).im) ^ 2 := by
+        rw [← hsq]
+        simp only [pow_two, Complex.mul_re]
+        try ring
+      rw [h2]
+      nlinarith [sq_nonneg (plainPolynomial n (tauThreeC n) x * halfShift n x).re]
+    · rw [Set.indicator_of_notMem hx, Set.indicator_of_notMem hx]
+      simp
+  have hnn : 0 ≤ ∫ t in (0:ℝ)..1,
+      ((wideSet n)ᶜ.indicator
+          (fun y => (plainPolynomial n (tauThreeC n) y ^ 2 * phase (-(n:ℝ)*y)).re) t
+        + (wideSet n)ᶜ.indicator
+            (fun y => ((plainPolynomial n (tauThreeC n) y * halfShift n y).im) ^ 2) t) := by
+    refine intervalIntegral.integral_nonneg (by norm_num) ?_
+    intro x _
+    have := hpt x
+    linarith
+  rw [intervalIntegral.integral_add hh hg] at hnn
+  linarith
+
 end B1B1Port
