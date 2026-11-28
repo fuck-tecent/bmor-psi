@@ -2900,4 +2900,4 @@ decidable.  (A `Set.ncard` restatement of the `filter` form would also work; not
 Also: `Finset.card_Icc` is not the name in this Mathlib — use
 `Finset.card_le_card` with `Icc 2 K ⊆ range (K+1)`.
 
-Dossier: 3441 → 3502 lines, no `sorry`.
+Dossier: 3441 -> 3500 lines, 119 theorems / 24 defs / 9 lemmas, no `sorry`.
