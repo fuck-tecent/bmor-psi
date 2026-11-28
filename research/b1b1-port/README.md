@@ -3315,7 +3315,12 @@ The remaining reciprocal sum now ranges over `p,q > √n` with `|p-q| > ⌊n^(2/
 The wide-arc term remains unrestricted.  No estimate for the final signed residual is
 claimed.
 
-## Milestone 57 (branch `research/b1b1-l2`): the `L²` negative result — foundation
+## Milestone BM57 (branch `research/b1b1-l2`): the `L²` negative result — foundation
+
+> **Numbering convention.**  Results produced on a research branch carry a `B` prefix
+> (`BM57`), main-branch results do not (`M57`).  This keeps the two tracks from colliding:
+> main-branch `M57` is the fixed-target prime-cutoff improvement, this `BM57` is the `L²`
+> barrier.
 
 Goal: make the `L²` barrier a *constant*, not a slogan.  The claim to be formalised:
 
