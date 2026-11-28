@@ -2509,3 +2509,76 @@ instantiation away.
   Only `m/a ≤ n^(1/3−δ)` is short.  The rest needs a new minor-arc estimate.
 
 Dossier on this branch: 2840 lines, no `sorry`.
+
+## Milestone 42: both instantiations of the peeling bound
+
+M41.4 listed two unformalised steps.  One is done; the other is replaced by a **free**
+stronger regime, and the original "divisor bound" target is shown to be the only one that
+needs new mathematics.
+
+### 42.1 `T ≤ B₁` — done
+
+```lean
+theorem lowMoebiusWeight_abs_le_lowCut (n a : ℕ) (ha : a ≤ lowCut n) :
+  |lowMoebiusWeight (cutoffU n) a| ≤ (lowCut n : ℝ)      -- card_divisors_le_self
+
+theorem integral_bot_norm_sq_le_lowCut (n V : ℕ) (hV : lowCut n * V ≤ n) :
+  ∫₀¹ ‖S_{Bot n V}‖²
+    ≤ (B₁ n)² * (B₁ n · V + 1) * (log n)²
+```
+
+Scale: `B₁²·B₁·V = n^(1/2)·n^(1/4)·V = n^(3/4)V`, so `V = o(n^(1/4))` suffices.
+
+### 42.2 The "divisor bound" step: `T` bounds the **coefficient**, not `d(m)`
+
+M41.4 asked for `T = n^o(1)` from a divisor bound on `m ≤ B₁V`.  That is not what the
+lemma needs.  Reading `lowBandCoefficientBot_abs_le`:
+
+```lean
+(hc : ∀ a, cutoffU n < a → a ≤ lowCut n → |lowMoebiusWeight (cutoffU n) a| ≤ T)
+```
+
+`T` bounds `c_U(a) = ∑_{U<d|a} μ(d)`, and by `lowMoebiusWeight_eq_neg_small`
+(`c_U(a) = −∑_{d|a, d≤U} μ(d)` for `a > 1` — Möbius cancellation) we get **for free**
+
+```lean
+theorem lowMoebiusWeight_abs_le_cutoffU (U a : ℕ) (ha : 1 < a) :
+  |lowMoebiusWeight U a| ≤ (U : ℝ)          -- ≤ #{d | a : d ≤ U} ≤ U
+
+theorem integral_bot_norm_sq_le_cutoffU (n V : ℕ) (hV) (hU : 1 ≤ cutoffU n) :
+  ∫₀¹ ‖S_{Bot n V}‖² ≤ (U n)² * (B₁ n · V + 1) * (log n)²
+```
+
+Scale: `U²·B₁·V = n^(1/8)·n^(1/4)·V = n^(3/8)V`, so **`V = o(n^(5/8))` suffices** —
+strictly better than 42.1, and unconditional.
+
+### 42.3 The three regimes
+
+| `T` bound on `c_U(a)` | source | total scale | admissible `V` |
+|---|---|---|---|
+| `B₁ = n^(1/4)` | `card_divisors_le_self` | `n^(3/4)V` | `V = n^(1/4−δ)` |
+| **`U = n^(1/16)`** | **Möbius cancellation (free)** | **`n^(3/8)V`** | **`V = n^(5/8−δ)`** |
+| `n^ε` | divisor bound `d(n) = n^o(1)` | `n^(1/4+2ε)V` | `V = n^(3/4−2ε)` |
+
+The free bound is `min(U, 2√a) = U` for `a ≤ B₁ = n^(1/4)` (paired divisors give
+`#{d | a : d ≤ U} ≤ 2√a = n^(1/8) > n^(1/16)`), so `U` is the best **elementary** value.
+
+### 42.4 What remains for the third regime
+
+`V = n^(3/4−δ)` needs `max_{a ≤ n^(1/4)} d(a) = n^o(1)`, i.e.
+
+```lean
+∀ ε > 0, ∃ N, ∀ m ≥ N, (m.divisors.card : ℝ) ≤ (m : ℝ) ^ ε
+```
+
+**This is not in Mathlib.**  Grepping `Mathlib` for `divisors.card` gives only
+`card_divisors_le_self : #n.divisors ≤ n` and `card_divisors` (the factorization product);
+there is no `n^o(1)` bound, and no `2^{ω(n)}`-versus-`n` asymptotics.  Building it needs:
+`Nat.card_divisors` (exists) + `∏_{p|n} p ∣ n` (exists, `prod_primeFactors_dvd`) +
+`∏ p^{e_p} = n` + the `e+1 ≤ C_δ p^{δe}` estimate + absorbing `C_δ^{ω(n)}`.  That is a
+standalone 200+ line formalisation and is **not** attempted here.
+
+So the peeling is now verified in the two elementary regimes; the third is a clean,
+well-scoped open formalisation target rather than an unknown.
+
+Dossier: 2840 → 2932 lines, no `sorry`.

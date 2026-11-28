@@ -2837,4 +2837,71 @@ theorem integral_bot_norm_sq_le (n V : ℕ) (hV : lowCut n * V ≤ n)
   ring_nf
   exact le_rfl
 
+/-! ### Milestone 42 (step 1): the crude coefficient bound `T = B₁`, instantiated -/
+
+/-- `|c_U(a)| ≤ a.divisors.card ≤ a ≤ B₁`. -/
+theorem lowMoebiusWeight_abs_le_lowCut (n a : ℕ) (ha : a ≤ lowCut n) :
+    |lowMoebiusWeight (cutoffU n) a| ≤ (lowCut n : ℝ) := by
+  calc |lowMoebiusWeight (cutoffU n) a|
+      ≤ (a.divisors.card : ℝ) := abs_lowMoebiusWeight_le (cutoffU n) a
+    _ ≤ (a : ℝ) := by exact_mod_cast Nat.card_divisors_le_self a
+    _ ≤ (lowCut n : ℝ) := by exact_mod_cast ha
+
+/-- **The peeling bound with the crude coefficient bound `T = B₁`.**
+No prime-distribution input: `|c(a)| ≤ a.divisors.card ≤ a ≤ B₁`. -/
+theorem integral_bot_norm_sq_le_lowCut (n V : ℕ) (hV : lowCut n * V ≤ n) :
+    (∫ t in (0:ℝ)..1,
+        ‖plainPolynomial n (fun m => (lowBandCoefficientBot n V m : ℂ)) t‖ ^ 2)
+      ≤ (lowCut n : ℝ) ^ 2 * (((lowCut n * V : ℕ) : ℝ) + 1) * (Real.log n) ^ 2 :=
+  integral_bot_norm_sq_le n V hV (by positivity)
+    (fun a _ ha => lowMoebiusWeight_abs_le_lowCut n a ha)
+
+/-! ### Milestone 42 (step 2): the free coefficient bound `T = U` from Möbius cancellation
+
+`T` in `integral_bot_norm_sq_le` bounds the **coefficient** `c_U(a) = ∑_{U<d|a} μ(d)`,
+not a divisor count of `m`.  Since `∑_{d|a} μ(d) = 0` for `a > 1`, the weight equals the
+negative of the sum over the *small* divisors `d ≤ U`, so
+
+```text
+|c_U(a)|  =  |∑_{d | a, d ≤ U} μ(d)|  ≤  #{d | a : d ≤ U}  ≤  U .
+```
+
+This needs no divisor bound at all.  -/
+
+/-- **Trivial Möbius-cancellation bound**: `|c_U(a)| ≤ U` for `a > 1`. -/
+theorem lowMoebiusWeight_abs_le_cutoffU (U a : ℕ) (ha : 1 < a) :
+    |lowMoebiusWeight U a| ≤ (U : ℝ) := by
+  classical
+  have hcard : (a.divisors.filter (fun d => d ≤ U)).card ≤ U := by
+    have hsub : a.divisors.filter (fun d => d ≤ U) ⊆ Finset.Icc 1 U := by
+      intro d hd
+      obtain ⟨hda, hdU⟩ := Finset.mem_filter.mp hd
+      have hpos : 0 < d := Nat.pos_of_mem_divisors hda
+      exact Finset.mem_Icc.mpr ⟨hpos, hdU⟩
+    calc (a.divisors.filter (fun d => d ≤ U)).card
+        ≤ (Finset.Icc 1 U).card := Finset.card_le_card hsub
+      _ = U := by simp
+  rw [lowMoebiusWeight_eq_neg_small U a ha, abs_neg]
+  calc |∑ d ∈ a.divisors.filter (fun d => d ≤ U), (μ d : ℝ)|
+      ≤ ∑ d ∈ a.divisors.filter (fun d => d ≤ U), |(μ d : ℝ)| :=
+        Finset.abs_sum_le_sum_abs _ _
+    _ ≤ ∑ d ∈ a.divisors.filter (fun d => d ≤ U), (1 : ℝ) := by
+        refine Finset.sum_le_sum fun d _ => ?_
+        have h : |(ArithmeticFunction.moebius d : ℤ)| ≤ 1 :=
+          ArithmeticFunction.abs_moebius_le_one
+        have h' : |(ArithmeticFunction.moebius d : ℝ)| ≤ 1 := by exact_mod_cast h
+        simpa using h'
+    _ = ((a.divisors.filter (fun d => d ≤ U)).card : ℝ) := by simp
+    _ ≤ (U : ℝ) := by exact_mod_cast hcard
+
+/-- **The peeling bound with the free coefficient bound `T = U`.**
+With `V = n^(5/8 − δ)` this is `o(n)`: `U² · B₁ · V = n^(1/8) · n^(1/4) · n^(5/8−δ) = n^(1−δ)`. -/
+theorem integral_bot_norm_sq_le_cutoffU (n V : ℕ) (hV : lowCut n * V ≤ n)
+    (hU : 1 ≤ cutoffU n) :
+    (∫ t in (0:ℝ)..1,
+        ‖plainPolynomial n (fun m => (lowBandCoefficientBot n V m : ℂ)) t‖ ^ 2)
+      ≤ (cutoffU n : ℝ) ^ 2 * (((lowCut n * V : ℕ) : ℝ) + 1) * (Real.log n) ^ 2 :=
+  integral_bot_norm_sq_le n V hV (by positivity)
+    (fun a hUa _ => lowMoebiusWeight_abs_le_cutoffU (cutoffU n) a (by omega))
+
 end B1B1Port
