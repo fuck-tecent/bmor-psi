@@ -3112,3 +3112,38 @@ Parseval, or absolute-value estimate in this dossier closes it.
 
 Dossier: 3889 → 4090 lines, no `sorry`.  The complete file passes `lake env lean` with
 Lean 4.36.0 and the locked Mathlib cache at the original 4,000,000-heartbeat limit.
+
+## Milestone 52: the remaining term is a sum of dilated prime sums
+
+The prime-cofactor coefficient now has the exact expansion
+
+```lean
+theorem plainPolynomial_topPrime (n V) (hUV : cutoffU n ≤ V) (t) :
+  S_{TopPrime n V} t =
+    ∑ a ∈ Icc (U+1) B₁, c_U(a) * primeWave a V (n/a) t
+```
+
+and, whenever `V ≤ n/a` throughout the divisor band,
+
+```lean
+theorem plainPolynomial_topPrime_dilated :
+  S_{TopPrime n V} t =
+    ∑ a ∈ Icc (U+1) B₁, c_U(a) *
+      (primeSum (n/a) (a·t) - primeSum V (a·t)) .
+```
+
+The proof reindexes `(m,a) ↔ (a,m/a)` on the finite divisor support.  The hypothesis
+`U ≤ V` is necessary: the original coefficient has both lower bounds on its cofactor.
+It holds for all intended peeling thresholds.  The second identity is the existing
+`primeWave_eq_dilated` applied atom by atom.
+
+This is the endpoint of the structural reduction.  Squaring the displayed sum gives the
+actual remaining object: signed, fixed-target correlations of pairs of dilated prime sums.
+A pointwise `o(n)` estimate for each `primeSum` is **not** enough for this binary integral;
+the absolute-value route still hits the usual `L²` barrier.  Summing the old Type-I estimate
+separately over `a` also retains the previously computed `n^(5/24)` excess.  A further step
+must therefore be joint in `(a,b)`, or use the fixed-target reciprocal-residue cancellation,
+rather than another per-atom pointwise bound.  No such new estimate is claimed here.
+
+Dossier after M52: 4213 lines, no `sorry`; full Lean 4.36.0 check passes at the original
+heartbeat limit.

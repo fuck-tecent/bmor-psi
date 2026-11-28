@@ -4087,4 +4087,127 @@ theorem integral_topProper_norm_sq_le_divisor_explicit (n V : ℕ) {ε : ℝ} (h
   apply mul_le_mul_of_nonneg_left _ (by positivity)
   exact_mod_cast card_higherPower_products_le (lowCut n) n
 
+/-! ### Milestone 52: the prime-cofactor part as dilated prime sums
+
+The remaining coefficient is now expanded without changing `V`.  Each small divisor
+`a` contributes the prime logarithm sum on `V < p ≤ n/a`, dilated by `a`.  This is the
+exact object to which any subsequent Type-I or fixed-target argument must apply. -/
+
+/-- **Dilated-prime expansion of `τ₁^TopPrime`.** -/
+theorem plainPolynomial_topPrime (n V : ℕ) (hUV : cutoffU n ≤ V) (t : ℝ) :
+    plainPolynomial n (fun m => (lowBandCoefficientTopPrime n V m : ℂ)) t =
+      ∑ a ∈ Finset.Icc (cutoffU n + 1) (lowCut n),
+        (lowMoebiusWeight (cutoffU n) a : ℂ) * primeWave a V (n / a) t := by
+  classical
+  let A : ℕ → Finset ℕ := fun m => (Nat.divisors m).filter
+    (fun a => cutoffU n < a ∧ a ≤ lowCut n ∧ cutoffU n < m / a ∧ V < m / a)
+  let R : ℕ → Finset ℕ := fun a => Finset.Icc (V + 1) (n / a)
+  let w : ℕ → ℝ := fun r => if r.Prime then Real.log r else 0
+  let fL : ℕ → ℕ → ℂ := fun m a =>
+    (lowMoebiusWeight (cutoffU n) a : ℂ) * (w (m / a) : ℂ) * phase ((m:ℝ) * t)
+  let fR : ℕ → ℕ → ℂ := fun a r =>
+    (lowMoebiusWeight (cutoffU n) a : ℂ) * (w r : ℂ) * phase (((a*r:ℕ):ℝ) * t)
+  have hsL0 : plainPolynomial n (fun m => (lowBandCoefficientTopPrime n V m : ℂ)) t =
+      ∑ m ∈ Finset.range (n+1), ∑ a ∈ A m, fL m a := by
+    dsimp only [plainPolynomial, lowBandCoefficientTopPrime, A, fL]
+    refine Finset.sum_congr rfl fun m _ => ?_
+    rw [Complex.ofReal_sum, Finset.sum_mul]
+    refine Finset.sum_congr (M := ℂ) rfl fun a _ => ?_
+    rw [Complex.ofReal_mul]
+  have hsR0 : (∑ a ∈ Finset.Icc (cutoffU n + 1) (lowCut n),
+        (lowMoebiusWeight (cutoffU n) a : ℂ) * primeWave a V (n / a) t) =
+      ∑ a ∈ Finset.Icc (cutoffU n + 1) (lowCut n), ∑ r ∈ R a, fR a r := by
+    dsimp only [R, fR]
+    refine Finset.sum_congr rfl fun a _ => ?_
+    unfold primeWave
+    rw [Finset.mul_sum]
+    refine Finset.sum_congr rfl fun r _ => ?_
+    by_cases hp : r.Prime <;> simp [w, hp, mul_assoc]
+  have hsL : (∑ m ∈ Finset.range (n+1), ∑ a ∈ A m, fL m a) =
+      ∑ x ∈ (Finset.range (n+1)).sigma A, fL x.1 x.2 := by
+    rw [Finset.sum_sigma']
+  have hsR : (∑ a ∈ Finset.Icc (cutoffU n + 1) (lowCut n), ∑ r ∈ R a, fR a r) =
+      ∑ y ∈ (Finset.Icc (cutoffU n + 1) (lowCut n)).sigma R, fR y.1 y.2 := by
+    rw [Finset.sum_sigma']
+  have key : (∑ x ∈ (Finset.range (n+1)).sigma A, fL x.1 x.2) =
+      ∑ y ∈ (Finset.Icc (cutoffU n + 1) (lowCut n)).sigma R, fR y.1 y.2 := by
+    refine Finset.sum_bij' (fun p _ => ⟨p.2, p.1 / p.2⟩)
+      (fun q _ => ⟨q.1 * q.2, q.1⟩) ?_ ?_ ?_ ?_ ?_
+    · intro p hp
+      obtain ⟨m, a⟩ := p
+      dsimp only at *
+      obtain ⟨hmrange, hmA⟩ := Finset.mem_sigma.mp hp
+      obtain ⟨had, hUa, haB, hUcof, hVcof⟩ := Finset.mem_filter.mp hmA
+      dsimp only at *
+      have haI : a ∈ Finset.Icc (cutoffU n + 1) (lowCut n) :=
+        Finset.mem_Icc.mpr ⟨by omega, haB⟩
+      have hrI : m / a ∈ Finset.Icc (V + 1) (n / a) := by
+        apply Finset.mem_Icc.mpr
+        exact ⟨by omega,
+          Nat.div_le_div_right (Nat.lt_succ_iff.mp (Finset.mem_range.mp hmrange))⟩
+      exact Finset.mem_sigma.mpr ⟨haI, hrI⟩
+    · intro q hq
+      obtain ⟨a, r⟩ := q
+      dsimp only at *
+      obtain ⟨haIcc, hrR⟩ := Finset.mem_sigma.mp hq
+      obtain ⟨haU, haB⟩ := Finset.mem_Icc.mp haIcc
+      obtain ⟨hrV, hrN⟩ := Finset.mem_Icc.mp hrR
+      dsimp only at *
+      have ha0 : 0 < a := by omega
+      have hr0 : 0 < r := by omega
+      have hmul : a * r ≤ n := by
+        rw [mul_comm]
+        exact (Nat.le_div_iff_mul_le ha0).mp hrN
+      apply Finset.mem_sigma.mpr
+      refine ⟨Finset.mem_range.mpr (Nat.lt_succ_iff.mpr hmul), ?_⟩
+      apply Finset.mem_filter.mpr
+      have hm0 : a * r ≠ 0 := (Nat.mul_pos ha0 hr0).ne'
+      refine ⟨Nat.mem_divisors.mpr ⟨dvd_mul_right a r, hm0⟩, ?_⟩
+      dsimp only [A]
+      have hdiv : (a * r) / a = r := by
+        rw [Nat.mul_comm a r, Nat.mul_div_left r ha0]
+      change cutoffU n < a ∧ a ≤ lowCut n ∧
+        cutoffU n < (a * r) / a ∧ V < (a * r) / a
+      rw [hdiv]
+      exact ⟨by omega, haB, by omega, by omega⟩
+    · intro p hp
+      obtain ⟨m, a⟩ := p
+      dsimp only at *
+      obtain ⟨_, hmA⟩ := Finset.mem_sigma.mp hp
+      dsimp only at *
+      have had := (Nat.mem_divisors.mp (Finset.mem_filter.mp hmA).1).1
+      simp only [Sigma.mk.injEq, heq_eq_eq]
+      exact ⟨Nat.mul_div_cancel' had, trivial⟩
+    · intro q hq
+      obtain ⟨a, r⟩ := q
+      dsimp only at *
+      obtain ⟨haIcc, _⟩ := Finset.mem_sigma.mp hq
+      dsimp only at *
+      have ha0 : 0 < a := by
+        have haU := (Finset.mem_Icc.mp haIcc).1
+        omega
+      simp only [Sigma.mk.injEq, heq_eq_eq]
+      refine ⟨trivial, ?_⟩
+      rw [Nat.mul_comm a r, Nat.mul_div_left r ha0]
+    · intro p hp
+      obtain ⟨m, a⟩ := p
+      dsimp only at *
+      obtain ⟨_, hmA⟩ := Finset.mem_sigma.mp hp
+      dsimp only at *
+      have had := (Nat.mem_divisors.mp (Finset.mem_filter.mp hmA).1).1
+      dsimp only [fL, fR]
+      rw [Nat.mul_div_cancel' had]
+  rw [hsL0, hsR0, hsL, key, ← hsR]
+
+/-- **Type-I normal form**: every atom is a difference of two dilated prime sums. -/
+theorem plainPolynomial_topPrime_dilated (n V : ℕ) (hUV : cutoffU n ≤ V)
+    (hV : ∀ a ∈ Finset.Icc (cutoffU n + 1) (lowCut n), V ≤ n / a) (t : ℝ) :
+    plainPolynomial n (fun m => (lowBandCoefficientTopPrime n V m : ℂ)) t =
+      ∑ a ∈ Finset.Icc (cutoffU n + 1) (lowCut n),
+        (lowMoebiusWeight (cutoffU n) a : ℂ) *
+          (primeSum (n / a) ((a:ℝ) * t) - primeSum V ((a:ℝ) * t)) := by
+  rw [plainPolynomial_topPrime n V hUV]
+  refine Finset.sum_congr rfl fun a ha => ?_
+  rw [primeWave_eq_dilated a V (n / a) t (hV a ha)]
+
 end B1B1Port
