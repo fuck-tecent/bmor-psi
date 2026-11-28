@@ -2964,4 +2964,4 @@ machinery (`vinogradov-local/type1_bound.lean`) currently reaches `U = n^(1/16)`
 needs a new residue argument.  So the structural reduction is complete, the analytic input
 is not.
 
-Dossier: 3500 → 3572 lines, no `sorry`.
+Dossier: 3500 -> 3573 lines, 121 theorems / 24 defs / 9 lemmas, no `sorry`.
