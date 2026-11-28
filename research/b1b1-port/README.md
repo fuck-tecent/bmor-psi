@@ -2581,4 +2581,4 @@ standalone 200+ line formalisation and is **not** attempted here.
 So the peeling is now verified in the two elementary regimes; the third is a clean,
 well-scoped open formalisation target rather than an unknown.
 
-Dossier: 2840 → 2932 lines, no `sorry`.
+Dossier: 2840 -> 2907 lines, no `sorry`.
