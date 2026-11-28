@@ -2901,3 +2901,67 @@ Also: `Finset.card_Icc` is not the name in this Mathlib — use
 `Finset.card_le_card` with `Icc 2 K ⊆ range (K+1)`.
 
 Dossier: 3441 -> 3500 lines, 119 theorems / 24 defs / 9 lemmas, no `sorry`.
+
+## Milestone 49: support size of the higher-prime-power part
+
+M48 counted the higher powers `p^k ≤ X`.  The `τ₁` cut needs `m = a·p^k` with `a ≤ B₁`, so
+the relevant count is over products.  Verified:
+
+```lean
+/-- Membership: `a·p^k` lies in the finite `biUnion` of `k`-th power images. -/
+theorem higherPower_product_mem (B X m a p k : ℕ) (ha : a ≤ B) (hpp : Nat.Prime p)
+    (hk2 : 2 ≤ k) (hpk : p ^ k ≤ X) (hm : m = a * p ^ k) :
+  m ∈ (Finset.Icc 2 (Nat.log 2 X)).biUnion (fun k' =>
+        (Finset.range (B + 1)).biUnion (fun a' =>
+          (Finset.range (Nat.sqrt X + 1)).image (fun p' => a' * p' ^ k')))
+
+/-- **Support size**: `≤ (log₂X + 1)(B + 1)(√X + 1)`. -/
+theorem card_higherPower_products_le (B X : ℕ) :
+  ((Finset.Icc 2 (Nat.log 2 X)).biUnion (fun k =>
+      (Finset.range (B + 1)).biUnion (fun a =>
+        (Finset.range (Nat.sqrt X + 1)).image (fun p => a * p ^ k)))).card
+    ≤ (Nat.log 2 X + 1) * (B + 1) * (Nat.sqrt X + 1)
+```
+
+### The arithmetic on the `τ₁` cut
+
+`τ₁^Top`'s higher-prime-power part has `a ∈ (n^(1/16), n^(1/4)]` and cofactor
+`m/a = p^k`, `k ≥ 2`, with `n^(3/4−δ) < p^k ≤ n/U = n^(15/16)`.  So `X = n^(15/16)`,
+`B = B₁ = n^(1/4)`, and
+
+```text
+#support  ≤ (log n) · n^(1/4) · n^(1/2 · 15/16)
+          = n^(1/4 + 15/32) · log n
+          = n^(23/32) · log n .                                     ← matches the estimate
+```
+
+With `|τ₁(m)| ≤ d(m)·log m = n^o(1)` (M45 is exactly where the divisor bound enters), the
+`L²` mass of that part is
+
+```text
+∑ |τ^hp(m)|²  ≤  #support · sup|τ|²  =  n^(23/32+o(1))  =  o(n) .
+```
+
+### What is verified here and what is not
+
+* **Verified**: the counting (both lemmas above).  This is the new content; it needed the
+  `biUnion`-instead-of-`filter` trick (M48's decidability landmine) applied twice.
+* **Not done**: an actual `τ₁^Top`-higher-power coefficient definition plus the `L²`
+  assembly.  That needs a `Finset.filter` over `∃ p k, …`, which is again undecidable, so it
+  must be phrased as "supported in the M49 set" — i.e. a support hypothesis, not a
+  definition.  It is glue (~30 lines), not mathematics.
+
+### Where this leaves the object
+
+After M42–M49 the surviving part of `τ₁^Top` is
+
+```text
+a ∈ (n^(1/16), n^(1/4)] ,   m/a > n^(3/4−δ) ,   m/a a PRIME (not a higher power)
+```
+
+— literally "small divisor × large prime".  That is a Type-I object.  The repo's Type-I
+machinery (`vinogradov-local/type1_bound.lean`) currently reaches `U = n^(1/16)`; `n^(1/4)`
+needs a new residue argument.  So the structural reduction is complete, the analytic input
+is not.
+
+Dossier: 3500 → 3572 lines, no `sorry`.

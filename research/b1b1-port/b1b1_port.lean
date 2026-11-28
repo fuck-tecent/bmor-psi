@@ -3497,4 +3497,77 @@ theorem card_biUnion_powers_le (X : ℕ) :
         calc (Finset.Icc 2 K).card ≤ (Finset.range (K + 1)).card := Finset.card_le_card hsub
           _ = K + 1 := Finset.card_range _
 
+/-! ### Milestone 49: support size of `a · p^k` with `k ≥ 2`
+
+The `τ₁^Top` cofactor `m/a` ranges over `(n^(3/4−δ), n/U]`; its **higher prime power** part
+is `m/a = p^k` with `k ≥ 2`, and then `m = a·p^k` with `a ≤ B₁` and `p^k ≤ n/U = n^(15/16)`.
+Here we bound how many such `m` there are. -/
+
+/-- **Membership**: `a·p^k` (with `a ≤ B`, `p` prime, `2 ≤ k`, `p^k ≤ X`) lies in the
+finite `biUnion` of the `k`-th power images. -/
+theorem higherPower_product_mem (B X m a p k : ℕ) (ha : a ≤ B) (hpp : Nat.Prime p)
+    (hk2 : 2 ≤ k) (hpk : p ^ k ≤ X) (hm : m = a * p ^ k) :
+    m ∈ (Finset.Icc 2 (Nat.log 2 X)).biUnion (fun k' =>
+      (Finset.range (B + 1)).biUnion (fun a' =>
+        (Finset.range (Nat.sqrt X + 1)).image (fun p' => a' * p' ^ k'))) := by
+  classical
+  have hp2 : 2 ≤ p := hpp.two_le
+  have h2k : 2 ^ k ≤ p ^ k := Nat.pow_le_pow_left hp2 k
+  have hk_le : k ≤ Nat.log 2 X :=
+    Nat.le_log_of_pow_le (by norm_num) (h2k.trans hpk)
+  have hp2k : p ^ 2 ≤ p ^ k := Nat.pow_le_pow_right (by omega : 1 ≤ p) hk2
+  have hpsqrt : p ≤ Nat.sqrt X := by
+    refine Nat.le_sqrt.mpr ?_
+    simpa [Nat.pow_two] using hp2k.trans hpk
+  rw [hm]
+  exact Finset.mem_biUnion.mpr ⟨k, Finset.mem_Icc.mpr ⟨hk2, hk_le⟩,
+    Finset.mem_biUnion.mpr ⟨a, Finset.mem_range.mpr (by omega),
+      Finset.mem_image.mpr ⟨p, Finset.mem_range.mpr (by omega), rfl⟩⟩⟩
+
+/-- **Support size.**  At most `(log₂X + 1)(B + 1)(√X + 1)` integers are of the form
+`a·p^k` with `a ≤ B`, `p` prime, `2 ≤ k`, `p^k ≤ X`. -/
+theorem card_higherPower_products_le (B X : ℕ) :
+    ((Finset.Icc 2 (Nat.log 2 X)).biUnion (fun k =>
+      (Finset.range (B + 1)).biUnion (fun a =>
+        (Finset.range (Nat.sqrt X + 1)).image (fun p => a * p ^ k)))).card
+      ≤ (Nat.log 2 X + 1) * (B + 1) * (Nat.sqrt X + 1) := by
+  classical
+  set K := Nat.log 2 X with hK
+  set S := (Finset.Icc 2 K).biUnion (fun k =>
+      (Finset.range (B + 1)).biUnion (fun a =>
+        (Finset.range (Nat.sqrt X + 1)).image (fun p => a * p ^ k))) with hS
+  have hstep1 : S.card ≤ ∑ k ∈ Finset.Icc 2 K,
+      ((Finset.range (B + 1)).biUnion (fun a =>
+        (Finset.range (Nat.sqrt X + 1)).image (fun p => a * p ^ k))).card :=
+    Finset.card_biUnion_le
+  have hstep2 : ∀ k ∈ Finset.Icc 2 K,
+      ((Finset.range (B + 1)).biUnion (fun a =>
+        (Finset.range (Nat.sqrt X + 1)).image (fun p => a * p ^ k))).card
+        ≤ ∑ _a ∈ Finset.range (B + 1), (Nat.sqrt X + 1) := by
+    intro k _
+    refine (Finset.card_biUnion_le).trans (Finset.sum_le_sum fun a _ => ?_)
+    calc ((Finset.range (Nat.sqrt X + 1)).image (fun p => a * p ^ k)).card
+        ≤ (Finset.range (Nat.sqrt X + 1)).card := Finset.card_image_le
+      _ = Nat.sqrt X + 1 := Finset.card_range _
+  calc S.card
+      ≤ ∑ k ∈ Finset.Icc 2 K,
+          ((Finset.range (B + 1)).biUnion (fun a =>
+            (Finset.range (Nat.sqrt X + 1)).image (fun p => a * p ^ k))).card := hstep1
+    _ ≤ ∑ _k ∈ Finset.Icc 2 K, ∑ _a ∈ Finset.range (B + 1), (Nat.sqrt X + 1) :=
+        Finset.sum_le_sum hstep2
+    _ = (Finset.Icc 2 K).card * (B + 1) * (Nat.sqrt X + 1) := by
+        simp only [Finset.sum_const, Finset.card_range, smul_eq_mul]
+        ring
+    _ ≤ (K + 1) * (B + 1) * (Nat.sqrt X + 1) := by
+        have hsub : Finset.Icc 2 K ⊆ Finset.range (K + 1) := by
+          intro x hx
+          simp only [Finset.mem_Icc, Finset.mem_range] at hx ⊢
+          omega
+        have hcard : (Finset.Icc 2 K).card ≤ K + 1 := by
+          calc (Finset.Icc 2 K).card ≤ (Finset.range (K + 1)).card :=
+                Finset.card_le_card hsub
+            _ = K + 1 := Finset.card_range _
+        exact mul_le_mul_of_nonneg_right
+          (mul_le_mul_of_nonneg_right hcard (by positivity)) (by positivity)
+
 end B1B1Port
