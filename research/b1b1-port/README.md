@@ -2691,3 +2691,69 @@ manipulation: ~150–250 lines, no new mathematics.  The three ingredients are:
 ```
 
 Dossier: 2956 -> 3034 lines, no `sorry`.  (127 theorems, 24 defs, 9 lemmas.)
+
+## Milestone 45: `d(n) = n^o(1)` — **complete**, and without any `log log`
+
+M43 listed three steps and estimated 150–250 lines for step 3 (`ω(n)` saving via `ω! ≤ n`).
+**Step 3 turned out to be unnecessary.**  There is a split that avoids `ω` entirely.
+
+### 45.1 The idea
+
+For a prime `p ≥ 2^(1/δ)`,
+
+```text
+e + 1 ≤ 2^e ≤ p^(δ e)          -- no constant at all, because 2 ≤ p^δ.
+```
+
+So only the primes **below** `2^(1/δ)` — at most `⌈2^(1/δ)⌉` of them, since they lie in
+`Finset.range ⌈2^(1/δ)⌉` — carry the constant `C_δ = 2/(δ log 2)`.  Splitting
+`n.primeFactors` into `small` (`p < ⌈2^(1/δ)⌉`) and `large`:
+
+```text
+∏_{small}(e+1) ≤ C_δ^(#small) · ∏_{small} p^(δ e) ≤ C_δ^(⌈2^(1/δ)⌉) · n^δ
+∏_{large}(e+1) ≤ ∏_{large} p^(δ e)                ≤ n^δ
+```
+
+hence `d(n) ≤ C_δ^(⌈2^(1/δ)⌉) · n^(2δ)`.  **No `ω(n)`, no `log log`, no `ω!`.**
+
+### 45.2 Verified
+
+```lean
+theorem add_one_le_two_pow (e : ℕ) : e + 1 ≤ 2 ^ e
+theorem one_le_prod_of_one_le' …            -- 1 ≤ ∏ f for real f ≥ 1
+theorem add_one_le_rpow_of_large (δ) (hδ) (p) (hp : 2^(1/δ) ≤ p) (e) :
+  (e:ℝ) + 1 ≤ p^(δ e)
+theorem card_divisors_le_const_mul_rpow (n) (δ) (hδ) (hn : 0 < n) :
+  (n.divisors.card : ℝ) ≤
+    (max (2/(δ log 2)) 1) ^ (Nat.ceil (2^(1/δ))) * n^(2δ)
+/-- **`d(n) = n^o(1)`** -/
+theorem card_divisors_le_rpow_eventually (ε : ℝ) (hε : 0 < ε) :
+  ∃ N : ℕ, ∀ n : ℕ, N ≤ n → (n.divisors.card : ℝ) ≤ (n : ℝ) ^ ε
+```
+
+The constant is explicit: `B_δ = (max (2/(δ log 2)) 1)^(⌈2^(1/δ)⌉)`, and the threshold is
+`N = ⌈B_(ε/4)^(2/ε)⌉ + 1` (using `δ = ε/4` so that `2δ = ε/2` leaves room for `B ≤ n^(ε/2)`).
+
+### 45.3 Consequences for the peeling
+
+`integral_bot_norm_sq_le` is now instantiable at `T = n^ε`:
+
+```text
+∫₀¹ ‖S_{Bot n V}‖²  ≤  T² · (B₁ V + 1) · log²n  =  n^(1/4 + 2ε) V · log²n
+```
+
+so `V = n^(3/4 − 2ε − δ')` gives `o(n)` — **the third regime of the M42 table**, and the
+strongest the peeling can be.  The remaining formal step is to plug
+`card_divisors_le_rpow_eventually` into `lowMoebiusWeight_abs_le`'s hypothesis `hc`
+(`|c_U(a)| ≤ d(a) ≤ a^(4ε)` for `a ≤ B₁ = n^(1/4)`), which is now a one-liner in principle.
+
+### 45.4 Landmines (all cost a compile round)
+
+* `Finset.one_le_prod` **also** needs `MulLeftMono ℝ` — replaced by `one_le_prod_of_one_le'`.
+* `Nat.lt_two_pow_self` has an implicit argument: `(n := e)`.
+* `Real.rpow_le_rpow` unification: the first (nonnegativity) argument fixes `x`, so it must be
+  `0 ≤ B^(2/ε)`, not `0 ≤ B`.
+* Do not `s.find("  calc (n.divisors.card : ℝ)")` to patch — it matches the *earlier*
+  occurrence in M44 and silently deletes the rest of the file.
+
+Dossier: 3034 → 3316 lines, no `sorry`.
