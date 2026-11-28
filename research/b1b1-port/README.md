@@ -3147,3 +3147,88 @@ rather than another per-atom pointwise bound.  No such new estimate is claimed h
 
 Dossier after M52: 4213 lines, no `sorry`; full Lean 4.36.0 check passes at the original
 heartbeat limit.
+
+## Milestones 53–54: verified fixed-target and distant-prime reduction
+
+New file: `fixed_target.lean`.  It is deliberately separate from `b1b1_port.lean`:
+`Type2FixedTargetReciprocalError` and the b1-b4 module currently duplicate
+`DyadicMixedB4Fourier.mode` and related definitions, so Lean rejects importing both.  The
+new module imports only the fixed-target library.
+
+**Single-file discipline.**  An earlier draft de-privatised four declarations in
+`Type2FixedTargetReciprocalError.lean` (`rowIndices`, `rowCoeff`, `rowIndex`,
+`divisor_envelope`).  A proof PR may only *add* the one task file, so that edit has been
+reverted and the dependencies handled locally instead:
+
+* `divisor_envelope` is reproved inside `fixed_target.lean` from the **already public**
+  `divisorPower 128` (same statement, same proof);
+* `rowIndices` / `rowCoeff` / `rowIndex` are plain defs, so the `unfold` step was dropped
+  and the following `change` closes the gap by definitional equality.
+
+Verified against `goldback-work`'s **pristine** library (private names intact): compiles
+clean.  No existing module is modified.
+
+### 53. Prime-cofactor replacement and prime rows
+
+With the first-band parameters `L = U`, `B = B₁`, the square-root cut satisfies
+
+```lean
+topPrime_sqrt_eq_core : topPrime n n.sqrt = core n U U B₁
+fullCell_primeCell_error :
+  ∃ K > 0, ∀ n ≥ 1, ‖fullCell n - primeCell n‖ ≤ K · n^(124/128)
+fullCell_iff_primeCell : smallEven fullCell ↔ smallEven primeCell
+primeCell_eq_full_sub_wide : primeCell = fullPrimePairs - widePrimePairs
+```
+
+The first error is the library's `transition_power_saving`; the asymptotic conversion to
+`smallEven` is proved, not just asserted.
+
+### 54. Close-pair removal and inverse residues
+
+Only the **full-circle** term is restricted to distant pairs; the wide-arc term still
+contains all prime pairs.  With `D = B₁`,
+
+```lean
+primeCell - distantResidual = closePrimeFull
+closePrimeFull_bound :
+  ‖closePrimeFull n‖ ≤ B₁² · (2B₁+1) · (C n^(1/128) log n)²
+closePrimeFull_eventually : ∀ e > 0, ∀ᶠ n, ‖closePrimeFull n‖ ≤ e n
+```
+
+The bound has scale `n^(49/64) (log n)^2`; the formal eventual proof absorbs the
+logarithms and obtains the simpler power `n^(25/32)`.  Hence
+
+```lean
+fullCell_iff_distantResidual : smallEven fullCell ↔ smallEven distantResidual .
+```
+
+On a distant pair, `p ≠ q` and `B₁ < q`.  The congruence `a p + b q = n` therefore forces
+
+```text
+a = (n p⁻¹ mod q).val ,   b = (n - a p)/q .
+```
+
+This is verified by `rowMass_eq_inversePair` and assembled as
+
+```lean
+distantPrimeFull_eq_inverseTotal :
+  distantPrimeFull = distantInverseTotal
+distantResidual_eq_inverse_sub_wide :
+  distantResidual = distantInverseTotal - widePrimePairs .
+```
+
+The final frozen-statement comparison is definitional:
+
+```lean
+theorem frozen_iff_inverseResidual :
+  (the exact L-goldbach-frontier-type2-b1-b1 statement) ↔ smallEven inverseResidual .
+```
+
+Thus the remaining mathematical task is precisely the `o(n)` cancellation of the
+inverse-residue sum over prime pairs `p,q > √n`, `|p-q| > B₁`, against the wide-arc integral
+of **all** prime pairs.  This is a signed fixed-target estimate; no new unconditional bound
+for it is claimed.  The verified contribution here is the complete reduction with explicit
+sublinear errors, not a solution of that residual.
+
+Both `fixed_target.lean` and the modified fixed-target library pass Lean 4.36.0 with the
+locked Mathlib cache; no `sorry` is used.
