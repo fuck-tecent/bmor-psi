@@ -2690,4 +2690,4 @@ manipulation: ~150–250 lines, no new mathematics.  The three ingredients are:
 (C)  ω ≤ ε' log n when ω ≥ K(ε') and ε' log 2 · log(K/2) ≥ 2
 ```
 
-Dossier: 2956 → 3040 lines, no `sorry`.
+Dossier: 2956 -> 3034 lines, no `sorry`.  (127 theorems, 24 defs, 9 lemmas.)
