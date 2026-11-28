@@ -2809,4 +2809,4 @@ and since `m ≤ n` forces `m/a ≤ n^(15/16)`, the surviving cofactor window is
   is `> n^(3/4−δ)` — a full-range signed object, not a short one.  The sign problem is
   untouched.
 
-Dossier: 3258 -> 3300 lines, no `sorry`.
+Dossier: 3258 -> 3297 lines, 115 theorems / 24 defs / 9 lemmas, no `sorry`.
