@@ -2866,3 +2866,38 @@ Mathlib has **no** prime-power counting lemma (only `IsPrimePow` + field-cardina
 so it would be built from scratch — the 50–80 line estimate is right.
 
 Dossier: 3297 -> 3441 lines, 119 theorems / 24 defs / 9 lemmas, no `sorry`.
+
+## Milestone 48: prime-power sparsity
+
+Independent of the divisor bound (see M47.3): a counting statement.
+
+```lean
+/-- Every higher power lies in the `biUnion` of the `k`-th power images. -/
+theorem higherPower_mem_biUnion (X m : ℕ) (hmX : m ≤ X)
+    (hm : ∃ p k : ℕ, Nat.Prime p ∧ 2 ≤ k ∧ m = p ^ k) :
+  m ∈ (Finset.Icc 2 (Nat.log 2 X)).biUnion
+        (fun k => (Finset.range (Nat.sqrt X + 1)).image (fun p => p ^ k))
+
+/-- **Prime-power sparsity**: at most `(log₂ X + 1)·(√X + 1)` higher powers below `X`. -/
+theorem card_biUnion_powers_le (X : ℕ) :
+  ((Finset.Icc 2 (Nat.log 2 X)).biUnion
+      (fun k => (Finset.range (Nat.sqrt X + 1)).image (fun p => p ^ k))).card
+    ≤ (Nat.log 2 X + 1) * (Nat.sqrt X + 1)
+```
+
+So `#{p^k ≤ X : p prime, k ≥ 2} = O(√X log X)` — with `X = n^(15/16)` this is
+`O(n^(15/32) log n)`, and the surviving `m = a·p^k` with `a ≤ B₁ = n^(1/4)` number at most
+`n^(23/32+o(1))`.
+
+### Landmine: unbounded existentials are not decidable
+
+The natural statement `(range (X+1)).filter (fun m => ∃ p k, …)` **does not elaborate**:
+`∃ p ∈ s, P p` is `Exists (fun p => p ∈ s ∧ P p)`, an unbounded quantifier over `ℕ`, so
+`DecidablePred` fails.  Splitting into (i) a membership lemma for a `biUnion` and (ii) a
+cardinality bound on that `biUnion` keeps every quantified statement finite and therefore
+decidable.  (A `Set.ncard` restatement of the `filter` form would also work; not needed.)
+
+Also: `Finset.card_Icc` is not the name in this Mathlib — use
+`Finset.card_le_card` with `Icc 2 K ⊆ range (K+1)`.
+
+Dossier: 3441 → 3502 lines, no `sorry`.

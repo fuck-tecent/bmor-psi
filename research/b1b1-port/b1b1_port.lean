@@ -3438,4 +3438,63 @@ theorem card_divisors_le_rpow_eventually_pow (ε : ℝ) (hε : 0 < ε) :
     _ = (n : ℝ) ^ (ε/2 + ε/2) := by rw [Real.rpow_add (by positivity)]
     _ = (n : ℝ) ^ ε := by rw [show ε/2 + ε/2 = ε by ring]
 
+/-! ### Milestone 48: prime-power sparsity
+
+The number of perfect powers `p^k ≤ X` with `k ≥ 2` is `O(√X · log X)`.  This is
+**independent of** the divisor bound `d(n) = n^o(1)` (M45): it is a counting statement.
+
+```text
+#{p^k ≤ X : p prime, k ≥ 2}  ≤  (log₂ X + 1) · (√X + 1)
+```
+
+Proof: every such `p^k` has `p ≤ √X` and `k ≤ log₂ X`, so the set is contained in
+`⋃_{k ∈ [2, log₂X]} {p^k : p ≤ √X}`; each inner image has at most `√X + 1` elements. -/
+
+/-- **Every higher power lies in the `biUnion` of the `k`-th power images.** -/
+theorem higherPower_mem_biUnion (X m : ℕ) (hmX : m ≤ X)
+    (hm : ∃ p k : ℕ, Nat.Prime p ∧ 2 ≤ k ∧ m = p ^ k) :
+    m ∈ (Finset.Icc 2 (Nat.log 2 X)).biUnion
+      (fun k => (Finset.range (Nat.sqrt X + 1)).image (fun p => p ^ k)) := by
+  classical
+  obtain ⟨p, k, hpp, hk2, rfl⟩ := hm
+  have hp2 : 2 ≤ p := hpp.two_le
+  have h2k : 2 ^ k ≤ p ^ k := Nat.pow_le_pow_left hp2 k
+  have hk_le : k ≤ Nat.log 2 X :=
+    Nat.le_log_of_pow_le (by norm_num) (h2k.trans hmX)
+  have hp2k : p ^ 2 ≤ p ^ k := Nat.pow_le_pow_right (by omega : 1 ≤ p) hk2
+  have hpsqrt : p ≤ Nat.sqrt X := by
+    refine Nat.le_sqrt.mpr ?_
+    simpa [Nat.pow_two] using hp2k.trans hmX
+  exact Finset.mem_biUnion.mpr ⟨k, Finset.mem_Icc.mpr ⟨hk2, hk_le⟩,
+    Finset.mem_image.mpr ⟨p, Finset.mem_range.mpr (by omega), rfl⟩⟩
+
+/-- **Prime-power sparsity**: at most `(log₂ X + 1)·(√X + 1)` higher powers below `X`. -/
+theorem card_biUnion_powers_le (X : ℕ) :
+    ((Finset.Icc 2 (Nat.log 2 X)).biUnion
+      (fun k => (Finset.range (Nat.sqrt X + 1)).image (fun p => p ^ k))).card
+      ≤ (Nat.log 2 X + 1) * (Nat.sqrt X + 1) := by
+  classical
+  set K := Nat.log 2 X with hK
+  set S := (Finset.Icc 2 K).biUnion
+    (fun k => (Finset.range (Nat.sqrt X + 1)).image (fun p => p ^ k)) with hS
+  calc S.card
+      ≤ ∑ k ∈ Finset.Icc 2 K,
+          ((Finset.range (Nat.sqrt X + 1)).image (fun p => p ^ k)).card :=
+        Finset.card_biUnion_le
+    _ ≤ ∑ _k ∈ Finset.Icc 2 K, (Nat.sqrt X + 1) := by
+        refine Finset.sum_le_sum fun k _ => ?_
+        calc ((Finset.range (Nat.sqrt X + 1)).image (fun p => p ^ k)).card
+            ≤ (Finset.range (Nat.sqrt X + 1)).card := Finset.card_image_le
+          _ = Nat.sqrt X + 1 := Finset.card_range _
+    _ = (Finset.Icc 2 K).card * (Nat.sqrt X + 1) := by
+        rw [Finset.sum_const, smul_eq_mul]
+    _ ≤ (K + 1) * (Nat.sqrt X + 1) := by
+        refine mul_le_mul_of_nonneg_right ?_ (by positivity)
+        have hsub : Finset.Icc 2 K ⊆ Finset.range (K + 1) := by
+          intro x hx
+          simp only [Finset.mem_Icc, Finset.mem_range] at hx ⊢
+          omega
+        calc (Finset.Icc 2 K).card ≤ (Finset.range (K + 1)).card := Finset.card_le_card hsub
+          _ = K + 1 := Finset.card_range _
+
 end B1B1Port
