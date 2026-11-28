@@ -3503,14 +3503,19 @@ The `τ₁^Top` cofactor `m/a` ranges over `(n^(3/4−δ), n/U]`; its **higher p
 is `m/a = p^k` with `k ≥ 2`, and then `m = a·p^k` with `a ≤ B₁` and `p^k ≤ n/U = n^(15/16)`.
 Here we bound how many such `m` there are. -/
 
+/-- The finite cover of all products `a·p^k` with `a ≤ B` and `p^k ≤ X`. -/
+def higherPowerProducts (B X : ℕ) : Finset ℕ :=
+  (Finset.Icc 2 (Nat.log 2 X)).biUnion (fun k =>
+    (Finset.range (B + 1)).biUnion (fun a =>
+      (Finset.range (Nat.sqrt X + 1)).image (fun p => a * p ^ k)))
+
 /-- **Membership**: `a·p^k` (with `a ≤ B`, `p` prime, `2 ≤ k`, `p^k ≤ X`) lies in the
 finite `biUnion` of the `k`-th power images. -/
 theorem higherPower_product_mem (B X m a p k : ℕ) (ha : a ≤ B) (hpp : Nat.Prime p)
     (hk2 : 2 ≤ k) (hpk : p ^ k ≤ X) (hm : m = a * p ^ k) :
-    m ∈ (Finset.Icc 2 (Nat.log 2 X)).biUnion (fun k' =>
-      (Finset.range (B + 1)).biUnion (fun a' =>
-        (Finset.range (Nat.sqrt X + 1)).image (fun p' => a' * p' ^ k'))) := by
+    m ∈ higherPowerProducts B X := by
   classical
+  unfold higherPowerProducts
   have hp2 : 2 ≤ p := hpp.two_le
   have h2k : 2 ^ k ≤ p ^ k := Nat.pow_le_pow_left hp2 k
   have hk_le : k ≤ Nat.log 2 X :=
@@ -3527,11 +3532,9 @@ theorem higherPower_product_mem (B X m a p k : ℕ) (ha : a ≤ B) (hpp : Nat.Pr
 /-- **Support size.**  At most `(log₂X + 1)(B + 1)(√X + 1)` integers are of the form
 `a·p^k` with `a ≤ B`, `p` prime, `2 ≤ k`, `p^k ≤ X`. -/
 theorem card_higherPower_products_le (B X : ℕ) :
-    ((Finset.Icc 2 (Nat.log 2 X)).biUnion (fun k =>
-      (Finset.range (B + 1)).biUnion (fun a =>
-        (Finset.range (Nat.sqrt X + 1)).image (fun p => a * p ^ k)))).card
-      ≤ (Nat.log 2 X + 1) * (B + 1) * (Nat.sqrt X + 1) := by
+    (higherPowerProducts B X).card ≤ (Nat.log 2 X + 1) * (B + 1) * (Nat.sqrt X + 1) := by
   classical
+  unfold higherPowerProducts
   set K := Nat.log 2 X with hK
   set S := (Finset.Icc 2 K).biUnion (fun k =>
       (Finset.range (B + 1)).biUnion (fun a =>
@@ -3885,5 +3888,203 @@ theorem imT_two_mul_eq (n : ℕ) (c : ℕ → ℂ) (hc : ∀ m, (c m).im = 0) (t
   rw [h2, ← Finset.sum_sub_distrib]
   refine Finset.sum_congr rfl fun m _ => ?_
   ring
+
+/-! ### Milestone 51: the actual `τ₁^Top` prime/proper-power split
+
+M49 counted the possible products `a · p^k`, but did not yet attach that count to a
+coefficient sequence.  The following definitions split the surviving high-cofactor part
+into a genuine prime-cofactor part and a proper-prime-power correction.  Every nonzero
+correction coefficient lies in the M49 cover.  Taking the cruder cover parameter `X = n`
+is already enough for an `o(n)` application: its cardinality is `O(n^(3/4) log n)`. -/
+
+/-- The high-cofactor part of `τ₁`, keeping only prime cofactors. -/
+def lowBandCoefficientTopPrime (n V : ℕ) : ℕ → ℝ :=
+  fun m => ∑ a ∈ (Nat.divisors m).filter
+      (fun a => cutoffU n < a ∧ a ≤ lowCut n ∧ cutoffU n < m / a ∧ V < m / a),
+    lowMoebiusWeight (cutoffU n) a *
+      if (m / a).Prime then Real.log ((m / a : ℕ) : ℝ) else 0
+
+/-- The high-cofactor part of `τ₁`, keeping only proper prime powers. -/
+def lowBandCoefficientTopProper (n V : ℕ) : ℕ → ℝ :=
+  fun m => ∑ a ∈ (Nat.divisors m).filter
+      (fun a => cutoffU n < a ∧ a ≤ lowCut n ∧ cutoffU n < m / a ∧ V < m / a),
+    lowMoebiusWeight (cutoffU n) a *
+      if (m / a).Prime then 0 else ArithmeticFunction.vonMangoldt (m / a)
+
+/-- **Exact split**: after peeling, `τ₁^Top` is a prime-cofactor term plus a
+proper-prime-power correction. -/
+theorem lowBandCoefficientTop_eq_prime_add_proper (n V m : ℕ) :
+    lowBandCoefficientTop n V m = lowBandCoefficientTopPrime n V m +
+      lowBandCoefficientTopProper n V m := by
+  classical
+  unfold lowBandCoefficientTop lowBandCoefficientTopPrime lowBandCoefficientTopProper
+  rw [← Finset.sum_add_distrib]
+  refine Finset.sum_congr rfl fun a _ => ?_
+  by_cases hp : (m / a).Prime
+  · simp [hp, ArithmeticFunction.vonMangoldt_apply_prime hp]
+  · simp [hp]
+
+/-- Pointwise bound for the proper-prime-power correction. -/
+theorem lowBandCoefficientTopProper_abs_le (n V m : ℕ) {T : ℝ} (hT : 0 ≤ T)
+    (hc : ∀ a, cutoffU n < a → a ≤ lowCut n → |lowMoebiusWeight (cutoffU n) a| ≤ T) :
+    ‖(lowBandCoefficientTopProper n V m : ℂ)‖ ≤ T * Real.log m := by
+  classical
+  unfold lowBandCoefficientTopProper
+  rw [Complex.norm_real, Real.norm_eq_abs]
+  calc |∑ a ∈ (Nat.divisors m).filter
+        (fun a => cutoffU n < a ∧ a ≤ lowCut n ∧ cutoffU n < m / a ∧ V < m / a),
+        lowMoebiusWeight (cutoffU n) a *
+          if (m / a).Prime then 0 else ArithmeticFunction.vonMangoldt (m / a)|
+      ≤ ∑ a ∈ (Nat.divisors m).filter
+        (fun a => cutoffU n < a ∧ a ≤ lowCut n ∧ cutoffU n < m / a ∧ V < m / a),
+        |lowMoebiusWeight (cutoffU n) a *
+          if (m / a).Prime then 0 else ArithmeticFunction.vonMangoldt (m / a)| :=
+        Finset.abs_sum_le_sum_abs _ _
+    _ ≤ ∑ a ∈ (Nat.divisors m).filter
+        (fun a => cutoffU n < a ∧ a ≤ lowCut n ∧ cutoffU n < m / a ∧ V < m / a),
+        T * ArithmeticFunction.vonMangoldt (m / a) := by
+        refine Finset.sum_le_sum fun a ha => ?_
+        obtain ⟨_, hUa, haB, _, _⟩ := Finset.mem_filter.mp ha
+        rw [abs_mul]
+        have hw : |(if (m / a).Prime then 0 else ArithmeticFunction.vonMangoldt (m / a))|
+            ≤ ArithmeticFunction.vonMangoldt (m / a) := by
+          by_cases hp : (m / a).Prime
+          · simp [hp, ArithmeticFunction.vonMangoldt_nonneg]
+          · simp [hp, abs_of_nonneg ArithmeticFunction.vonMangoldt_nonneg]
+        exact mul_le_mul (hc a hUa haB) hw (abs_nonneg _) hT
+    _ ≤ ∑ a ∈ Nat.divisors m, T * ArithmeticFunction.vonMangoldt (m / a) := by
+        refine Finset.sum_le_sum_of_subset_of_nonneg (Finset.filter_subset _ _) ?_
+        intro a _ _
+        exact mul_nonneg hT ArithmeticFunction.vonMangoldt_nonneg
+    _ = T * Real.log m := by rw [← Finset.mul_sum, sum_vonMangoldt_div_divisors]
+
+/-- **Support of the correction.**  A nonzero coefficient supplies a divisor `a ≤ B₁`
+and a proper prime power `m/a = p^k`.  The bound `p^k ≤ n` suffices here. -/
+theorem lowBandCoefficientTopProper_mem_cover (n V m : ℕ) (hmn : m ≤ n)
+    (hm : lowBandCoefficientTopProper n V m ≠ 0) :
+    m ∈ higherPowerProducts (lowCut n) n := by
+  classical
+  unfold lowBandCoefficientTopProper at hm
+  obtain ⟨a, ha, hterm⟩ := Finset.exists_ne_zero_of_sum_ne_zero hm
+  obtain ⟨had, hUa, haB, hcofU, hcofV⟩ := Finset.mem_filter.mp ha
+  have hweight : (if (m / a).Prime then 0 else ArithmeticFunction.vonMangoldt (m / a)) ≠ 0 := by
+    intro hw
+    apply hterm
+    rw [hw, mul_zero]
+  have hlambda : ArithmeticFunction.vonMangoldt (m / a) ≠ 0 := by
+    intro hzero
+    simp [hzero] at hweight
+  have hnotprime : ¬(m / a).Prime := by
+    intro hp
+    simp [hp] at hweight
+  obtain ⟨p, k, hp, hk, hpk⟩ := (isPrimePow_nat_iff (m / a)).mp
+    (ArithmeticFunction.vonMangoldt_ne_zero_iff.mp hlambda)
+  have hk2 : 2 ≤ k := by
+    by_contra hlt
+    have hk1 : k = 1 := by omega
+    subst k
+    apply hnotprime
+    have hpa : p = m / a := by simpa only [pow_one] using hpk
+    rw [← hpa]
+    exact hp
+  apply higherPower_product_mem (lowCut n) n m a p k haB hp hk2
+  · calc p ^ k = m / a := hpk
+      _ ≤ m := Nat.div_le_self _ _
+      _ ≤ n := hmn
+  · calc m = a * (m / a) := (Nat.mul_div_cancel' (Nat.dvd_of_mem_divisors had)).symm
+      _ = a * p ^ k := by rw [hpk]
+
+/-- **Finite `L²` estimate for the proper-prime-power correction.**  The sum localises to
+the M49 product cover; every coefficient is at most `T log n`. -/
+theorem sum_topProper_norm_sq_le (n V : ℕ) {T : ℝ} (hT : 0 ≤ T)
+    (hc : ∀ a, cutoffU n < a → a ≤ lowCut n → |lowMoebiusWeight (cutoffU n) a| ≤ T) :
+    (∑ m ∈ Finset.range (n + 1), ‖(lowBandCoefficientTopProper n V m : ℂ)‖ ^ 2) ≤
+      T ^ 2 * (Real.log n) ^ 2 * ((higherPowerProducts (lowCut n) n).card : ℝ) := by
+  classical
+  let cover := higherPowerProducts (lowCut n) n
+  let kept := (Finset.range (n + 1)).filter (fun m => m ∈ cover)
+  let C := T ^ 2 * (Real.log n) ^ 2
+  have hC : 0 ≤ C := by dsimp [C]; positivity
+  have hrestrict :
+      (∑ m ∈ Finset.range (n + 1), ‖(lowBandCoefficientTopProper n V m : ℂ)‖ ^ 2) =
+        ∑ m ∈ kept, ‖(lowBandCoefficientTopProper n V m : ℂ)‖ ^ 2 := by
+    symm
+    apply Finset.sum_subset (Finset.filter_subset _ _)
+    intro m hmrange hnot
+    have hmzero : lowBandCoefficientTopProper n V m = 0 := by
+      by_contra hmne
+      apply hnot
+      apply Finset.mem_filter.mpr
+      refine ⟨hmrange, ?_⟩
+      exact lowBandCoefficientTopProper_mem_cover n V m
+        (Nat.lt_succ_iff.mp (Finset.mem_range.mp hmrange)) hmne
+    simp [hmzero]
+  have hpoint : ∀ m ∈ kept, ‖(lowBandCoefficientTopProper n V m : ℂ)‖ ^ 2 ≤ C := by
+    intro m hm
+    have hmrange := (Finset.mem_filter.mp hm).1
+    have hmn : m ≤ n := Nat.lt_succ_iff.mp (Finset.mem_range.mp hmrange)
+    have hlog : (Real.log (m:ℝ)) ^ 2 ≤ (Real.log (n:ℝ)) ^ 2 := by
+      rcases Nat.eq_zero_or_pos m with hzero | hpos
+      · subst m
+        simpa using sq_nonneg (Real.log (n:ℝ))
+      · have h1 : Real.log (m:ℝ) ≤ Real.log (n:ℝ) :=
+          Real.log_le_log (by exact_mod_cast hpos) (by exact_mod_cast hmn)
+        have h2 : 0 ≤ Real.log (m:ℝ) := Real.log_nonneg (by exact_mod_cast hpos)
+        nlinarith
+    have habs := lowBandCoefficientTopProper_abs_le n V m hT hc
+    calc ‖(lowBandCoefficientTopProper n V m : ℂ)‖ ^ 2
+        ≤ (T * Real.log (m:ℝ)) ^ 2 := pow_le_pow_left₀ (norm_nonneg _) habs 2
+      _ = T ^ 2 * (Real.log (m:ℝ)) ^ 2 := by ring
+      _ ≤ C := by dsimp [C]; exact mul_le_mul_of_nonneg_left hlog (by positivity)
+  rw [hrestrict]
+  calc (∑ m ∈ kept, ‖(lowBandCoefficientTopProper n V m : ℂ)‖ ^ 2)
+      ≤ ∑ _m ∈ kept, C := Finset.sum_le_sum hpoint
+    _ = (kept.card : ℝ) * C := by simp
+    _ ≤ (cover.card : ℝ) * C := by
+      apply mul_le_mul_of_nonneg_right _ hC
+      exact_mod_cast Finset.card_le_card (show kept ⊆ cover from fun _ hm =>
+        (Finset.mem_filter.mp hm).2)
+    _ = T ^ 2 * (Real.log n) ^ 2 * (cover.card : ℝ) := by dsimp [C]; ring
+
+/-- **The correction's `L²` mass with the divisor bound plugged in.** -/
+theorem integral_topProper_norm_sq_le_divisor_bound (n V : ℕ) {ε : ℝ} (hε : 0 < ε) :
+    ∃ N : ℕ, (∫ t in (0:ℝ)..1,
+        ‖plainPolynomial n (fun m => (lowBandCoefficientTopProper n V m : ℂ)) t‖ ^ 2) ≤
+      (max (N:ℝ) ((lowCut n : ℝ) ^ ε)) ^ 2 * (Real.log n) ^ 2 *
+        ((higherPowerProducts (lowCut n) n).card : ℝ) := by
+  obtain ⟨N, hN⟩ := card_divisors_le_rpow_eventually_pow ε hε
+  refine ⟨N, ?_⟩
+  let T := max (N:ℝ) ((lowCut n : ℝ) ^ ε)
+  have hT : 0 ≤ T := le_trans (Nat.cast_nonneg N) (le_max_left _ _)
+  have hcoef : ∀ a, cutoffU n < a → a ≤ lowCut n →
+      |lowMoebiusWeight (cutoffU n) a| ≤ T := by
+    intro a _ haB
+    have h1 : |lowMoebiusWeight (cutoffU n) a| ≤ (a.divisors.card : ℝ) :=
+      abs_lowMoebiusWeight_le (cutoffU n) a
+    by_cases ha : N ≤ a
+    · have h2 : (a.divisors.card : ℝ) ≤ (a : ℝ) ^ ε := hN a ha
+      have h3 : (a : ℝ) ^ ε ≤ (lowCut n : ℝ) ^ ε :=
+        Real.rpow_le_rpow (by positivity) (by exact_mod_cast haB) hε.le
+      exact h1.trans (h2.trans (h3.trans (le_max_right _ _)))
+    · have h2 : (a.divisors.card : ℝ) ≤ (a : ℝ) := by
+        exact_mod_cast Nat.card_divisors_le_self a
+      have h3 : (a : ℝ) ≤ (N : ℝ) := by
+        exact_mod_cast (by omega : a ≤ N)
+      exact h1.trans (h2.trans (h3.trans (le_max_left _ _)))
+  have hsum := sum_topProper_norm_sq_le (n := n) (V := V) (T := T) hT hcoef
+  rw [integral_plainPolynomial_norm_sq]
+  exact hsum
+
+/-- **Explicit support-count form.**  Once `N ≤ (B₁ n)^ε`, the right-hand side has scale
+`n^(3/4 + ε/2) (log n)^3`, hence is `o(n)` for `ε < 1/2`. -/
+theorem integral_topProper_norm_sq_le_divisor_explicit (n V : ℕ) {ε : ℝ} (hε : 0 < ε) :
+    ∃ N : ℕ, (∫ t in (0:ℝ)..1,
+        ‖plainPolynomial n (fun m => (lowBandCoefficientTopProper n V m : ℂ)) t‖ ^ 2) ≤
+      (max (N:ℝ) ((lowCut n : ℝ) ^ ε)) ^ 2 * (Real.log n) ^ 2 *
+        (((Nat.log 2 n + 1) * (lowCut n + 1) * (Nat.sqrt n + 1) : ℕ) : ℝ) := by
+  obtain ⟨N, hbound⟩ := integral_topProper_norm_sq_le_divisor_bound n V hε
+  refine ⟨N, hbound.trans ?_⟩
+  apply mul_le_mul_of_nonneg_left _ (by positivity)
+  exact_mod_cast card_higherPower_products_le (lowCut n) n
 
 end B1B1Port

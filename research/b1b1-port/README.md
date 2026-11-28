@@ -3058,3 +3058,57 @@ content is entirely in `imT_two_mul_eq` above.
 * `Finset.card_Icc` is absent in this Mathlib.
 
 Dossier: 3573 → 3889 lines, no `sorry`.
+
+## Milestone 51: the actual prime-cofactor reduction of `τ₁^Top`
+
+M49 counted products `a·p^k` but left the coefficient-level split and its `L²` estimate
+undone.  These are now supplied using only the decidable test `Nat.Prime (m/a)`:
+
+```lean
+def lowBandCoefficientTopPrime (n V : ℕ) : ℕ → ℝ
+def lowBandCoefficientTopProper (n V : ℕ) : ℕ → ℝ
+
+theorem lowBandCoefficientTop_eq_prime_add_proper (n V m) :
+  Top n V m = TopPrime n V m + TopProper n V m
+
+theorem lowBandCoefficientTopProper_abs_le :
+  ‖(TopProper n V m : ℂ)‖ ≤ T * Real.log m
+
+theorem lowBandCoefficientTopProper_mem_cover (hmn : m ≤ n)
+    (hm : TopProper n V m ≠ 0) :
+  m ∈ {a · p^k | a ≤ B₁, p prime, 2 ≤ k, p^k ≤ n}
+
+theorem sum_topProper_norm_sq_le :
+  ∑_{m ≤ n} ‖TopProper n V m‖²
+    ≤ T² · (log n)² · #(M49 product cover with X = n)
+
+theorem integral_topProper_norm_sq_le_divisor_explicit (ε > 0) :
+  ∃ N, ∫₀¹ ‖S_{TopProper}‖²
+    ≤ (max N (B₁ n)^ε)² · (log n)²
+        · (log₂ n + 1)(B₁ n + 1)(√n + 1)
+```
+
+Using `X = n` instead of the sharper `X = n/U` is deliberate: it avoids all cutoff
+positivity and natural-division side conditions, and is already sufficient.  The support
+count is `O(B₁ √n log n) = O(n^(3/4) log n)`.  Once `N ≤ (B₁ n)^ε`, the displayed `L²`
+bound has scale
+
+```text
+n^(3/4 + ε/2) · (log n)³ = o(n)       for ε < 1/2 .
+```
+
+The M40 Cauchy–Schwarz bounds therefore discard both the proper-power self term and its
+cross term with the prime part.  Together with M46's low-cofactor peeling, the only
+surviving coefficient is
+
+```text
+a ∈ (n^(1/16), n^(1/4)] ,   m/a > V ,   m/a prime ,
+```
+
+up to two unconditional `L²`-small errors.  This is the actual "small divisor × large
+prime" reduction anticipated in M49, rather than only a support-counting statement.  The
+signed deep-minor estimate for that prime-cofactor part remains open; no pointwise,
+Parseval, or absolute-value estimate in this dossier closes it.
+
+Dossier: 3889 → 4090 lines, no `sorry`.  The complete file passes `lake env lean` with
+Lean 4.36.0 and the locked Mathlib cache at the original 4,000,000-heartbeat limit.
