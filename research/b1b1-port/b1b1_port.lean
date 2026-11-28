@@ -3786,4 +3786,58 @@ theorem re_deepIntegral3_ge_neg_im_sq (n : ℕ) :
   rw [intervalIntegral.integral_add hh hg] at hnn
   linarith
 
+/-- The imaginary part of `phase θ`. -/
+theorem im_phase (θ : ℝ) : (phase θ).im = Real.sin (2 * Real.pi * θ) := by
+  unfold phase
+  rw [Complex.exp_ofReal_mul_I]
+  simp only [Complex.add_im, Complex.mul_im, Complex.ofReal_re, Complex.ofReal_im,
+    Complex.I_re, Complex.I_im, mul_one, mul_zero, add_zero]
+  ring
+
+/-- `Im T` as a plain sine sum over `m ∈ [0, n]`. -/
+theorem imT_eq_sin_sum (n : ℕ) (c : ℕ → ℂ) (hc : ∀ m, (c m).im = 0) (t : ℝ) :
+    (plainPolynomial n c t * halfShift n t).im
+      = ∑ m ∈ Finset.range (n + 1),
+          (c m).re * Real.sin (2 * Real.pi * ((m:ℝ) - (n:ℝ)/2) * t) := by
+  rw [plainPolynomial, Finset.sum_mul, Complex.im_sum]
+  refine Finset.sum_congr rfl fun m _ => ?_
+  have hph : phase ((m:ℝ)*t) * halfShift n t = phase (((m:ℝ) - (n:ℝ)/2) * t) := by
+    unfold halfShift
+    rw [← phase_add]
+    congr 1
+    ring
+  rw [mul_assoc, hph, Complex.mul_im, hc m, zero_mul, add_zero, im_phase]
+  congr 2
+  ring
+
+/-- `∫₀¹ (f t).re dt = (∫₀¹ f t dt).re` for continuous `f`. -/
+theorem intervalIntegral_re_eq (f : ℝ → ℂ) (hf : Continuous f) :
+    (∫ t in (0:ℝ)..1, (f t).re) = (∫ t in (0:ℝ)..1, f t).re := by
+  have hint : IntegrableOn f (Set.Ioc (0:ℝ) 1) volume := by
+    rw [← intervalIntegrable_iff_integrableOn_Ioc_of_le zero_le_one]
+    exact hf.intervalIntegrable _ _
+  have hbridge : (∫ x, (f x).re ∂(volume.restrict (Set.Ioc (0:ℝ) 1)))
+      = ∫ x, RCLike.re (f x) ∂(volume.restrict (Set.Ioc (0:ℝ) 1)) := rfl
+  rw [intervalIntegral.integral_of_le zero_le_one, hbridge, integral_re hint,
+    intervalIntegral.integral_of_le zero_le_one]
+  try rfl
+
+/-- **`∫₀¹ (Im T)² = ½(∑ c(m)² − D)`** for real coefficients. -/
+theorem integral_imT_sq_eq_diagonal (n : ℕ) (c : ℕ → ℂ) (hc : ∀ m, (c m).im = 0) :
+    (∫ t in (0:ℝ)..1, ((plainPolynomial n c t * halfShift n t).im) ^ 2)
+      = ((∑ m ∈ Finset.range (n + 1), (c m).re ^ 2) - (diagonalSumOf n c).re) / 2 := by
+  rw [integral_imT_sq_eq]
+  have hsum : (∑ m ∈ Finset.range (n + 1), ‖c m‖ ^ 2)
+      = ∑ m ∈ Finset.range (n + 1), (c m).re ^ 2 := by
+    refine Finset.sum_congr rfl fun m _ => ?_
+    rw [← Complex.normSq_eq_norm_sq, Complex.normSq_apply, hc m]
+    try ring
+  have hbase : Continuous fun t : ℝ => plainPolynomial n c t ^ 2 * phase (-(n:ℝ)*t) :=
+    ((by unfold plainPolynomial phase; fun_prop : Continuous (plainPolynomial n c)).pow 2).mul
+      (by unfold phase; fun_prop)
+  have hI : (∫ t in (0:ℝ)..1, (plainPolynomial n c t ^ 2 * phase (-(n:ℝ)*t)).re)
+      = (diagonalSumOf n c).re := by
+    rw [intervalIntegral_re_eq _ hbase, integral_sq_phase_eq_diagonalOf]
+  rw [hsum, hI]
+
 end B1B1Port

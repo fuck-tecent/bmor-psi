@@ -3003,16 +3003,41 @@ So **the `h33` floor is equivalent to an `L²` bound on `Im T`** — a `1`-param
 instead of the quadruple sum.  This is the cut worth having if `goldbach` decomposes the
 task later.
 
-### Three pieces still missing (each is one step)
+### Now also verified (the three pieces that were missing)
 
-1. **`∫ Re = Re ∫`** — i.e. converting `∫_{Aᶜ} Re(S²e(−n·))` into `Re Jdeep`.  The lemma is
-   `MeasureTheory.integral_re` (Mathlib `MeasureTheory/Integral/Bochner/ContinuousLinearMap.lean:165`),
-   but the enclosing namespace could not be pinned down in this session (`MeasureTheory.` and
-   `RCLike.` both reported unknown). One grep settles it.
-2. **`∫₀¹(Im T)² = ½(∑τ₃² − D₃)`** — follows from (1) plus `integral_sq_phase_eq_diagonalOf`.
-3. **`Im T = ∑_k d_k sin(2πkt)`** with `d_k = τ₃(n/2+k) − τ₃(n/2−k)` — the antisymmetric
-   form.  Needs `Even n` index reindexing plus `Real.sin` addition formulas; independent of
-   the rest.
+```lean
+theorem im_phase (θ) : (phase θ).im = Real.sin (2 * Real.pi * θ)
+theorem imT_eq_sin_sum (n) (c) (hc : ∀ m, (c m).im = 0) (t) :
+  (Im T) = ∑_{m ≤ n} c(m).re * Real.sin (2 * Real.pi * ((m:ℝ) − n/2) * t)
+theorem intervalIntegral_re_eq (f) (hf : Continuous f) :
+  ∫₀¹ (f t).re = (∫₀¹ f t).re
+/-- **`∫₀¹(Im T)² = ½(∑τ₃² − D₃)`** -/
+theorem integral_imT_sq_eq_diagonal (n) (c) (hc : ∀ m, (c m).im = 0) :
+  ∫₀¹ (Im T)² = ((∑_{m ≤ n} (c m).re ^ 2) − (diagonalSumOf n c).re) / 2
+```
+
+Note: `integral_re` is **unqualified** (root namespace) in this Mathlib —
+`MeasureTheory.integral_re` and `RCLike.integral_re` are both unknown.  `(f x).re` versus
+`RCLike.re (f x)` also needs a `rfl`-bridge before the rewrite.
+
+### The one piece still missing
+
+The **paired / antisymmetric** form
+
+```text
+Im T = ∑_{k=1}^{n/2} d_k · sin(2πkt) ,      d_k = τ₃(n/2 + k) − τ₃(n/2 − k) ,
+```
+
+i.e. reindexing `range (n+1)` as `{n/2} ⊔ {n/2 ± k : 1 ≤ k ≤ n/2}` for even `n` and using
+`sin(−θ) = −sin θ`.  The *unpaired* sine sum (`imT_eq_sin_sum`) and the value identity
+(`integral_imT_sq_eq_diagonal`) are both verified; only the pairing is left.  Statement it
+should take:
+
+```lean
+theorem imT_eq_antisymm_sin (n) (hn : Even n) (c) (hc) (t) :
+  (Im T) = ∑ k ∈ Finset.Icc 1 (n/2),
+            ((c (n/2 + k)).re − (c (n/2 - k)).re) * Real.sin (2 * Real.pi * k * t)
+```
 
 ### Landmines
 
@@ -3023,4 +3048,4 @@ task later.
   beta-reduce; writing the raw lambdas avoids it entirely.
 * `Finset.card_Icc` is absent in this Mathlib.
 
-Dossier: 3573 → 3789 lines, no `sorry`.
+Dossier: 3573 → 3843 lines, no `sorry`.
