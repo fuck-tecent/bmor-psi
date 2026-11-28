@@ -2757,3 +2757,56 @@ strongest the peeling can be.  The remaining formal step is to plug
   occurrence in M44 and silently deletes the rest of the file.
 
 Dossier: 3034 -> 3258 lines, no `sorry`.  (113 theorems, 24 defs, 12 lemmas.)
+
+## Milestone 46: the third peeling regime is complete
+
+`integral_bot_norm_sq_le`'s coefficient hypothesis is now discharged by the divisor bound.
+
+```lean
+theorem integral_bot_norm_sq_le_divisor (n V : ℕ) (hV : lowCut n * V ≤ n)
+    {ε : ℝ} (hε : 0 < ε) {N : ℕ}
+    (hdiv : ∀ m : ℕ, N ≤ m → (m.divisors.card : ℝ) ≤ (m : ℝ) ^ ε) :
+  ∫₀¹ ‖S_{Bot n V}‖²
+    ≤ (max (N:ℝ) ((lowCut n : ℝ) ^ ε)) ^ 2 * (B₁·V + 1) * (log n) ^ 2
+
+/-- **Third regime**, no extra hypothesis. -/
+theorem integral_bot_norm_sq_le_divisor_bound (n V : ℕ) (hV : lowCut n * V ≤ n)
+    {ε : ℝ} (hε : 0 < ε) :
+  ∃ N : ℕ, ∫₀¹ ‖S_{Bot n V}‖²
+    ≤ (max (N:ℝ) ((lowCut n : ℝ) ^ ε)) ^ 2 * (B₁·V + 1) * (log n) ^ 2
+```
+
+Discharge of `hc`: for `a ≥ N`,
+`|c_U(a)| ≤ a.divisors.card ≤ a^ε ≤ (B₁ n)^ε`; for `a < N`,
+`|c_U(a)| ≤ a.divisors.card ≤ a < N`.  So `T = max N (B₁ n)^ε`.
+
+`max N (B₁ n)^ε` avoids needing `lowCut n ≤ n`, which is why the threshold is `B₁ n` and not `n`.
+
+### The corrected three-regime table (final)
+
+| `T` bound on `c_U(a)` | source | total scale | admissible `V` |
+|---|---|---|---|
+| `B₁ = n^(1/4)` | `card_divisors_le_self` | `n^(3/4) V` | `n^(1/4−δ)` |
+| `U = n^(1/16)` | Möbius cancellation (free) | `n^(3/8) V` | `n^(5/8−δ)` |
+| **`n^(ε/4)`** | **divisor bound `d(n)=n^o(1)` (M45)** | **`n^(1/4+ε/2) V`** | **`n^(3/4−ε/2−δ)`** |
+
+So `V = n^(3/4−δ')` for any `δ' > ε/2`: the peeling removes **all cofactors below
+`n^(3/4−δ)`**, leaving
+
+```text
+a ∈ (n^(1/16), n^(1/4)] ,   m/a > n^(3/4−δ) ,
+```
+
+and since `m ≤ n` forces `m/a ≤ n^(15/16)`, the surviving cofactor window is only
+`(n^(3/4−δ), n^(15/16)]`.
+
+### What this does and does not give
+
+* **Does**: the `τ₁` low-cofactor part is `L²`-small with an explicit bound, unconditionally.
+  Combined with M40 (`norm_deepSelf_le`, `norm_deepCross_le_sqrt`), the self and cross terms
+  involving `S_{Bot}` are `o(n)`.
+* **Does not**: close b1-b1.  The remaining piece is `Jdeep(τ₁^Top, τ₁^Top)`, whose cofactor
+  is `> n^(3/4−δ)` — a full-range signed object, not a short one.  The sign problem is
+  untouched.
+
+Dossier: 3258 -> 3300 lines, no `sorry`.

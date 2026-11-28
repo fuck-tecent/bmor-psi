@@ -3255,4 +3255,43 @@ theorem card_divisors_le_rpow_eventually (ε : ℝ) (hε : 0 < ε) :
     _ = (n : ℝ) ^ (ε/2 + ε/2) := by rw [Real.rpow_add (by positivity)]
     _ = (n : ℝ) ^ ε := by rw [show ε/2 + ε/2 = ε by ring]
 
+/-! ### Milestone 46: the third peeling regime, with the divisor bound plugged in -/
+
+/-- **The peeling bound with a divisor-bound coefficient estimate.**
+`hc` of `integral_bot_norm_sq_le` is discharged: for `a ≥ N` use
+`|c_U(a)| ≤ a.divisors.card ≤ a^ε ≤ (lowCut n)^ε`, and for `a < N` use
+`|c_U(a)| ≤ a.divisors.card ≤ a < N`. -/
+theorem integral_bot_norm_sq_le_divisor (n V : ℕ) (hV : lowCut n * V ≤ n)
+    {ε : ℝ} (hε : 0 < ε) {N : ℕ}
+    (hdiv : ∀ m : ℕ, N ≤ m → (m.divisors.card : ℝ) ≤ (m : ℝ) ^ ε) :
+    (∫ t in (0:ℝ)..1,
+        ‖plainPolynomial n (fun m => (lowBandCoefficientBot n V m : ℂ)) t‖ ^ 2)
+      ≤ (max (N:ℝ) ((lowCut n : ℝ) ^ ε)) ^ 2
+          * (((lowCut n * V : ℕ) : ℝ) + 1) * (Real.log n) ^ 2 := by
+  refine integral_bot_norm_sq_le n V hV
+    (le_trans (Nat.cast_nonneg N) (le_max_left _ _)) ?_
+  intro a _ haB
+  have h1 : |lowMoebiusWeight (cutoffU n) a| ≤ (a.divisors.card : ℝ) :=
+    abs_lowMoebiusWeight_le (cutoffU n) a
+  by_cases ha : N ≤ a
+  · have h2 : (a.divisors.card : ℝ) ≤ (a : ℝ) ^ ε := hdiv a ha
+    have h3 : (a : ℝ) ^ ε ≤ ((lowCut n : ℝ)) ^ ε :=
+      Real.rpow_le_rpow (by positivity) (by exact_mod_cast haB) hε.le
+    exact h1.trans (h2.trans (h3.trans (le_max_right _ _)))
+  · have h2 : (a.divisors.card : ℝ) ≤ (a : ℝ) := by
+      exact_mod_cast Nat.card_divisors_le_self a
+    have h3 : (a : ℝ) ≤ (N : ℝ) := by
+      exact_mod_cast (by omega : a ≤ N)
+    exact h1.trans (h2.trans (h3.trans (le_max_left _ _)))
+
+/-- **The third peeling regime.**  No extra hypothesis: the divisor bound supplies `N`. -/
+theorem integral_bot_norm_sq_le_divisor_bound (n V : ℕ) (hV : lowCut n * V ≤ n)
+    {ε : ℝ} (hε : 0 < ε) :
+    ∃ N : ℕ, (∫ t in (0:ℝ)..1,
+        ‖plainPolynomial n (fun m => (lowBandCoefficientBot n V m : ℂ)) t‖ ^ 2)
+      ≤ (max (N:ℝ) ((lowCut n : ℝ) ^ ε)) ^ 2
+          * (((lowCut n * V : ℕ) : ℝ) + 1) * (Real.log n) ^ 2 := by
+  obtain ⟨N, hN⟩ := card_divisors_le_rpow_eventually ε hε
+  exact ⟨N, integral_bot_norm_sq_le_divisor n V hV hε hN⟩
+
 end B1B1Port
