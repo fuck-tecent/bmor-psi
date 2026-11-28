@@ -3315,6 +3315,54 @@ The remaining reciprocal sum now ranges over `p,q > √n` with `|p-q| > ⌊n^(2/
 The wide-arc term remains unrestricted.  No estimate for the final signed residual is
 claimed.
 
+## Milestone 58: the strong-prime reciprocal residual is complete
+
+The strong-prime set and its product support are
+
+```lean
+strongPrimes n = {p ≤ n | D < p ∧ p.Prime}
+strongRowSupport = {(p,a) | p strong, a ≤ B₁, U < a, U < p, a·p ≤ n} .
+```
+
+The product map `(p,a) ↦ a·p` is injective on this support: the existing large-prime
+cofactor uniqueness applies because `√n ≤ D`.  Reindexing the divisor sum over this support
+gives `topPrime_strong_rows`, and hence `strongPrimeCellOn_arcRows` for every measurable arc
+set.
+
+The strong full circle then splits into close and distant pairs.  The old asymptotic
+close-pair proof was generalized to `closeFull_eventually`, parameterized by the prime set
+and row coefficients; both the original and strong close masses use it.  Therefore
+
+```lean
+strongPrimeCell_iff_distantResidual :
+  smallEven strongPrimeCell ↔ smallEven strongDistantResidual .
+```
+
+For distant strong pairs, `B₁ < q`, so `rowMass_eq_inversePair` applies.  Moreover
+`2B₁ < p,q` and `n < p·q`, so `inversePair_symmetric` replaces both short factors by inverse
+residues.  This yields
+
+```lean
+strongDistantPrimeFull_eq_inverseTotal
+strongDistantInverseTotal_eq_reciprocal
+fullCell_iff_strongReciprocalResidual :
+  smallEven fullCell ↔ smallEven strongReciprocalResidual .
+```
+
+Finally, the exact frozen catalogue statement is definitionally equivalent to
+`smallEven strongReciprocalResidual` (`frozen_iff_strongReciprocalResidual`).  Explicitly,
+the remaining full-circle sum ranges over
+
+```text
+D < p,q ≤ n ,  p,q prime ,  |p-q| > D ,  D = ⌊n^(2/3)⌋ ,
+```
+
+with both short factors given by `(n p⁻¹ mod q).val` and `(n q⁻¹ mod p).val`; the strong
+wide-arc prime-pair integral is subtracted unchanged.  This is the strongest current normal
+form.  The signed estimate itself remains open.
+
+The complete `fixed_target.lean` passes Lean 4.36.0 after M58, with no `sorry`.
+
 ## Milestone 57: the prime lower cutoff can also be raised to `n^(2/3)`
 
 The merge did not add a directly applicable fixed-target theorem.  In particular, the B13
@@ -3352,7 +3400,6 @@ fullCell_iff_strongPrimeCell :
 The necessary cutoff ordering `√n ≤ D` is proved from the natural-floor formula for the
 real square root.  No `sorry` is used.
 
-**Scope.**  This strengthens the prime cell itself.  The reciprocal residual in M55–M56
-still uses the earlier row support based on `bigPrimes n` (`p > √n`); a corresponding
-strong-prime reciprocal residual would require a new row-support reindexing and is not
-claimed here.
+**Scope at M57.**  This strengthens the prime cell itself.  The reciprocal residual in
+M55–M56 still used the earlier row support based on `bigPrimes n` (`p > √n`).  M58 below
+supplies the new row-support reindexing and removes this limitation.

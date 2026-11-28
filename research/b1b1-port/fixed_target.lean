@@ -9,7 +9,7 @@ imported together.  All cutoffs below are those of the first band: `L = U`, `B =
 -/
 
 open Filter Topology Finset MeasureTheory
-open GoldbachTransitionSquare
+open GoldbachTransitionSquare DyadicMixedB4Fourier
 
 set_option maxHeartbeats 4000000
 set_option maxRecDepth 4096
@@ -548,10 +548,17 @@ theorem distantResidual_eq_inverse_sub_wide (n : ℕ) (hn : 1 ≤ n) :
   unfold distantResidual
   rw [distantPrimeFull_eq_inverseTotal n hn]
 
-/-- The close-pair mass is eventually below any linear error budget. -/
-theorem closePrimeFull_eventually (e : ℝ) (he : 0 < e) :
-    ∀ᶠ n : ℕ in atTop, ‖closePrimeFull n‖ ≤ e * (n : ℝ) := by
-  obtain ⟨C, hC, hdiv⟩ := divisor_envelope
+/-- Generic close-pair mass is eventually below any linear error budget. -/
+theorem closeFull_eventually (C : ℝ) (hC : 1 ≤ C)
+    (hdiv : ∀ n m : ℕ, m ≤ n → (m.divisors.card : ℝ) ≤ C * (n : ℝ) ^ (1 / 128 : ℝ))
+    (P : ℕ → Finset ℕ) (c : ℕ → ℕ → ℕ → ℂ)
+    (hzero : ∀ n p, c n p 0 = 0)
+    (hweight0 : ∀ n : ℕ, 1 ≤ n → ∀ p ∈ P n, ∀ a ∈ Icc 1 (cutoffL n),
+      ‖c n p a‖ ≤ C * (n : ℝ) ^ (1 / 128 : ℝ) * Real.log n)
+    (e : ℝ) (he : 0 < e) :
+    ∀ᶠ n : ℕ in atTop, ‖∫ t in (0:ℝ)..1,
+      pairRows (closePairs (P n) (distanceCut n)) (cutoffL n + 1) n (c n) t‖ ≤
+        e * (n : ℝ) := by
   let K := (1 + 6 * C) * (384 * C) ^ 2
   have hlim : Tendsto (fun n : ℕ => K * (n : ℝ) ^ (-(21 / 384 : ℝ))) atTop (𝓝 0) := by
     have hp := (tendsto_rpow_neg_atTop (by norm_num : (0 : ℝ) < 21 / 384)).comp
@@ -605,12 +612,10 @@ theorem closePrimeFull_eventually (e : ℝ) (he : 0 < e) :
       (m.divisors.card : ℝ) ≤ C * (n : ℝ) ^ (1 / 128 : ℝ) :=
         hdiv n m (hm.trans hBD)
       _ = C * X ^ 3 := by rw [hXpow]; norm_num
-  have hweight : ∀ p ∈ bigPrimes n, ∀ a ∈ Icc 1 (cutoffL n),
-      ‖primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n) p a‖ ≤ M := by
+  have hweight : ∀ p ∈ P n, ∀ a ∈ Icc 1 (cutoffL n), ‖c n p a‖ ≤ M := by
     intro p hp a ha
     calc
-      _ ≤ C * (n : ℝ) ^ (1 / 128 : ℝ) * Real.log n :=
-        primeRowCoeff_norm_le_envelope n hn (by positivity) (fun m hm => hdiv n m hm) p a
+      _ ≤ C * (n : ℝ) ^ (1 / 128 : ℝ) * Real.log n := hweight0 n hn p hp a ha
       _ ≤ (C * X ^ 3) * (384 * X) := by
         have hn3 : (n : ℝ) ^ (1 / 128 : ℝ) = X ^ 3 := by rw [hXpow]; norm_num
         rw [hn3]
@@ -636,7 +641,9 @@ theorem closePrimeFull_eventually (e : ℝ) (he : 0 < e) :
   calc
     _ ≤ ((min (cutoffL n ^ 2 * (2 * distanceCut n + 1))
         (cutoffL n ^ 2 + 2 * cutoffL n * (2 * distanceCut n + 1) * T) : ℕ) : ℝ) * M ^ 2 :=
-      closePrimeFull_divisor_bound n T M hdivNear hweight
+      by
+        rw [near_fullCircle n (cutoffL n) (distanceCut n) (P n) (c n) (hzero n)]
+        exact weighted_near n (cutoffL n) (distanceCut n) T (P n) (c n) M hdivNear hweight
     _ ≤ ((cutoffL n ^ 2 + 2 * cutoffL n * (2 * distanceCut n + 1) * T : ℕ) : ℝ) * M ^ 2 := by
       apply mul_le_mul_of_nonneg_right _ (sq_nonneg M)
       exact_mod_cast min_le_right _ _
@@ -650,6 +657,16 @@ theorem closePrimeFull_eventually (e : ℝ) (he : 0 < e) :
         Real.rpow_add hn0, Real.rpow_one]
       ring
     _ ≤ _ := mul_le_mul_of_nonneg_right hsmall.le hn0.le
+
+/-- The original close-pair mass, as a special case of `closeFull_eventually`. -/
+theorem closePrimeFull_eventually (e : ℝ) (he : 0 < e) :
+    ∀ᶠ n : ℕ in atTop, ‖closePrimeFull n‖ ≤ e * (n : ℝ) := by
+  obtain ⟨C, hC, hdiv⟩ := divisor_envelope
+  exact closeFull_eventually C hC hdiv (fun n => bigPrimes n)
+    (fun n => primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n))
+    (fun n => primeRowCoeff_zero n)
+    (fun n hn p hp a ha => primeRowCoeff_norm_le_envelope n hn (by positivity)
+      (fun m hm => hdiv n m hm) p a) e he
 
 /-- **The prime cell and distant-pair residual have the same `o(n)` fate.** -/
 theorem primeCell_iff_distantResidual : smallEven primeCell ↔ smallEven distantResidual := by
@@ -1089,5 +1106,437 @@ theorem primeCell_iff_strongPrimeCell : smallEven primeCell ↔ smallEven strong
 /-- **The original cell is equivalent to the cell with both primes above `n^(2/3)`.** -/
 theorem fullCell_iff_strongPrimeCell : smallEven fullCell ↔ smallEven strongPrimeCell :=
   fullCell_iff_primeCell.trans primeCell_iff_strongPrimeCell
+
+/-! ### Milestone 58: row expansion for primes above `D = n^(2/3)` -/
+
+/-- Primes above the strengthened cutoff. -/
+def strongPrimes (n : ℕ) : Finset ℕ :=
+  (range (n + 1)).filter (fun p : ℕ => distanceCut n < p ∧ p.Prime)
+
+/-- Product support for a strong prime and its short divisor. -/
+def strongRowSupport (n : ℕ) : Finset (ℕ × ℕ) :=
+  (strongPrimes n ×ˢ range (cutoffL n + 1)).filter (fun i : ℕ × ℕ =>
+    cutoffU n < i.2 ∧ cutoffU n < i.1 ∧ i.2 * i.1 ≤ n)
+
+/-- Product of the short divisor and strong prime. -/
+def strongProduct (i : ℕ × ℕ) : ℕ := i.2 * i.1
+
+private theorem strongSupportInfo {i : ℕ × ℕ} {n : ℕ} (hi : i ∈ strongRowSupport n) :
+    i.1 ∈ strongPrimes n ∧ i.2 ≤ cutoffL n ∧ cutoffU n < i.2 ∧ cutoffU n < i.1 ∧
+      i.2 * i.1 ≤ n := by
+  simpa [strongRowSupport, and_assoc, Nat.lt_succ_iff] using hi
+
+private theorem strongSupport_dvd {i : ℕ × ℕ} {n : ℕ} (hi : i ∈ strongRowSupport n) :
+    0 < strongProduct i ∧ strongProduct i ≤ n ∧ i.2 ∣ strongProduct i ∧
+      strongProduct i / i.2 = i.1 := by
+  obtain ⟨hp, _, ha, _, hn⟩ := strongSupportInfo hi
+  have ha' : 0 < i.2 := Nat.zero_lt_of_lt ha
+  have hp' := (mem_filter.mp hp).2.2.pos
+  exact ⟨Nat.mul_pos ha' hp', hn, dvd_mul_right .., Nat.mul_div_cancel_left _ ha'⟩
+
+private theorem strongSupport_inj (n : ℕ) (hn : 1 ≤ n) :
+    Set.InjOn strongProduct (strongRowSupport n : Set (ℕ × ℕ)) := by
+  have hVD : n.sqrt ≤ distanceCut n := by
+    rw [← Real.nat_floor_real_sqrt_eq_nat_sqrt]
+    apply Nat.floor_mono
+    rw [Real.sqrt_eq_rpow]
+    exact Real.rpow_le_rpow_of_exponent_le (by exact_mod_cast hn) (by norm_num)
+  intro i hi j hj he
+  obtain ⟨hm, hnprod, hd, heq⟩ := strongSupport_dvd hi
+  obtain ⟨_, _, hj', heq'⟩ := strongSupport_dvd hj
+  rw [← he] at hj' heq'
+  have hiP := (mem_filter.mp (strongSupportInfo hi).1).2
+  have hjP := (mem_filter.mp (strongSupportInfo hj).1).2
+  rw [← heq] at hiP
+  rw [← heq'] at hjP
+  have ha := unique_large_prime_cofactor hm hnprod hd hj' hiP.2 hjP.2
+    (hVD.trans_lt hiP.1) (hVD.trans_lt hjP.1)
+  exact Prod.ext (by rw [← heq, ha, heq']) ha
+
+private theorem divisor_to_strongSupport {n m a : ℕ} (hn : 1 ≤ n) (hm : m ≤ n)
+    (ha : a ∈ (Nat.divisors m).filter (fun a => cutoffU n < a ∧ a ≤ cutoffL n ∧
+      cutoffU n < m / a ∧ distanceCut n < m / a)) (hp : (m / a).Prime) :
+    (m / a, a) ∈ strongRowSupport n ∧ strongProduct (m / a, a) = m := by
+  obtain ⟨had, haU, haB, hrU, hrD⟩ := mem_filter.mp ha
+  have heq := Nat.mul_div_cancel' (Nat.dvd_of_mem_divisors had)
+  have hle := (Nat.div_le_self m a).trans hm
+  refine ⟨mem_filter.mpr ⟨mem_product.mpr ⟨mem_filter.mpr
+    ⟨mem_range.mpr (Nat.lt_succ_of_le hle), hrD, hp⟩,
+    mem_range.mpr (Nat.lt_succ_of_le haB)⟩, haU, hrU, ?_⟩, heq⟩
+  exact heq.le.trans hm
+
+private theorem topPrime_on_strongProduct {n : ℕ} {i : ℕ × ℕ} (hn : 1 ≤ n)
+    (hi : i ∈ strongRowSupport n) :
+    topPrime n (distanceCut n) (strongProduct i) =
+      lowMoebiusWeight (cutoffU n) i.2 * Real.log i.1 := by
+  obtain ⟨hp, hB, ha, hr, _⟩ := strongSupportInfo hi
+  obtain ⟨hm, hnprod, hd, heq⟩ := strongSupport_dvd hi
+  have hp' := (mem_filter.mp hp).2
+  have ha : i.2 ∈ (Nat.divisors (strongProduct i)).filter
+      (fun a => cutoffU n < a ∧ a ≤ cutoffL n ∧ cutoffU n < strongProduct i / a ∧
+        distanceCut n < strongProduct i / a) := by
+    apply mem_filter.mpr
+    rw [heq]
+    refine ⟨Nat.mem_divisors.mpr ⟨hd, hm.ne'⟩, ha, hB, ?_⟩
+    exact ⟨hr, hp'.1⟩
+  unfold topPrime
+  rw [sum_eq_single_of_mem i.2 ha, heq]
+  · simp [primeWeight, hp'.2]
+  · intro a ha' hne
+    by_cases hpa : (strongProduct i / a).Prime
+    · obtain ⟨hs, he⟩ := divisor_to_strongSupport hn hnprod ha' hpa
+      have same := strongSupport_inj n hn hs hi he
+      exact (hne (congrArg Prod.snd same)).elim
+    · simp [hpa]
+
+private theorem topPrime_off_strongProduct {n m : ℕ} (hn : 1 ≤ n) (hm : m ≤ n)
+    (hoff : m ∉ (strongRowSupport n).image strongProduct) :
+    topPrime n (distanceCut n) m = 0 := by
+  unfold topPrime
+  refine sum_eq_zero fun a ha => ?_
+  obtain ⟨had, haU, haB, hrU, hrD⟩ := mem_filter.mp ha
+  by_cases hp : (m / a).Prime
+  · obtain ⟨hs, he⟩ := divisor_to_strongSupport hn hm ha hp
+    exact (hoff (mem_image.mpr ⟨_, hs, he⟩)).elim
+  · simp [hp]
+
+private theorem phase_eq_mode_nat' (m : ℕ) (t : ℝ) : phase (m * t) = mode m t := by
+  unfold phase mode frequency
+  congr 1
+  push_cast
+  ring
+
+private theorem mode_row_index' (a p : ℕ) (t : ℝ) : mode a (p * t) = mode ((a * p : ℕ) : ℤ) t := by
+  unfold mode frequency
+  congr 1
+  push_cast
+  ring
+
+private theorem primeRowCoeff_on_support {n p a : ℕ}
+    (h : (p, a) ∈ rowSupport n (cutoffU n) (cutoffU n) (cutoffL n)) :
+    primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n) p a =
+      ((lowMoebiusWeight (cutoffU n) a * Real.log p : ℝ) : ℂ) := by
+  unfold primeRowCoeff
+  rw [if_pos h]
+  rfl
+
+private theorem strongSupport_row {n : ℕ} {i : ℕ × ℕ} (hi : i ∈ strongRowSupport n) :
+    (i.1, i.2) ∈ rowSupport n (cutoffU n) (cutoffU n) (cutoffL n) := by
+  obtain ⟨hp, haB, haU, hpU, hprod⟩ := strongSupportInfo hi
+  simp only [rowSupport, mem_filter, mem_product, mem_range, Nat.lt_succ_iff]
+  refine ⟨⟨?_, haB⟩, haU, hpU, hprod⟩
+  obtain ⟨hpN, hD, hprime⟩ := mem_filter.mp hp
+  have hn : 1 ≤ n := by
+    have : 0 < i.2 := by omega
+    have : 0 < i.1 := (mem_filter.mp hp).2.2.pos
+    have : 0 < i.2 * i.1 := Nat.mul_pos ‹_› ‹_›
+    omega
+  have hVD : n.sqrt ≤ distanceCut n := by
+    rw [← Real.nat_floor_real_sqrt_eq_nat_sqrt]
+    apply Nat.floor_mono
+    rw [Real.sqrt_eq_rpow]
+    exact Real.rpow_le_rpow_of_exponent_le (by exact_mod_cast hn) (by norm_num)
+  exact mem_filter.mpr ⟨hpN, hVD.trans_lt hD, hprime⟩
+
+private theorem notStrongSupport_row {n : ℕ} {i : ℕ × ℕ}
+    (hi : i ∈ strongPrimes n ×ˢ range (cutoffL n + 1)) (hnot : i ∉ strongRowSupport n) :
+    (i.1, i.2) ∉ rowSupport n (cutoffU n) (cutoffU n) (cutoffL n) := by
+  intro h
+  apply hnot
+  obtain ⟨hp, ha⟩ := mem_product.mp hi
+  simp only [rowSupport, mem_filter, mem_product, mem_range, Nat.lt_succ_iff] at h
+  obtain ⟨⟨hpbig, haB⟩, haU, hpU, hprod⟩ := h
+  simp only [strongRowSupport, mem_filter, mem_product, mem_range, Nat.lt_succ_iff]
+  exact ⟨⟨hp, haB⟩, haU, hpU, hprod⟩
+
+/-- **Strong-prime row expansion.** -/
+theorem topPrime_strong_rows (n : ℕ) (hn : 1 ≤ n) (t : ℝ) :
+    fourierSum n (topPrime n (distanceCut n)) t =
+    ∑ p ∈ strongPrimes n, row (cutoffL n + 1) p
+      (primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n) p) t := by
+  classical
+  let S := strongRowSupport n
+  let f (m : ℕ) := ((topPrime n (distanceCut n) m : ℝ) : ℂ) * phase (m * t)
+  have subset : S.image strongProduct ⊆ range (n + 1) := by
+    intro m hm
+    obtain ⟨i, hi, rfl⟩ := mem_image.mp hm
+    exact mem_range.mpr (Nat.lt_succ_of_le (strongSupport_dvd hi).2.1)
+  calc
+    _ = ∑ m ∈ S.image strongProduct, f m := by
+      symm
+      apply sum_subset subset
+      intro m hm hoff
+      simp [f, topPrime_off_strongProduct hn (Nat.le_of_lt_succ (mem_range.mp hm)) hoff]
+    _ = ∑ i ∈ S, f (strongProduct i) := sum_image (strongSupport_inj n hn)
+    _ = ∑ i ∈ S, ((lowMoebiusWeight (cutoffU n) i.2 * Real.log i.1 : ℝ) : ℂ) *
+        mode i.2 (i.1 * t) := by
+      refine sum_congr rfl fun i hi => ?_
+      unfold f
+      rw [topPrime_on_strongProduct hn hi, phase_eq_mode_nat', mode_row_index']
+      rfl
+    _ = ∑ i ∈ strongPrimes n ×ˢ range (cutoffL n + 1),
+        primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n) i.1 i.2 *
+          mode i.2 (i.1 * t) := by
+      rw [← sum_filter_add_sum_filter_not (strongPrimes n ×ˢ range (cutoffL n + 1))
+        (fun i => i ∈ S)]
+      have ident : ((strongPrimes n ×ˢ range (cutoffL n + 1)).filter (fun i => i ∈ S)) = S :=
+        filter_mem_eq_inter.trans (inter_eq_right.mpr (filter_subset _ _))
+      rw [ident, sum_eq_zero (s := (strongPrimes n ×ˢ range (cutoffL n + 1)).filter
+        fun i => i ∉ S), add_zero]
+      · refine sum_congr rfl fun i hi => ?_
+        rw [primeRowCoeff_on_support (strongSupport_row hi)]
+      · intro i hi
+        have hnrow := notStrongSupport_row (mem_filter.mp hi).1 (mem_filter.mp hi).2
+        simp [primeRowCoeff, hnrow]
+    _ = _ := sum_product ..
+
+/-- **Strong prime cell in prime-row form, on any measurable arc set.** -/
+theorem strongPrimeCellOn_arcRows (s : Set ℝ) (hs : MeasurableSet s) (n : ℕ) (hn : 1 ≤ n) :
+    pairIntegral s n (topPrime n (distanceCut n)) (topPrime n (distanceCut n)) =
+    arcRows s (strongPrimes n ×ˢ strongPrimes n) (cutoffL n + 1) n
+      (primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n)) := by
+  have point (t : ℝ) :
+      fourierSum n (topPrime n (distanceCut n)) t *
+        fourierSum n (topPrime n (distanceCut n)) t * phase (-(n : ℝ) * t) =
+      pairRows (strongPrimes n ×ˢ strongPrimes n) (cutoffL n + 1) n
+        (primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n)) t := by
+    rw [topPrime_strong_rows n hn]
+    unfold pairRows
+    have hphase : phase (-(n : ℝ) * t) = mode (-(n : ℤ)) t := by
+      unfold phase mode frequency
+      congr 1
+      push_cast
+      ring
+    rw [hphase, sum_product, sum_mul]
+    congr 1
+    exact sum_congr rfl fun _ _ => mul_sum ..
+  unfold pairIntegral arcRows
+  simp_rw [point]
+  rw [intervalIntegral.integral_of_le zero_le_one, ← integral_Icc_eq_integral_Ioc,
+    integral_indicator hs, Measure.restrict_restrict hs, Set.inter_comm]
+
+/-- The strong prime cell on the deep minor arcs. -/
+theorem strongPrimeCell_eq_arcRows (n : ℕ) (hn : 1 ≤ n) :
+    strongPrimeCell n = arcRows (deep n) (strongPrimes n ×ˢ strongPrimes n)
+      (cutoffL n + 1) n (primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n)) :=
+  strongPrimeCellOn_arcRows (deep n) (wide_measurable ..).compl n hn
+
+/-- The first-band cutoff is below the strengthened distance/prime cutoff. -/
+theorem cutoffL_le_distanceCut {n : ℕ} (hn : 1 ≤ n) : cutoffL n ≤ distanceCut n := by
+  apply Nat.floor_mono
+  exact Real.rpow_le_rpow_of_exponent_le (by exact_mod_cast hn) (by norm_num)
+
+/-- Wide-arc integral over strong-prime pairs. -/
+def strongWidePrimePairs (n : ℕ) : ℂ :=
+  arcRows (wide n (cutoffB n) (arcHeight n)) (strongPrimes n ×ˢ strongPrimes n)
+    (cutoffL n + 1) n (primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n))
+
+/-- Full-circle contribution of distant strong-prime pairs. -/
+def strongDistantPrimeFull (n : ℕ) : ℂ :=
+  ∫ t in (0:ℝ)..1, pairRows (farPairs (strongPrimes n) (distanceCut n)) (cutoffL n + 1) n
+    (primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n)) t
+
+/-- Full-circle contribution of close strong-prime pairs. -/
+def strongClosePrimeFull (n : ℕ) : ℂ :=
+  ∫ t in (0:ℝ)..1, pairRows (closePairs (strongPrimes n) (distanceCut n)) (cutoffL n + 1) n
+    (primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n)) t
+
+/-- Distant strong-prime residual. -/
+def strongDistantResidual (n : ℕ) : ℂ := strongDistantPrimeFull n - strongWidePrimePairs n
+
+/-- The strong prime cell as a full-circle minus wide-arc discrepancy. -/
+theorem strongPrimeCell_eq_full_sub_wide (n : ℕ) (hn : 1 ≤ n) :
+    strongPrimeCell n =
+      (∫ t in (0:ℝ)..1, pairRows (strongPrimes n ×ˢ strongPrimes n) (cutoffL n + 1) n
+        (primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n)) t) -
+      strongWidePrimePairs n := by
+  rw [strongPrimeCell_eq_arcRows n hn]
+  exact eq_sub_iff_add_eq.mpr (arcRows_partition (wide n (cutoffB n) (arcHeight n))
+    (wide_measurable ..) (strongPrimes n ×ˢ strongPrimes n) (cutoffL n + 1) n
+    (primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n)))
+
+/-- Strong-prime full circle splits into distant and close pairs. -/
+theorem strongFull_eq_distant_add_close (n : ℕ) :
+    (∫ t in (0:ℝ)..1, pairRows (strongPrimes n ×ˢ strongPrimes n) (cutoffL n + 1) n
+      (primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n)) t) =
+    strongDistantPrimeFull n + strongClosePrimeFull n := by
+  have hsubset : closePairs (strongPrimes n) (distanceCut n) ⊆ strongPrimes n ×ˢ strongPrimes n :=
+    Finset.filter_subset _ _
+  have point (t : ℝ) :
+      pairRows (strongPrimes n ×ˢ strongPrimes n) (cutoffL n + 1) n
+        (primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n)) t =
+      pairRows (farPairs (strongPrimes n) (distanceCut n)) (cutoffL n + 1) n
+        (primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n)) t +
+      pairRows (closePairs (strongPrimes n) (distanceCut n)) (cutoffL n + 1) n
+        (primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n)) t := by
+    unfold pairRows farPairs
+    rw [← add_mul, sum_sdiff hsubset]
+  simp_rw [point]
+  apply intervalIntegral.integral_add
+  · exact (continuous_pairRows ..).intervalIntegrable 0 1
+  · exact (continuous_pairRows ..).intervalIntegrable 0 1
+
+/-- The strong-cell discrepancy from its distant residual is exactly the close mass. -/
+theorem strongPrimeCell_sub_distantResidual (n : ℕ) (hn : 1 ≤ n) :
+    strongPrimeCell n - strongDistantResidual n = strongClosePrimeFull n := by
+  unfold strongDistantResidual strongWidePrimePairs
+  rw [strongPrimeCell_eq_full_sub_wide n hn, strongFull_eq_distant_add_close]
+  unfold strongWidePrimePairs
+  ring_nf
+
+/-- The strong close-pair mass is `o(n)`, using the generic close-pair theorem. -/
+theorem strongClosePrimeFull_eventually (e : ℝ) (he : 0 < e) :
+    ∀ᶠ n : ℕ in atTop, ‖strongClosePrimeFull n‖ ≤ e * (n : ℝ) := by
+  obtain ⟨C, hC, hdiv⟩ := divisor_envelope
+  exact closeFull_eventually C hC hdiv (fun n => strongPrimes n)
+    (fun n => primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n))
+    (fun n => primeRowCoeff_zero n)
+    (fun n hn p hp a ha => primeRowCoeff_norm_le_envelope n hn (by positivity)
+      (fun m hm => hdiv n m hm) p a) e he
+
+/-- The strong cell and its distant residual have equivalent `smallEven` estimates. -/
+theorem strongPrimeCell_iff_distantResidual :
+    smallEven strongPrimeCell ↔ smallEven strongDistantResidual := by
+  constructor
+  · apply smallEven_transfer
+    intro e he
+    filter_upwards [eventually_ge_atTop 1, strongClosePrimeFull_eventually e he] with n hn1 hn
+    have heq := strongPrimeCell_sub_distantResidual n hn1
+    rw [← heq] at hn
+    simpa only [norm_sub_rev] using hn
+  · apply smallEven_transfer
+    intro e he
+    filter_upwards [eventually_ge_atTop 1, strongClosePrimeFull_eventually e he] with n hn1 hn
+    have heq := strongPrimeCell_sub_distantResidual n hn1
+    simpa only [heq] using hn
+
+/-- Inverse-residue sum over distant strong-prime pairs. -/
+def strongDistantInverseTotal (n : ℕ) : ℂ :=
+  ∑ pq ∈ farPairs (strongPrimes n) (distanceCut n),
+    inversePair n (cutoffL n)
+      (primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n)) pq.1 pq.2
+
+/-- The distant strong-prime full circle is an inverse-residue sum. -/
+theorem strongDistantPrimeFull_eq_inverseTotal (n : ℕ) (hn : 1 ≤ n) :
+    strongDistantPrimeFull n = strongDistantInverseTotal n := by
+  classical
+  unfold strongDistantPrimeFull strongDistantInverseTotal
+  rw [full_pairRows, Finset.sum_filter]
+  change (∑ i ∈ (farPairs (strongPrimes n) (distanceCut n) ×ˢ
+      (Finset.range (cutoffL n + 1) ×ˢ Finset.range (cutoffL n + 1))),
+      if i.2.1 * i.1.1 + i.2.2 * i.1.2 = n then
+        primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n) i.1.1 i.2.1 *
+          primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n) i.1.2 i.2.2 else 0) = _
+  rw [Finset.sum_product]
+  refine Finset.sum_congr rfl fun pq hpq => ?_
+  obtain ⟨hm, hout⟩ := Finset.mem_sdiff.mp hpq
+  obtain ⟨hp, hq⟩ := Finset.mem_product.mp hm
+  have hne : pq.1 ≠ pq.2 := by
+    intro heq
+    apply hout
+    exact Finset.mem_filter.mpr ⟨hm, by simp [heq]⟩
+  exact rowMass_eq_inversePair (Finset.mem_filter.mp hp).2.2
+    (Finset.mem_filter.mp hq).2.2 hne
+    ((cutoffL_le_distanceCut hn).trans_lt (Finset.mem_filter.mp hq).2.1) _
+
+/-- The strong distant residual in inverse-residue form. -/
+def strongInverseResidual (n : ℕ) : ℂ := strongDistantInverseTotal n - strongWidePrimePairs n
+
+theorem strongDistantResidual_eq_inverse (n : ℕ) (hn : 1 ≤ n) :
+    strongDistantResidual n = strongInverseResidual n := by
+  unfold strongDistantResidual strongInverseResidual
+  rw [strongDistantPrimeFull_eq_inverseTotal n hn]
+
+/-- Fully symmetric reciprocal sum over distant strong-prime pairs. -/
+def strongReciprocalTotal (n : ℕ) : ℂ :=
+  let c := primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n)
+  ∑ pq ∈ farPairs (strongPrimes n) (distanceCut n),
+    c pq.1 (inverseResidue n pq.1 pq.2) * c pq.2 (inverseResidue n pq.2 pq.1)
+
+/-- Symmetric reciprocal form of the strong inverse-residue sum. -/
+theorem strongDistantInverseTotal_eq_reciprocal (n : ℕ) (hn : 16 ≤ n) :
+    strongDistantInverseTotal n = strongReciprocalTotal n := by
+  classical
+  let c := primeRowCoeff n (cutoffU n) (cutoffU n) (cutoffL n)
+  unfold strongDistantInverseTotal strongReciprocalTotal
+  refine Finset.sum_congr rfl fun pq hpq => ?_
+  obtain ⟨hm, hout⟩ := Finset.mem_sdiff.mp hpq
+  obtain ⟨hp, hq⟩ := Finset.mem_product.mp hm
+  have hne : pq.1 ≠ pq.2 := by
+    intro heq
+    apply hout
+    exact Finset.mem_filter.mpr ⟨hm, by simp [heq]⟩
+  have hVD : n.sqrt ≤ distanceCut n := by
+    rw [← Real.nat_floor_real_sqrt_eq_nat_sqrt]
+    apply Nat.floor_mono
+    rw [Real.sqrt_eq_rpow]
+    exact Real.rpow_le_rpow_of_exponent_le (by exact_mod_cast (by omega : 1 ≤ n)) (by norm_num)
+  have hpD := (Finset.mem_filter.mp hp).2.1
+  have hqD := (Finset.mem_filter.mp hq).2.1
+  have hnq : n < pq.1 * pq.2 := by
+    have hpS : n.sqrt + 1 ≤ pq.1 := Nat.succ_le_of_lt (hVD.trans_lt hpD)
+    have hqS : n.sqrt + 1 ≤ pq.2 := Nat.succ_le_of_lt (hVD.trans_lt hqD)
+    exact (Nat.lt_succ_sqrt n).trans_le (Nat.mul_le_mul hpS hqS)
+  apply inversePair_symmetric (Finset.mem_filter.mp hp).2.2 (Finset.mem_filter.mp hq).2.2 hne hnq
+    (((twice_cutoffL_le_sqrt hn).trans hVD).trans_lt hqD)
+    (((twice_cutoffL_le_sqrt hn).trans hVD).trans_lt hpD)
+  intro p a ha
+  have hnot : (p, a) ∉ rowSupport n (cutoffU n) (cutoffU n) (cutoffL n) := by
+    intro h
+    have hmem := (Finset.mem_filter.mp h).1
+    have haB : a ≤ cutoffL n := Nat.le_of_lt_succ
+      (Finset.mem_range.mp (Finset.mem_product.mp hmem).2)
+    omega
+  simp [c, primeRowCoeff, hnot]
+
+/-- The strong residual in symmetric reciprocal form. -/
+def strongReciprocalResidual (n : ℕ) : ℂ := strongReciprocalTotal n - strongWidePrimePairs n
+
+/-- The strong inverse and reciprocal residuals are eventually equal. -/
+theorem strongInverseResidual_eq_reciprocal (n : ℕ) (hn : 16 ≤ n) :
+    strongInverseResidual n = strongReciprocalResidual n := by
+  unfold strongInverseResidual strongReciprocalResidual
+  rw [strongDistantInverseTotal_eq_reciprocal n hn]
+
+/-- **Full reduction to the strong symmetric reciprocal residual.** -/
+theorem fullCell_iff_strongReciprocalResidual :
+    smallEven fullCell ↔ smallEven strongReciprocalResidual := by
+  have h₁ : smallEven fullCell ↔ smallEven strongDistantResidual :=
+    fullCell_iff_strongPrimeCell.trans strongPrimeCell_iff_distantResidual
+  rw [h₁]
+  have transform {f g : ℕ → ℂ} (h : ∀ n, 16 ≤ n → f n = g n) : smallEven f → smallEven g := by
+    intro hf e he
+    obtain ⟨N, hN⟩ := hf e he
+    refine ⟨max 16 N, fun n hn heven => ?_⟩
+    rw [← h n ((le_max_left ..).trans hn)]
+    exact hN n ((le_max_right ..).trans hn) heven
+  exact ⟨transform (fun n hn => (strongDistantResidual_eq_inverse n (by omega)).trans
+      (strongInverseResidual_eq_reciprocal n hn)),
+    transform (fun n hn => ((strongDistantResidual_eq_inverse n (by omega)).trans
+      (strongInverseResidual_eq_reciprocal n hn)).symm)⟩
+
+/-- Definitional comparison of the frozen catalogue statement with the strong residual. -/
+theorem frozen_iff_strongReciprocalResidual :
+    (let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I);
+    let S := fun (n : ℕ) (u : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1))
+      (fun k => (u k:ℂ)*E ((k:ℝ)*t));
+    let Q := fun n : ℕ => (Nat.log 2 (n+2))^2;
+    let Q₁ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊;
+    let H := fun n : ℕ => 256 * Q₁ n * Q n;
+    let wideArcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q₁ n ∧ a≤q ∧
+      Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (H n:ℝ)/((q:ℝ)*(n:ℝ))};
+    let Λ := ArithmeticFunction.vonMangoldt;
+    let μ := fun d : ℕ => ((ArithmeticFunction.moebius d : ℤ) : ℝ);
+    let U := fun n : ℕ => ⌊(n:ℝ)^(1/16:ℝ)⌋₊;
+    let B₁ := fun n : ℕ => ⌊(n:ℝ)^(1/4:ℝ)⌋₊;
+    let τ₁ := fun (n m : ℕ) => ∑ a ∈ (Nat.divisors m).filter
+      (fun a => U n < a ∧ a ≤ B₁ n ∧ U n < m / a),
+      (∑ d ∈ (Nat.divisors a).filter (fun d => U n < d), μ d) * Λ (m / a);
+    let Jdeep := fun (n : ℕ) (u v : ℕ → ℝ) => intervalIntegral
+      (fun t => (wideArcs n)ᶜ.indicator
+        (fun x => S n u x * S n v x * E (-(n:ℝ)*x)) t) (0:ℝ) 1 MeasureTheory.volume;
+    ∀ e : ℝ, 0 < e → ∃ N : ℕ, ∀ n : ℕ, N ≤ n → Even n →
+      ‖Jdeep n (τ₁ n) (τ₁ n)‖ ≤ e * (n : ℝ)) ↔ smallEven strongReciprocalResidual := by
+  exact fullCell_iff_strongReciprocalResidual
 
 end B1B1Fixed
