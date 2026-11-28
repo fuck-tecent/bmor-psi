@@ -2756,4 +2756,4 @@ strongest the peeling can be.  The remaining formal step is to plug
 * Do not `s.find("  calc (n.divisors.card : ℝ)")` to patch — it matches the *earlier*
   occurrence in M44 and silently deletes the rest of the file.
 
-Dossier: 3034 → 3316 lines, no `sorry`.
+Dossier: 3034 -> 3258 lines, no `sorry`.  (113 theorems, 24 defs, 12 lemmas.)
