@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-prescribed-residues-square-root-moduli",
+  "statement": "let missed := fun q a b n : ℕ => Even n ∧ n % q = (a+b) % q ∧ ¬ ∃ p r : ℕ, Nat.Prime p ∧ Nat.Prime r ∧ p+r=n ∧ p%q=a ∧ r%q=b; ∀ B : ℕ, ∃ A : ℕ, ∀ ε : ℝ, 0 < ε → ∃ N₀ : ℕ, ∀ N R : ℕ, N₀ ≤ N → 3 ≤ R → (R : ℝ)*(Real.log (N : ℝ))^A ≤ Real.sqrt (N : ℝ) → ∃ T : Finset ℕ, T ⊆ Finset.Icc 3 R ∧ (T.card : ℝ)*(Real.log (N : ℝ))^B ≤ (R : ℝ) ∧ ∀ q ∈ Finset.Icc 3 R, q ∉ T → ∀ a b : ℕ, a < q → b < q → Nat.Coprime a q → Nat.Coprime b q → (((@Finset.filter ℕ (missed q a b) (Classical.decPred (missed q a b)) (Finset.Icc 2 N)).card : ℝ)*(q : ℝ)) ≤ ε*(N : ℝ)",
+  "plain_statement": {
+    "zh": "在几乎所有不超过 √N/对数幂的模数 q 上，同时对每一对互素剩余类 a、b 证明：至 N 的可容许偶数中，没有指定两素数表示的仅为 o(N/q)。同一批例外模数适用于所有剩余类。",
+    "en": "For almost all moduli up to sqrt N divided by a log power, prove o(N/q) exceptional even targets simultaneously for every pair of reduced summand classes. The same bad-modulus set must work for all residue pairs."
+  },
+  "brief": {
+    "zh": "Salmensuu 定理 1.1 在平方根尺度还须排除某些第二剩余类；定理 1.2 在较小的素数模范围可固定两类。尝试估计每个模数内最坏剩余类对的误差，再对模数取矩。该任务让参与者可以事先指定双素数所在的同余类，仍允许少量模数和偶数例外。",
+    "en": "Theorem 1.1 leaves exceptional second residues at the square-root scale; Theorem 1.2 treats both prescribed classes on a smaller prime-modulus range. Seek a moment over moduli controlling their worst residue pair. This would allow a local congruence filter chosen in advance, while still permitting exceptional targets."
+  },
+  "source": "https://doi.org/10.1093/qmath/haac008",
+  "program": "correlation",
+  "track": "progressions",
+  "depends_on": [],
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true,
+  "imports": []
+}

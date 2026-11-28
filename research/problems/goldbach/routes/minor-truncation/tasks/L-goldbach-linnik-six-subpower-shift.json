@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-linnik-six-subpower-shift",
+  "statement": "∀ ε : ℝ, 0 < ε → ∃ N₀ : ℕ, ∀ N : ℕ, N₀ ≤ N → Even N → ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ ∃ a : Fin 6 → ℕ, N = p + q + ∑ i : Fin 6, 2 ^ (a i + 1) ∧ ((∑ i : Fin 6, (2 : ℕ) ^ (a i + 1) : ℕ) : ℝ) ≤ (N : ℝ) ^ ε",
+  "plain_statement": {
+    "zh": "把六幂偏移的总和压进任意固定的 N^ε 窗口，对每个充分大偶数成立。",
+    "en": "Place the entire six-power correction inside N^ε for every fixed positive ε and every sufficiently large even N."
+  },
+  "brief": {
+    "zh": "本题保留定理 1.1 的六项并限制总偏移。因此每个大偶数 N 左侧的短区间内都要有一个二素数和，而且其距离具有六幂结构。应先将二幂和截到 ε log₂ N 的长度，在这个新长度下分别重算大值集和反射积分的损失。阈值可依赖 ε。",
+    "en": "Retain six terms but constrain their sum. A Goldbach number must lie just below every even N at a distance with six-term binary structure. Truncate the lacunary sum at a length proportional to ε log₂ N and reassess the large-value and reflection losses. The threshold may depend on ε."
+  },
+  "source": "https://arxiv.org/html/2610.15784v1#S1",
+  "program": "correlation",
+  "track": "minor-truncation",
+  "depends_on": [],
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true,
+  "imports": []
+}

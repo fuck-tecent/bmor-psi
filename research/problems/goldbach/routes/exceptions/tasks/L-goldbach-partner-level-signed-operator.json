@@ -1,0 +1,22 @@
+{
+  "id": "L-goldbach-partner-level-signed-operator",
+  "statement": "by\n  classical\n  let S := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    ∑' q : ℕ, if hq : q ≠ 0 then\n      let _ : NeZero q := ⟨hq⟩\n      if h : r ∣ q ∧ s ∣ q then\n        let A := DirichletCharacter.changeLevel h.1 α\n        let B := DirichletCharacter.changeLevel h.2 β\n        gaussSum A ZMod.stdAddChar * gaussSum B ZMod.stdAddChar *\n          gaussSum (A*B)⁻¹ (ZMod.stdAddChar.mulShift (-(m:ZMod q))) / (q.totient:ℂ)^2\n      else 0\n    else 0\n  let O := S (1 : DirichletCharacter ℂ 1) (1 : DirichletCharacter ℂ 1)\n  let P := (1 : DirichletCharacter ℂ 1)\n  let B := Σ s : ℕ, DirichletCharacter ℂ s\n  let valid := fun b : B => b.1 ≠ 0 ∧ b.2.IsPrimitive\n  exact ∀ D m : ℕ, 0 < D → 0 < m → Even m → ∃ F : Finset B, (∀ b, b ∈ F ↔ valid b ∧ b.1 ∣ D) ∧ (let H := ((Finset.range D).filter (fun x => x.Coprime D ∧ (m+D-(x%D)).Coprime D)).card; let scale := ‖O m‖*(D.totient:ℝ)/(H:ℝ); let normSq := fun w : B → ℂ => ∑ a ∈ F, ‖w a‖^2; let applyRow := fun (w : B → ℂ) (a : B) => ∑ b ∈ F, S a.2 b.2 m * w b; (∀ w : B → ℂ, normSq (applyRow w) ≤ scale^2 * normSq w) ∧ ∃ w : B → ℂ, 0 < normSq w ∧ normSq (applyRow w) = scale^2 * normSq w)",
+  "plain_statement": {
+    "zh": "求整个共同导子水平上的带相位奇异级数矩阵的精确 ℓ² 算子范数，并给出取等向量。",
+    "en": "Determine the exact ℓ² operator norm of the signed full-level matrix, including attainment."
+  },
+  "brief": {
+    "zh": "#4316 给出每一行的平方和。对一般复系数求和还涉及行间干涉。把全体原始来源提升为单位群特征基；预计矩阵经左右 Fourier 变换后是 x↦m−x 在可用单位上的部分置换。H 为两端均为单位的剩余类个数，精确因子应为 ‖O(m)‖φ(D)/H。",
+    "en": "PR #4316 gives individual row energies. For arbitrary complex coefficients retain interference between rows. In the full character basis the kernel should become a partial permutation on admissible units, with Fourier normalization giving the predicted sharp factor."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4316",
+  "program": "exceptions",
+  "role": "target",
+  "challenge_only": true,
+  "parallel": true,
+  "imports": [],
+  "depends_on": [
+    "L-goldbach-partner-level-parseval"
+  ],
+  "track": "exceptions"
+}

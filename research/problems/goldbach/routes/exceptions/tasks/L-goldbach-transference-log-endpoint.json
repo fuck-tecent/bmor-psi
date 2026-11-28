@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-transference-log-endpoint",
+  "statement": "by\n  classical\n  exact ∀ M δ η : ℝ, 1 ≤ M → 0 < δ → δ ≤ 1 → 0 < η → η ≤ 1 → ∃ κ : ℝ, 0 < κ ∧ ∀ (N : ℕ) [NeZero N], ∀ f g u v : ZMod N → ℝ,\n    let avg := fun h : ZMod N → ℝ => (∑ x, h x)/(N : ℝ)\n    let ft := fun (h : ZMod N → ℝ) (r : ZMod N) => (∑ x : ZMod N, (h x : ℂ) * Complex.exp (-2*(Real.pi : ℂ)*Complex.I*((r*x).val : ℂ)/(N : ℂ)))/(N : ℂ)\n    let bump := fun x : ℝ => x^4 * (1+Real.log (1+x⁻¹))\n    (∀ x, 0 ≤ f x ∧ f x ≤ u x ∧ 0 ≤ g x ∧ g x ≤ v x) → 1+δ ≤ avg f + avg g →\n    (∑ r : ZMod N, bump ‖ft f r‖) ≤ M → (∑ r : ZMod N, bump ‖ft g r‖) ≤ M →\n    (∀ r, ‖ft (fun x => u x-1) r‖ ≤ κ ∧ ‖ft (fun x => v x-1) r‖ ≤ κ) →\n    ((Finset.univ.filter (fun n : ZMod N => avg (fun x => f x*g (n-x)) < δ^3/1000)).card : ℝ) ≤ η*(N : ℝ)",
+  "plain_statement": {
+    "zh": "在临界指数 4 上，以一个对数加权四次矩控制二元卷积的低值例外。",
+    "en": "Endpoint binary transference with logarithmically strengthened fourth moments."
+  },
+  "brief": {
+    "zh": "在小 Fourier 系数处额外的对数权使四次质量的尾部一致可控。尝试先选谱截断，再选主化误差；允许 κ 比多项式小。任意固定 p<4 的限制条件可控制该对数四次矩（大系数另用有界性），但反向推理一般不成立。",
+    "en": "The logarithmic bump forces uniformly small fourth-moment tails at small coefficients. Choose the spectral truncation before the uniformity parameter. This endpoint task asks for a qualitative modulus; the polynomial modulus of #4281 need not survive."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4281",
+  "track": "exceptions",
+  "program": "exceptions",
+  "role": "target",
+  "challenge_only": true,
+  "parallel": true,
+  "imports": [],
+  "depends_on": []
+}

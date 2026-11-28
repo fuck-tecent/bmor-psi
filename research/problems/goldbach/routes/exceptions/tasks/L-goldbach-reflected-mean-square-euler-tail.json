@@ -1,0 +1,22 @@
+{
+  "id": "L-goldbach-reflected-mean-square-euler-tail",
+  "statement": "by\n  classical\n  let e := fun t : ℝ => Complex.exp (((2*Real.pi*t : ℝ) : ℂ)*Complex.I)\n  let S := fun (N : ℕ) (t : ℝ) => ∑ p ∈ (Finset.range (N+1)).filter Nat.Prime, (Real.log (p : ℝ) : ℂ) * e ((p : ℝ)*t)\n  let arcs := fun N : ℕ => let k := Nat.log 2 (N+2); {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ k ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t-(a : ℝ)/(q : ℝ)| ≤ ((k^3 : ℕ) : ℝ)/((q : ℝ)*(N : ℝ))}\n  let A := fun N m : ℕ => (intervalIntegral ((arcs N).indicator (fun t : ℝ => (S N t)^2 * e (-(m : ℝ)*t))) (0 : ℝ) 1 MeasureTheory.volume).re\n  let C₂ := ∏' p : ℕ, if Nat.Prime p ∧ 2 < p then 1 - 1/((p : ℝ)-1)^2 else 1\n  let band := fun N m : ℕ => 4*N ≤ 3*m ∧ 2*m ≤ 3*N ∧ Even m\n  let R := fun N m : ℕ => A N m / (2*(N:ℝ)-(m:ℝ))\n  let B := fun N : ℕ => (Finset.Icc N (2*N)).filter (band N)\n  let avg := fun (F : Finset ℕ) (f : ℕ → ℝ) => (∑ m ∈ F, f m)/(F.card:ℝ)\n  exact ∃ C : ℝ, 0 < C ∧ ∀ y : ℕ, 3 ≤ y → ∃ T : ℕ, ∀ N : ℕ, T ≤ N →\n    let P := fun m : ℕ => 2*C₂ * ∏ p ∈ m.primeFactors.filter (fun p => 2 < p ∧ p ≤ y), (1+1/((p:ℝ)-2))\n    avg (B N) (fun m => (R N m-P m)^2) ≤ C/(y:ℝ)^2",
+  "plain_statement": {
+    "zh": "用不超过 y 的奇素因子预测实际大弧系数，在偶目标带上证明均方误差为 O(y⁻²)。",
+    "en": "Bound mean-square error of the small-prime model by O(y⁻²) on the reflected band."
+  },
+  "brief": {
+    "zh": "固定 y 后让 N 增长。有限模型只读目标的少量局部信息；误差上界要求绝对常数独立于 y。可先对截断 Ramanujan 和做正交，再把有限素因子模型与完整二阶 Euler 乘积比较。",
+    "en": "After fixing y take N large. Bound the actual coefficient in mean square by a model using only small prime divisors, with an absolute constant. Try Ramanujan orthogonality followed by a second-moment Euler product tail estimate."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4275",
+  "track": "exceptions",
+  "program": "exceptions",
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true,
+  "imports": [],
+  "depends_on": [
+    "L-goldbach-reflected-major-sharp-floor"
+  ]
+}

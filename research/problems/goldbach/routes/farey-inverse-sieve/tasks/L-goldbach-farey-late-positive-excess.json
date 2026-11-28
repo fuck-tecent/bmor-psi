@@ -1,0 +1,24 @@
+{
+  "id": "L-goldbach-farey-late-positive-excess",
+  "statement": "let I := fun n : ℕ => Finset.Icc ((n+2)/3) ((2*n)/3); let P := fun z : ℕ => (Finset.Icc 2 z).filter Nat.Prime; let V := fun n z : ℕ => ((I n).card:ℝ)*(n.totient:ℝ)/n * ∏ p ∈ (P z).filter (fun p => ¬ p ∣ n), (1-2/(p:ℝ)); let Z₁ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊; let Z₂ := Nat.sqrt; let hit := fun n p : ℕ => ((I n).filter (fun u => u.Coprime n ∧ (u*(n-u)).minFac = p)).card; ∃ N₀ : ℕ, 64 ≤ N₀ ∧ ∀ n : ℕ, N₀ ≤ n → Even n → (∑ p ∈ (P (Z₂ n)).filter (fun p => Z₁ n < p), max 0 ((hit n p : ℝ) - (V n (p-1) - V n p))) ≤ (9/20 : ℝ)*V n (Z₂ n)",
+  "plain_statement": {
+    "zh": "按最小命中素数 p 将立方根到平方根之间的末段拆开。对所有充分大偶数，证明各个 p 的实际命中数超出模型减少量的正部之和至多为终筛主项的 9/20。",
+    "en": "Split the late sieve band by its first hitting prime. Bound the sum of positive excesses above the model drops by 9/20 of the terminal sieve volume, uniformly for large even targets."
+  },
+  "brief": {
+    "zh": "讨论 #3819 提出总损失预算为 V(√n)/2。模型降幅沿 p 望远镜求和，实际首次命中按最小素因子不交分组。故本题能用 9/20 替代 1/2，还对任意子集的有符号超额同时给界。复用已核验的换元定理，把 u=pq 和对称侧逐项计数。对 r 不整除 np 的奇素数，给定 q 为素数后附加局部存活因子为 (r−2)/(r−1)，它比 1−1/r 多一个收敛乘积因子；另算 q 为素数的密度。研究带正部的总误差，而非假设逐个 p 点态等分布。",
+    "en": "Discussion #3819 identifies a terminal budget of one half. First hits partition the actual total; model drops telescope. This target leaves 1/20 of terminal volume in reserve and applies to every subsum. Use the verified factor switch. For odd r not dividing np the conditional survival factor is (r−2)/(r−1) after q is prime; its ratio to 1−1/r is 1−1/(r−1)². Count the prime density of q separately. Bound the aggregate positive discrepancy."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/discussions/3819",
+  "track": "farey-inverse-sieve",
+  "program": "correlation",
+  "role": "target",
+  "challenge_only": true,
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-farey-late-first-hit-factor-switch"
+  ],
+  "imports": [
+    "Conjectures.Goldbach.FareyLateFirstHitFactorSwitch"
+  ]
+}

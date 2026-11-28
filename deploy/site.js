@@ -31,12 +31,12 @@ const strings = {
     noHourContributors: '最近一小时暂无首次通过的引理。',
     rankingsUnavailable: '暂时无法获取贡献榜。',
     rankingsCount: n => '共 ' + n + ' 位贡献者。',
-    rankingsSummary: (people, proofs) => people + ' 位贡献者共通过 ' + proofs + ' 条引理，按首次核验积分排列。',
+    rankingsSummary: (people, proofs) => people + ' 位贡献者共通过 ' + proofs + ' 条引理，榜单按贡献积分排列。',
     rankingPeriods: { hour: '最近一小时', all_time: '累计' },
     justNow: '刚刚',
     participant: '参与者',
     activities: {
-      claimed: '领取引理', submitted: '登记提交', checking: '开始验证',
+      claimed: '领取引理', submitted: '登记提交', checking: '开始验证', error: '核验中断，可重试',
       released: '归还引理', accepted: '验证通过', rejected: '验证拒绝', expired: '任务凭证过期'
     },
     event: '任务状态更新',
@@ -52,7 +52,7 @@ const strings = {
     alreadyVerified: '这条引理已通过权威验证。',
     lemmaPrompt: gap => '读取 ' + guideUrl + '，按指南用 ' + claimCommand + ' ' + gap.id + ' 领取并验证这一条引理。可跨猜想导入全站已验证社区模块，完整清单见领取指南。'
       + '同一题的积分归研究台最先记录权威 Lean ACCEPTED 的提交者。'
-      + (gap.takes_cuts ? '也可用 ' + claimCommand + ' ' + gap.id + ' --kind cut 提交拆题，每套经 Lean 核验并被采用的拆法另加 1 分。' : '')
+      + (gap.takes_cuts ? '也可用 ' + claimCommand + ' ' + gap.id + ' --kind cut 领取拆题。写 Lean 前先读当前路线、已有拆法和回执中的 discussion.search_url 讨论，选定具体卡点，在 PR 中说明新前提如何推进，并注明讨论来源。每套经 Lean 核验并被采用的拆法另加 1 分。' : '')
       + (gap.imports?.length ? '本题推荐  ' + gap.imports.join('、') + '。' : '')
       + '可查阅网上资料，把相关方法形式化到指定的 Lean 文件，并在 PR 中注明来源。如果无法领取这条引理，请说明原因，不要改领其他题。'
   },
@@ -77,7 +77,7 @@ const strings = {
     justNow: 'Just now',
     participant: 'Participant',
     activities: {
-      claimed: 'Claimed a lemma', submitted: 'Registered a submission', checking: 'Started verification',
+      claimed: 'Claimed a lemma', submitted: 'Registered a submission', checking: 'Started verification', error: 'Verification interrupted · retry available',
       released: 'Returned a lemma', accepted: 'Proof accepted', rejected: 'Proof rejected', expired: 'Lease expired'
     },
     event: 'Task status changed',
@@ -93,7 +93,7 @@ const strings = {
     alreadyVerified: 'The authoritative verifier has accepted this lemma.',
     lemmaPrompt: gap => 'Read ' + guideUrl + ' and follow it to claim and verify exactly ' + gap.id + ' with ' + claimCommand + ' ' + gap.id + '. Verified community modules are available across conjectures (see the guide). '
       + "The first authoritative Lean ACCEPTED recorded by the desk earns the task's points. "
-      + (gap.takes_cuts ? 'You can also use ' + claimCommand + ' ' + gap.id + ' --kind cut. Each Lean-verified cut adopted by the desk earns a separate point. ' : '')
+      + (gap.takes_cuts ? 'You can also use ' + claimCommand + ' ' + gap.id + ' --kind cut. Before writing Lean, read the live roadmap, existing cuts, and discussion.search_url from the receipt. Pick a concrete blocker, explain how your premises address it in the cut PR, and cite helpful threads. Each Lean-verified cut adopted by the desk earns a separate point. ' : '')
       + (gap.imports?.length ? 'Suggested imports include ' + gap.imports.join(', ') + '. ' : '')
       + 'You may research methods online. Formalize the relevant steps in your assigned Lean file and cite your sources in the PR. If that lemma is unavailable, report why and do not choose another.'
   }
@@ -163,50 +163,22 @@ function loadTaskDetail(id) {
   return entry.request;
 }
 
-function detailSearch(scope, refresh) {
-  let active = '';
-  let matches = new Set();
-  let debounce;
-  let pending;
+function loadTaskPage(params) {
+  return fetchPublicJson('api/task-page?' + new URLSearchParams({ lang, ...params }));
+}
 
-  return {
-    update(query) {
-      if (active === query) return;
-      active = query;
-      matches = new Set();
-      window.clearTimeout(debounce);
-      pending?.abort();
-      if (query.length === 0 || query.length > 500) return;
-      debounce = window.setTimeout(async () => {
-        const controller = new AbortController();
-        pending = controller;
-        const params = new URLSearchParams({q: query, lang, scope});
-        try {
-          const response = await fetch('api/task-search?' + params, {
-            signal: AbortSignal.any([controller.signal, AbortSignal.timeout(10000)]),
-          });
-          if (!response.ok) return;
-          const data = await response.json();
-          if (!controller.signal.aborted && active === query) {
-            matches = new Set(data.ids);
-            refresh();
-          }
-        } catch {
-          // Titles and IDs can still be searched locally.
-        }
-      }, 250);
-    },
-    matches(query, id) {
-      return query === active && matches.has(id);
-    },
-  };
+function rememberTasks(rows) {
+  for (const gap of rows) {
+    gapRoutes.set(gap.id, programOf(gap));
+    if (gap.assignment) assignments[gap.id] = gap.assignment;
+    else delete assignments[gap.id];
+  }
 }
 
 function cutEvidence(gap) {
   const zh = lang === 'zh';
   const block = element('div', undefined, 'detail-context');
   const reasons = {
-    cuts_disabled: zh ? '此题未开启拆题' : 'Cuts are disabled for this task',
     cut_depth_limit: zh ? '已到拆题深度上限' : 'Cut depth limit reached',
     cut_limit: zh ? '有效拆法数已达上限' : 'Live cut limit reached',
     claims_closed: closedClaimLabel(),
@@ -302,7 +274,6 @@ const nextPage = document.getElementById('lemma-next');
 const pageSelect = document.getElementById('lemma-page');
 const pageSize = 24;
 
-let publishedGaps = [];
 let gapRoutes = new Map();
 let assignments = {};
 let selectedProgram = '';
@@ -360,20 +331,12 @@ function canClaim(gap) {
   return !gap.claims_closed && !gap.refutation && !gap.proved && !gap.resolved && (!assigned(gap) || gap.parallel === true);
 }
 
-function renderProgramCounts() {
-  const counts = new Map(Array.from(programs.keys(), key => [key, { published: 0, verified: 0, active: 0 }]));
-  for (const gap of publishedGaps) {
-    const count = counts.get(programOf(gap));
-    if (!count) continue;
-    count.published += 1;
-    if (gap.proved) count.verified += 1;
-    if (assigned(gap)) count.active++;
-  }
-  for (const [key, count] of counts) {
-    const button = programs.get(key);
-    button.classList.toggle('route-active', count.active > 0);
-    button.querySelector('.program-count').textContent = strings.programCount(count.verified, count.published)
-      + ' · ' + count.active + (lang === 'zh' ? ' 进行中' : ' in progress');
+function renderProgramCounts(programCounts) {
+  for (const [key, button] of programs) {
+    const { total = 0, verified = 0, active = 0 } = programCounts[key] || {};
+    button.classList.toggle('route-active', active > 0);
+    button.querySelector('.program-count').textContent = strings.programCount(verified, total)
+      + ' · ' + active + (lang === 'zh' ? ' 进行中' : ' in progress');
   }
 }
 
@@ -385,7 +348,7 @@ function chooseProgram(program) {
   mapContext.textContent = programName(program) || strings.allPrograms;
   mapReset.hidden = !program;
   lemmaPage = 1;
-  if (lastGaps !== null) renderLemmas();
+  if (lemmaListRequested) renderLemmas();
   researchMap.setProgram(program);
 }
 
@@ -397,30 +360,36 @@ mapReset.addEventListener('click', () => {
   chooseProgram('');
 });
 
-function updateRouteActivity(gaps) {
-  const byId = new Map(gaps.map(gap => [gap.id, gap]));
-  for (const panel of document.querySelectorAll('.route-panel')) {
-    const counts = { working: 0, submitted: 0, checking: 0, proved: 0 };
-    for (const link of panel.querySelectorAll('[data-roadmap-task]')) {
-      const gap = byId.get(link.dataset.roadmapTask);
-      if (!gap) continue;
-      const state = gap.proved ? 'proved' : assignments[gap.id];
-      if (Object.hasOwn(counts, state)) counts[state]++;
-      const badge = link.querySelector('.task-activity');
-      if (Object.hasOwn(strings.assignments, state)) {
-        const current = badge || element('small', '', 'task-activity');
-        current.textContent = strings.assignments[state];
-        if (!badge) link.append(current);
-      } else if (badge) badge.remove();
-    }
-    const active = counts.working + counts.submitted + counts.checking;
-    panel.classList.toggle('route-active', active > 0);
-    const parts = ['working', 'submitted', 'checking']
-      .filter(key => counts[key]).map(key => counts[key] + ' ' + strings.assignments[key]);
-    if (!active) parts.push(lang === 'zh' ? '暂无进行中任务' : 'No active tasks');
-    parts.push(counts.proved + (lang === 'zh' ? ' 已核验' : ' verified'));
+function updateRouteActivity(panels) {
+  for (const panel of document.querySelectorAll('[data-route-panel]')) {
+    const { working = 0, submitted = 0, checking = 0, proved = 0 } = panels[panel.dataset.routePanel] || {};
+    const states = { working, submitted, checking };
+    panel.classList.toggle('route-active', working + submitted + checking > 0);
+    const parts = Object.keys(states).filter(key => states[key])
+      .map(key => states[key] + ' ' + strings.assignments[key]);
+    parts.push(proved + (lang === 'zh' ? ' 已核验' : ' verified'));
     panel.querySelector('[data-route-status]').textContent = ' · ' + parts.join(' · ');
   }
+}
+
+for (const panel of document.querySelectorAll('[data-route-panel]')) {
+  const content = panel.querySelector('.roadmap-tasks');
+  const show = page => loadDisclosure(content, () => loadTaskPage({panel: panel.dataset.routePanel, page}), data => {
+    rememberTasks(data.gaps);
+    const links = data.gaps.map(gap => {
+      const link = anchor(gap.plain_statement[lang], '?lang=' + lang + '&lemma=' + encodeURIComponent(gap.id) + '#roadmap');
+      link.dataset.roadmapTask = gap.id;
+      return link;
+    });
+    const previous = element('button', lang === 'zh' ? '上一页' : 'Previous');
+    const next = element('button', lang === 'zh' ? '下一页' : 'Next');
+    previous.disabled = data.page <= 1;
+    next.disabled = data.page * pageSize >= data.total;
+    previous.onclick = () => show(data.page - 1);
+    next.onclick = () => show(data.page + 1);
+    content.replaceChildren(...links, previous, next);
+  });
+  panel.addEventListener('toggle', () => { if (panel.open && !content.hasChildNodes()) show(1); });
 }
 
 function openGap(id) {
@@ -431,20 +400,21 @@ function openGap(id) {
 }
 
 document.getElementById('roadmap')?.addEventListener('click', event => {
-    const link = event.target.closest('a[data-roadmap-task]');
-    if (!link || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
-    if (publishedGaps.some(gap => gap.id === link.dataset.roadmapTask)) {
-      event.preventDefault();
-      openGap(link.dataset.roadmapTask);
-    }
+  const link = event.target.closest('a[data-roadmap-task]');
+  if (!link || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+  event.preventDefault();
+  openGap(link.dataset.roadmapTask);
 });
 
 function renderGapDetail() {
-  const gap = publishedGaps.find(entry => entry.id === selectedGap);
-  if (!gap) return;
+  const id = selectedGap;
+  if (!id) return;
   const placeholder = element('div');
   detailContent.replaceChildren(placeholder);
-  loadDisclosure(placeholder, () => loadTaskDetail(gap.id), detail => drawGapDetail({ ...gap, ...detail }));
+  loadDisclosure(placeholder, () => loadTaskDetail(id), detail => {
+    rememberTasks([detail]);
+    drawGapDetail(detail);
+  });
 }
 
 function drawGapDetail(gap) {
@@ -527,38 +497,34 @@ function lemmaRow(gap) {
   return row;
 }
 
-const lemmaDetailSearch = detailSearch('all', renderLemmas);
+let listRequest = 0;
+let lemmaListRequested = false;
 
-function renderLemmas() {
-  const query = lemmaSearch.value.trim().toLowerCase();
-  lemmaDetailSearch.update(query);
-  const selection = lemmaState.value;
-  const visibleGaps = publishedGaps.filter(gap => {
-    if (selectedProgram && programOf(gap) !== selectedProgram) return false;
-    if (selection === 'proved' && !gap.proved) return false;
-    if (selection === 'open' && gap.proved) return false;
-    if (selection === 'progress' && !assigned(gap)) return false;
-    if (selection === 'available' && !canClaim(gap)) return false;
-    if (!query) return true;
-    const program = programOf(gap);
-    const content = [
-      gap.id, gap.plain_statement.zh, gap.plain_statement.en, program, programName(program)
-    ];
-    return content.some(text => text.toLowerCase().includes(query)) || lemmaDetailSearch.matches(query, gap.id);
-  });
-  const maxPage = Math.max(1, Math.ceil(visibleGaps.length / pageSize));
-  lemmaPage = Math.min(lemmaPage, maxPage);
-  const offset = (lemmaPage - 1) * pageSize;
-  const current = visibleGaps.slice(offset, offset + pageSize);
-  lemmaRows.replaceChildren(...(current.length ? current.map(lemmaRow) : [messageRow(strings.empty)]));
-  pageRange.textContent = current.length ? strings.pageRange(offset + 1, offset + current.length, visibleGaps.length) : strings.empty;
-  previousPage.disabled = lemmaPage === 1;
-  nextPage.disabled = lemmaPage === maxPage;
-  pageSelect.disabled = maxPage === 1;
-  if (pageSelect.options.length !== maxPage) {
-    pageSelect.replaceChildren(...Array.from({ length: maxPage }, (_, index) => new Option(index + 1, index + 1)));
+async function renderLemmas() {
+  const request = ++listRequest;
+  lemmaListRequested = true;
+  try {
+    const data = await loadTaskPage({
+      page: lemmaPage, q: lemmaSearch.value.trim().slice(0, 500),
+      state: lemmaState.value || 'all', program: selectedProgram,
+    });
+    if (request !== listRequest) return;
+    rememberTasks(data.gaps);
+    lemmaPage = data.page;
+    const maxPage = Math.max(1, Math.ceil(data.total / pageSize));
+    const offset = (lemmaPage - 1) * pageSize;
+    lemmaRows.replaceChildren(...(data.gaps.length ? data.gaps.map(lemmaRow) : [messageRow(strings.empty)]));
+    pageRange.textContent = data.total ? strings.pageRange(offset + 1, offset + data.gaps.length, data.total) : strings.empty;
+    previousPage.disabled = lemmaPage === 1;
+    nextPage.disabled = lemmaPage === maxPage;
+    pageSelect.disabled = maxPage === 1;
+    if (pageSelect.options.length !== maxPage) {
+      pageSelect.replaceChildren(...Array.from({ length: maxPage }, (_, index) => new Option(index + 1, index + 1)));
+    }
+    pageSelect.value = String(lemmaPage);
+  } catch {
+    if (request === listRequest) lemmaRows.replaceChildren(messageRow(strings.failure));
   }
-  pageSelect.value = String(lemmaPage);
 }
 
 function setPage(page) {
@@ -948,8 +914,7 @@ function mountProgressiveRankings(scrollEl, key, renderRow, emptyText) {
     const offset = feed.items.length;
     try {
       const response = await fetch(
-        'api/rankings?mode=' + encodeURIComponent(key) + '&offset=' + offset + '&limit=' + RANKINGS_BATCH,
-        { cache: 'no-store' }
+        'api/rankings?mode=' + encodeURIComponent(key) + '&offset=' + offset + '&limit=' + RANKINGS_BATCH
       );
       if (!response.ok) throw new Error('rankings_fetch_failed');
       const page = await response.json();
@@ -1029,12 +994,8 @@ function renderRankingMode() {
   document.getElementById('agent-ranking-controls').hidden = !agents;
   document.querySelector('.ranking-candidate').hidden = agents;
   document.getElementById('rankings-summary').textContent = agents
-    ? (topic === 'twin-primes'
-      ? (lang === 'zh' ? '积分来自首个通过的证明和正式采用的拆题。' : 'Points come from first accepted proofs and adopted cuts.')
-      : (lang === 'zh' ? '按本研究台累计首次核验积分排列。旧规则下首次通过的题每道计 1 分。' : 'Ranked by points from first accepted proofs on this research desk. Each first acceptance under the old rules counts for one point.'))
-    : topic === 'twin-primes'
-      ? (lang === 'zh' ? '贡献榜计入首个通过的证明和正式采用的拆题。' : 'The leaderboard credits first accepted proofs and adopted cuts.')
-      : strings.rankingsSummary(rankingsData.contributors.toLocaleString(locale), rankingsData.proofs.toLocaleString(locale));
+    ? (lang === 'zh' ? '按本研究台的累计贡献积分排列。' : 'Ranked by total contribution points on this research desk.')
+    : strings.rankingsSummary(rankingsData.contributors.toLocaleString(locale), rankingsData.proofs.toLocaleString(locale));
   if (agents) {
     renderAgentColumns(columns);
     const total = rankingFeeds[agentDimension]?.total ?? 0;
@@ -1297,7 +1258,16 @@ new IntersectionObserver(([entry]) => {
   }
 }, {rootMargin: '200px'}).observe(verificationLog);
 
-lemmaSearch.addEventListener('input', () => setPage(1));
+let lemmaSearchTimer;
+const lemmaDisclosure = lemmaSearch.closest('details');
+lemmaDisclosure?.addEventListener('toggle', () => {
+  if (lemmaDisclosure.open && !lemmaListRequested) setPage(1);
+});
+lemmaSearch.addEventListener('focus', () => { if (!lemmaListRequested) setPage(1); });
+lemmaSearch.addEventListener('input', () => {
+  clearTimeout(lemmaSearchTimer);
+  lemmaSearchTimer = setTimeout(() => setPage(1), 250);
+});
 lemmaState.addEventListener('change', () => setPage(1));
 
 document.addEventListener('keydown', event => {
@@ -1351,10 +1321,20 @@ function renderExponent(record) {
 
 const researchMap = (() => {
 const root=document.getElementById('research-map-v4');
-let tracks=[],gaps=[],T=new Map(),G=new Map(),groups=new Map(),upstream=new Map(),initialized=false;
+let tracks=[],T=new Map(),G=new Map(),groups=new Map(),upstream=new Map(),initialized=false;
+let routeMetrics = {}, totalTasks = 0, trackData = null, trackPage = 1, trackRequest = 0;
+let trackSearchTimer, globalSearchTimer, globalSearchRequest = 0;
+function metrics(id, programName = null) {
+  const grouped = routeMetrics[id] || {};
+  const result = { total: 0, open: 0, open_target: 0, verified: 0, available: 0, target: 0, progress: 0 };
+  for (const row of programName ? [grouped[programName] || {}] : Object.values(grouped)) {
+    for (const [key, value] of Object.entries(row)) result[key] = (result[key] || 0) + value;
+  }
+  result.pct = result.total ? 100 * result.verified / result.total : 0;
+  return result;
+}
 const endpointId='L-goldbach-binary-pointwise-positivity';
 const tr=(zh,en)=>lang==='zh'?zh:en;
-const groupOf=g=>topic?('program-'+programOf(g)):(g.track||(g.id===endpointId?'__goal':'__core'));
 const goalTitle=()=>topic?document.getElementById('page-title').textContent.trim():tr('强哥德巴赫猜想','Strong Goldbach conjecture');
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const palette={foundation:'#a0c6a1',grh:'#9ab9d7',correlation:'#ebc883',exceptions:'#c4acd7'},roleName=lang==='zh'?{target:'待突破',conditional:'条件归约',lemma:'支撑引理',endpoint:'终点'}:{target:'Open target',conditional:'Conditional',lemma:'Supporting lemma',endpoint:'Target'},distance=new Map();
@@ -1364,20 +1344,17 @@ let focus=null,hover=null,onlyChain=false,compact=true,horizontal=false,directio
 const directionKey='goldbach-map-direction',wideDirection=()=>window.innerWidth>=2400;try{const saved=localStorage.getItem(directionKey);if(saved==='horizontal'||saved==='vertical'){horizontal=saved==='horizontal';directionChosen=true}}catch{}if(!directionChosen)horizontal=wideDirection();function syncDirection(){root?.querySelectorAll('[data-direction]').forEach(x=>x.classList.toggle('active',(x.dataset.direction==='horizontal')===horizontal))}syncDirection();
 function status(g){if(g.refutation)return g.refutation.status==='verified'?'refuted':'progress';if(g.proved||g.resolved)return 'verified';if(g.claims_closed)return 'closed';if(assigned(g))return 'progress';return g.role==='target'?'target':'available'}
 function statusText(g){if(status(g)==='closed')return closedClaimLabel();if(g.refutation){const v=g.refutation.status==='verified';return lang==='zh'?(v?'已证伪':'反证待核验'):(v?'Refuted':'Refutation under review')}if(g.resolved&&!g.proved)return tr('已解决','Resolved');return ({verified:lang==='zh'?'已核查':'Verified',progress:lang==='zh'?'处理中':'In progress',target:lang==='zh'?'待突破':'Open target',available:lang==='zh'?'可领取':'Available'})[status(g)]}
-function stateOK(g,v){return v==='all'||(v==='open'&&!g.proved&&!g.resolved&&!g.refutation)||(v==='target'&&g.role==='target'&&!g.proved&&!g.resolved&&!g.refutation)}
-function counts(gs){let verified=gs.filter(g=>status(g)==='verified').length;return {verified,progress:gs.filter(g=>status(g)==='progress').length,available:gs.filter(g=>status(g)==='available').length,target:gs.filter(g=>status(g)==='target').length,pct:gs.length?100*verified/gs.length:0}}
-function program(t){let c={};for(const g of groups.get(t.id))c[g.program]=(c[g.program]||0)+1;return Object.keys(c).sort((a,b)=>c[b]-c[a])[0]||'foundation'}
 function trackSets(id){return {up:closure(id,x=>upstream.get(x)||[]),down:closure(id,x=>T.get(x)?.feeds||[])}}
 function scrollRestore(){requestAnimationFrame(()=>{window.scrollTo({top:savedScrollY,behavior:'instant'});requestAnimationFrame(drawBoard)})}
 function enterTrack(id,gap){if(!groups.has(id))return;if(!currentTrack)savedScrollY=window.scrollY;pendingGap=gap||null;if(location.hash===`#route=${encodeURIComponent(id)}`){renderRoute();return}location.hash=`route=${encodeURIComponent(id)}`}
 function goOverview(){if(currentTrack)location.hash='';else renderRoute()}
-function renderRoute(){let wasTrack=currentTrack;let m=location.hash.match(/^#route=(.+)$/),id=m?decodeURIComponent(m[1]):null;if(id&&!groups.has(id))id=null;currentTrack=id;observer?.disconnect();if(id){localFilter='all';localSearch='';indexMode=false;expanded=pendingGap;pendingGap=null;root.querySelector('#map-overview').hidden=true;root.querySelector('#map-route-view').hidden=false;root.querySelector('#map-focusbar').hidden=true;renderTrack();root.scrollIntoView({block:'start',behavior:'instant'});if(expanded)requestAnimationFrame(()=>root.querySelector(`[data-item="${CSS.escape(expanded)}"]`)?.scrollIntoView({block:'center'}));}else{root.querySelector('#map-overview').hidden=false;root.querySelector('#map-route-view').hidden=true;root.querySelector('#map-route-view').innerHTML='';renderBoard();renderFocus();if(wasTrack)scrollRestore()}}
-function renderBoard(){let html='';let active=focus||hover,sets=active?trackSets(active):null,board=root.querySelector('#rm-board'),isHorizontal=horizontal&&window.innerWidth>640;board.classList.toggle('horizontal',isHorizontal);board.classList.toggle('chain-horizontal',isHorizontal&&onlyChain&&!!focus);for(let d=0;d<=Math.max(...distance.values());d++){let list=tracks.filter(t=>dist(t.id)===d).filter(t=>!onlyChain||!focus||sets.up.has(t.id)||sets.down.has(t.id)).filter(t=>groups.get(t.id).some(g=>(!field||(topic?programOf(g)===field:g.program===field))&&stateOK(g,globalFilter))).sort((a,b)=>Number(b.id.startsWith('frontier-'))-Number(a.id.startsWith('frontier-'))||a.title[lang].localeCompare(b.title[lang],locale));if(!list.length)continue;html+=`<section class="level" data-depth="${d}"><h3>${lang==='zh'?'第 '+(d+1)+' 层':'Layer '+(d+1)} · ${d===0?tr('直接汇合','Direct convergence'):`${tr('依赖深度','Dependency depth')} ${d}`}</h3><div class="grid count-${Math.min(list.length,4)}">`;for(const t of list){let gs=groups.get(t.id),c=counts(gs),n=gs.filter(g=>g.role==='target'&&!g.proved&&!g.resolved&&!g.refutation).length,muted=active&&!sets.up.has(t.id)&&!sets.down.has(t.id);html+=`<div class="track ${compact?'compact':'full'} ${focus===t.id?'selected':''} ${muted?'dim':''}" data-track="${esc(t.id)}" style="--c:${palette[program(t)]}" tabindex="0" role="button" aria-label="${tr('聚焦','Focus')} ${esc(t.title[lang])}" title="${esc(t.description[lang])}"><div class="track-title"><strong>${esc(t.title[lang])}</strong>${n?`<span class="target-badge">${lang==='zh'?`${n} 待突破`:`${n} open target${n===1?'':'s'}`}</span>`:''}</div>${compact?'':`<span class="description">${esc(t.description[lang])}</span>`}<span class="stats">${tr('已核查 / 全部','Verified / Total')}：${c.verified} / ${gs.length}</span><span class="bar"><i style="width:${c.pct}%"></i></span><button class="enter-small" data-enter="${esc(t.id)}">${tr('查看','View')} ${gs.length} ${tr('条引理','lemmas')} →</button></div>`}html+='</div></section>'}root.querySelector('#rm-levels').innerHTML=html;requestAnimationFrame(drawBoard)}
+function renderRoute(){let wasTrack=currentTrack;let m=location.hash.match(/^#route=(.+)$/),id=m?decodeURIComponent(m[1]):null;if(id&&!groups.has(id))id=null;currentTrack=id;observer?.disconnect();if(id){localFilter='all';localSearch='';indexMode=false;expanded=pendingGap;pendingGap=null;trackPage=1;trackData=null;root.querySelector('#map-overview').hidden=true;root.querySelector('#map-route-view').hidden=false;root.querySelector('#map-route-view').replaceChildren(element('p', tr('正在加载路线…','Loading route…')));root.querySelector('#map-focusbar').hidden=true;refreshTrack({focus: expanded});root.scrollIntoView({block:'start',behavior:'instant'});if(expanded)requestAnimationFrame(()=>root.querySelector(`[data-item="${CSS.escape(expanded)}"]`)?.scrollIntoView({block:'center'}));}else{root.querySelector('#map-overview').hidden=false;root.querySelector('#map-route-view').hidden=true;root.querySelector('#map-route-view').innerHTML='';renderBoard();renderFocus();if(wasTrack)scrollRestore()}}
+function renderBoard(){let html='';let active=focus||hover,sets=active?trackSets(active):null,board=root.querySelector('#rm-board'),isHorizontal=horizontal&&window.innerWidth>640;board.classList.toggle('horizontal',isHorizontal);board.classList.toggle('chain-horizontal',isHorizontal&&onlyChain&&!!focus);for(let d=0;d<=Math.max(...distance.values());d++){let list=tracks.filter(t=>dist(t.id)===d).filter(t=>!onlyChain||!focus||sets.up.has(t.id)||sets.down.has(t.id)).filter(t=>metrics(t.id, field)[globalFilter==='all'?'total':globalFilter==='target'?'open_target':'open'] > 0).sort((a,b)=>Number(b.id.startsWith('frontier-'))-Number(a.id.startsWith('frontier-'))||a.title[lang].localeCompare(b.title[lang],locale));if(!list.length)continue;html+=`<section class="level" data-depth="${d}"><h3>${lang==='zh'?'第 '+(d+1)+' 层':'Layer '+(d+1)} · ${d===0?tr('直接汇合','Direct convergence'):`${tr('依赖深度','Dependency depth')} ${d}`}</h3><div class="grid count-${Math.min(list.length,4)}">`;for(const t of list){let c=metrics(t.id, field),n=c.open_target,muted=active&&!sets.up.has(t.id)&&!sets.down.has(t.id);html+=`<div class="track ${compact?'compact':'full'} ${focus===t.id?'selected':''} ${muted?'dim':''}" data-track="${esc(t.id)}" style="--c:${palette[Object.keys(routeMetrics[t.id] || {}).sort((a,b)=>metrics(t.id,b).total-metrics(t.id,a).total)[0]] || palette.foundation}" tabindex="0" role="button" aria-label="${tr('聚焦','Focus')} ${esc(t.title[lang])}" title="${esc(t.description[lang])}"><div class="track-title"><strong>${esc(t.title[lang])}</strong>${n?`<span class="target-badge">${lang==='zh'?`${n} 待突破`:`${n} open target${n===1?'':'s'}`}</span>`:''}</div>${compact?'':`<span class="description">${esc(t.description[lang])}</span>`}<span class="stats">${tr('已核查 / 全部','Verified / Total')}：${c.verified} / ${c.total}</span><span class="bar"><i style="width:${c.pct}%"></i></span><button class="enter-small" data-enter="${esc(t.id)}">${tr('查看','View')} ${c.total} ${tr('条引理','lemmas')} →</button></div>`}html+='</div></section>'}root.querySelector('#rm-levels').innerHTML=html;requestAnimationFrame(drawBoard)}
 function drawBoard(){if(currentTrack)return;let board=root.querySelector('#rm-board'),svg=root.querySelector('#rm-board-svg');if(!board||!svg)return;let rect=board.getBoundingClientRect();svg.setAttribute('viewBox',`0 0 ${rect.width} ${rect.height}`);let active=focus||hover,sets=active?trackSets(active):null,isHorizontal=board.classList.contains('horizontal'),center=el=>{let r=el.getBoundingClientRect();return{x:r.left-rect.left+r.width/2,y:r.top-rect.top+r.height/2,left:r.left-rect.left,right:r.right-rect.left,top:r.top-rect.top,bottom:r.bottom-rect.top}},nodes=new Map([...board.querySelectorAll('[data-track]')].map(x=>[x.dataset.track,center(x)])),goal=center(root.querySelector('#rm-goal')),paths='';function edge(a,b,gold,op,from,to){let d;if(isHorizontal){let x1=a.right,x2=b.left-2,span=Math.max(0,x2-x1),lead=Math.min(12,Math.max(6,span*.22)),ex=x2-lead,dx=Math.max(8,(ex-x1)*.5);d=`M ${x1} ${a.y} C ${x1+dx} ${a.y}, ${ex-dx} ${b.y}, ${ex} ${b.y} L ${x2} ${b.y}`}else{let y1=a.top,y2=b.bottom+2,span=Math.max(0,y1-y2),lead=Math.min(12,Math.max(6,span*.22)),ey=y2+lead,dy=Math.max(10,(y1-ey)*.5);d=`M ${a.x} ${y1} C ${a.x} ${y1-dy}, ${b.x} ${ey+dy}, ${b.x} ${ey} L ${b.x} ${y2}`}paths+=`<path data-from="${esc(from)}" data-to="${esc(to)}" d="${d}" stroke="${gold?'#e3c580':'#a0c6a1'}" stroke-width="${active?2:0.85}" stroke-opacity="${op}" fill="none" marker-end="url(#arr-${gold?'gold':'mint'})"/>`}
 for(const t of tracks){if(!nodes.has(t.id))continue;for(const f of t.feeds||[]){if(!nodes.has(f))continue;let down=active&&sets.down.has(t.id)&&sets.down.has(f),up=active&&sets.up.has(t.id)&&sets.up.has(f);if(!active||down||up)edge(nodes.get(t.id),nodes.get(f),!!down,active?.95:.2,t.id,f)}if(!(t.feeds||[]).length&&(!active||sets.down.has(t.id)))edge(nodes.get(t.id),goal,!!active,active?.95:.2,t.id,'goal')}
 for(const el of board.querySelectorAll('[data-track]')){el.classList.toggle('selected',focus===el.dataset.track);el.classList.toggle('dim',!!active&&!sets.up.has(el.dataset.track)&&!sets.down.has(el.dataset.track))}svg.innerHTML=`<defs><marker id="arr-gold" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="5.5" markerHeight="5.5" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#e3c580"/></marker><marker id="arr-mint" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="5.5" markerHeight="5.5" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#a0c6a1"/></marker></defs>${paths}`}
 function setFocus(id){let rebuild=onlyChain;focus=id;hover=null;if(!id)onlyChain=false;if(rebuild)renderBoard();else drawBoard();renderFocus()}
-function renderFocus(){let bar=root.querySelector('#map-focusbar');bar.hidden=!focus||!!currentTrack;if(bar.hidden)return;let t=T.get(focus),up=upstream.get(focus)||[],down=t.feeds||[],buttons=a=>a.map(x=>`<button class="flow-focus" data-focus="${esc(x)}">${esc(T.get(x).title[lang])}</button>`).join('、'),summarize=a=>a.length>3?`${buttons(a.slice(0,3))} ${lang==='zh'?'等 '+a.length+' 条':'and '+a.length+' total'}`:buttons(a);bar.innerHTML=`<div class="focus-inner"><div class="focus-copy"><div class="flowline">${up.length?`${summarize(up)} → `:''}<b>${lang==='zh'?`【当前：${esc(t.title[lang])}】`:`Current: ${esc(t.title[lang])}`}</b>${down.length?` → ${summarize(down)}`:''} → ${esc(goalTitle())}</div></div><div class="focus-actions"><button id="chain-toggle" aria-pressed="${onlyChain}">${onlyChain?tr('显示全部路线','Show all routes'):tr('仅看相关链路','Related routes only')}</button><button data-enter="${esc(focus)}" class="primary">${tr('查看','View')} ${groups.get(focus).length} ${tr('条引理','lemmas')} →</button><button id="clear-focus">${tr('取消聚焦','Clear focus')}</button></div></div>`}
+function renderFocus(){let bar=root.querySelector('#map-focusbar');bar.hidden=!focus||!!currentTrack;if(bar.hidden)return;let t=T.get(focus),up=upstream.get(focus)||[],down=t.feeds||[],buttons=a=>a.map(x=>`<button class="flow-focus" data-focus="${esc(x)}">${esc(T.get(x).title[lang])}</button>`).join('、'),summarize=a=>a.length>3?`${buttons(a.slice(0,3))} ${lang==='zh'?'等 '+a.length+' 条':'and '+a.length+' total'}`:buttons(a);bar.innerHTML=`<div class="focus-inner"><div class="focus-copy"><div class="flowline">${up.length?`${summarize(up)} → `:''}<b>${lang==='zh'?`【当前：${esc(t.title[lang])}】`:`Current: ${esc(t.title[lang])}`}</b>${down.length?` → ${summarize(down)}`:''} → ${esc(goalTitle())}</div></div><div class="focus-actions"><button id="chain-toggle" aria-pressed="${onlyChain}">${onlyChain?tr('显示全部路线','Show all routes'):tr('仅看相关链路','Related routes only')}</button><button data-enter="${esc(focus)}" class="primary">${tr('查看','View')} ${metrics(focus).total} ${tr('条引理','lemmas')} →</button><button id="clear-focus">${tr('取消聚焦','Clear focus')}</button></div></div>`}
 function gapGraph(id){let all=groups.get(id),set=new Set(all.map(g=>g.id)),parents=new Map(all.map(g=>[g.id,[]])),depths=new Map();for(const g of all)for(const d of g.depends_on||[])if(set.has(d))parents.get(d).push(g.id);function depth(g,seen=new Set()){if(depths.has(g.id))return depths.get(g.id);if(seen.has(g.id))return 0;let ns=new Set(seen);ns.add(g.id);let ds=(g.depends_on||[]).filter(x=>set.has(x)).map(x=>depth(G.get(x),ns));let n=ds.length?1+Math.max(...ds):0;depths.set(g.id,n);return n}all.forEach(g=>depth(g));return {set,parents,depths,hasEdges:all.some(g=>(g.depends_on||[]).some(x=>set.has(x)))}}
 function gapRelated(id,graph){if(!id)return new Set();let a=closure(id,x=>(G.get(x)?.depends_on||[]).filter(d=>graph.set.has(d))),b=closure(id,x=>graph.parents.get(x)||[]);return new Set([...a,...b])}
 function ordered(id,graph){let rank=g=>g.role==='target'?2:g.role==='conditional'?1:0;return [...groups.get(id)].sort((a,b)=>rank(b)-rank(a)||graph.depths.get(b.id)-graph.depths.get(a.id)||a.id.localeCompare(b.id,undefined,{numeric:true}))}
@@ -1386,29 +1363,54 @@ function details(g) {
     '<code>' + esc(g.id) + '</code></div>';
 }
 
-function resolvedDetails(g){let parents=gaps.filter(x=>(x.depends_on||[]).includes(g.id)),links=ids=>ids.length?ids.map(id=>`<button data-gap-jump="${esc(id)}">${esc(id)}</button>`).join(' · '):tr('无','None');return `<div class="detail-inline"><div class="detail-title"><b>${esc(g.id)}</b><span class="state ${status(g)}">● ${statusText(g)}</span><span class="role">${esc(roleName[g.role]||tr('命题','Statement'))}</span></div><p>${esc(g.plain_statement?.[lang]||tr('无中文说明','No statement available'))}</p>${g.brief?.[lang]?`<p class="muted">${esc(g.brief[lang])}</p>`:''}<div class="related"><b>${tr('上游依赖：','Prerequisites: ')}</b>${links(g.depends_on||[])}<br><b>${tr('下游影响：','Supports: ')}</b>${links(parents.map(x=>x.id))}</div><p class="muted">${tr('文件路径：','File: ')}${esc(g.file||tr('未指定','Not specified'))}</p><b>${tr('Lean 表述','Lean statement')}</b>${g.latest?runLink(g.latest,strings.latestRun).outerHTML:''}${g.refutation?` <a href="${repository}/pull/${Number(g.refutation.pr)}">${statusText(g)} · PR #${Number(g.refutation.pr)}</a>`:''}${g.source && /^https?:\/\//i.test(g.source)?` <a href="${esc(g.source)}" rel="noopener noreferrer">${tr('阅读来源 ↗','Read source ↗')}</a>`:''}<pre>${esc(g.statement||tr('未提供','Not provided'))}</pre>${cutEvidence(g).outerHTML}</div>`}
-const trackDetailSearch = detailSearch('brief', () => {
-  if (currentTrack) renderTrackPreservingSearch();
-});
-
-function renderTrackPreservingSearch() {
-  const active = root.querySelector('#track-search');
-  if (document.activeElement !== active) {
+function resolvedDetails(g){let parents=g.dependents||[],links=ids=>ids.length?ids.map(id=>`<button data-gap-jump="${esc(id)}">${esc(id)}</button>`).join(' · '):tr('无','None');return `<div class="detail-inline"><div class="detail-title"><b>${esc(g.id)}</b><span class="state ${status(g)}">● ${statusText(g)}</span><span class="role">${esc(roleName[g.role]||tr('命题','Statement'))}</span></div><p>${esc(g.plain_statement?.[lang]||tr('无中文说明','No statement available'))}</p>${g.brief?.[lang]?`<p class="muted">${esc(g.brief[lang])}</p>`:''}<div class="related"><b>${tr('上游依赖：','Prerequisites: ')}</b>${links(g.depends_on||[])}<br><b>${tr('下游影响：','Supports: ')}</b>${links(parents)}</div><p class="muted">${tr('文件路径：','File: ')}${esc(g.file||tr('未指定','Not specified'))}</p><b>${tr('Lean 表述','Lean statement')}</b>${g.latest?runLink(g.latest,strings.latestRun).outerHTML:''}${g.refutation?` <a href="${repository}/pull/${Number(g.refutation.pr)}">${statusText(g)} · PR #${Number(g.refutation.pr)}</a>`:''}${g.source && /^https?:\/\//i.test(g.source)?` <a href="${esc(g.source)}" rel="noopener noreferrer">${tr('阅读来源 ↗','Read source ↗')}</a>`:''}<pre>${esc(g.statement||tr('未提供','Not provided'))}</pre>${cutEvidence(g).outerHTML}</div>`}
+async function refreshTrack({ focus: task = null, preserve = false } = {}) {
+  if (!currentTrack) return;
+  const route = currentTrack;
+  const request = ++trackRequest;
+  try {
+    const data = await loadTaskPage({
+      route, page: trackPage, state: localFilter, q: localSearch.trim().slice(0, 500),
+      ...(task ? { focus: task } : {}),
+    });
+    if (request !== trackRequest || route !== currentTrack) return;
+    rememberTasks(data.gaps);
+    trackData = data;
+    trackPage = data.page;
+    groups.set(route, data.gaps);
+    G = new Map(data.gaps.map(gap => [gap.id, gap]));
     renderTrack();
-    return;
+    if (task && !preserve) root.querySelector(`[data-item="${CSS.escape(task)}"]`)?.scrollIntoView({block:'center'});
+  } catch {
+    if (request !== trackRequest || route !== currentTrack || trackData) return;
+    const back = element('button', tr('返回研究地图', 'Back to research map'));
+    back.id = 'back-overview';
+    const retry = element('button', tr('重试', 'Retry'));
+    retry.onclick = () => refreshTrack({focus: task});
+    root.querySelector('#map-route-view').replaceChildren(back, element('p', strings.failure), retry);
   }
-  const { selectionStart: start, selectionEnd: end } = active;
-  renderTrack();
-  const input = root.querySelector('#track-search');
-  input?.focus({ preventScroll: true });
-  if (input && start !== null) input.setSelectionRange(start, end);
 }
 
-function renderTrack(){if(!currentTrack)return;observer?.disconnect();trackDetailSearch.update(localSearch.trim().toLowerCase());let id=currentTrack,t=T.get(id),all=groups.get(id),graph=gapGraph(id),ct=counts(all),q=localSearch.trim().toLowerCase(),related=gapRelated(expanded,graph),shown=ordered(id,graph).filter(g=>stateOK(g,localFilter==='chain'?'all':localFilter)&&(!q||`${g.id} ${g.plain_statement?.[lang]||''}`.toLowerCase().includes(q)||trackDetailSearch.matches(q,g.id))&&(localFilter!=='chain'||related.has(g.id))),toButton=(x)=>`<button data-nav="${esc(x)}">${esc(T.get(x).title[lang])}</button>`,feed=t?.feeds||[],ups=upstream.get(id)||[];
+function renderTrack(){
+  if (!currentTrack || !trackData) return;
+  const active = root.querySelector('#track-search');
+  const focused = !!active && active === document.activeElement;
+  const caret = focused ? active.selectionStart : null;
+  observer?.disconnect();
+  const id = currentTrack, t = T.get(id), ct = metrics(id), graph = gapGraph(id);
+  graph.hasEdges ||= trackData.has_edges;
+  const shown = trackData.gaps, all = {length: ct.total};
+  const toButton = x => `<button data-nav="${esc(x)}">${esc(T.get(x).title[lang])}</button>`;
+  const feed = t?.feeds || [], ups = upstream.get(id) || [];
 let toolbar=[['all',`${tr('全部','All')} ${all.length}`],['open',tr('仅未通过','Not verified')],['target',tr('仅待突破','Open targets')],...(graph.hasEdges?[['chain',tr('仅依赖链','Dependency chain')]]:[])].map(([k,v])=>`<button data-filter="${k}" class="${localFilter===k?'active':''}">${v}</button>`).join('');
 let rows=shown.map(g=>`<div class="item status-${status(g)}" data-item="${esc(g.id)}"><div class="row ${expanded===g.id?'active':''}" data-row="${esc(g.id)}" role="button" tabindex="0" aria-expanded="${expanded===g.id}"><span class="lemma-id" title="${esc(g.id)}">${esc(g.id.replace(/^L-goldbach-/,''))}</span><span class="state ${status(g)}">● ${statusText(g)}</span><span class="role">${esc(roleName[g.role]||tr('命题','Statement'))}</span><span class="statement">${esc(g.plain_statement?.[lang]||g.brief?.[lang]||tr('无中文说明','No statement available'))}</span><span class="expand">${expanded===g.id?tr('收起 ▴','Collapse ▴'):tr('展开 ▾','Expand ▾')}</span></div>${expanded===g.id?details(g):''}</div>`).join('');
 let chips=shown.map(g=>`<button data-index="${esc(g.id)}" class="index-chip ${status(g)} ${expanded===g.id?'selected':''}" title="${esc(g.id)}"><span>●</span> ${esc(g.id.replace(/^L-goldbach-/,''))}</button>`).join('');
-root.querySelector('#map-route-view').innerHTML=`<div class="backbar"><button id="back-overview">← ${tr('返回研究地图','Back to research map')}</button><span class="breadcrumb">${esc(goalTitle())} / ${t?`${lang==='zh'?'第 '+(dist(id)+1)+' 层':'Layer '+(dist(id)+1)} / ${esc(t.title[lang])}`:(id==='__goal'?tr('主命题','Main statement'):tr('核心主干引理','Core lemmas'))}</span></div><div class="track-header"><div class="header-info"><h1>${esc(t?.title[lang]||(id==='__goal'?tr('强哥德巴赫猜想','Strong Goldbach conjecture'):tr('核心主干引理','Core lemmas')))} <small>（${all.length} ${tr('条','lemmas')}）</small></h1><p>${esc(t?.description[lang]||(id==='__goal'?tr('查看主命题的正式表述。','Read the formal statement.'):tr('支撑研究地图的早期核心命题。','Early statements supporting the research map.')))}</p><div class="track-flows">${ups.length?`<span>${tr('上游路线：','Upstream: ')}</span>${ups.map(toButton).join(' ')}`:''}${feed.length?`<span>${tr('流向：','Feeds into: ')}</span>${feed.map(toButton).join(' ')}`:(t?`<span>${tr('流向：','Feeds into: ')}${esc(goalTitle())} →</span>`:'')}</div></div><div class="header-progress"><span>${tr('已核查 / 全部','Verified / Total')}</span><b>${ct.verified} / ${all.length}</b><div class="bar"><i style="width:${ct.pct}%"></i></div><div class="legend"><span class="verified">● ${tr('已核查','Verified')} ${ct.verified}</span><span class="target">● ${tr('待突破','Open targets')} ${ct.target}</span><span class="available">● ${tr('未通过','Not verified')} ${ct.progress+ct.available}</span></div></div></div><section class="track-content"><div class="toolbar">${toolbar}<input id="track-search" type="search" placeholder="${tr('路线内搜索编号或中文命题','Search ID or statement')}" value="${esc(localSearch)}"><div class="segments"><button data-view="list" class="${!indexMode?'active':''}">${tr('列表','List')}</button><button data-view="index" ${graph.hasEdges?`disabled title="${tr('该路线包含依赖关系','This route has dependencies')}"`:''} class="${indexMode?'active':''}">${tr('紧凑索引','Compact index')}</button></div></div><div class="countline">${tr('共','Total')} ${all.length} · ${tr('当前显示','shown')} ${shown.length}</div>${shown.length?(indexMode&&!graph.hasEdges?`<div class="index-area">${expanded&&shown.some(g=>g.id===expanded)?`<div class="index-detail" data-item="${esc(expanded)}">${details(G.get(expanded))}</div>`:''}<div class="index-grid">${chips}</div></div>`:`<div class="proof ${graph.hasEdges?'has-rail':''}">${graph.hasEdges?`<div class="rail"><svg aria-label="${tr('路线内真实依赖关系','Dependencies within this route')}"></svg></div>`:''}<div class="listing"><div class="table-head"><span>${tr('引理编号','Lemma ID')}</span><span>${tr('状态','Status')}</span><span>${tr('角色','Role')}</span><span>${tr('引理陈述','Statement')}</span><span>${tr('操作','Action')}</span></div><div class="items">${rows}</div></div></div>`):`<p class="empty">${tr('没有匹配的命题；请选择全部或清除搜索。','No matches; clear the search or filters.')}</p>`}</section>`;
+root.querySelector('#map-route-view').innerHTML=`<div class="backbar"><button id="back-overview">← ${tr('返回研究地图','Back to research map')}</button><span class="breadcrumb">${esc(goalTitle())} / ${t?`${lang==='zh'?'第 '+(dist(id)+1)+' 层':'Layer '+(dist(id)+1)} / ${esc(t.title[lang])}`:(id==='__goal'?tr('主命题','Main statement'):tr('核心主干引理','Core lemmas'))}</span></div><div class="track-header"><div class="header-info"><h1>${esc(t?.title[lang]||(id==='__goal'?tr('强哥德巴赫猜想','Strong Goldbach conjecture'):tr('核心主干引理','Core lemmas')))} <small>（${all.length} ${tr('条','lemmas')}）</small></h1><p>${esc(t?.description[lang]||(id==='__goal'?tr('查看主命题的正式表述。','Read the formal statement.'):tr('支撑研究地图的早期核心命题。','Early statements supporting the research map.')))}</p><div class="track-flows">${ups.length?`<span>${tr('上游路线：','Upstream: ')}</span>${ups.map(toButton).join(' ')}`:''}${feed.length?`<span>${tr('流向：','Feeds into: ')}</span>${feed.map(toButton).join(' ')}`:(t?`<span>${tr('流向：','Feeds into: ')}${esc(goalTitle())} →</span>`:'')}</div></div><div class="header-progress"><span>${tr('已核查 / 全部','Verified / Total')}</span><b>${ct.verified} / ${all.length}</b><div class="bar"><i style="width:${ct.pct}%"></i></div><div class="legend"><span class="verified">● ${tr('已核查','Verified')} ${ct.verified}</span><span class="target">● ${tr('待突破','Open targets')} ${ct.target}</span><span class="available">● ${tr('未通过','Not verified')} ${ct.progress+ct.available}</span></div></div></div><section class="track-content"><div class="toolbar">${toolbar}<input id="track-search" type="search" placeholder="${tr('路线内搜索编号或中文命题','Search ID or statement')}" value="${esc(localSearch)}"><div class="segments"><button data-view="list" class="${!indexMode?'active':''}">${tr('列表','List')}</button><button data-view="index" ${graph.hasEdges?`disabled title="${tr('该路线包含依赖关系','This route has dependencies')}"`:''} class="${indexMode?'active':''}">${tr('紧凑索引','Compact index')}</button></div></div><div class="countline">${tr('共','Total')} ${all.length} · ${tr('当前显示','shown')} ${shown.length} · ${trackPage}/${Math.max(1, Math.ceil(trackData.total/pageSize))}</div><div class="segments"><button data-track-page="${trackPage-1}" ${trackPage<=1?'disabled':''}>${tr('上一页','Previous')}</button><button data-track-page="${trackPage+1}" ${trackPage*pageSize>=trackData.total?'disabled':''}>${tr('下一页','Next')}</button></div>${shown.length?(indexMode&&!graph.hasEdges?`<div class="index-area">${expanded&&shown.some(g=>g.id===expanded)?`<div class="index-detail" data-item="${esc(expanded)}">${details(G.get(expanded))}</div>`:''}<div class="index-grid">${chips}</div></div>`:`<div class="proof ${graph.hasEdges?'has-rail':''}">${graph.hasEdges?`<div class="rail"><svg aria-label="${tr('路线内真实依赖关系','Dependencies within this route')}"></svg></div>`:''}<div class="listing"><div class="table-head"><span>${tr('引理编号','Lemma ID')}</span><span>${tr('状态','Status')}</span><span>${tr('角色','Role')}</span><span>${tr('引理陈述','Statement')}</span><span>${tr('操作','Action')}</span></div><div class="items">${rows}</div></div></div>`):`<p class="empty">${tr('没有匹配的命题；请选择全部或清除搜索。','No matches; clear the search or filters.')}</p>`}</section>`;
+if (focused) {
+  const input = root.querySelector('#track-search');
+  input.focus({preventScroll:true});
+  if (caret !== null) input.setSelectionRange(caret, caret);
+}
 const detailTarget = root.querySelector('[data-task-detail]');
 if (detailTarget) {
   const summary = G.get(expanded);
@@ -1419,31 +1421,97 @@ if(graph.hasEdges&&shown.length&&!indexMode){let container=root.querySelector('.
 function drawRail(id){if(id!==currentTrack)return;let rail=root.querySelector('.rail'),svg=rail?.querySelector('svg'),container=root.querySelector('.items');if(!svg||!container)return;let graph=gapGraph(id),items=[...container.querySelectorAll('.item')],map=new Map(items.map((it,i)=>{let row=it.querySelector('.row').getBoundingClientRect(),base=rail.getBoundingClientRect();return [it.dataset.item,{y:row.top+row.height/2-base.top,index:i}]})),w=rail.clientWidth,h=container.offsetHeight+(container.getBoundingClientRect().top-rail.getBoundingClientRect().top),orderedAll=ordered(id,graph),assigned=new Map(),xFor=i=>12+(w-28)*i/4;for(const [i,g] of orderedAll.entries()){let ps=graph.parents.get(g.id)||[],parent=ps.find(x=>assigned.has(x)),siblings=parent?(G.get(parent).depends_on||[]).filter(x=>graph.set.has(x)):[],j=siblings.indexOf(g.id);assigned.set(g.id,g.role==='target'||g.role==='endpoint'?4:parent&&j===0?assigned.get(parent):(graph.depths.get(g.id)+Math.max(0,j)+i)%4)}for(const [id,n] of map)n.x=xFor(assigned.get(id));let rel=gapRelated(expanded,graph),paths='';for(const [key,n] of map)for(const dep of G.get(key).depends_on||[])if(map.has(dep)){let a=map.get(dep),b=n,mid=(a.y+b.y)/2,on=rel.has(key)&&rel.has(dep);paths+=`<path data-from="${esc(dep)}" data-to="${esc(key)}" d="M${a.x} ${a.y} L${a.x} ${mid} C${a.x} ${mid-10},${b.x} ${mid+10},${b.x} ${mid} L${b.x} ${b.y}" stroke="${on?'#e3c580':'#a4b9a5'}" stroke-opacity="${expanded&&!on?.2:.75}" stroke-width="${on?2:1}" fill="none"/>`}
 for(const [key,n] of map){let target=G.get(key).role==='target';if(key===expanded)paths+=`<path d="M${n.x} ${n.y}H${w}" stroke="#e3c580" stroke-width="1.5"/>`;if(target)paths+=`<circle cx="${n.x}" cy="${n.y}" r="8" fill="#183126" stroke="#e3c580"/><path d="M${n.x} ${n.y-9}v-8 m-3 3 3-3 3 3" fill="none" stroke="#e3c580"/>`;paths+=`<circle data-node="${esc(key)}" cx="${n.x}" cy="${n.y}" r="${target?5:3.5}" fill="${rel.has(key)||target?'#e3c580':'#d8e5d8'}"/>`}rail.style.height=h+'px';svg.style.height=h+'px';svg.setAttribute('viewBox',`0 0 ${w} ${h}`);svg.innerHTML=paths}
 function expandGap(id){expanded=expanded===id?null:id;let old=window.scrollY;renderTrack();window.scrollTo({top:old,behavior:'instant'})}
-function jumpGap(id){let g=G.get(id);if(!g)return;let tid=groupOf(g);if(currentTrack!==tid){enterTrack(tid,id);return}localFilter='all';localSearch='';expanded=id;renderTrack();requestAnimationFrame(()=>root.querySelector(`[data-item="${CSS.escape(id)}"]`)?.scrollIntoView({block:'center',behavior:'smooth'}))}
-root.addEventListener('click',e=>{let el=e.target.closest('button,[data-track],[data-row],[data-goal]');if(!el){if(e.target.closest('#rm-board')&&focus)setFocus(null);return}if(el.dataset.goal&&!topic){enterTrack('__goal',endpointId);return}if(el.dataset.direction){horizontal=el.dataset.direction==='horizontal';directionChosen=true;try{localStorage.setItem(directionKey,el.dataset.direction)}catch{}syncDirection();renderBoard();return}if(el.dataset.cards){compact=el.dataset.cards==='compact';root.querySelectorAll('[data-cards]').forEach(x=>x.classList.toggle('active',x===el));renderBoard();return}if(el.dataset.focus){setFocus(el.dataset.focus);return}if(el.id==='clear-focus'){setFocus(null);return}if(el.id==='chain-toggle'){onlyChain=!onlyChain;renderBoard();renderFocus();return}if(el.id==='back-overview'){goOverview();return}if(el.dataset.enter){enterTrack(el.dataset.enter);return}if(el.dataset.nav){enterTrack(el.dataset.nav);return}if(el.dataset.gapJump){jumpGap(el.dataset.gapJump);return}if(el.dataset.resultGap){enterTrack(groupOf(G.get(el.dataset.resultGap)),el.dataset.resultGap);return}if(el.dataset.resultTrack){enterTrack(el.dataset.resultTrack);return}if(el.dataset.program)return;if(el.dataset.filter){localFilter=el.dataset.filter;if(localFilter==='chain'&&!expanded){let g=ordered(currentTrack,gapGraph(currentTrack)).find(g=>g.role==='target')||groups.get(currentTrack)[0];expanded=g.id}renderTrack();return}if(el.dataset.view){indexMode=el.dataset.view==='index';renderTrack();return}if(el.dataset.index){expandGap(el.dataset.index);return}if(el.dataset.row){expandGap(el.dataset.row);return}if(el.dataset.track){setFocus(el.dataset.track);return}});
+async function jumpGap(id) {
+  try {
+    const gap = G.get(id) || await loadTaskDetail(id);
+    if (!groups.has(gap.map_route)) {
+      openGap(id);
+      return;
+    }
+    if (currentTrack !== gap.map_route) {
+      enterTrack(gap.map_route, id);
+      return;
+    }
+    localFilter = 'all';
+    localSearch = '';
+    expanded = id;
+    await refreshTrack({focus: id});
+  } catch {
+    openGap(id);
+  }
+}
+root.addEventListener('click',e=>{let el=e.target.closest('button,[data-track],[data-row],[data-goal]');if(!el){if(e.target.closest('#rm-board')&&focus)setFocus(null);return}if(el.dataset.goal&&!topic){enterTrack('__goal',endpointId);return}if(el.dataset.direction){horizontal=el.dataset.direction==='horizontal';directionChosen=true;try{localStorage.setItem(directionKey,el.dataset.direction)}catch{}syncDirection();renderBoard();return}if(el.dataset.cards){compact=el.dataset.cards==='compact';root.querySelectorAll('[data-cards]').forEach(x=>x.classList.toggle('active',x===el));renderBoard();return}if(el.dataset.focus){setFocus(el.dataset.focus);return}if(el.id==='clear-focus'){setFocus(null);return}if(el.id==='chain-toggle'){onlyChain=!onlyChain;renderBoard();renderFocus();return}if(el.id==='back-overview'){goOverview();return}if(el.dataset.enter){enterTrack(el.dataset.enter);return}if(el.dataset.nav){enterTrack(el.dataset.nav);return}if(el.dataset.gapJump){jumpGap(el.dataset.gapJump);return}if(el.dataset.resultGap){jumpGap(el.dataset.resultGap);return}if(el.dataset.resultTrack){enterTrack(el.dataset.resultTrack);return}if(el.dataset.program)return;if(el.dataset.trackPage){trackPage=Number(el.dataset.trackPage);refreshTrack();return}if(el.dataset.filter){localFilter=el.dataset.filter;trackPage=1;if(localFilter==='chain'&&!expanded)expanded=trackData.gaps.find(g=>g.role==='target')?.id||trackData.gaps[0]?.id;refreshTrack({focus: localFilter==='chain'?expanded:null});return}if(el.dataset.view){indexMode=el.dataset.view==='index';renderTrack();return}if(el.dataset.index){expandGap(el.dataset.index);return}if(el.dataset.row){expandGap(el.dataset.row);return}if(el.dataset.track){setFocus(el.dataset.track);return}});
 root.addEventListener('dblclick',e=>{let el=e.target.closest('[data-track]');if(el&&!e.target.closest('button'))enterTrack(el.dataset.track)});root.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('[data-track],[data-row],[data-goal]')){e.preventDefault();e.target.click()}});
 root.addEventListener('pointerover',e=>{let card=e.target.closest('[data-track]');if(card&&!focus&&hover!==card.dataset.track){hover=card.dataset.track;drawBoard()}});root.addEventListener('pointerout',e=>{let card=e.target.closest('[data-track]');if(card&&!focus&&!card.contains(e.relatedTarget)){hover=null;drawBoard()}});
-root.querySelector('#rm-state').addEventListener('change',e=>{globalFilter=e.target.value;renderBoard()});root.addEventListener('input',e=>{if(e.target.id==='track-search'){localSearch=e.target.value;renderTrackPreservingSearch()}if(e.target.id==='rm-search'){let q=e.target.value.trim().toLowerCase(),box=root.querySelector('#rm-search-results');if(!q){box.innerHTML='';return}let ts=tracks.filter(t=>`${t.id} ${t.title[lang]}`.toLowerCase().includes(q)),gs=gaps.filter(g=>`${g.id} ${g.plain_statement?.[lang]||''}`.toLowerCase().includes(q));box.innerHTML=`<span>${ts.length} ${tr('条路线','routes')} · ${gs.length} ${tr('条命题匹配','matching lemmas')}:</span>`+ts.map(t=>`<button data-result-track="${esc(t.id)}">${esc(t.title[lang])}</button>`).join(' ')+gs.map(g=>`<button data-result-gap="${esc(g.id)}">${esc(g.id)}</button>`).join(' ')}});
+root.querySelector('#rm-state').addEventListener('change', e => { globalFilter = e.target.value; renderBoard(); });
+root.addEventListener('input', e => {
+  if (e.target.id === 'track-search') {
+    localSearch = e.target.value;
+    trackPage = 1;
+    clearTimeout(trackSearchTimer);
+    trackSearchTimer = setTimeout(() => refreshTrack(), 250);
+  }
+  if (e.target.id !== 'rm-search') return;
+  const q = e.target.value.trim().toLowerCase().slice(0, 500);
+  const box = root.querySelector('#rm-search-results');
+  const request = ++globalSearchRequest;
+  clearTimeout(globalSearchTimer);
+  box.replaceChildren();
+  if (!q) return;
+  globalSearchTimer = setTimeout(async () => {
+    try {
+      const data = await loadTaskPage({q, limit: 24});
+      if (request !== globalSearchRequest) return;
+      const routes = tracks.filter(t => (t.id + ' ' + t.title[lang]).toLowerCase().includes(q));
+      box.append(element('span', data.total + ' ' + tr('条命题匹配','matching lemmas')));
+      for (const [label, key, id] of [
+        ...routes.map(t => [t.title[lang], 'resultTrack', t.id]),
+        ...data.gaps.map(gap => [gap.id, 'resultGap', gap.id]),
+      ]) {
+        const button = element('button', label);
+        button.dataset[key] = id;
+        box.append(button);
+      }
+      if (data.total > data.gaps.length && lemmaDisclosure) {
+        const more = element('button', tr('查看全部匹配','See all matches'));
+        more.onclick = () => {
+          lemmaSearch.value = q;
+          lemmaDisclosure.open = true;
+          chooseProgram('');
+          if (!lemmaListRequested) setPage(1);
+          lemmaDisclosure.scrollIntoView({block:'start'});
+        };
+        box.append(more);
+      }
+    } catch {
+      if (request === globalSearchRequest) box.textContent = strings.failure;
+    }
+  }, 250);
+});
 window.addEventListener('hashchange',()=>{if(initialized)renderRoute()});window.addEventListener('resize',()=>{if(!directionChosen&&horizontal!==wideDirection()){horizontal=wideDirection();syncDirection()}if(currentTrack)drawRail(currentTrack);else if(horizontal!==root.querySelector('#rm-board')?.classList.contains('horizontal')&&window.innerWidth>640||horizontal&&window.innerWidth<=640&&root.querySelector('#rm-board')?.classList.contains('horizontal'))renderBoard();else drawBoard()});
 
 
-function update(data, incoming){
- const prevTrack=currentTrack,active=document.activeElement,activeId=active?.id,activeRow=active?.dataset?.row,activeIndex=active?.dataset?.index,activeFilter=active?.dataset?.filter,caret=active?.selectionStart,scrollY=window.scrollY;
- gaps=data;tracks=incoming.length?incoming:[...programs.keys()].map(key=>({id:'program-'+key,title:{zh:programName(key),en:programName(key)},description:{zh:'查看该研究方向的命题。',en:'Explore statements in this research area.'},feeds:[]}));
- T=new Map(tracks.map(t=>[t.id,t]));G=new Map(gaps.map(g=>[g.id,g]));groups=new Map(tracks.map(t=>[t.id,[]]));groups.set('__core',[]);groups.set('__goal',[]);
- for(const g of gaps){let key=groupOf(g);if(!groups.has(key))key='__core';groups.get(key).push(g)}
+function update(incoming, counts, total) {
+ routeMetrics = counts;
+ totalTasks = total;
+ tracks=incoming.length?incoming:[...programs.keys()].map(key=>({id:'program-'+key,title:{zh:programName(key),en:programName(key)},description:{zh:'查看该研究方向的命题。',en:'Explore statements in this research area.'},feeds:[]}));
+ T=new Map(tracks.map(t=>[t.id,t]));
+ for (const key of [...T.keys(), '__core', '__goal']) if (!groups.has(key)) groups.set(key, []);
  upstream=new Map(tracks.map(t=>[t.id,[]]));for(const t of tracks)for(const f of t.feeds||[])upstream.get(f)?.push(t.id);distance.clear();tracks.forEach(t=>dist(t.id));
- const goal=root.querySelector('#rm-goal');goal.innerHTML=topic?`<strong>${esc(goalTitle())}</strong>`:`<strong>${esc(tr('强哥德巴赫猜想 · 每个偶数 n ≥ 4 可表为 p + q','Strong Goldbach conjecture · every even n ≥ 4 is p + q'))}</strong><small>${tracks.length} ${tr('条研究路线','research routes')} · ${gaps.length} ${tr('条命题','statements')}</small><button class="goal-core" data-enter="__core">${tr('核心主干引理','Core lemmas')} (${groups.get('__core').length}) ↗</button>`;
- if(!topic){goal.dataset.goal='1';goal.tabIndex=0}else{delete goal.dataset.goal;goal.removeAttribute('tabindex')}
+ const goal=root.querySelector('#rm-goal');
+ goal.innerHTML=topic?`<strong>${esc(goalTitle())}</strong>`:`<strong>${esc(tr('强哥德巴赫猜想 · 每个偶数 n ≥ 4 可表为 p + q','Strong Goldbach conjecture · every even n ≥ 4 is p + q'))}</strong><small>${tracks.length} ${tr('条研究路线','research routes')} · ${totalTasks} ${tr('条命题','statements')}</small><button class="goal-core" data-enter="__core">${tr('核心主干引理','Core lemmas')} (${metrics('__core').total}) ↗</button>`;
+ if(!topic){goal.dataset.goal='1';goal.tabIndex=0}
  if(!initialized){initialized=true;renderRoute();return}
- if(prevTrack&&groups.has(prevTrack)){currentTrack=prevTrack;renderTrack();{const selector=activeId?'#'+CSS.escape(activeId):activeRow?`[data-row="${CSS.escape(activeRow)}"]`:activeIndex?`[data-index="${CSS.escape(activeIndex)}"]`:activeFilter?`[data-filter="${CSS.escape(activeFilter)}"]`:null;const e=selector&&root.querySelector(selector);if(e){e.focus({preventScroll:true});if(typeof caret==='number'&&e.setSelectionRange)e.setSelectionRange(caret,caret)}}}else{renderBoard();renderFocus()}
- window.scrollTo({top:scrollY,behavior:'instant'});
+ if(currentTrack) {
+   if (document.activeElement?.id !== 'track-search') refreshTrack({preserve:true});
+ } else {renderBoard();renderFocus()}
 }
 return {update,setProgram(value){field=value;if(initialized&&!currentTrack)renderBoard()}};
 })();
 
-let cachedTracks = [];
 let cachedRevision;
+let lastOverviewAt = 0;
+const OVERVIEW_MIN_INTERVAL = 30000;
 
 async function loadStatus() {
   if (loading || document.hidden) return;
@@ -1451,22 +1519,15 @@ async function loadStatus() {
   const request = new AbortController();
   const timeout = window.setTimeout(() => request.abort(), 30000);
   try {
-    const incremental = lastGaps !== null;
-    const response = await fetch(incremental ? 'api/status?view=board-index-delta-gzip' : 'api/status?view=board-index-gzip', {
-      headers: { Accept: 'application/json' },
-      signal: request.signal,
-    });
+    const response = await fetch('api/overview', {signal: request.signal});
     if (!response.ok) throw new Error('Status request failed');
     const data = await response.json();
+    lastOverviewAt = Date.now();
     const { counts, results, desk, lpf_record, catalogue_revision } = data;
-    if (incremental && cachedRevision !== catalogue_revision) {
+    if (lastGaps !== null && cachedRevision !== catalogue_revision) {
       window.location.reload();
       return;
     }
-    const previous = incremental ? new Map(publishedGaps.map(gap => [gap.id, gap])) : null;
-    const gaps = previous ? data.gaps.map(gap => ({ ...previous.get(gap.id), ...gap })) : data.gaps;
-    const tracks = incremental ? cachedTracks : (data.tracks || []);
-    cachedTracks = tracks;
     cachedRevision = catalogue_revision;
     const pageRevision = document.querySelector('meta[name="catalogue-revision"]')?.content;
     if (pageRevision && catalogue_revision && pageRevision !== catalogue_revision) {
@@ -1474,27 +1535,19 @@ async function loadStatus() {
       return;
     }
     renderExponent(lpf_record);
-    assignments = desk?.assignments ?? assignments;
-    document.getElementById('hero-available').textContent = gaps.filter(canClaim).length;
+    document.getElementById('hero-available').textContent = data.available;
     const latest = results[0];
     document.getElementById('news-verdict').textContent = latest
       ? latest.lemma_id + (latest.kind && latest.kind !== 'prove' ? ' · ' + latest.kind : '') + ' · ' + (latest.verdict === 'ACCEPTED' ? strings.accepted : strings.rejected)
       : strings.noRecords;
-    const gapsSnapshot = JSON.stringify([gaps, tracks, assignments]);
-    if (lastGaps !== gapsSnapshot) {
-      publishedGaps = gaps;
-      gapRoutes = new Map(gaps.map(gap => [gap.id, programOf(gap)]));
-      updateRouteActivity(gaps);
-      researchMap.update(gaps, tracks);
-      renderProgramCounts();
-      renderLemmas();
-      if (lemmaDialog.open) renderGapDetail();
-      if (lastGaps === null) {
-        const requested = new URLSearchParams(window.location.search).get('lemma');
-        if (requested && gaps.some(gap => gap.id === requested)) openGap(requested);
-      }
-      lastGaps = gapsSnapshot;
+    updateRouteActivity(data.panel_counts);
+    researchMap.update(data.tracks || [], data.route_counts, counts.published);
+    renderProgramCounts(data.program_counts);
+    if (lastGaps === null) {
+      const requested = new URLSearchParams(window.location.search).get('lemma');
+      if (requested) openGap(requested);
     }
+    lastGaps = true;
     lemmaSearch.disabled = false;
     lemmaState.disabled = false;
     for (const name of ['accepted', 'open', 'published', 'attempts']) {
@@ -1897,10 +1950,30 @@ function initSponsorMarquee() {
   }
 }
 
+function scheduleSponsorMarquee() {
+  const wall = document.querySelector('.sponsor-wall');
+  if (!wall) return;
+  if (typeof IntersectionObserver !== 'function') {
+    initSponsorMarquee();
+    return;
+  }
+  const observer = new IntersectionObserver(entries => {
+    if (entries.some(entry => entry.isIntersecting)) {
+      observer.disconnect();
+      initSponsorMarquee();
+    }
+  }, {rootMargin: '350px 0px'});
+  observer.observe(wall);
+}
+
 for (const img of document.querySelectorAll('.author-avatar img')) {
   img.addEventListener('error', () => img.remove());
 }
-initSponsorMarquee();
+scheduleSponsorMarquee();
 loadStatus();
 window.setInterval(loadStatus, 120000);
-document.addEventListener('visibilitychange', loadStatus);
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && Date.now() - lastOverviewAt >= OVERVIEW_MIN_INTERVAL) {
+    loadStatus();
+  }
+});

@@ -23,6 +23,6 @@ python -B -m unittest research.test_catalogue research.test_route_sources
 
 1. 在地图或路线面板找到预期的双语标题。确认新增任务都在正确路线，且没有落到「未分路线的命题」或主站的未分轨任务组。主站抽查 `feeds` 的方向，分站抽查同一任务能从地图筛选及路线面板找到。
 2. 点开新任务，确认详情显示正确的 ID、命题、证明状态和领取入口。挑战题的开放状态和领取方式应符合 `challenge_only`、`claims_closed`。在窄屏检查路线列表与详情可操作。
-3. 从对应研究台的 `/api/status` 对照任务 ID、`route_id`、冻结声明和 `proved` 状态。若 API 或页面还是旧数据，先核对 `/health` 的 `catalogue_revision` 和浏览器刷新后的结果。CI 状态不能用来替代运营中的目录快照。
+3. 从对应研究台的 `/api/task?lemma=任务ID` 对照任务 ID、`route_id`、冻结声明和 `proved` 状态。批量对照冻结声明哈希用 `/api/catalogue-status`。若 API 或页面还是旧数据，先核对 `/health` 的 `catalogue_revision` 和浏览器刷新后的结果。CI 状态不能用来替代运营中的目录快照。
 
 示例可用二次型素数研究台的 [高频估计推广阶段](https://www.goldbach.tech/problems/quadratic-primes/?lang=zh#track-high-mode-extension)。在 PR 里留下对应的主站或分站入口与抽查任务 ID，方便维护者复核。

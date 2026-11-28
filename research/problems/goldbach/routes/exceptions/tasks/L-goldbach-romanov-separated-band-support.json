@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-romanov-separated-band-support",
+  "statement": "by\n  classical\n  exact let J := fun a b m : ℕ => ((Finset.Icc a b).filter (fun e => Nat.Prime (m-2^e))).card; ∃ c : ℝ, 0 < c ∧ ∃ T : ℕ, ∀ X ≥ T, let L := Nat.log 2 X / 2; c*(X:ℝ) ≤ (((Finset.Ico X (2*X)).filter (fun m => Odd m ∧ 0<J 1 (L/2) m ∧ 0<J (L/2+1) L m)).card:ℝ)",
+  "plain_statement": {
+    "zh": "低指数带和高指数带各有一个表示的不同奇目标占正比例。",
+    "en": "A positive proportion of distinct odd targets meet both separated exponent bands."
+  },
+  "brief": {
+    "zh": "保留既有 cross-band-overlap 题的两个指数范围，把加权混合质量提升为不同目标数。该计数下界推出旧的质量下界；反过来必须排除少数高重数点支配均值。可先控制乘积的截断尾部，再用二阶矩。",
+    "en": "Keep the bands of the existing cross-band overlap task, counting each target only once. This implies its weighted lower bound. Control concentration of the product on high-multiplicity targets to go in the stronger direction."
+  },
+  "depends_on": [],
+  "imports": [],
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/discussions/4314",
+  "program": "exceptions",
+  "track": "exceptions",
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true
+}

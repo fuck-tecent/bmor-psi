@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-moving-window-two-factor-chen",
+  "statement": "let C₀ : ℝ := ∏' p : ℕ, if Nat.Prime p ∧ 2 < p then 1 - 1 / ((p : ℝ)-1)^2 else 1; ∃ c : ℝ, 0 < c ∧ ∃ N₀ : ℕ, ∀ N A H : ℕ, N₀ ≤ N → Even N → 2*A ≤ N → A+H ≤ N → (N : ℝ)^(817/1000 : ℝ) ≤ (H : ℝ) → (A=0 ∨ (N : ℝ)^(697/800 : ℝ) ≤ (H : ℝ)) → let S := (Finset.Icc A (A+H)).filter (fun p => Nat.Prime p ∧ (Nat.Prime (N-p) ∨ ((N-p).minFac.Prime ∧ Nat.Prime ((N-p)/(N-p).minFac)))); let D : ℝ := ∏ p ∈ N.primeFactors.filter (fun p => 2 < p), ((p : ℝ)-1)/((p : ℝ)-2); c*C₀*D*(H : ℝ)/(Real.log (N : ℝ))^2 ≤ (S.card : ℝ)",
+  "plain_statement": {
+    "zh": "在充分大偶数 N 的每个允许窗口 [A,A+H] 内，证明至少 c C(N)H/(log N)² 个素数 p 的补数是素数或半素数。同一个正常数适用于全部窗口：起点为零时 H≥N^0.817，其他 0<A≤N/2 时 H≥N^0.87125，右端不超过 N。",
+    "en": "Uniformly in windows [A,A+H] with 0≤A≤N/2 and A+H≤N, find at least c C(N)H/(log N)² prime summands with prime or semiprime complement for all sufficiently large even N. Require H≥N^0.817 at the origin and H≥N^0.87125 elsewhere."
+  },
+  "brief": {
+    "zh": "Li III 定理 1.1 在原点和中点以同量级得到至多三个素因子的补数。本题要求至多两个，允许平方，且起点可移动。先控制短区间素数在筛模上的带权误差，再估计切换后含三个素因子的部分。取窗口宽度向上取整只可能多计一个端点，对下界量级无影响。额外的半素数净损失界仍是得到素数对的必要输入。",
+    "en": "Li III Theorem 1.1 obtains at most three prime factors for the endpoint and midpoint windows. Keep their scales, remove the third factor and control translated starts with a single constant. Estimate short-interval distribution against the switching weights, then subtract the three-factor part. Rounding a width up loses at most one boundary term on returning to the paper's window. Prime-pair positivity still needs a separate semiprime subtraction."
+  },
+  "source": "https://runbolicarey.com/assets/downloads/On_Chen_s_theorem__Goldbach_s_conjecture_and_almost_prime_twins_III.pdf",
+  "program": "correlation",
+  "track": "farey-inverse-sieve",
+  "depends_on": [],
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true,
+  "imports": []
+}

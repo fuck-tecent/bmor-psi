@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-quartic-progression-goldbach-values",
+  "statement": "by\n  classical\n  exact ∀ P : Polynomial ℤ, P.natDegree=4 → 0<P.leadingCoeff → ∀ k : ℕ, ∀ ε : ℝ, 0<ε → ∃ C : ℝ, 0<C ∧ ∀ N : ℕ, 2≤N → ∀ d a b : ℕ, 1≤d → (d:ℝ) ≤ (1+Real.log (N:ℝ))^k → a<d → b<d → a.Coprime d → b.Coprime d → let bad := fun n : ℕ => let m := 2*P.eval (n:ℤ); ((d:ℤ) ∣ m-(a:ℤ)-(b:ℤ)) ∧ ¬ ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ (p:ℤ)+(q:ℤ)=m ∧ p%d=a ∧ q%d=b; (((Finset.Icc 1 N).filter bad).card:ℝ) ≤ C*(N:ℝ)^((3:ℝ)/4+ε)",
+  "plain_statement": {
+    "zh": "对四次多项式目标同时指定两个素数的既约剩余类，保留 3/4 例外指数，对对数幂大小的模数一致。",
+    "en": "Retain the quartic 3/4 exceptional exponent with both prime residues prescribed at polylogarithmic moduli."
+  },
+  "brief": {
+    "zh": "d=1 恢复文献定理 1 的四次结论。一般 d 先筛选目标同余相容的指标，再对子进程素数和与任意异常指标集的四次 Weyl 和作混合估计。指数与阈值需对 d,a,b 一致。",
+    "en": "At d=1 recover the quartic case of Theorem 1. Restrict to compatible indices before estimating the prime sums in two progressions against the polynomial sum on an arbitrary exceptional set. Control errors uniformly in the modulus and both residues."
+  },
+  "source": "https://arxiv.org/html/2611.09386v1",
+  "track": "exceptions",
+  "program": "exceptions",
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true,
+  "depends_on": [],
+  "imports": []
+}

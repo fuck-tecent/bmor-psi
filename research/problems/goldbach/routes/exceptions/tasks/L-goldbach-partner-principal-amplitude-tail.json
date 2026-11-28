@@ -1,0 +1,22 @@
+{
+  "id": "L-goldbach-partner-principal-amplitude-tail",
+  "statement": "by\n  classical\n  let S := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    ∑' q : ℕ, if hq : q ≠ 0 then\n      let _ : NeZero q := ⟨hq⟩\n      if h : r ∣ q ∧ s ∣ q then\n        let A := DirichletCharacter.changeLevel h.1 α\n        let B := DirichletCharacter.changeLevel h.2 β\n        gaussSum A ZMod.stdAddChar * gaussSum B ZMod.stdAddChar *\n          gaussSum (A*B)⁻¹ (ZMod.stdAddChar.mulShift (-(m:ZMod q))) / (q.totient:ℂ)^2\n      else 0\n    else 0\n  let O := S (1 : DirichletCharacter ℂ 1) (1 : DirichletCharacter ℂ 1)\n  let P := (1 : DirichletCharacter ℂ 1)\n  let B := Σ s : ℕ, DirichletCharacter ℂ s\n  let valid := fun b : B => b.1 ≠ 0 ∧ b.2.IsPrimitive\n  exact ∀ ε : ℝ, 0 < ε → ∃ T : ℕ, ∀ Y ≥ T, ∃ F : Finset B, (∀ b, b ∈ F ↔ valid b ∧ ‖O 2‖ < (Y:ℝ)*‖S P b.2 2‖) ∧ |(F.card:ℝ)/(Y:ℝ)^2 - 1/(2*‖O 2‖)| ≤ ε",
+  "plain_statement": {
+    "zh": "在 m=2 的平凡首行，求全部超过 1/Y 归一化阈值的搭档数的精确二次渐近。",
+    "en": "Determine the precise quadratic tail count for the principal row at target two."
+  },
+  "brief": {
+    "zh": "#4164 只控制高阈值，#4245 由三次矩给出 O(Y³)。本题按振幅而非导子计数，阈值趋零时预测 Y²/(2‖O(2)‖)。平方自由导子 s 在此贡献 h(s)=∏(p−2) 个等振幅搭档；对按 h 排序的 Dirichlet 级数需证明适当的 Tauber 条件。",
+    "en": "Count by amplitude, not by conductor. Each odd squarefree s contributes h(s)=∏(p−2) partners of reciprocal normalized amplitude h(s). Derive the near-critical pole and justify the Tauberian step for an asymptotic, improving the cubic-moment tail bound."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4316",
+  "program": "exceptions",
+  "role": "target",
+  "challenge_only": true,
+  "parallel": true,
+  "imports": [],
+  "depends_on": [
+    "L-goldbach-partner-level-parseval"
+  ],
+  "track": "exceptions"
+}

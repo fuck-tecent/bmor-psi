@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-beatty-common-exceptions",
+  "statement": "let bt := fun (u v : ℝ) (p : ℕ) => ∃ j : ℤ, ⌊u*(j : ℝ)+v⌋ = (p : ℤ); ∀ α : ℝ, 1 < α → α < 2 → Irrational α → (∃ c τ : ℝ, 0 < c ∧ 0 < τ ∧ ∀ q : ℕ, 0 < q → ∀ a : ℤ, c/(q : ℝ)^τ ≤ |α-(a : ℝ)/(q : ℝ)|) → ∃ C : ℝ, 0 < C ∧ ∃ X₀ : ℕ, ∀ X : ℕ, X₀ ≤ X → let bad := fun n : ℕ => Even n ∧ ∃ β : ℝ, ¬ ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ p+q=n ∧ bt α β p ∧ bt α β q; ((@Finset.filter ℕ bad (Classical.decPred bad) (Finset.Icc 4 X)).card : ℝ) ≤ C*Real.sqrt (X : ℝ)",
+  "plain_statement": {
+    "zh": "固定 1<α<2 的有限型无理斜率，寻找大小仅 Oα(√X) 的共同例外集；对集外每个偶数及每个实平移 β，都有两个同一 Beatty 序列中素数的表示。",
+    "en": "For every finite-type irrational slope between one and two, bound by Oα(sqrt X) a single exceptional set working for every translate of the Beatty sequence."
+  },
+  "brief": {
+    "zh": "与 Banks–Güloğlu–Nevans 对固定序列的几乎处处存在性相比，误差目标是平方根且平移置于选定目标之后。利用 α<2 给出的两段相位交叠余量，用有限网格覆盖平移，真正的困难是得到幂级例外界。不能由两段各自的素数密度推出同时命中。",
+    "en": "Exploit the positive overlap margin for slope below two to discretize translates. The difficult step is a square-root exceptional bound for simultaneous phase hits. Separate marginal densities do not control the joint count."
+  },
+  "source": "https://arxiv.org/abs/math/0701285",
+  "track": "representations",
+  "program": "correlation",
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true,
+  "imports": [],
+  "depends_on": []
+}

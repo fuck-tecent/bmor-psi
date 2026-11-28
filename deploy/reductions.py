@@ -4,7 +4,7 @@ import json
 import re
 import time
 
-MAX_DEPTH = 2
+MAX_DEPTH = 8
 MAX_LIVE = 3
 CREDIT_POINTS = 1
 KINDS = ("prove", "cut", "refute")
@@ -37,14 +37,32 @@ def target(gap, module):
     return {**gap, "module": module, "file": "lean/" + module.replace(".", "/") + ".lean"}
 
 
-def cut_reason(gap, live):
-    if gap.get("reductions") is not True:
-        return "cuts_disabled"
-    if gap.get("depth", 0) >= MAX_DEPTH:
+def cut_reason(gap, live, depth=0):
+    if max(gap.get("depth", 0), depth) >= MAX_DEPTH:
         return "cut_depth_limit"
     if live >= MAX_LIVE:
         return "cut_limit"
     return None
+
+
+def live_depths(conn):
+    """Return the longest incoming and outgoing live paths for each task."""
+    incoming, outgoing = {}, {}
+    for start, end, depth in conn.execute("""
+        WITH RECURSIVE edges(parent, child) AS (
+            SELECT r.parent, p.child FROM reductions r JOIN cut_premises p ON p.run=r.run
+            WHERE r.state='live'
+        ), paths(start, end, depth) AS (
+            SELECT parent, child, 1 FROM edges
+            UNION
+            SELECT p.start, e.child, p.depth+1 FROM paths p
+            JOIN edges e ON e.parent=p.end WHERE p.depth < ?
+        )
+        SELECT start, end, depth FROM paths
+    """, (MAX_DEPTH + 1,)):
+        incoming[end] = max(incoming.get(end, 0), depth)
+        outgoing[start] = max(outgoing.get(start, 0), depth)
+    return incoming, outgoing
 
 
 def inactive_tasks(conn):
@@ -81,8 +99,10 @@ def register(conn, parent, lease, children, gaps, slug, refuted, proved, descrip
         return
     live = conn.execute("SELECT count(*) FROM reductions WHERE parent=? AND state='live'",
                         (parent["id"],)).fetchone()[0]
+    incoming, outgoing = live_depths(conn)
+    parent_depth = max(parent.get("depth", 0), incoming.get(parent["id"], 0))
     reason = ("settled" if parent["id"] in proved or parent["id"] in refuted or parent.get("refutation")
-              else cut_reason(parent, live))
+              else cut_reason(parent, live, parent_depth))
     if parent["id"] in inactive_tasks(conn):
         reason = "cut_inactive"
     by_statement = {g["statement"]: g for g in gaps.values()}
@@ -110,10 +130,12 @@ def register(conn, parent, lease, children, gaps, slug, refuted, proved, descrip
                 "route_parent": parent.get("route_parent", parent["id"]),
                 "cut_origin": {"run": run, "pr": lease["pr"], "head": lease["head"],
                                "position": pos, "contributor_wording": bool(wording)},
-                "reductions": True, "depth": parent.get("depth", 0) + 1,
+                "reductions": True, "depth": parent_depth + 1,
             }, "Conjectures.Cuts.Task" + key)
         if child["id"] in forbidden:
             reason = "cyclic_cut"
+        elif not reason and parent_depth + 1 + outgoing.get(child["id"], 0) > MAX_DEPTH:
+            reason = "cut_depth_limit"
         tasks.append(child)
     existing = conn.execute(
         "SELECT run FROM reductions WHERE parent=? AND state='live'", (parent["id"],))

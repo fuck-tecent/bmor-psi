@@ -1,0 +1,22 @@
+{
+  "id": "L-goldbach-partner-height-renormalized-square",
+  "statement": "by\n  classical\n  let S := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    ∑' q : ℕ, if hq : q ≠ 0 then\n      let _ : NeZero q := ⟨hq⟩\n      if h : r ∣ q ∧ s ∣ q then\n        let A := DirichletCharacter.changeLevel h.1 α\n        let B := DirichletCharacter.changeLevel h.2 β\n        gaussSum A ZMod.stdAddChar * gaussSum B ZMod.stdAddChar *\n          gaussSum (A*B)⁻¹ (ZMod.stdAddChar.mulShift (-(m:ZMod q))) / (q.totient:ℂ)^2\n      else 0\n    else 0\n  let O := S (1 : DirichletCharacter ℂ 1) (1 : DirichletCharacter ℂ 1)\n  let P := (1 : DirichletCharacter ℂ 1)\n  let B := Σ s : ℕ, DirichletCharacter ℂ s\n  let valid := fun b : B => b.1 ≠ 0 ∧ b.2.IsPrimitive\n  exact ∀ (r : ℕ) [NeZero r] (α : DirichletCharacter ℂ r), α.IsPrimitive → ∀ m : ℕ, 0 < m → Even m → ∃ b₀ : ℝ, ∀ ε : ℝ, 0 < ε → ∃ T : ℕ, ∀ Y ≥ T, ∃ F : Finset B, (∀ b, b ∈ F ↔ valid b ∧ b.1 ≤ Y) ∧ |(∑ b ∈ F, ‖S α b.2 m‖^2) - ‖O m‖ * Real.log (Y:ℝ) - b₀| ≤ ε",
+  "plain_statement": {
+    "zh": "按搭档导子 ≤Y 截断，求平方质量的对数主项并证明扣除后收敛到常数。",
+    "en": "Renormalize the quadratic mass by a conductor-height cutoff and obtain a constant secondary term."
+  },
+  "brief": {
+    "zh": "#4316 按整除共同水平取完整行。高度截断恰是另一族集合。先剥离 r 与 m 的有限局部项，再把剩余平方质量写成与调和级数的卷积。预期未归一化主项系数为普通奇异级数的模，常数项可依赖固定行及目标。",
+    "en": "A height cutoff differs from divisibility by one level. Peel off the finite local factors of r and m and factor the outer Dirichlet series against the harmonic series. Predict the unnormalized leading coefficient ‖O(m)‖ and retain a row-dependent constant term."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4316",
+  "program": "exceptions",
+  "role": "target",
+  "challenge_only": true,
+  "parallel": true,
+  "imports": [],
+  "depends_on": [
+    "L-goldbach-partner-level-parseval"
+  ],
+  "track": "exceptions"
+}

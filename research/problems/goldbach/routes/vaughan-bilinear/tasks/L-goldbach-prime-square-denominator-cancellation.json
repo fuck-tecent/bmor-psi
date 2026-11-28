@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-prime-square-denominator-cancellation",
+  "statement": "let S := fun (N : ℕ) (x : ℝ) => ∑ m ∈ Finset.range N, ((ArithmeticFunction.vonMangoldt m : ℝ) : ℂ) * Complex.exp (((2*Real.pi*(m : ℝ)*x : ℝ) : ℂ)*Complex.I); ∀ η : ℝ, 0 < η → ∃ N₀ : ℕ, ∀ N p : ℕ, N₀ ≤ N → 2 ≤ N → Nat.Prime p → let q := p^2; q^2 ≤ N → N ≤ 4*q^2 → ∀ a : ℤ, Nat.Coprime a.natAbs q → ∀ e : ℝ, |e| ≤ 1/((q : ℝ)*Real.sqrt (N : ℝ)) → ‖S N ((a : ℝ)/(q : ℝ)+e)‖ ≤ (N : ℝ)^((3 : ℝ)/4+η)",
+  "plain_statement": {
+    "zh": "在 q=p² 且 √N/2≤q≤√N 的所有标准有理逼近弧上，对每个既约分子无条件证明 N^(3/4+η) 的冯·曼戈尔特指数和界。",
+    "en": "For prime-square denominators between √N/2 and √N, seek the unconditional N^(3/4+η) pointwise bound throughout every reduced rational arc."
+  },
+  "brief": {
+    "zh": "对标 Maynard–Pandey–Radziwiłł 定理 1.1 在此分母族的特例：去掉主导的 19/24 指数。#4193 已核验高次素数幂质量无需相位抵消即可处理。对素数贡献先沿模 p 分层，再利用模 p² 的加法相位对提升变量是线性的；完整主特征项因 μ(p²)=0 消失。一般分母与次弧带符号系数仍须另做。",
+    "en": "In this denominator family the 19/24 term of Theorem 1.1 dominates. Remove it without GRH. Reuse #4193 for the higher-prime-power contribution. Group the prime part by residues mod p and exploit the linear phase in the lift from p to p². The complete principal Gauss sum vanishes. General denominators remain open."
+  },
+  "source": "https://arxiv.org/html/2608.14777v1",
+  "program": "correlation",
+  "track": "vaughan-bilinear",
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true,
+  "depends_on": [],
+  "imports": []
+}

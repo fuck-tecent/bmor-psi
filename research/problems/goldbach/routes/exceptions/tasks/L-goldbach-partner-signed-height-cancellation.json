@@ -1,0 +1,22 @@
+{
+  "id": "L-goldbach-partner-signed-height-cancellation",
+  "statement": "by\n  classical\n  let S := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    ∑' q : ℕ, if hq : q ≠ 0 then\n      let _ : NeZero q := ⟨hq⟩\n      if h : r ∣ q ∧ s ∣ q then\n        let A := DirichletCharacter.changeLevel h.1 α\n        let B := DirichletCharacter.changeLevel h.2 β\n        gaussSum A ZMod.stdAddChar * gaussSum B ZMod.stdAddChar *\n          gaussSum (A*B)⁻¹ (ZMod.stdAddChar.mulShift (-(m:ZMod q))) / (q.totient:ℂ)^2\n      else 0\n    else 0\n  let O := S (1 : DirichletCharacter ℂ 1) (1 : DirichletCharacter ℂ 1)\n  let P := (1 : DirichletCharacter ℂ 1)\n  let B := Σ s : ℕ, DirichletCharacter ℂ s\n  let valid := fun b : B => b.1 ≠ 0 ∧ b.2.IsPrimitive\n  exact ∀ m : ℕ, 0 < m → Even m → 2 ≤ (m-1).primeFactors.card → ∀ ε : ℝ, 0 < ε → ∃ T : ℕ, ∀ Y ≥ T, ∃ F : Finset B, (∀ b, b ∈ F ↔ valid b ∧ b.1 ≤ Y) ∧ ‖∑ b ∈ F, S P b.2 m‖ ≤ ε",
+  "plain_statement": {
+    "zh": "若 m−1 至少有两个不同素因子，证明按导子高度截断的平凡行复数和趋零。",
+    "en": "Two distinct prime factors of m−1 force signed principal-row cancellation in conductor-height order."
+  },
+  "brief": {
+    "zh": "按导子合并所有原始特征后，p|m−1 的局部带符号因子预期形如 1−p^(−s)。两个不同素数带来两次有限差分，有望同时消掉对数项和常数项。必须按高度 Y 的实际顺序估计余项；绝对值矩不能推出该结论。",
+    "en": "Summing primitive character values locally produces finite differences at primes dividing m−1. Two such differences should remove both logarithmic and constant terms. Justify the cutoff error in the stated summation order; an absolute row moment loses the cancellation."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4316",
+  "program": "exceptions",
+  "role": "target",
+  "challenge_only": true,
+  "parallel": true,
+  "imports": [],
+  "depends_on": [
+    "L-goldbach-partner-level-parseval"
+  ],
+  "track": "exceptions"
+}

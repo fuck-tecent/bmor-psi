@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-cubic-fixed-linear-defect",
+  "statement": "by\n  classical\n  exact ∀ P : Polynomial ℤ, P.natDegree=3 → ∀ ε : ℝ, 0<ε → ∃ C : ℝ, 0<C ∧ ∀ M : ℕ, 2≤M → ∀ A : Finset ℕ, A ⊆ Finset.Icc 1 M → ∀ h : ℤ, let wt := fun (x : Fin 3 → (↥A)) => ∑ i, P.eval ((x i : ℕ):ℤ); let lin := fun (x : Fin 3 → (↥A)) => ∑ i, ((x i : ℕ):ℤ); let triples := (Finset.univ : Finset ((Fin 3 → (↥A)) × (Fin 3 → (↥A)))); ((triples.filter (fun z => wt z.1=wt z.2 ∧ lin z.1-lin z.2=h)).card:ℝ) ≤ C*(M:ℝ)^ε*(A.card:ℝ)^3",
+  "plain_statement": {
+    "zh": "固定三元组指标和之差 h，证明三次多项式的碰撞数在每个切片都至多 M^ε|A|³，常数对 h 一致。",
+    "en": "Bound cubic triple collisions at every prescribed linear defect uniformly in that defect."
+  },
+  "brief": {
+    "zh": "#4325 已证精确六阶矩恒等式。固定左边三元组后，右边的一次和与多项式和均已知。平移和缩放变量去掉二次项，利用 S³−Σxᵢ³=3(x₁+x₂)(x₂+x₃)(x₃+x₁) 控制非零乘积的约数；零乘积需单独处理。各 h 的界相加仍有损失。",
+    "en": "With the first triple fixed, the other triple has prescribed linear and cubic data. Depress the cubic, factor the difference between the cube of the sum and the sum of cubes, and isolate degeneracy before using divisor bounds. Summing the slices is a separate challenge."
+  },
+  "source": "https://arxiv.org/html/2611.09386v1",
+  "track": "exceptions",
+  "program": "exceptions",
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true,
+  "depends_on": [],
+  "imports": []
+}

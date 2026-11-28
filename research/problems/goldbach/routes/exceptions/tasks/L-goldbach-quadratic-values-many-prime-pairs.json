@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-quadratic-values-many-prime-pairs",
+  "statement": "by\n  classical\n  let reps := fun z : ℤ => ((Finset.Icc 2 z.toNat).filter (fun p => Nat.Prime p ∧ Nat.Prime (z.toNat-p))).card\n  exact ∀ P : Polynomial ℤ, P.natDegree = 2 → 0 < P.leadingCoeff → ∃ c : ℝ, 0 < c ∧ ∀ ε : ℝ, 0 < ε → ∃ C : ℝ, 0 < C ∧ ∀ N : ℕ, 2 ≤ N →\n    (((Finset.Icc 1 N).filter (fun n => let z := 2 * P.eval (n : ℤ); z ≤ 2 ∨ (reps z : ℝ) < c * (z : ℝ) / (Real.log (z : ℝ))^2)).card : ℝ) ≤ C*(N : ℝ)^((3 : ℝ)/7+ε)",
+  "plain_statement": {
+    "zh": "对每个正首项的整系数二次多项式，大部分 2P(n) 至少有 c·2P(n)/log²(2P(n)) 个有序素数表示，坏指标不超过 O(N^(3/7+ε))。",
+    "en": "For any fixed positive-leading quadratic, all but O(N^(3/7+ε)) indices give 2P(n) at least c·2P(n)/log²(2P(n)) ordered prime representations."
+  },
+  "brief": {
+    "zh": "对标定理 1 二次情形的 1/2+ε。所有无表示指标均计入坏集（包括非正目标），因此新界推出旧界。少数表示也计作坏点，用主弧下界与次弧误差之间的差距代替完全消失。指数降至 3/7 需要素数权与二次稀疏集合的额外抵消，不能只代入原第四矩。",
+    "en": "Theorem 1 gives an exceptional exponent 1/2 for quadratics. Nonpositive and unrepresented targets are included in the bad set. Compare the main term with the minor arcs even where a few representations survive. The saving to 3/7 requires cancellation beyond the existing fourth-moment argument."
+  },
+  "source": "https://arxiv.org/html/2611.09386v1",
+  "program": "exceptions",
+  "track": "exceptions",
+  "role": "target",
+  "challenge_only": true,
+  "parallel": true,
+  "imports": [],
+  "depends_on": []
+}

@@ -985,6 +985,10 @@ class Desk:
         with closing(sqlite3.connect(db_path)) as conn:
             conn.execute("PRAGMA journal_mode=WAL")
             conn.executescript("""
+                CREATE TABLE IF NOT EXISTS goldbach_check_failures (
+                    run_id INTEGER PRIMARY KEY, at INTEGER NOT NULL, gap TEXT NOT NULL,
+                    handle TEXT NOT NULL, pr INTEGER NOT NULL, head TEXT NOT NULL
+                );
                 CREATE TABLE IF NOT EXISTS goldbach_leases (
                     token_hash TEXT PRIMARY KEY,
                     gap TEXT NOT NULL,
@@ -1150,6 +1154,7 @@ class Desk:
             live = dict(conn.execute("SELECT parent,count(*) FROM reductions WHERE state='live' GROUP BY parent"))
 
             inactive = reductions.inactive_tasks(conn)
+            cut_depths = reductions.live_depths(conn)[0] if kind == "cut" else {}
 
             def unavailable(gap_id):
                 if gap_id in inactive:
@@ -1161,7 +1166,7 @@ class Desk:
                 if gap.get("claims_closed"):
                     return "claims_closed"
                 if kind == "cut":
-                    return reductions.cut_reason(gap, live.get(gap_id, 0))
+                    return reductions.cut_reason(gap, live.get(gap_id, 0), cut_depths.get(gap_id, 0))
                 if kind == "refute" and gap.get("reductions") is not True:
                     return "refutations_disabled"
                 return None
@@ -1348,7 +1353,10 @@ class Desk:
                 return error(409, "no_matching_submission")
             if lease["run_id"] == run_id and lease["expires_at"] > now and lease["finished_at"] is None:
                 return 200, {"authorized": True}
-            if lease["run_id"] is not None or lease["expires_at"] <= now:
+            retry = lease["run_id"] is not None and run_id > lease["run_id"] and conn.execute(
+                "SELECT 1 FROM goldbach_check_failures WHERE run_id=?", (lease["run_id"],)
+            ).fetchone() is not None
+            if not retry and (lease["run_id"] is not None or lease["expires_at"] <= now):
                 return error(409, "submission_unavailable")
             if gap in self.resolved_gaps(conn):
                 return error(409, "gap_already_proved")
@@ -1356,14 +1364,29 @@ class Desk:
                 return error(409, "run_already_authorized")
             if conn.execute("""
                 SELECT 1 FROM goldbach_leases WHERE pr = ? AND head = ? AND run_id IS NOT NULL
+                  AND NOT EXISTS (SELECT 1 FROM goldbach_check_failures f WHERE f.run_id=goldbach_leases.run_id)
             """, (pr, head)).fetchone():
                 return error(409, "head_already_authorized")
 
             conn.execute("""
-                UPDATE goldbach_leases SET run_id = ?, checking_at = ?, expires_at = ?
+                UPDATE goldbach_leases SET run_id = ?, checking_at = ?, expires_at = ?, finished_at = NULL, verdict = NULL
                 WHERE token_hash = ?
             """, (run_id, now, now + CHECK_SECONDS, lease["token_hash"]))
             return 200, {"authorized": True}
+
+    def record_check_failure(self, pr, head, run, now):
+        # Keep the run identity for late or repeated delivery. Only an author-authorized
+        # new run may resume this exact registered submission.
+        with self.transaction(write=True) as conn:
+            result = conn.execute("""
+                UPDATE goldbach_leases SET finished_at=?
+                WHERE pr=? AND head=? AND run_id=? AND verdict IS NULL
+                  AND released_at IS NULL AND finished_at IS NULL
+                RETURNING gap, handle
+            """, (now, pr, head, run)).fetchone()
+            if result:
+                conn.execute("INSERT OR IGNORE INTO goldbach_check_failures VALUES (?, ?, ?, ?, ?, ?)",
+                             (run, now, result["gap"], result["handle"], pr, head))
 
     def resolve_module(self, module):
         with self.transaction() as conn:
@@ -1395,11 +1418,13 @@ class Desk:
         cuts = reductions.public_records(conn, gap_id)
         assemblies = dict(conn.execute(query, params))
         inactive = reductions.inactive_tasks(conn)
+        cut_depths, _ = reductions.live_depths(conn)
         for key, gap in gaps.items():
             entries = cuts.get(key, [])
             live = sum(c["status"] == "live" for c in entries)
-            reason = reductions.cut_reason(gap, live)
-            gap = {**gap, "depth": gap.get("depth", 0), "reductions": gap.get("reductions", False),
+            depth = max(gap.get("depth", 0), cut_depths.get(key, 0))
+            reason = reductions.cut_reason(gap, live, depth)
+            gap = {**gap, "depth": depth, "reductions": gap.get("reductions", False),
                    "reductions_live": live, "cuts": entries}
             if key in inactive:
                 gap["claims_closed"] = True
@@ -1586,7 +1611,9 @@ class Desk:
                         FROM goldbach_leases WHERE released_at IS NOT NULL
                         UNION ALL
                         SELECT finished_at, lower(verdict), gap, handle, pr, run_id, head, NULL, 3
-                        FROM goldbach_leases WHERE finished_at IS NOT NULL
+                        FROM goldbach_leases WHERE verdict IS NOT NULL
+                        UNION ALL
+                        SELECT at, 'error', gap, handle, pr, run_id, head, NULL, 3 FROM goldbach_check_failures
                         UNION ALL
                         SELECT expires_at, 'expired', gap,
                                CASE WHEN run_id IS NOT NULL THEN handle END,

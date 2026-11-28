@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-log-square-window-density",
+  "statement": "let good := fun n : ℕ => ∃ p q : ℕ, Nat.Prime p ∧ Odd p ∧ Nat.Prime q ∧ Odd q ∧ p + q = n; ∃ c : ℝ, 0 < c ∧ ∀ x : ℝ, 2 ≤ x → let h := (Real.log x)^2; let W := Finset.Ioc ⌊x⌋₊ ⌊x + 123*h⌋₊; 1 + ⌊c*h⌋₊ ≤ (@Finset.filter ℕ good (Classical.decPred good) W).card",
+  "plain_statement": {
+    "zh": "待证：存在绝对常数 c>0，对每个实数 x≥2，区间 (x,x+123(log x)²] 至少含 1+⌊c(log x)²⌋ 个不同的两奇素数和。命题不假定黎曼猜想。",
+    "en": "Unconditionally find an absolute c>0 such that every real x≥2 has at least 1+floor(c(log x)²) distinct sums of two odd primes in (x,x+123(log x)²]."
+  },
+  "brief": {
+    "zh": "按不同目标数计数，每个偶数只计一次。先对区间内素数对表示次数求一阶、二阶矩，用 Cauchy–Schwarz 控制支撑大小；两条矩估计都须对每个起点成立。另一入口是估计无素数短区间和反射后的同时空缺。对照 2026 年论文定理 1：保留相同实数起点和端点，去掉 RH，且从保证一个命中提升为正比例命中。仍可能漏掉孤立偶数，不能直接推出逐偶数表示。",
+    "en": "Count distinct sums, not pairs. Seek a uniform lower first moment and upper second moment for representation counts in the same window, then apply Cauchy–Schwarz to their support. Alternatively study simultaneous holes in the short prime intervals and their reflections. Theorem 1 gives one hit under RH with the same endpoints. Positive density at every starting point still permits isolated exceptions."
+  },
+  "source": "https://doi.org/10.1007/s40993-026-00767-6",
+  "program": "correlation",
+  "track": "exceptional-set-four-sevenths",
+  "depends_on": [],
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true,
+  "imports": []
+}

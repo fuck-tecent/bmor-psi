@@ -2,7 +2,6 @@ import gzip
 import json
 import unittest
 from unittest.mock import MagicMock, patch
-from urllib.error import HTTPError
 
 from tools import goldbach
 
@@ -19,30 +18,16 @@ class TaskListingTests(unittest.TestCase):
         self.assertTrue(opener.open.call_args.args[0].full_url.endswith("/problems/twin-primes/api/tasks?limit=1"))
         self.assertEqual(opener.open.call_count, 1)
 
-    def test_fallback_board_excludes_unclaimable_tasks_and_keeps_parallel_claims(self):
-        board = {
-            "desk": {"assignments": {"parallel-task": "working", "occupied": "working"}},
-            "gaps": [
-                {"id": "parallel-task", "parallel": True, "points": 4},
-                {"id": "occupied"},
-                {"id": "closed", "claims_closed": True},
-                {"id": "refuted", "refutation": {"status": "verified"}},
-                {"id": "proved", "proved": True},
-                {"id": "resolved", "resolved": True},
-                {"id": "challenge", "challenge_only": True, "points": 7},
-            ],
-        }
+    def test_large_requests_use_bounded_pages(self):
+        def response(items):
+            reply = MagicMock()
+            reply.__enter__.return_value.headers = {"Content-Encoding": "gzip"}
+            reply.__enter__.return_value.read.return_value = gzip.compress(json.dumps({
+                "problem": "twin-primes", "available": 101, "tasks": items,
+            }).encode())
+            return reply
         opener = MagicMock()
-        response = opener.open.return_value.__enter__.return_value
-        response.headers = {"Content-Encoding": "gzip"}
-        response.read.return_value = gzip.compress(json.dumps(board).encode())
-        opener.open.side_effect = [HTTPError("", 404, "", None, None), opener.open.return_value]
+        opener.open.side_effect = [response([{"id": str(i)} for i in range(100)]), response([{"id": "100"}])]
         with patch.object(goldbach.urllib.request, "build_opener", return_value=opener):
-            listing = goldbach.list_tasks("twin-primes", 1)
-        self.assertEqual(listing, {
-            "problem": "twin-primes", "available": 2,
-            "tasks": [{"id": "challenge", "points": 7, "challenge_only": True}],
-        })
-        request = opener.open.call_args.args[0]
-        self.assertEqual(request.get_method(), "GET")
-        self.assertTrue(request.full_url.endswith("/problems/twin-primes/api/status?view=board-gzip"))
+            self.assertEqual(len(goldbach.list_tasks("twin-primes", 101)["tasks"]), 101)
+        self.assertTrue(opener.open.call_args.args[0].full_url.endswith("/api/tasks?limit=1&offset=100"))

@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-binary-shift-simultaneous-richness",
+  "statement": "by\n  classical\n  exact let G := fun m : ℕ => ((Finset.Icc 2 m).filter (fun p => Nat.Prime p ∧ Nat.Prime (m-p))).card; ∃ c C : ℝ, 0 < c ∧ 0 < C ∧ ∃ T : ℕ, ∀ X ≥ T, let L := Nat.log 2 X / 2; let E := (Finset.Ico X (2*X)).filter (fun n => Even n ∧ ∃ e ∈ Finset.Icc 1 L, (G (n-2^e):ℝ) < c*(X:ℝ)/(Real.log (X:ℝ))^2); (E.card:ℝ) ≤ C*(X:ℝ)^((3:ℝ)/4)",
+  "plain_statement": {
+    "zh": "要求每个小二幂移位同时拥有 ≫X/log²X 个二素数表示，且例外数至多 O(X^(3/4))。",
+    "en": "Require many Goldbach representations at every small binary shift with at most O(X^(3/4)) exceptions."
+  },
+  "brief": {
+    "zh": "#4220 的合入证明只需所有移位都有一个见证，允许 X^(4/5) 个坏中心。新题既增加重数又缩小坏集；须检验近 1 零点会不会使归一化主项变小。对单一移位证明异常估计时要为随后 O(log X) 个平移的并集留余量。",
+    "en": "PR #4220 proves positivity at every small shift outside X^(4/5) centers. Improve both the representation floor and the exceptional exponent. Quantify the near-one-zero contribution and reserve enough saving to sum the individual exceptional sets."
+  },
+  "depends_on": [],
+  "imports": [],
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4220",
+  "program": "exceptions",
+  "track": "exceptions",
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true
+}

@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-transference-fourth-obstruction",
+  "statement": "by\n  classical\n  exact ∃ M : ℝ, 0 < M ∧ ∀ ε : ℝ, 0 < ε → ∀ T : ℕ, ∃ N : ℕ, ∃ hN : Nat.Prime N, T ≤ N ∧ (letI : NeZero N := ⟨hN.ne_zero⟩; ∃ f : ZMod N → ℝ,\n    let ft := fun (h : ZMod N → ℝ) (r : ZMod N) => (∑ x : ZMod N, (h x : ℂ) * Complex.exp (-2*(Real.pi : ℂ)*Complex.I*((r*x).val : ℂ)/(N : ℂ)))/(N : ℂ)\n    (∀ x, 0 ≤ f x) ∧ (∑ x, f x)/(N:ℝ)=1 ∧ (∑ r : ZMod N, ‖ft f r‖^4) ≤ M ∧ (∀ r, ‖ft (fun x => f x-1) r‖ ≤ ε) ∧ (N:ℝ)/2 ≤ ((Finset.univ.filter (fun n : ZMod N => (∑ x, f x*f (n-x))=0)).card:ℝ))",
+  "plain_statement": {
+    "zh": "构造素数阶循环群上的临界反例：均值一、Fourier 误差任意小、四次矩有界，仍有半数目标卷积为零。",
+    "en": "Construct a Fourier-uniform fourth-moment endpoint obstruction missing half of all sums."
+  },
+  "brief": {
+    "zh": "尝试用约 √N/2 个点的稀疏集，按均值一归一化。小支撑直接限制和集；还须在同一个样本中同时证明加法能量为 O(N)、全部非零频率偏差趋零，并处理精确归一化。若成立，可排除把 #4281 的指数范围无条件闭合到 4。",
+    "en": "Try sparse sets of size about √N/2. The sumset is small by counting pairs; obtain additive energy O(N) and simultaneous uniformity at all nonzero frequencies for the same set. Normalize by its actual cardinality. This tests sharpness of the restriction assumption."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4281",
+  "track": "exceptions",
+  "program": "exceptions",
+  "role": "target",
+  "challenge_only": true,
+  "parallel": true,
+  "imports": [],
+  "depends_on": []
+}

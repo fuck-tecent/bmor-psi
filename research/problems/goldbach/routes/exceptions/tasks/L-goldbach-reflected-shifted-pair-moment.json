@@ -1,0 +1,22 @@
+{
+  "id": "L-goldbach-reflected-shifted-pair-moment",
+  "statement": "by\n  classical\n  let e := fun t : ℝ => Complex.exp (((2*Real.pi*t : ℝ) : ℂ)*Complex.I)\n  let S := fun (N : ℕ) (t : ℝ) => ∑ p ∈ (Finset.range (N+1)).filter Nat.Prime, (Real.log (p : ℝ) : ℂ) * e ((p : ℝ)*t)\n  let arcs := fun N : ℕ => let k := Nat.log 2 (N+2); {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ k ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t-(a : ℝ)/(q : ℝ)| ≤ ((k^3 : ℕ) : ℝ)/((q : ℝ)*(N : ℝ))}\n  let A := fun N m : ℕ => (intervalIntegral ((arcs N).indicator (fun t : ℝ => (S N t)^2 * e (-(m : ℝ)*t))) (0 : ℝ) 1 MeasureTheory.volume).re\n  let C₂ := ∏' p : ℕ, if Nat.Prime p ∧ 2 < p then 1 - 1/((p : ℝ)-1)^2 else 1\n  let band := fun N m : ℕ => 4*N ≤ 3*m ∧ 2*m ≤ 3*N ∧ Even m\n  let R := fun N m : ℕ => A N m / (2*(N:ℝ)-(m:ℝ))\n  let B := fun N : ℕ => (Finset.Icc N (2*N)).filter (band N)\n  let avg := fun (F : Finset ℕ) (f : ℕ → ℝ) => (∑ m ∈ F, f m)/(F.card:ℝ)\n  exact ∀ ε : ℝ, 0 < ε → ∃ T : ℕ, ∀ N h : ℕ, T ≤ N → h^3 ≤ N →\n    let F := (B N).filter (fun m => band N (m+2*h))\n    let E := (2*C₂)^2 * ∏' p : ℕ, if Nat.Prime p ∧ 2<p then (let u : ℝ := 1/((p:ℝ)-2); 1+2*u/(p:ℝ)+(if p ∣ h then u^2/(p:ℝ) else 0)) else 1\n    |avg F (fun m => R N m * R N (m+2*h)) - E| ≤ ε",
+  "plain_statement": {
+    "zh": "求相距 2h 的两个大弧系数的混合二阶矩，对 h³≤N 一致。",
+    "en": "Determine the shifted second moment uniformly for h³≤N."
+  },
+  "brief": {
+    "zh": "#4275 只控制单点下界。若 p∤h，则 p 不能同时整除 m 和 m+2h；若 p|h，则两条件重合，这给出不同的局部二阶项。须证明有限分母截断误差对移动的 h 一致。h=0 包含真正的二阶矩。",
+    "en": "Use intersection versus exclusion of the two divisibility events at odd p. Control the cutoff uniformly as h varies; h=0 recovers the unshifted second moment. The average is over the intersection of the two reflected bands."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4275",
+  "track": "exceptions",
+  "program": "exceptions",
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true,
+  "imports": [],
+  "depends_on": [
+    "L-goldbach-reflected-major-sharp-floor"
+  ]
+}

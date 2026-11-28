@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-mixed-b13-short-even-mean",
+  "statement": "have x1 : ℕ → ℝ → ℕ := fun (x1 : ℕ) (x2 : ℝ) => ⌊(↑x1 : ℝ) ^ x2⌋₊; have x2 : ℕ → ℕ := fun (x2 : ℕ) => x1 x2 (1 / 16 : ℝ); have x3 : ℝ → ℂ := fun (x3 : ℝ) => Complex.exp ((↑((2 : ℝ) * Real.pi * x3) : ℂ) * Complex.I); have x4 : ℕ → ℕ → ℕ → ℕ → ℝ := fun (x4 x5 x6 x7 : ℕ) => ∑ x8 ∈ x7.divisors with x5 < x8 ∧ x8 ≤ x6 ∧ x2 x4 < x7 / x8, (∑ x9 ∈ x8.divisors with x2 x4 < x9, (↑((ArithmeticFunction.moebius : ℕ → ℤ) x9) : ℝ)) * (ArithmeticFunction.vonMangoldt : ℕ → ℝ) (x7 / x8); have x5 : ℕ → ℕ → ℕ → ℝ → ℂ := fun (x5 x6 x7 : ℕ) (x8 : ℝ) => ∑ x9 ∈ Finset.range (x5 + (1 : ℕ)), (↑(x4 x5 x6 x7 x9) : ℂ) * x3 ((↑x9 : ℝ) * x8); have x6 : ℕ → Set ℝ := fun (x6 : ℕ) => {x7 : ℝ | ∃ (x8 : ℕ) (x9 : ℕ), (1 : ℕ) ≤ x8 ∧ x8 ≤ x1 x6 (1 / 3 : ℝ) ∧ x9 ≤ x8 ∧ x9.Coprime x8 ∧ |x7 - (↑x9 : ℝ) / (↑x8 : ℝ)| ≤ (↑((256 : ℕ) * x1 x6 (1 / 3 : ℝ) * Nat.log (2 : ℕ) (x6 + (2 : ℕ)) ^ (2 : ℕ)) : ℝ) / ((↑x8 : ℝ) * (↑x6 : ℝ))}; have x7 : ℕ → ℂ := fun (x7 : ℕ) => ∫ (x8 : ℝ) in (0 : ℝ)..(1 : ℝ), (x6 x7)ᶜ.indicator (fun (x9 : ℝ) => x5 x7 (x2 x7) (x1 x7 (1 / 4 : ℝ)) x9 * x5 x7 (x1 x7 (1 / 3 : ℝ)) (x1 x7 (2 / 3 : ℝ)) x9 * x3 (-(↑x7 : ℝ) * x9)) x8; have x8 : ℕ → ℝ := fun (x8 : ℕ) => (‖x7 x8‖ / (↑x8 : ℝ)) ^ (2 : ℕ); have x9 : ℕ → ℕ → ℝ := fun (x9 x10 : ℕ) => (∑ x11 ∈ Finset.range (x10 + (1 : ℕ)), x8 (x9 + (2 : ℕ) * x11)) / (↑(x10 + (1 : ℕ)) : ℝ); ∃ C : ℝ, 0 < C ∧ ∃ T : ℕ, ∀ n H : ℕ, T ≤ n → Even n → n ≤ H^2 → H ≤ n → x9 n H ≤ C*(n : ℝ)^(-(13/512 : ℝ))",
+  "plain_statement": {
+    "zh": "对 #4211 原封不动的混合 B13 次弧系数，将偶数 n,n+2,…,n+2H 上的归一化平方平均推广到每个 √n≤H≤n 的短窗，保留累计长窗的 n^(−13/512) 节省。",
+    "en": "For the exact moving B13 coefficient in #4211 retain its long-window normalized square-mean saving n^(−13/512) uniformly on all even-step windows with √n≤H≤n."
+  },
+  "brief": {
+    "zh": "Qmhou 已用共享分块标签保留混合频谱，证明 [X,2X] 上未归一化二次矩为 O(X^(1523/512))。只把长窗上界搬到短窗再除 H 会损失 n/H，在平方根尺度完全不够。尝试把移动行的 Bessel 估计局部化，并单独控制窗口穿过 n^(2/3) 取整跳点的代价。H=n 即恢复原有均方衰减；均方本身仍允许个别偶数取大值。",
+    "en": "Qmhou bounded the dyadic unnormalized second moment by O(X^(1523/512)) with shared labels for the mixed spectrum. Restricting that total and dividing by H costs n/H; this loses the saving at square-root scale. Localize the moving-row Bessel estimate and control windows crossing jumps of the n^(2/3) cutoff. H=n recovers the long mean. Individual even targets may still be exceptional."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4211",
+  "track": "frontier-type2-dyadic-matrix",
+  "program": "correlation",
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true,
+  "depends_on": [],
+  "imports": []
+}

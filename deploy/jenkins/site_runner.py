@@ -130,7 +130,7 @@ def check_formal(job_id):
                 desk_url=desk_url, secret=Path(secret_file).read_bytes().strip(),
             )
             row = db.execute("SELECT payload FROM desk_outbox WHERE run=? AND attempt=1", (run,)).fetchone()
-            return {"ACCEPTED": 0, "REJECTED": 1}[json.loads(row[0])["verdict"]]
+            return {"ACCEPTED": 0, "REJECTED": 1, "ERROR": 3}[json.loads(row[0])["verdict"]]
     except ProofRefused as error:
         logging.warning("Formal submission refused for job %s: %s", job_id, error)
         return 1

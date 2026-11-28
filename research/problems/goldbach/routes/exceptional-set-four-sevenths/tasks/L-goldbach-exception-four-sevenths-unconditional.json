@@ -1,5 +1,6 @@
 {
   "id": "L-goldbach-exception-four-sevenths-unconditional",
+  "reductions": true,
   "statement": "let bad := fun n : ℕ => 4 ≤ n ∧ Even n ∧ ¬ ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ p+q=n; ∀ e : ℝ, 0 < e → ∃ (C : ℝ) (N : ℕ), 0 < C ∧ ∀ X : ℕ, N ≤ X → ((@Finset.filter ℕ bad (Classical.decPred bad) (Finset.Icc 4 X)).card : ℝ) ≤ C * (X:ℝ) ^ (4/7 + e)",
   "plain_statement": {
     "zh": "无条件证明 E(X) ≪ε X^(4/7+ε)。",

@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-linnik-five-unconditional",
+  "statement": "∃ N₀ : ℕ, ∀ N : ℕ, N₀ ≤ N → Even N → ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ ∃ a : Fin 5 → ℕ, N = p + q + ∑ i : Fin 5, 2 ^ (a i + 1)",
+  "plain_statement": {
+    "zh": "无条件把每个充分大偶数表示为两个素数与恰好五个正指数二幂之和。",
+    "en": "Represent every sufficiently large even integer by two primes and five positive powers of two unconditionally."
+  },
+  "brief": {
+    "zh": "Li–Liu 定理 1.2 在 GRH 下达到五幂，定理 1.1 无条件达到六幂。尝试找出五幂反射积分的无条件主弧下界，并与次弧损失作定量比较。#4232 控制的是模 30 模型修正项，替换成真正素数后的误差仍需证明。",
+    "en": "Li–Liu Theorem 1.2 reaches five under GRH and Theorem 1.1 reaches six unconditionally. Seek a positive unconditional margin between the five-power major and minor arcs. PR #4232 only treats a wheel-model correction; the prime-weighted transfer needs its own bound."
+  },
+  "source": "https://arxiv.org/html/2610.15784v1#S1",
+  "program": "correlation",
+  "track": "minor-truncation",
+  "depends_on": [],
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true,
+  "imports": []
+}

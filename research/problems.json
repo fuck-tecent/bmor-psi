@@ -190,7 +190,8 @@
         "program": "correlation",
         "imports": [],
         "parallel": true,
-        "source": "https://epoch.ai/frontiermath/open-problems/no-three-in-line"
+        "source": "https://epoch.ai/frontiermath/open-problems/no-three-in-line",
+        "reductions": true
       },
       {
         "id": "L-no-three-in-line-mixed-secants",
@@ -11140,7 +11141,8 @@
         ],
         "file": "lean/Conjectures/SquarePacking/SeventeenLower4661.lean",
         "module": "Conjectures.SquarePacking.SeventeenLower4661",
-        "route_source": "seventeen-square-frontier"
+        "route_source": "seventeen-square-frontier",
+        "reductions": true
       },
       {
         "id": "L-square-packing-seventeen-upper-46755",
@@ -11173,7 +11175,8 @@
         ],
         "file": "lean/Conjectures/SquarePacking/SeventeenUpper46755.lean",
         "module": "Conjectures.SquarePacking.SeventeenUpper46755",
-        "route_source": "seventeen-square-frontier"
+        "route_source": "seventeen-square-frontier",
+        "reductions": true
       },
       {
         "id": "L-square-packing-seventeen-weight-budget",
@@ -12598,7 +12601,8 @@
         "imports": [],
         "parallel": true,
         "lpf_exponent": "1.324",
-        "challenge_only": true
+        "challenge_only": true,
+        "reductions": true
       },
       {
         "id": "L-quadratic-primes-lpf-endpoint",
@@ -12618,7 +12622,8 @@
         "imports": [],
         "parallel": true,
         "lpf_exponent": "2",
-        "challenge_only": true
+        "challenge_only": true,
+        "reductions": true
       },
       {
         "id": "L-quadratic-primes-prime-power-roots",
@@ -29191,7 +29196,8 @@
         "file": "lean/Conjectures/LogRank/ImprovedGeneralRectangleExponent.lean",
         "module": "Conjectures.LogRank.ImprovedGeneralRectangleExponent",
         "track": "general-monochromatic-rectangles",
-        "route_source": "general-monochromatic-rectangles"
+        "route_source": "general-monochromatic-rectangles",
+        "reductions": true
       }
     ],
     "roadmap": [
@@ -31712,7 +31718,8 @@
         "track": "07-global-heights",
         "module": "Conjectures.JoshiAbc.Endpoint",
         "file": "lean/Conjectures/JoshiAbc/Endpoint.lean",
-        "route_source": "07-global-heights"
+        "route_source": "07-global-heights",
+        "reductions": true
       },
       {
         "id": "L-joshi-abc-frey-height",
@@ -31786,7 +31793,8 @@
         "track": "07-global-heights",
         "module": "Conjectures.JoshiAbc.FreyUpperAtSeven",
         "file": "lean/Conjectures/JoshiAbc/FreyUpperAtSeven.lean",
-        "route_source": "07-global-heights"
+        "route_source": "07-global-heights",
+        "reductions": true
       },
       {
         "id": "L-joshi-abc-height-bridge",

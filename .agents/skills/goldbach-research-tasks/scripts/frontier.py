@@ -23,7 +23,7 @@ def load_snapshot(problem, path):
         data = path.read_bytes()
     else:
         prefix = "" if problem == "goldbach" else f"/problems/{problem}"
-        with urlopen(f"https://www.goldbach.tech{prefix}/api/status?view=web-gzip", timeout=30) as response:
+        with urlopen(f"https://www.goldbach.tech{prefix}/api/catalogue-status", timeout=30) as response:
             data = response.read()
     if data.startswith(b"\x1f\x8b"):
         data = gzip.decompress(data)
@@ -32,10 +32,12 @@ def load_snapshot(problem, path):
 
 def prepare(gaps, snapshot, parent=None, inputs=()):
     catalogue = {g["id"]: g for g in gaps}
-    live = {g["id"]: g for g in snapshot["gaps"]}
-    if (len(live) != len(snapshot["gaps"]) or set(catalogue) != set(live)
+    static = [g for g in snapshot["gaps"] if not g.get("generated")]
+    live = {g["id"]: g for g in static}
+    if (len(live) != len(static) or set(catalogue) != set(live)
             or any(type(live[k]["proved"]) is not bool
-                   or live[k]["statement"] != g["statement"] for k, g in catalogue.items())):
+                   or live[k].get("statement_sha256", hashlib.sha256(live[k].get("statement", "").encode()).hexdigest())
+                      != hashlib.sha256(g["statement"].encode()).hexdigest() for k, g in catalogue.items())):
         raise ValueError("desk and Git catalogue differ or verdict data is incomplete; refresh both")
     assigned = snapshot["desk"]["assignments"]
     if not isinstance(assigned, dict):

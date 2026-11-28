@@ -1,0 +1,24 @@
+{
+  "id": "L-goldbach-partner-dyadic-zero-block",
+  "statement": "by\n  classical\n  let S := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    ∑' q : ℕ, if hq : q ≠ 0 then\n      let _ : NeZero q := ⟨hq⟩\n      if h : r ∣ q ∧ s ∣ q then\n        let A := DirichletCharacter.changeLevel h.1 α\n        let B := DirichletCharacter.changeLevel h.2 β\n        gaussSum A ZMod.stdAddChar * gaussSum B ZMod.stdAddChar *\n          gaussSum (A*B)⁻¹ (ZMod.stdAddChar.mulShift (-(m:ZMod q))) / (q.totient:ℂ)^2\n      else 0\n    else 0\n  let O := S (1 : DirichletCharacter ℂ 1) (1 : DirichletCharacter ℂ 1)\n  let B := Σ s : ℕ, DirichletCharacter ℂ s\n  let primitive := fun b : B => b.1 ≠ 0 ∧ b.2.IsPrimitive\n  let zeroAt := fun (b : B) (z : ℂ) => if h : b.1 ≠ 0 then\n    letI : NeZero b.1 := ⟨h⟩\n    DirichletCharacter.LFunction b.2 z = 0\n    else False\n  let N := fun (F : Finset B) (w : B → ℝ) => (∑ b ∈ F, |w b| ^ (6/5 : ℝ)) ^ (5/6 : ℝ)\n  exact\n    (∀ m : ℕ, 0 < m → Even m → ∀ F : Finset B, (∀ b ∈ F, primitive b) →\n      ∀ u v : B → ℝ, (∑ a ∈ F, ∑ b ∈ F, |u a| * ‖S a.2 b.2 m‖ * |v b|)\n        ≤ (3 : ℝ)^(1/3 : ℝ) * ‖O m‖ * N F u * N F v) ∧\n    ∃ C : ℝ, 0 < C ∧ ∀ (m : ℕ) (T : ℝ), 0 < m → Even m → 1 ≤ T →\n      ∀ (n : ℕ) (χ : Fin n → B) (z u v : Fin n → ℂ),\n      (∀ i, primitive (χ i) ∧ zeroAt (χ i) (z i) ∧\n        1/2 ≤ (z i).re ∧ (z i).re ≤ 1 ∧ T ≤ |(z i).im| ∧ |(z i).im| ≤ 2*T) →\n      let F := Finset.univ.image χ\n      let W := fun (w : Fin n → ℂ) (b : B) =>\n        ∑ i ∈ Finset.univ.filter (fun i => χ i = b), ‖w i‖ * (m : ℝ)^((z i).re-1)\n      let K := fun i j : Fin n => Complex.Gamma (z i) * Complex.Gamma (z j) /\n        Complex.Gamma (z i + z j) * (m : ℂ)^(z i + z j - 1)\n      ‖∑ i : Fin n, ∑ j : Fin n, u i * v j * S (χ i).2 (χ j).2 m * K i j‖\n        ≤ C * (m : ℝ) * ‖O m‖ / Real.sqrt T * N F (W u) * N F (W v)",
+  "plain_statement": {
+    "zh": "对全导子的奇异级数核证明双线性 ℓ⁶⁄⁵ 界，再对 Pintz 显式公式在同一二进高度块的实际零点对保留 T⁻¹⁄² 衰减及按特征合并的节省。",
+    "en": "Prove the all-conductor bilinear ℓ⁶⁄⁵ estimate and retain both height decay and character dispersion for a dyadic zero block in the Pintz kernel."
+  },
+  "brief": {
+    "zh": "Pintz (2.10)、(10.24)–(10.25)；Zhao (2.4)–(2.8)。先用行列三次矩插值得双线性界，在 T≤|Im ρ|≤2T 上统一估计 Beta 核，按原始特征累加零点权重。同一块若 M 个特征的两组归并权重均为 1，所得 M^(5/3) 比逐对上界 M² 节省 M^(1/3)。保留重数、符号和复相位；父题仍需其他高度块与显式公式余项。",
+    "en": "Interpolate the cubic row and column estimates. Bound the beta kernel uniformly on the height block and collect the weighted zeros by primitive character. For M equally weighted character groups on both sides this costs M^(5/3) instead of M² at the same height. Repeated indices allow multiplicities. Other blocks and the explicit-formula remainder are separate inputs."
+  },
+  "source": "https://arxiv.org/html/1804.05561v1",
+  "program": "exceptions",
+  "role": "target",
+  "challenge_only": true,
+  "parallel": true,
+  "imports": [
+    "Conjectures.Goldbach.PrimitivePartnerCubicMass"
+  ],
+  "depends_on": [
+    "L-goldbach-primitive-partner-cubic-mass"
+  ],
+  "track": "exceptions"
+}

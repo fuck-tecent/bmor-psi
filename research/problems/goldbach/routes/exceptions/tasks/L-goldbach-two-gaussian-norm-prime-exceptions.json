@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-two-gaussian-norm-prime-exceptions",
+  "track": "exceptions",
+  "statement": "let lp := fun p : ℕ => Nat.Prime p ∧ ∃ a b : ℕ, p=a^2+b^2+1; let bad := fun n : ℕ => Even n ∧ n%9 ≠ 5 ∧ n%9 ≠ 8 ∧ ¬ ∃ p q : ℕ, lp p ∧ lp q ∧ p+q=n; ∃ δ : ℝ, 0 < δ ∧ δ < 1 ∧ ∃ X₀ : ℕ, ∀ X : ℕ, X₀ ≤ X → ((@Finset.filter ℕ bad (Classical.decPred bad) (Finset.Icc 2 X)).card : ℝ) ≤ (X : ℝ)^(1-δ)",
+  "plain_statement": {
+    "zh": "对模 9 非 5、8 的偶数，证明不能写成两个 x²+y²+1 型素数之和的例外总数具有幂节省。",
+    "en": "Obtain a power-saving exceptional set for sums of two primes of the form x²+y²+1 over even targets outside residues 5 and 8 modulo 9."
+  },
+  "brief": {
+    "zh": "Teräväinen 定理 1.1 给出同一目标集上的 o(X)。不增加坐标互素条件；否则局部可容许类会改变。尝试在半维筛中保留可量化的傅里叶误差及异常特征贡献。计数对象是失败的偶数，各坐标表示不重复计分。",
+    "en": "Theorem 1.1 gives o(X) on the same admissible targets. Keep unrestricted coordinates on both sides. Quantify the Fourier and exceptional-character errors in the half-dimensional sieve. Count exceptional targets rather than lattice witnesses."
+  },
+  "source": "https://www.cambridge.org/core/journals/mathematika/article/abs/goldbach-problem-for-primes-that-are-sums-of-two-squares-plus-one/4A5250357B50082F9203DAE01A3CDAC3",
+  "imports": [],
+  "depends_on": [],
+  "role": "target",
+  "parallel": true,
+  "program": "correlation",
+  "challenge_only": true
+}

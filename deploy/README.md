@@ -54,11 +54,11 @@ Jenkins 裁决字段包括 `lemma_id`、`head_sha`、`verdict`、`manifest`、`r
 
 服务端目录 /opt/goldbach-web，状态目录 /var/lib/goldbach-web。公网入口使用 nginx 的 HTTPS 443 端口。
 
-发布站点时，按上表将应用、页面、静态资源、两个任务清单和地区数据放入 `/opt/goldbach-web/`，再重启 `goldbach-web`。主域名的 `GET /api/status` 和 movan.tech 的 `GET /goldbach/api/status` 都从命题清单和 SQLite 返回公开引理、最近的验证结果及累计统计。
+发布站点时，按上表将应用、页面、静态资源、两个任务清单和地区数据放入 `/opt/goldbach-web/`，再重启 `goldbach-web`。主域名的 `GET /api/catalogue-status` 和 movan.tech 的 `GET /goldbach/api/catalogue-status` 提供供工具使用的冻结命题哈希、验证状态及领取状态。网页使用 /api/overview 获取汇总，打开路线后分页读 /api/task-page，展开单题时读 /api/task。旧 /api/status 请求返回 410。
 
 讨论群浮窗的 `deploy/discussion.js`、`deploy/discussion-qr.png` 和 `deploy/wechat.svg` 也放在 `/opt/goldbach-web/`。换群码时同步更新 `server.py` 的 `DISCUSSION_EXPIRES`，按微信标注的北京时间有效期填写；到期后页面自动隐藏入口。
 
-二次型素数研究台的 `/goldbach/problems/quadratic-primes/api/status` 返回 `lpf_record`。其中 `baseline` 链接外部 1.323 论文及其有限证书，`verified` 是本站权威核验通过的最高指数，暂缺时为 null。登记新的挑战值时，请在 `research/problems.json` 使用新的任务 ID、十进制字符串 `lpf_exponent` 和 `deploy/landau.py` 的 `record_statement` 生成的固定命题。参与者可领取该任务并提交 Lean 证明。通过核验的运行与任务租约及命题哈希匹配后，访客即可在记录上打开对应的 GitHub Check。
+二次型素数研究台的 `/goldbach/problems/quadratic-primes/api/overview` 返回 `lpf_record`。其中 `baseline` 链接外部 1.323 论文及其有限证书，`verified` 是本站权威核验通过的最高指数，暂缺时为 null。登记新的挑战值时，请在 `research/problems.json` 使用新的任务 ID、十进制字符串 `lpf_exponent` 和 `deploy/landau.py` 的 `record_statement` 生成的固定命题。参与者可领取该任务并提交 Lean 证明。通过核验的运行与任务租约及命题哈希匹配后，访客即可在记录上打开对应的 GitHub Check。
 
 多问题目录位于 `/goldbach/problems/`。将 `research/problems.json` 同样部署到 `/opt/goldbach-web`。新问题以 `/goldbach/problems/<slug>/` 为入口，拥有独立的状态接口、加入说明和 SQLite 数据库。哥德巴赫沿用 `gaps.json` 与 `verdicts.sqlite3`。新问题可用 `python tools/goldbach.py claim --problem <slug>` 领取；提交、续租和归还从租约读取问题编号。签名队列为每个问题保留一部分批次位置，空余位置继续处理等待中的任务。签名判定按任务归属路由，新增问题的判定须关联已授权的运行。
 

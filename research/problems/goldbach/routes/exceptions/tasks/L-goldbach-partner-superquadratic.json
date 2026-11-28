@@ -1,0 +1,22 @@
+{
+  "id": "L-goldbach-partner-superquadratic",
+  "statement": "by\n  classical\n  let S := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    ∑' q : ℕ, if hq : q ≠ 0 then\n      let _ : NeZero q := ⟨hq⟩\n      if h : r ∣ q ∧ s ∣ q then\n        let A := DirichletCharacter.changeLevel h.1 α\n        let B := DirichletCharacter.changeLevel h.2 β\n        gaussSum A ZMod.stdAddChar * gaussSum B ZMod.stdAddChar *\n          gaussSum (A*B)⁻¹ (ZMod.stdAddChar.mulShift (-(m:ZMod q))) / (q.totient:ℂ)^2\n      else 0\n    else 0\n  let O := S (1 : DirichletCharacter ℂ 1) (1 : DirichletCharacter ℂ 1)\n  exact ∀ t : ℝ, 2 < t → ∃ C : ℝ, 0 < C ∧ ∀ (r : ℕ) [NeZero r] (α : DirichletCharacter ℂ r), α.IsPrimitive →\n    ∀ m : ℕ, 0 < m → Even m →\n    ∀ F : Finset (Σ s : ℕ, DirichletCharacter ℂ s),\n    (∀ b ∈ F, b.1 ≠ 0 ∧ b.2.IsPrimitive) →\n    (∑ b ∈ F, ‖S α b.2 m‖ ^ t) ≤ C * ‖O m‖ ^ t",
+  "plain_statement": {
+    "zh": "对所有实指数 t>2，一致控制跨导子的原始搭档 t 次矩。",
+    "en": "Uniform superquadratic moments of primitive partners across all conductors."
+  },
+  "brief": {
+    "zh": "#4245 处理 t=3。归一化后单项至多 1，故真正新增的是 2<t<3，对小系数的控制更强。若首特征局部平凡，分离平凡搭档并对剩余项使用 1/(p−2) 上界。若局部非平凡，对二次矩用最大值的 t−2 次幂；大素数应给出收缩，小素数保留在依赖 t 的常数中。",
+    "en": "PR #4245 gives t=3. After normalization the new range is 2<t<3. For a principal local row isolate its principal entry; the rest have cap 1/(p−2). For a nonprincipal row combine Parseval with the pointwise cap to the power t−2. Control the product uniformly in both conductors."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4245",
+  "program": "exceptions",
+  "role": "target",
+  "challenge_only": true,
+  "parallel": true,
+  "imports": [],
+  "depends_on": [
+    "L-goldbach-primitive-partner-cubic-mass"
+  ],
+  "track": "exceptions"
+}

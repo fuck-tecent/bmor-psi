@@ -18,5 +18,6 @@
   "challenge_only": true,
   "track": "07-global-heights",
   "module": "Conjectures.JoshiAbc.FreyUpperAtSeven",
-  "file": "lean/Conjectures/JoshiAbc/FreyUpperAtSeven.lean"
+  "file": "lean/Conjectures/JoshiAbc/FreyUpperAtSeven.lean",
+  "reductions": true
 }

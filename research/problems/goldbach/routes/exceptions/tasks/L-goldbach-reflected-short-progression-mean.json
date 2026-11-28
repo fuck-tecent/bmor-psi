@@ -1,0 +1,22 @@
+{
+  "id": "L-goldbach-reflected-short-progression-mean",
+  "statement": "by\n  classical\n  let e := fun t : ℝ => Complex.exp (((2*Real.pi*t : ℝ) : ℂ)*Complex.I)\n  let S := fun (N : ℕ) (t : ℝ) => ∑ p ∈ (Finset.range (N+1)).filter Nat.Prime, (Real.log (p : ℝ) : ℂ) * e ((p : ℝ)*t)\n  let arcs := fun N : ℕ => let k := Nat.log 2 (N+2); {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ k ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t-(a : ℝ)/(q : ℝ)| ≤ ((k^3 : ℕ) : ℝ)/((q : ℝ)*(N : ℝ))}\n  let A := fun N m : ℕ => (intervalIntegral ((arcs N).indicator (fun t : ℝ => (S N t)^2 * e (-(m : ℝ)*t))) (0 : ℝ) 1 MeasureTheory.volume).re\n  let C₂ := ∏' p : ℕ, if Nat.Prime p ∧ 2 < p then 1 - 1/((p : ℝ)-1)^2 else 1\n  let band := fun N m : ℕ => 4*N ≤ 3*m ∧ 2*m ≤ 3*N ∧ Even m\n  let R := fun N m : ℕ => A N m / (2*(N:ℝ)-(m:ℝ))\n  let B := fun N : ℕ => (Finset.Icc N (2*N)).filter (band N)\n  let avg := fun (F : Finset ℕ) (f : ℕ → ℝ) => (∑ m ∈ F, f m)/(F.card:ℝ)\n  exact ∀ d a : ℕ, Odd d → a < d → ∀ θ : ℝ, 0 < θ → θ < 1 → ∀ ε : ℝ, 0 < ε → ∃ T : ℕ, ∀ N x H : ℕ, T ≤ N → 4*N ≤ 3*x → 2*(x+H) ≤ 3*N → (N:ℝ)^θ ≤ (H:ℝ) →\n    let F := ((B N) ∩ Finset.Icc x (x+H)).filter (fun m => m%d=a)\n    let E := 2 * ∏ p ∈ d.primeFactors, ((if p ∣ a then 1+1/((p:ℝ)-2) else 1)/(1+1/((p:ℝ)*((p:ℝ)-2))))\n    |avg F (R N) - E| ≤ ε",
+  "plain_statement": {
+    "zh": "在任意固定奇模剩余类、任意幂长短区间上求实际大弧系数的局部均值。",
+    "en": "Determine the mean in each fixed odd residue class uniformly in polynomial-length windows."
+  },
+  "brief": {
+    "zh": "把 #4275 的一致转移代入算术行，按同余条件平均 Ramanujan 和。p 整除模数时按 p 是否整除 a 固定局部因子；其余素数需控制短窗端点误差。取 d=1 时预测均值为 2。",
+    "en": "Use the uniform transfer of #4275, average the truncated Ramanujan sums in a progression and bound endpoint losses. Condition each prime dividing d on the target residue. For d=1 the expected mean is 2."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4275",
+  "track": "exceptions",
+  "program": "exceptions",
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true,
+  "imports": [],
+  "depends_on": [
+    "L-goldbach-reflected-major-sharp-floor"
+  ]
+}

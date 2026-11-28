@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-cubic-balanced-goldbach-values",
+  "statement": "by\n  classical\n  exact ∀ P : Polynomial ℤ, P.natDegree=3 → 0<P.leadingCoeff → ∀ ε : ℝ, 0<ε → ∃ C : ℝ, 0<C ∧ ∀ N : ℕ, 2≤N → let bad := fun n : ℕ => let m := 2*P.eval (n:ℤ); ¬ ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ (p:ℤ)+(q:ℤ)=m ∧ |(p:ℤ)-(q:ℤ)|^3 ≤ m^2; (((Finset.Icc 1 N).filter bad).card:ℝ) ≤ C*(N:ℝ)^((5:ℝ)/8+ε)",
+  "plain_statement": {
+    "zh": "对两倍三次多项式值，在保持 5/8 例外指数的同时将素数对限制到 |p−q|≤m^(2/3)。",
+    "en": "Keep the cubic 5/8 exceptional exponent with both primes confined near half the target."
+  },
+  "brief": {
+    "zh": "文献定理 1 的三次结论允许素数任意分布。此题规定中心窗口，忽略间距可恢复旧界。需要重新分析随目标移动的短素数和，整段的加权主弧下界不会自动给出该窗内贡献。非正目标也计作坏指标。",
+    "en": "Theorem 1 permits unrestricted summands. Recover its cubic conclusion by dropping the central-window condition. The moving short prime sum needs a new lower estimate; a full-interval major-arc floor does not localize itself."
+  },
+  "source": "https://arxiv.org/html/2611.09386v1",
+  "track": "exceptions",
+  "program": "exceptions",
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true,
+  "depends_on": [],
+  "imports": []
+}

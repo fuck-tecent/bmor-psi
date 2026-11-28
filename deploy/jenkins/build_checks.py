@@ -49,6 +49,12 @@ def enqueue_formal_checks(jobs, outbox, *, first_job_id=1):
                            JOIN desk_outbox o ON o.run=r.run_id AND o.attempt=1
                            WHERE j.id>=? AND j.kind='authoritative' AND j.pr>0""", (first_job_id,))
     for sha, pr, run_id, gap, verdict in rows:
+        if verdict == "ERROR":
+            enqueue(outbox, "authoritative-pr", sha, "failure",
+                    f"The verification runner stopped before issuing a Lean verdict. Task desk run {run_id}. "
+                    "The PR author can retry the same commit by posting the same /goldbach-check command in a new comment.",
+                    pr=pr, run_id=run_id)
+            continue
         conclusion = {"ACCEPTED": "success", "REJECTED": "failure"}[verdict]
         enqueue(outbox, "authoritative-pr", sha, conclusion,
                 f"Lean verdict for {gap}: {verdict}. Task desk run {run_id}.", pr=pr, run_id=run_id)

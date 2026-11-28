@@ -5,7 +5,7 @@ description: Review current Goldbach Research pull requests and Lean verdicts, e
 
 # Goldbach 成果核验与报告卡
 
-1. 从仓库根目录核对最新 `main`。按用户指定的范围查看 PR 和对应研究台的 `/api/status`。普通成功状态、辅助检查和清单类型检查都要与权威证明裁决区分。旧运行查 `Lean / authoritative` 和 Actions 日志，新运行查同一 head SHA 的 `Goldbach CI / formal Lean verdict`、任务台 ACCEPTED 和 Jenkins 核验记录。网站地址和 GitHub 仓库可从仓库 README 找到。
+1. 从仓库根目录核对最新 `main`。按用户指定的范围查看 PR 和对应研究台分页的 `/api/records`。普通成功状态、辅助检查和清单类型检查都要与权威证明裁决区分。旧运行查 `Lean / authoritative` 和 Actions 日志，新运行查同一 head SHA 的 `Goldbach CI / formal Lean verdict`、任务台 ACCEPTED 和 Jenkins 核验记录。网站地址和 GitHub 仓库可从仓库 README 找到。
 2. 对每条入选结果，核对实际接受的 PR head、命题 ID、冻结声明、显式假设和范围，并附真实来源链接。对比当前目录声明。仅有权威检查通过的范围可以写为「已核验」。标出条件性结论、有限证书、已知结果复现、未合并的证明和研究稿。检查数学表述准确性，遇到不能确认的原创性或第三方审查，保留相应不确定性。
 3. 从已核验结果中挑选对主线有实质用途的命题。说明它解决了哪一步，以及主要猜想还缺什么。用户问数学价值或发表潜力时，对照原论文、已知界或已有形式化，说明新贡献、重用范围和仍需补齐的证据。只有分析需求时，直接给出带来源的摘要。
 4. 每个关键 PR 分别列出 GitHub 提交者、模型和 Harness。提交者查 GitHub PR 作者。模型与 Harness 优先采用研究台绑定到同一 PR 和受审 head 的提交记录，标作自报；其次用作者在 PR 原文或评论中的明确自报，注明来源。提交记录有版本号时一并保留。缺失或无法确认的字段写「未披露」，不得根据用户名、提交机器人、代码风格或 CI 环境推测。

@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-fraction-shifted-mangoldt-second-moment",
+  "statement": "let S := fun (w : ℝ → ℝ) (X t : ℝ) => ∑ n ∈ Finset.range (⌊X⌋₊+1), (((ArithmeticFunction.vonMangoldt n : ℝ)*w ((n : ℝ)/X) : ℝ) : ℂ)*Complex.exp (((2*Real.pi*(n : ℝ)*t : ℝ) : ℂ)*Complex.I); ∀ w : ℝ → ℝ, ContDiff ℝ ⊤ w → Function.support w ⊆ Set.Icc 0 1 → ∀ ε : ℝ, 0 < ε → ∃ C : ℝ, 0 < C ∧ ∀ X D x : ℝ, 2 ≤ X → 1 ≤ D → D ≤ X → x ∈ Set.Icc 0 1 → ∀ q : ℕ, 0 < q → ∀ a : ℤ, Nat.Coprime a.natAbs q → |x-(a : ℝ)/(q : ℝ)| ≤ 1/(q : ℝ)^2 → (∑ d ∈ Finset.Icc ⌈D⌉₊ ⌊2*D⌋₊, ∑ b ∈ Finset.range d, ‖S w X (x+(b : ℝ)/(d : ℝ))‖^2) ≤ C*X^(2+ε)*(D/(q : ℝ)+(q : ℝ)*D/X+D^2/X^(3/8 : ℝ))",
+  "plain_statement": {
+    "zh": "在整段 D 至 2D 的分母与全部剩余类上，对平移 Mangoldt 指数和的平方求和，将次弧误差 D²X^(−1/3) 改进为 D²X^(−3/8)。",
+    "en": "Improve the D²X^(−1/3) contribution to D²X^(−3/8) in the mean square of smoothed Mangoldt sums shifted by all fractions b/d in a dyadic denominator block."
+  },
+  "brief": {
+    "zh": "对标定理 2.1；保留 D/q 与 qD/X 两个共振项。论文的 1/6 障碍来自最后一项：在 D≤X^(3/16−δ) 时新项有幂节省。先研究频率聚集的 Type II 块；尚需另外核对主弧与切换筛，不能仅凭这一界宣称新的分布水平。",
+    "en": "Keep both resonance terms from Theorem 2.1. The proposed last term saves a power up to D≤X^(3/16−δ). Analyze clusters of shifted rational phases in the Type II terms. Other major-arc and switched-sieve inputs still have to be checked."
+  },
+  "track": "large-sieve-dispersion",
+  "program": "correlation",
+  "role": "target",
+  "depends_on": [],
+  "imports": [],
+  "parallel": true,
+  "challenge_only": true,
+  "source": "https://arxiv.org/html/2606.29559v1#S2"
+}

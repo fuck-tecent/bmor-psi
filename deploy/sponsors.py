@@ -1,13 +1,16 @@
 """Moderated organization logos. All identities come from the Zhihu OAuth session."""
+import hashlib
 import hmac
 import io
 import re
 import sqlite3
 import time
+from collections import OrderedDict
 from contextlib import closing
 from email import policy
 from email.parser import BytesParser
 from html import escape
+from threading import Lock
 from urllib.parse import urlsplit
 
 from PIL import Image, UnidentifiedImageError
@@ -104,8 +107,44 @@ def logo_png(raw):
         clean = im.convert("RGBA")
         clean.info.clear()
         out = io.BytesIO()
-        clean.save(out, format="PNG")
+        clean.save(out, format="PNG", optimize=True)
         return out.getvalue()
+
+
+_PUBLIC_LOGO_CACHE = OrderedDict()
+_PUBLIC_LOGO_LOCK = Lock()
+_PUBLIC_LOGO_LIMIT = 256
+
+
+def render_public_logo(raw, *, webp=False, hd=False):
+    high_res = bool(hd or len(raw) <= 20_480)
+    key = (hashlib.sha256(raw).digest(), bool(webp), high_res)
+    with _PUBLIC_LOGO_LOCK:
+        cached = _PUBLIC_LOGO_CACHE.get(key)
+        if cached is not None:
+            _PUBLIC_LOGO_CACHE.move_to_end(key)
+            return cached
+    with Image.open(io.BytesIO(raw)) as im:
+        im = im.convert("RGBA")
+        if not high_res:
+            im.thumbnail((280, 140), Image.Resampling.LANCZOS)
+        im.info.clear()
+        out = io.BytesIO()
+        if webp:
+            if high_res:
+                im.save(out, format="WEBP", lossless=True, quality=100, method=6)
+            else:
+                im.save(out, format="WEBP", quality=82, method=6)
+            result = (out.getvalue(), "image/webp")
+        else:
+            im.save(out, format="PNG", optimize=True)
+            result = (out.getvalue(), "image/png")
+    with _PUBLIC_LOGO_LOCK:
+        _PUBLIC_LOGO_CACHE[key] = result
+        _PUBLIC_LOGO_CACHE.move_to_end(key)
+        while len(_PUBLIC_LOGO_CACHE) > _PUBLIC_LOGO_LIMIT:
+            _PUBLIC_LOGO_CACHE.popitem(last=False)
+    return result
 
 
 INITIATOR_URL = "https://www.zhihu.com/people/cg-22-2"
@@ -194,9 +233,9 @@ def wall(path, lang, prefix):
     with closing(sqlite3.connect(path)) as db:
         rows = db.execute(f"SELECT id,name,website FROM sponsor_logos WHERE state='approved' ORDER BY {DISPLAY_ORDER}").fetchall()
     cards = []
-    for index, (ident, name, website) in enumerate(rows):
+    for ident, name, website in rows:
         alt = escape(name) if website else ""
-        image = (f'<img loading="{"eager" if index < 4 else "lazy"}" '
+        image = (f'<img loading="lazy" decoding="async" '
                  f'src="{prefix}sponsors/logo/{ident}.png" alt="{alt}">')
         if website:
             image = website_link(website, image)
@@ -209,9 +248,14 @@ def wall(path, lang, prefix):
 
 
 def public_logo(path, ident):
+    record = public_logo_record(path, ident)
+    return record[0] if record else None
+
+
+def public_logo_record(path, ident):
     with closing(sqlite3.connect(path)) as db:
-        row = db.execute("SELECT png FROM sponsor_logos WHERE id=? AND state='approved'", (ident,)).fetchone()
-    return row[0] if row else None
+        row = db.execute("SELECT png, name FROM sponsor_logos WHERE id=? AND state='approved'", (ident,)).fetchone()
+    return (row[0], row[1]) if row else None
 
 
 def settings_page(status, lang, title, content):

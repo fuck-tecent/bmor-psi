@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-balanced-three-factor-gap",
+  "statement": "let bad := fun n : ℕ => Even n ∧ ¬ ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ p+q=n ∧ q < p ∧ (p-q)^2 ≤ n ∧ (p-q+1).primeFactorsList.length ≤ 3; ∀ A : ℕ, ∃ X₀ : ℕ, ∀ X : ℕ, X₀ ≤ X → (((@Finset.filter ℕ bad (Classical.decPred bad) (Finset.Ioc (X/2) X)).card : ℝ)*(Real.log (X : ℝ))^A) ≤ (X : ℝ)",
+  "plain_statement": {
+    "zh": "除去任意对数幂节省的例外，每个偶数 n 都可写成 p+q，其中 0<p−q≤√n，且 p−q+1 至多有三个素因子（计重）。",
+    "en": "For all but O_A(X/log^A X) even targets in (X/2,X], find primes with 0<p−q≤sqrt(n) and at most three prime factors of p−q+1, counted with multiplicity."
+  },
+  "brief": {
+    "zh": "对照 Akeno 定理 1.2，在同一例外集尺度上，把四个因子降到三个，并约束在中点附近。尝试在短对称窗上估计原筛与切换筛的分布误差；全长版本的 0.267 门槛不能直接搬到这个窗口。q<p 排除了用差零反复贡献。",
+    "en": "Compare Theorem 1.2. Localize both summands near n/2 and study the switched and original sieve in the same short window. The full-range switched-sieve criterion does not supply this localization. Strict ordering excludes a zero-gap shortcut."
+  },
+  "track": "representations",
+  "program": "correlation",
+  "role": "target",
+  "depends_on": [],
+  "imports": [],
+  "parallel": true,
+  "challenge_only": true,
+  "source": "https://arxiv.org/html/2606.29559v1#S1"
+}

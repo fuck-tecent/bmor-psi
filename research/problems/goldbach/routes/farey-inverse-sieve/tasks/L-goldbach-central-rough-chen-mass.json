@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-central-rough-chen-mass",
+  "statement": "let C₀ : ℝ := ∏' p : ℕ, if Nat.Prime p ∧ 2 < p then 1 - 1 / ((p : ℝ)-1)^2 else 1; ∃ N₀ : ℕ, ∀ N : ℕ, N₀ ≤ N → Even N → let S := (Finset.range (N+1)).filter (fun p => Nat.Prime p ∧ N ≤ 4*p ∧ 4*p ≤ 3*N ∧ (Nat.Prime (N-p) ∨ (N-p).minFac.Prime ∧ Nat.Prime ((N-p)/(N-p).minFac) ∧ N < (N-p).minFac^6)); let D : ℝ := ∏ p ∈ N.primeFactors.filter (fun p => 2 < p), ((p : ℝ)-1)/((p : ℝ)-2); (99/50 : ℝ)*C₀*D*(N : ℝ)/(Real.log (N : ℝ))^2 ≤ (S.card : ℝ)",
+  "plain_statement": {
+    "zh": "待证：每个充分大偶数 N 的中央半区间内，至少有 1.98 C(N)N/(log N)² 个素数 p，使 N−p 是素数或两个均大于 N^(1/6) 的素数之积。允许平方，每个 p 只计一次。",
+    "en": "For every sufficiently large even N, find at least 1.98 C(N)N/(log N)² primes p in [N/4,3N/4] such that N−p is prime or is a product of two primes both exceeding N^(1/6). Squares are allowed; count each p once."
+  },
+  "brief": {
+    "zh": "Li 定理 1.1 的计数允许全部区间和小素因子，常数为 1.9728。保留原来的全长归一化。尝试在中央区间上直接构造切换筛下界，并在筛权里去掉小因子的半素数项。不能简单把全区间计数除以二。若再把同窗粗半素数的上界压到 1.98 以下，两界相减即得真正的双素数表示；该上界仍须独立证明。",
+    "en": "Compare Theorem 1.1, whose full-range count has coefficient 1.9728. Run the switching sieve on the central interval and handle small semiprime factors inside the weight. Keep the full-N normalization. A separate same-window rough-semiprime upper coefficient strictly below 1.98 would leave a positive prime-prime count; neither input follows from splitting the published total in half."
+  },
+  "source": "https://doi.org/10.59277/mrar.2026.28.78.1.2.39",
+  "program": "correlation",
+  "track": "farey-inverse-sieve",
+  "depends_on": [],
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true,
+  "imports": []
+}

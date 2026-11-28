@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-transference-mixed-restriction",
+  "statement": "by\n  classical\n  exact ∀ p q M : ℝ, 2 < p → 2 < q → 1/2 < 1/p+1/q → 1 ≤ M → ∃ c K : ℝ, 0 < c ∧ 0 < K ∧ ∀ δ η : ℝ, 0 < δ → δ ≤ 1 → 0 < η → η ≤ 1 →\n    ∀ (N : ℕ) [NeZero N], ∀ f g u v : ZMod N → ℝ,\n    let avg := fun h : ZMod N → ℝ => (∑ x, h x)/(N : ℝ)\n    let ft := fun (h : ZMod N → ℝ) (r : ZMod N) => (∑ x : ZMod N, (h x : ℂ) * Complex.exp (-2*(Real.pi : ℂ)*Complex.I*((r*x).val : ℂ)/(N : ℂ)))/(N : ℂ)\n    (∀ x, 0 ≤ f x ∧ f x ≤ u x ∧ 0 ≤ g x ∧ g x ≤ v x) → 1+δ ≤ avg f + avg g →\n    (∑ r : ZMod N, ‖ft f r‖^p) ≤ M^p → (∑ r : ZMod N, ‖ft g r‖^q) ≤ M^q →\n    (∀ r, ‖ft (fun x => u x-1) r‖ ≤ c*(δ*η)^K ∧ ‖ft (fun x => v x-1) r‖ ≤ c*(δ*η)^K) →\n    ((Finset.univ.filter (fun n : ZMod N => avg (fun x => f x*g (n-x)) < δ^3/1000)).card : ℝ) ≤ η*(N : ℝ)",
+  "plain_statement": {
+    "zh": "允许两端分别满足不同 Fourier 限制指数，包括一端超过 4 的情形。",
+    "en": "Asymmetric restriction exponents for polynomial binary transference."
+  },
+  "brief": {
+    "zh": "取 p=q 恢复 #4281。新区域允许一侧指数越过 4，只要两倒数之和仍严格大于 1/2。用混合 Hölder 控制系数乘积的小谱尾部；直接把两边换为较大的指数会损失这个区域。",
+    "en": "The diagonal p=q recovers #4281. One input may cross four. Seek a mixed Hölder estimate for the product spectrum and retain polynomial dependence on the density surplus and exceptional fraction."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4281",
+  "track": "exceptions",
+  "program": "exceptions",
+  "role": "target",
+  "challenge_only": true,
+  "parallel": true,
+  "imports": [],
+  "depends_on": []
+}

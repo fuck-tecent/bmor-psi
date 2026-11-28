@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-polynomial-triple-collisions",
+  "statement": "by\n  classical\n  exact ∀ P : Polynomial ℤ, 3 ≤ P.natDegree → ∀ ε : ℝ, 0 < ε → ∃ C : ℝ, 0 < C ∧ ∀ M : ℕ, 2 ≤ M → ∀ A : Finset ℕ, A ⊆ Finset.Icc 1 M →\n    let weight := fun x : Fin 3 → (↥A) => ∑ j : Fin 3, P.eval ((x j : ℕ) : ℤ)\n    (((Finset.univ : Finset ((Fin 3 → (↥A)) × (Fin 3 → (↥A)))).filter (fun z => weight z.1 = weight z.2)).card : ℝ) ≤ C*(M : ℝ)^ε*(A.card : ℝ)^3",
+  "plain_statement": {
+    "zh": "对三次及以上固定整系数多项式 P 与 [1,M] 中任意有限指标集 A，证明两组有序三元组的 P 值之和相等的配对数至多为 C M^ε |A|³。允许重复指标，并计入所有对角解。",
+    "en": "For a fixed integer polynomial of degree at least three and arbitrary support A in [1,M], bound collisions of ordered triple sums of P-values by C M^ε |A|³, including repetitions and diagonal solutions."
+  },
+  "brief": {
+    "zh": "#4221 将八阶矩严格化成两组四元组之和相等的计数。若两侧共享一个指标，删除该指标后只需本题；16 种位置选择使此部分至多 16 C M^ε |A|⁴。其余八元组仍需攻克。对标 Althöfer 等第 3 节定理 F：八阶矩与差分因式分解给出的四阶矩插值，六阶矩有 M^(1/2+ε)|A|³ 的界。本题去掉额外的 M^(1/2)。另在该文式 (4.7) 中代入 q=6、b=0，若素数侧输入成立，三次例外指数便为 1/2、四次为 2/3。",
+    "en": "The verified #4221 orthogonality identity counts collisions of two ordered four-tuples. When they share an index, erase one of 16 possible pairs of positions: this bound would control those configurations by 16 C M^ε |A|⁴. Fully disjoint collisions remain. Compare section 3, Theorem F of arXiv:2611.09386v1: interpolating its eighth moment with the divisor-bound fourth moment costs M^(1/2+ε)|A|³. The target removes the extra square root. With the prime-side estimates in (4.7), q=6 and b=0 give exceptional exponents 1/2 for cubics and 2/3 for quartics."
+  },
+  "source": "https://arxiv.org/html/2611.09386v1",
+  "track": "exceptions",
+  "program": "exceptions",
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true,
+  "depends_on": [],
+  "imports": []
+}

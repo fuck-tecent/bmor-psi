@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-shifted-prime-pair-sieve-566",
+  "statement": "let C₀ : ℝ := ∏' p : ℕ, if Nat.Prime p ∧ 2 < p then 1 - 1 / ((p : ℝ) - 1)^2 else 1; ∀ ε : ℝ, 0 < ε → ∃ N₀ : ℕ, ∀ N h : ℕ, N₀ ≤ N → 0 < h → h < N → let pairs := (Finset.range (N+1)).filter (fun p => Nat.Prime p ∧ p+h ≤ N ∧ Nat.Prime (p+h)); let localFactor : ℝ := ∏ p ∈ h.primeFactors.filter (fun p => 2 < p), ((p : ℝ)-1)/((p : ℝ)-2); (pairs.card : ℝ) ≤ ((283/50 : ℝ)+ε)*C₀*(N : ℝ)*localFactor/(Real.log (N : ℝ))^2",
+  "plain_statement": {
+    "zh": "一致控制所有 0<h<N 的素数差对计数，把显式筛上界中的常数从 6.7814 降至 5.66，保留局部奇异因子和任意 ε 损失。",
+    "en": "Improve the uniform prime-difference sieve constant to 5.66 for every 0<h<N, preserving the local factors and an arbitrary epsilon loss."
+  },
+  "brief": {
+    "zh": "对标命题 2 的 R(N,h)，按较小素数 p 计数，p+h 也须不超过 N。尝试在可分解筛权中分离大素因子，再对移动剩余类 −h 保持一致估计。5.66 严格小于表 1 无条件六项的 5.672 门槛；只控制固定 h 或对 h 平均都不够。",
+    "en": "Use Proposition 2 with the smaller prime as the parameter. Separate the large prime factors of the sieve moduli and retain uniformity in the moving residue −h. Table 1 puts the unconditional six-power threshold at 5.672. A fixed-shift estimate cannot be substituted."
+  },
+  "source": "https://arxiv.org/html/2605.17825v2#S2.SS2",
+  "program": "correlation",
+  "track": "minor-truncation",
+  "depends_on": [],
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true,
+  "imports": []
+}

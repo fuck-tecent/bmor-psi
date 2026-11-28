@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-chen-short-target-window",
+  "statement": "by\n  classical\n  let chen := fun p : ℕ => Nat.Prime p ∧ (p+2).primeFactorsList.length ≤ 2\n  let good := fun n : ℕ => ∃ p q : ℕ, chen p ∧ chen q ∧ p+q=n\n  exact ∃ δ : ℝ, 0 < δ ∧ δ < 1 ∧ ∃ T : ℕ, ∀ X : ℕ, T ≤ X → ∀ H : ℕ, X ≤ H^2 → H ≤ X →\n    (((Finset.Icc X (X+H)).filter (fun n => n%6=4 ∧ ¬good n)).card:ℝ) ≤ (H:ℝ)^(1-δ)",
+  "plain_statement": {
+    "zh": "在每个长度至少 √X 的目标短窗内证明双陈素数表示的幂节省例外界。",
+    "en": "Power-saving exceptional sets for two Chen primes in every target interval of length at least √X."
+  },
+  "brief": {
+    "zh": "原论文定理 1.1 给累计例外界，容许例外集中在短窗。本题要求对每个起点 X 成立，且损失以窗口长度 H 计算。加数仍可自由变化；这与现有要求 p、q 彼此接近的任务不同。",
+    "en": "Theorem 1.1 permits clustering of exceptions. Localize the exceptional-set argument in the target and preserve a saving measured in H. The summands remain unrestricted in distance."
+  },
+  "source": "https://arxiv.org/html/2508.16400v1#S1",
+  "track": "exceptions",
+  "program": "exceptions",
+  "role": "target",
+  "challenge_only": true,
+  "parallel": true,
+  "imports": [],
+  "depends_on": []
+}

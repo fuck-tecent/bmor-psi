@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-thin-prime-reservoir",
+  "statement": "by\n  classical\n  exact ∃ B : Set ℕ, (∀ p ∈ B, Nat.Prime p) ∧ ∃ C c : ℝ, 0 < C ∧ 0 < c ∧ ∃ T : ℕ, ∀ X : ℕ, T ≤ X →\n    (((Finset.Icc 1 X).filter (fun p => p ∈ B)).card : ℝ) ≤ C*Real.log (X : ℝ)*Real.log (Real.log (X : ℝ)) ∧\n    ∀ H : ℕ, X ≤ H^2 → H ≤ X →\n      let small := fun n : ℕ => (((Finset.Icc 1 n).filter (fun p => p ∈ B ∧ Nat.Prime (n-p))).card : ℝ) < c*Real.log (Real.log (X : ℝ))\n      (((Finset.Ioc X (X+H)).filter (fun n => Even n ∧ small n)).card : ℝ) ≤ C*(H : ℝ)/(Real.log (X : ℝ))^2",
+  "plain_statement": {
+    "zh": "构造一个固定素数集 B，至 X 只用 O(log X·log log X) 个元素。在每个长度 √X≤H≤X 的窗口 (X,X+H]，除 O(H/log² X) 个偶数外，每个偶数至少有 c log log X 个不同的 B 中素数作加数。",
+    "en": "Construct one fixed set of primes B of counting size O(log X log log X). In every window (X,X+H] of length √X≤H≤X, all but O(H/log² X) even targets should have at least c log log X distinct summands from B."
+  },
+  "brief": {
+    "zh": "Dai–Pan 定理 1.2 对任意趋无穷的 w 给出 O(w(X)log X) 的素数集，保证几乎所有偶数可表示。此题对 w=log log X 的特例保留相同用量，以每窗例外率和表示数强化结论；取 H=X 后按二进区间求和即可恢复该特例。B 必须对所有窗口同时固定，不能为每个 n 或 H 换集合。尝试以带权随机抽取构造 B，先在短窗估计候选素数对数与共享同一候选的依赖，再统一控制各尺度的失败概率。",
+    "en": "Dai–Pan, Theorem 1.2, allows O(w(X)log X) primes for any divergent w and gives density-one coverage of even targets. For w=log log X keep the budget, quantify the exceptions in every window and demand distinct witnesses. H=X and dyadic summation recover the stated special case. One set must work at all scales. Seek short-window prime-pair counts and dependency estimates for weighted random thinning."
+  },
+  "source": "https://www.impan.pl/shop/en/publication/transaction/download/product/83028",
+  "track": "exceptions",
+  "program": "exceptions",
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true,
+  "depends_on": [],
+  "imports": []
+}

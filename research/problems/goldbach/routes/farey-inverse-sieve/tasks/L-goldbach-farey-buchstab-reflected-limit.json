@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-farey-buchstab-reflected-limit",
+  "statement": "by\n  classical\n  exact let I := fun n : ℕ => Finset.Icc ((n+2)/3) ((2*n)/3); let P := fun z : ℕ => (Finset.Icc 2 z).filter Nat.Prime; let V := fun n z : ℕ => ((I n).card:ℝ)*(n.totient:ℝ)/n * ∏ p ∈ (P z).filter (fun p => ¬ p ∣ n), (1-2/(p:ℝ)); let S := fun n z : ℕ => ((I n).filter (fun u => u.Coprime n ∧ z < (u*(n-u)).minFac)).card; let Z₁ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊; let K : ℝ := (Real.exp Real.eulerMascheroniConstant*(1+Real.log 2)/3)^2; ∀ ε : ℝ, 0 < ε → ∃ T : ℕ, ∀ n ≥ T, Even n → |(S n (Z₁ n):ℝ)/V n (Z₁ n)-K| ≤ ε",
+  "plain_statement": {
+    "zh": "对每个充分大的偶数，确定中央反射窗口中立方根粗糙数对的归一化极限。",
+    "en": "A pointwise Buchstab-product limit for reflected cube-root-rough pairs."
+  },
+  "brief": {
+    "zh": "讨论 #3819 指出旧下界的相对损失预算约为 1/18。Kai Fan（arXiv:2306.03347）的单变量结果给出 ω(3)=(1+log 2)/3。这里提出检验经本项目局部密度 V 修正后两坐标的联合常数。预计值略大于 1，若得证可推进原下界。最大的未知是逐偶数的相关性；把单变量公式平方不能证明此命题。",
+    "en": "Discussion #3819 identifies a tight loss budget. Fan (arXiv:2306.03347) gives the one-variable rough-number framework; ω(3)=(1+log 2)/3. Test the predicted joint constant after local normalization. Correlation at each individual even target is an additional requirement."
+  },
+  "depends_on": [],
+  "imports": [],
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/discussions/3819",
+  "program": "correlation",
+  "track": "farey-inverse-sieve",
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true
+}

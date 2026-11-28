@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-polynomial-eighth-moment-support",
+  "statement": "by\n  classical\n  exact ∀ P : Polynomial ℤ, 3 ≤ P.natDegree → ∀ ε : ℝ, 0 < ε → ∃ C : ℝ, 0 < C ∧ ∀ M : ℕ, 2 ≤ M → ∀ A : Finset ℕ, A ⊆ Finset.Icc 1 M →\n    let K := fun t : ℝ => ∑ n ∈ A, Complex.exp (2 * (Real.pi : ℂ) * Complex.I * ((P.eval (n : ℤ) : ℤ) : ℂ) * (t : ℂ))\n    intervalIntegral (fun t : ℝ => ‖K t‖^8) 0 1 MeasureTheory.volume ≤ C * (M : ℝ)^ε * (A.card : ℝ)^(if P.natDegree = 3 then (5 : ℕ) else 4)",
+  "plain_statement": {
+    "zh": "对任意三次及以上整系数多项式和任意指标子集，证明指数和八阶矩至多为 C M^ε |A|⁵（三次）或 C M^ε |A|⁴（四次及以上）。",
+    "en": "Control the eighth moment on arbitrary subsets by M^ε times the fifth power of their size in degree three and its fourth power in higher degrees."
+  },
+  "brief": {
+    "zh": "对标预印本第 3 节定理 F 的 M^(1+ε)|A|⁴。因 |A|≤M，三次目标收回原界并在稀疏集上改进；更高次数直接省 M。由正交性改为估计四项和相等的八元组，可从分离对角解与凸序列关联估计入手。代回式 (4.6)，对三、四次的例外指标指数均可降至 1/2+ε，须保留原文所用素数侧输入。",
+    "en": "Compare Theorem F in section 3. Cardinality is at most M, so the cubic estimate recovers the old bound and saves on sparse sets; higher degrees save a factor M. Count equal four-term sums and separate diagonal solutions. In (4.6), keeping the prime-side hypotheses, both cubic and quartic exceptional exponents would become 1/2+ε."
+  },
+  "source": "https://arxiv.org/html/2611.09386v1",
+  "program": "exceptions",
+  "track": "exceptions",
+  "role": "target",
+  "challenge_only": true,
+  "parallel": true,
+  "imports": [],
+  "depends_on": []
+}

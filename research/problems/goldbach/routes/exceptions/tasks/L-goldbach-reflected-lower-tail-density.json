@@ -1,0 +1,22 @@
+{
+  "id": "L-goldbach-reflected-lower-tail-density",
+  "statement": "by\n  classical\n  let e := fun t : ℝ => Complex.exp (((2*Real.pi*t : ℝ) : ℂ)*Complex.I)\n  let S := fun (N : ℕ) (t : ℝ) => ∑ p ∈ (Finset.range (N+1)).filter Nat.Prime, (Real.log (p : ℝ) : ℂ) * e ((p : ℝ)*t)\n  let arcs := fun N : ℕ => let k := Nat.log 2 (N+2); {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ k ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t-(a : ℝ)/(q : ℝ)| ≤ ((k^3 : ℕ) : ℝ)/((q : ℝ)*(N : ℝ))}\n  let A := fun N m : ℕ => (intervalIntegral ((arcs N).indicator (fun t : ℝ => (S N t)^2 * e (-(m : ℝ)*t))) (0 : ℝ) 1 MeasureTheory.volume).re\n  let C₂ := ∏' p : ℕ, if Nat.Prime p ∧ 2 < p then 1 - 1/((p : ℝ)-1)^2 else 1\n  let band := fun N m : ℕ => 4*N ≤ 3*m ∧ 2*m ≤ 3*N ∧ Even m\n  let R := fun N m : ℕ => A N m / (2*(N:ℝ)-(m:ℝ))\n  let B := fun N : ℕ => (Finset.Icc N (2*N)).filter (band N)\n  let avg := fun (F : Finset ℕ) (f : ℕ → ℝ) => (∑ m ∈ F, f m)/(F.card:ℝ)\n  exact ∀ ε : ℝ, 0 < ε → ∃ δ₀ : ℝ, 0 < δ₀ ∧ ∀ δ : ℝ, 0 < δ → δ < δ₀ → ∃ T : ℕ, ∀ N : ℕ, T ≤ N →\n    let P := (((B N).filter (fun m => R N m ≤ 2*C₂+δ)).card:ℝ)/((B N).card:ℝ)\n    |Real.log (1/δ)*P - 2*Real.exp (-Real.eulerMascheroniConstant)| ≤ ε",
+  "plain_statement": {
+    "zh": "精确计算距离最优下界 δ 以内的偶目标所占比例的一阶常数。",
+    "en": "Find the first-order lower-tail density at the sharp floor."
+  },
+  "brief": {
+    "zh": "#4275 用二的幂说明下界可逼近；本题预测比例约为 2e^(−γ)/log(1/δ)。避开至约 1/δ 的奇素数产生 Mertens 因子，须在这个筛过的样本内估计更大素因子的贡献，并按先 N 后 δ 的次序取极限。",
+    "en": "Powers of two give witnesses in #4275. For the frequency, sieve out odd prime factors up to scale 1/δ, then bound the conditional tail from larger primes. The order of limits is N first, δ second."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4275",
+  "track": "exceptions",
+  "program": "exceptions",
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true,
+  "imports": [],
+  "depends_on": [
+    "L-goldbach-reflected-major-sharp-floor"
+  ]
+}

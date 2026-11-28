@@ -26,5 +26,6 @@
     "PEqualNP.Outside.L_square_packing_rational_rotation",
     "PEqualNP.Outside.L_square_packing_axis_dot_certificate",
     "PEqualNP.Outside.L_square_packing_scaled_box_two_axes"
-  ]
+  ],
+  "reductions": true
 }

@@ -1,0 +1,22 @@
+{
+  "id": "L-goldbach-partner-quadratic-obstruction",
+  "statement": "by\n  classical\n  let S := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    ∑' q : ℕ, if hq : q ≠ 0 then\n      let _ : NeZero q := ⟨hq⟩\n      if h : r ∣ q ∧ s ∣ q then\n        let A := DirichletCharacter.changeLevel h.1 α\n        let B := DirichletCharacter.changeLevel h.2 β\n        gaussSum A ZMod.stdAddChar * gaussSum B ZMod.stdAddChar *\n          gaussSum (A*B)⁻¹ (ZMod.stdAddChar.mulShift (-(m:ZMod q))) / (q.totient:ℂ)^2\n      else 0\n    else 0\n  let O := S (1 : DirichletCharacter ℂ 1) (1 : DirichletCharacter ℂ 1)\n  exact ∀ K : ℝ, ∃ F : Finset (Σ s : ℕ, DirichletCharacter ℂ s), (∀ b ∈ F, b.1 ≠ 0 ∧ b.2.IsPrimitive ∧ Squarefree b.1) ∧ K * ‖O 2‖ ^ 2 < ∑ b ∈ F, ‖S (1 : DirichletCharacter ℂ 1) b.2 2‖ ^ 2",
+  "plain_statement": {
+    "zh": "即使固定 m=2、首特征平凡、搭档导子无平方因子，归一化平方和仍可任意大。",
+    "en": "Unbounded normalized quadratic mass even on squarefree partners at a fixed target."
+  },
+  "brief": {
+    "zh": "检验把 #4245 的三次矩直接降为二次矩会遇到的障碍。取奇素数连乘为共同模数；每个 p 的平方质量因子应为 1+1/(p−2)。须证明普通级数非零并构造有限原始搭档族。该结论可排除一条错误的一致估计路线。",
+    "en": "Test the endpoint of #4245: choose odd primorial levels, prove the ordinary series is nonzero and realize the finite row factors 1+1/(p−2). Divergence excludes a conductor-independent square bound even for this fixed row."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4245",
+  "program": "exceptions",
+  "role": "target",
+  "challenge_only": true,
+  "parallel": true,
+  "imports": [],
+  "depends_on": [
+    "L-goldbach-primitive-partner-cubic-mass"
+  ],
+  "track": "exceptions"
+}

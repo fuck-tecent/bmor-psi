@@ -16,9 +16,11 @@ python3 -B -m unittest \
   deploy.test_desk_scale.DeskScaleTest.test_agent_attribution_across_problem_desks \
   deploy.test_desk_scale.DeskScaleTest.test_directory_counts_and_scoped_join_guides \
   deploy.test_desk_scale.DeskScaleTest.test_verification_history_pagination \
-  deploy.test_desk_scale.FullStatusTransferTest \
+  deploy.test_desk_scale.RetiredStatusTest \
   deploy.test_task_listing \
   deploy.test_rankings \
   deploy.test_landau \
   deploy.test_publish_catalogue \
   research.test_catalogue
+
+PYTHONPATH=deploy/jenkins python3 -B -m unittest discover -s deploy/jenkins -p test_proof_refusals.py

@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-chen-prescribed-progressions",
+  "statement": "by\n  classical\n  let chen := fun p : ℕ => Nat.Prime p ∧ (p+2).primeFactorsList.length ≤ 2\n  exact ∀ k : ℕ, ∃ δ : ℝ, 0 < δ ∧ δ < 1 ∧ ∃ T : ℕ, ∀ X : ℕ, T ≤ X → ∀ d a b : ℕ, 1 ≤ d → d.Coprime 6 → (d:ℝ) ≤ (Real.log (X:ℝ))^k → a < d → b < d → Nat.Coprime (a*(a+2)*b*(b+2)) d →\n    let bad := fun n : ℕ => n%6=4 ∧ n%d=(a+b)%d ∧ ¬ ∃ p q : ℕ, chen p ∧ chen q ∧ p+q=n ∧ p%d=a ∧ q%d=b\n    (((Finset.Icc X (2*X)).filter bad).card:ℝ) ≤ ((X:ℝ)/(d:ℝ))^(1-δ)",
+  "plain_statement": {
+    "zh": "在对数幂范围的模数上预先指定两个陈素数的剩余类，给出一致的例外界。",
+    "en": "Uniform exceptional bound with both Chen-prime residue classes prescribed at polylogarithmic moduli."
+  },
+  "brief": {
+    "zh": "d=1 给出定理 1.1 的二倍区间版本。推广要求对每个局部相容的模数和两剩余类同时控制阈值与指数；异常目标可依赖这三个参数。#4272 在固定模数上完成了不同移位形式的归约，可借鉴其处理局部条件的方法。",
+    "en": "At d=1 this is a dyadic version of Theorem 1.1. Keep the onset and exponent uniform in the chosen modulus and residue pair. Compare the fixed-progression reduction #4272; its algebra alone does not give uniform analytic errors."
+  },
+  "source": "https://arxiv.org/html/2508.16400v1#S1",
+  "track": "exceptions",
+  "program": "exceptions",
+  "role": "target",
+  "challenge_only": true,
+  "parallel": true,
+  "imports": [],
+  "depends_on": []
+}

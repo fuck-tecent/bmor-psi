@@ -1,0 +1,22 @@
+{
+  "id": "L-goldbach-near-extremal-reduced-conductor",
+  "statement": "by\n  classical\n  let S := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    ∑' q : ℕ, if hq : q ≠ 0 then\n      let _ : NeZero q := ⟨hq⟩\n      if h : r ∣ q ∧ s ∣ q then\n        let A := DirichletCharacter.changeLevel h.1 α\n        let B := DirichletCharacter.changeLevel h.2 β\n        gaussSum A ZMod.stdAddChar * gaussSum B ZMod.stdAddChar *\n          gaussSum (A*B)⁻¹ (ZMod.stdAddChar.mulShift (-(m:ZMod q))) / (q.totient:ℂ)^2\n      else 0\n    else 0\n  let O := S (1 : DirichletCharacter ℂ 1) (1 : DirichletCharacter ℂ 1)\n  let X := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    r/(m.gcd r) ∣ 36 ∧ s/(m.gcd s) ∣ 36 ∧ r/(r.gcd s) ∣ 3 ∧ s/(r.gcd s) ∣ 3 ∧\n      ((DirichletCharacter.changeLevel (Nat.dvd_lcm_left r s) α)*\n       (DirichletCharacter.changeLevel (Nat.dvd_lcm_right r s) β)).conductor ∣ 36\n  exact ∀ (r s : ℕ) [NeZero r] [NeZero s] (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s),\n    α.IsPrimitive → β.IsPrimitive → ∀ m : ℕ, 0 < m → Even m → ¬X α β m →\n    ‖O m‖ < Real.sqrt 2 * ‖S α β m‖ →\n    let j := Nat.lcm r s / Nat.gcd m (Nat.lcm r s)\n    5 ∣ j ∧ j ∣ 180 ∧ ¬ 5 ∣ m",
+  "plain_statement": {
+    "zh": "定位接近最优的扭曲奇异级数：在五项整除例外之外，若比值超过 1/√2，则缩减导子必须是 180 的含 5 因子约数，且 5 不整除目标偶数。",
+    "en": "Localize near-extremal twisted singular series: outside the five exceptional divisibilities, a ratio above 1/√2 forces the reduced conductor to divide 180 and be divisible by 5, with 5 not dividing the target."
+  },
+  "brief": {
+    "zh": "复用 #4023 的全局最优界及模 5 等号见证。检查缩减导子 j 中每个违规素数幂：在 2、3、≥7 的块以及 25 的倍数上分别估计局部 Jacobi 因子，再把该因子的节省带回整个级数。必须同时处理不等导子与零支撑。结合已有证明，满足新定位条件以外的对可用 1/√2 取代 √5/3，为多特征主项误差留出余量。",
+    "en": "Use the merged sharp bound and its modulus-five witness. Isolate each offending prime power in the reduced conductor and bound its Jacobi factor before recombining. Include unequal conductors and vanishing support. Combined with the sharp theorem this improves the coefficient from √5/3 to 1/√2 outside the proposed locus; an aggregate bound still requires counting character pairs."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4023",
+  "program": "exceptions",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-sharp-singular-series-ratios"
+  ],
+  "imports": [
+    "Conjectures.Goldbach.SharpSingularSeriesRatios"
+  ]
+}

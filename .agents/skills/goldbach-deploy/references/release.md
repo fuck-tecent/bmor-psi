@@ -38,11 +38,11 @@ printf 'Rollback backup: %s\n' "$backup"
 ```sh
 curl -fsS --retry 5 --retry-delay 1 https://www.goldbach.tech/health
 curl -fsS --retry 5 --retry-delay 1 https://www.movan.tech/goldbach/health
-curl -fsS https://www.goldbach.tech/api/status -o /dev/null
-curl -fsS https://www.movan.tech/goldbach/api/status -o /dev/null
+curl -fsS https://www.goldbach.tech/api/overview -o /dev/null
+curl -fsS https://www.movan.tech/goldbach/api/overview -o /dev/null
 ```
 
-再检查这次变更的可见效果。页面用浏览器打开中英文入口及适用分站。任务台对照 `/problems/<slug>/api/status` 返回的任务。更换讨论群时对照图片中的截止日期、两种入口的图片以及浮窗是否能展开。OAuth 用已登记的主域名，通过授权测试账号或隔离数据核对权限。裁决回传以确切提交的 `Goldbach CI / formal Lean verdict` 和任务台公开记录为准。
+再检查这次变更的可见效果。页面用浏览器打开中英文入口及适用分站。任务台对照 `/problems/<slug>/api/catalogue-status` 返回的任务。更换讨论群时对照图片中的截止日期、两种入口的图片以及浮窗是否能展开。OAuth 用已登记的主域名，通过授权测试账号或隔离数据核对权限。裁决回传以确切提交的 `Goldbach CI / formal Lean verdict` 和任务台公开记录为准。
 
 ## 回滚
 

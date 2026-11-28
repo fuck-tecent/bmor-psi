@@ -12002,6 +12002,7 @@
     },
     {
       "id": "L-goldbach-frontier-type2-b3-b3-parity",
+      "reductions": true,
       "file": "lean/PEqualNP/Outside/L_goldbach_frontier_type2_b3_b3_parity.lean",
       "module": "PEqualNP.Outside.L_goldbach_frontier_type2_b3_b3_parity",
       "statement": "let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (u : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (u k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let Q₁ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊; let H := fun n : ℕ => 256 * Q₁ n * Q n; let wideArcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q₁ n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (H n:ℝ)/((q:ℝ)*(n:ℝ))}; let Λ := ArithmeticFunction.vonMangoldt; let μ := fun d : ℕ => ((ArithmeticFunction.moebius d : ℤ) : ℝ); let U := fun n : ℕ => ⌊(n:ℝ)^(1/16:ℝ)⌋₊; let B₂ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊; let B₃ := fun n : ℕ => ⌊(n:ℝ)^(2/3:ℝ)⌋₊; let τ₃ := fun (n m : ℕ) => ∑ a ∈ (Nat.divisors m).filter (fun a => B₂ n < a ∧ a ≤ B₃ n ∧ U n < m / a), (∑ d ∈ (Nat.divisors a).filter (fun d => U n < d), μ d) * Λ (m / a); let Jdeep := fun (n : ℕ) (u v : ℕ → ℝ) => intervalIntegral (fun t => (wideArcs n)ᶜ.indicator (fun x => S n u x * S n v x * E (-(n:ℝ)*x)) t) (0:ℝ) 1 MeasureTheory.volume; ∀ e : ℝ, 0 < e → ∃ N : ℕ, ∀ n : ℕ, N ≤ n → Even n → -(e * (n : ℝ)) ≤ (Jdeep n (τ₃ n) (τ₃ n)).re",
@@ -14064,6 +14065,29 @@
       "route_source": "dyadic-reflection"
     },
     {
+      "id": "L-goldbach-balanced-chen-prime-pairs",
+      "statement": "let bad := fun n : ℕ => n%6=4 ∧ ¬ ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ p+q=n ∧ (p+2).primeFactorsList.length ≤ 2 ∧ (q+2).primeFactorsList.length ≤ 2 ∧ (p-q)^2 ≤ n ∧ (q-p)^2 ≤ n; ∃ δ : ℝ, 0 < δ ∧ δ < 1 ∧ ∃ X₀ : ℕ, ∀ X : ℕ, X₀ ≤ X → ((@Finset.filter ℕ bad (Classical.decPred bad) (Finset.Icc 4 X)).card : ℝ) ≤ (X : ℝ)^(1-δ)",
+      "plain_statement": {
+        "zh": "在模 6 余 4 的目标中，除 O(X^(1−δ)) 个例外，每个 n 都有一对陈素数之和表示，且两素数之差至多 √n。",
+        "en": "Represent all but O(X^(1−δ)) targets congruent to 4 modulo 6 by two Chen primes with absolute difference at most sqrt(n)."
+      },
+      "brief": {
+        "zh": "对照 Grimmelt–Teräväinen 定理 1.1，把两个筛权局部化到以 n/2 为中心、宽度仅 √n 的同一反射窗口。必须在该窗口内重新证明均值与误差估计。两个自然数截断差同时受限；忽略间距可恢复原定理的幂节省结论。",
+        "en": "Localize both sieve weights in the same reflected window before estimating errors. Both truncated differences are bounded, capturing absolute distance. Forgetting the gap recovers the qualitative power saving of Theorem 1.1."
+      },
+      "source": "https://arxiv.org/html/2508.16400v1#S1",
+      "track": "dyadic-reflection",
+      "program": "correlation",
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "imports": [],
+      "depends_on": [],
+      "module": "Conjectures.Goldbach.BalancedChenPrimePairs",
+      "file": "lean/Conjectures/Goldbach/BalancedChenPrimePairs.lean",
+      "route_source": "dyadic-reflection"
+    },
+    {
       "id": "L-goldbach-character-window-fiber-energy",
       "statement": "∀ (m : ℕ) [NeZero m] (N : ℕ) (w : ℕ → ℂ) (s : Finset (DirichletCharacter ℂ m)),\n  (∑ χ ∈ s, ‖(∑ n ∈ Finset.range (N+1), w n * star (χ (n : ZMod m))) /\n      (Real.sqrt (m.totient : ℝ) : ℂ)‖^2) ≤\n    (1 + (N/m : ℕ) : ℝ) * ∑ n ∈ Finset.range (N+1), ‖w n‖^2",
       "plain_statement": {
@@ -14628,6 +14652,29 @@
       "route_source": "exception-density-bridge"
     },
     {
+      "id": "L-goldbach-dyadic-exception-little-o-sqrt",
+      "statement": "let bad := fun n : ℕ => 4 ≤ n ∧ Even n ∧ ¬ ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ p+q=n; ∀ ε : ℝ, 0 < ε → ∃ X₀ : ℕ, ∀ X : ℕ, X₀ ≤ X → ((@Finset.filter ℕ bad (Classical.decPred bad) (Finset.Ioc X (2*X))).card : ℝ) ≤ ε * Real.sqrt (X : ℝ)",
+      "plain_statement": {
+        "zh": "待证：在每个充分大的倍增区间 (X,2X] 中，强哥猜例外偶数的个数为 o(√X)。",
+        "en": "Show that the number of exceptional even Goldbach targets in (X,2X] is o(√X), uniformly for all sufficiently large X."
+      },
+      "brief": {
+        "zh": "从 #3806 所述均方上界丢失符号的问题出发，只在真实例外集上估计负傅里叶系数。每个漏点有大小约 X 的主弧亏损时，例外支撑上的平方和若为 o(X^(5/2)) 即足够；主弧下界也须证明。以二进区间求和可得全局 o(√X)，推出本路线的 4/7 目标。对标 Li–Liu v1 定理 2 的和问题部分，去掉对数损失并要求任意小常数。",
+        "en": "Exploit the sign on the actual exceptional support. Given a uniform positive major-arc floor of order X, an o(X^(5/2)) squared deficit on those targets suffices. Prove the floor as well. Dyadic summation recovers global o(√X) and hence the four-sevenths target. Compare the sum component of Li–Liu v1, Theorem 2."
+      },
+      "source": "https://arxiv.org/html/2610.26756v1#S1",
+      "program": "correlation",
+      "track": "exceptional-set-four-sevenths",
+      "depends_on": [],
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "imports": [],
+      "module": "Conjectures.Goldbach.DyadicExceptionLittleOSqrt",
+      "file": "lean/Conjectures/Goldbach/DyadicExceptionLittleOSqrt.lean",
+      "route_source": "exceptional-set-four-sevenths"
+    },
+    {
       "id": "L-goldbach-exception-four-sevenths-counting-bridge",
       "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let major := fun n : ℕ => intervalIntegral (fun t => (arcs n).indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume; let minor := fun n : ℕ => (intervalIntegral (fun t => (arcs n)ᶜ.indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume).re; let bad := fun n : ℕ => 4 ≤ n ∧ Even n ∧ ¬ ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ p+q=n; (∃ (c : ℝ) (N : ℕ), 0<c ∧ ∀ n : ℕ, N≤n → Even n → c*(n:ℝ) ≤ (major n).re) → (∀ e : ℝ, 0 < e → ∃ (C : ℝ) (N : ℕ), 0 < C ∧ ∀ X : ℕ, N ≤ X → (Finset.sum ((Finset.Icc X (2*X)).filter Even) (fun n => (max 0 (-minor n))^2)) ≤ C * (X:ℝ) ^ (18/7 + e)) → (∀ e : ℝ, 0 < e → ∃ (C : ℝ) (N : ℕ), 0 < C ∧ ∀ X : ℕ, N ≤ X → ((@Finset.filter ℕ bad (Classical.decPred bad) (Finset.Icc X (2*X))).card : ℝ) ≤ C * (X:ℝ) ^ (4/7 + e))",
       "plain_statement": {
@@ -14685,6 +14732,7 @@
     },
     {
       "id": "L-goldbach-exception-four-sevenths-unconditional",
+      "reductions": true,
       "statement": "let bad := fun n : ℕ => 4 ≤ n ∧ Even n ∧ ¬ ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ p+q=n; ∀ e : ℝ, 0 < e → ∃ (C : ℝ) (N : ℕ), 0 < C ∧ ∀ X : ℕ, N ≤ X → ((@Finset.filter ℕ bad (Classical.decPred bad) (Finset.Icc 4 X)).card : ℝ) ≤ C * (X:ℝ) ^ (4/7 + e)",
       "plain_statement": {
         "zh": "无条件证明 E(X) ≪ε X^(4/7+ε)。",
@@ -14710,6 +14758,52 @@
       "file": "lean/Conjectures/Goldbach/ExceptionFourSeventhsUnconditional.lean",
       "module": "Conjectures.Goldbach.ExceptionFourSeventhsUnconditional",
       "route_source": "exceptional-set-four-sevenths"
+    },
+    {
+      "id": "L-goldbach-log-square-window-density",
+      "statement": "let good := fun n : ℕ => ∃ p q : ℕ, Nat.Prime p ∧ Odd p ∧ Nat.Prime q ∧ Odd q ∧ p + q = n; ∃ c : ℝ, 0 < c ∧ ∀ x : ℝ, 2 ≤ x → let h := (Real.log x)^2; let W := Finset.Ioc ⌊x⌋₊ ⌊x + 123*h⌋₊; 1 + ⌊c*h⌋₊ ≤ (@Finset.filter ℕ good (Classical.decPred good) W).card",
+      "plain_statement": {
+        "zh": "待证：存在绝对常数 c>0，对每个实数 x≥2，区间 (x,x+123(log x)²] 至少含 1+⌊c(log x)²⌋ 个不同的两奇素数和。命题不假定黎曼猜想。",
+        "en": "Unconditionally find an absolute c>0 such that every real x≥2 has at least 1+floor(c(log x)²) distinct sums of two odd primes in (x,x+123(log x)²]."
+      },
+      "brief": {
+        "zh": "按不同目标数计数，每个偶数只计一次。先对区间内素数对表示次数求一阶、二阶矩，用 Cauchy–Schwarz 控制支撑大小；两条矩估计都须对每个起点成立。另一入口是估计无素数短区间和反射后的同时空缺。对照 2026 年论文定理 1：保留相同实数起点和端点，去掉 RH，且从保证一个命中提升为正比例命中。仍可能漏掉孤立偶数，不能直接推出逐偶数表示。",
+        "en": "Count distinct sums, not pairs. Seek a uniform lower first moment and upper second moment for representation counts in the same window, then apply Cauchy–Schwarz to their support. Alternatively study simultaneous holes in the short prime intervals and their reflections. Theorem 1 gives one hit under RH with the same endpoints. Positive density at every starting point still permits isolated exceptions."
+      },
+      "source": "https://doi.org/10.1007/s40993-026-00767-6",
+      "program": "correlation",
+      "track": "exceptional-set-four-sevenths",
+      "depends_on": [],
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "imports": [],
+      "module": "Conjectures.Goldbach.LogSquareWindowDensity",
+      "file": "lean/Conjectures/Goldbach/LogSquareWindowDensity.lean",
+      "route_source": "exceptional-set-four-sevenths"
+    },
+    {
+      "id": "L-goldbach-balanced-linear-square-root",
+      "statement": "by\n  classical\n  let missed := fun (n a b : ℕ) => Nat.Coprime n (a*b) ∧ n % 2 = (a+b) % 2 ∧ ¬ ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ a*p+b*q=n ∧ |((a*p : ℕ) : ℝ) - (n : ℝ)/2| ≤ Real.sqrt n ∧ |((b*q : ℕ) : ℝ) - (n : ℝ)/2| ≤ Real.sqrt n\n  exact ∀ c E : ℕ, ∃ C : ℝ, 0 < C ∧ ∃ N₀ : ℕ, ∀ N : ℕ, N₀ ≤ N → 2 ≤ N → let B := ⌊(Real.log (N : ℝ))^c⌋₊; (((Finset.Icc N (2*N)).filter (fun n => ∃ a ∈ Finset.Icc 1 B, ∃ b ∈ Finset.Icc 1 B, Nat.Coprime a b ∧ missed n a b)).card : ℝ) ≤ C*(N : ℝ)/(Real.log (N : ℝ))^E",
+      "plain_statement": {
+        "zh": "在 [N,2N] 中，除去 O(N/logᴱ N) 个共同例外，对所有不超过 logᶜ N 的互素正系数 a,b 和满足局部条件的 n，找到素数 p,q，使 ap+bq=n 且两项距离 n/2 均不超过 √n。",
+        "en": "Outside one set of O(N/logᴱ N) exceptions in [N,2N], simultaneously solve ap+bq=n for every admissible coprime pair of positive coefficients up to logᶜ N, with each summand within √n of n/2."
+      },
+      "brief": {
+        "zh": "对标 Coppola–Laporta 定理 2，保留互素、奇偶和对数幂例外集条件，将 n^(7/12+ε) 窗口缩至 √n。统一多个系数仅需在已有任意对数节省时取并集，核心难点是缩窗。可先在平方根尺度上估计移动中心的次弧均方，随后用主弧正下界控制例外数。取 a=b=1 就给出几乎所有偶数的近等哥德巴赫表示，逐偶数结论仍需排除剩余例外。",
+        "en": "Compare Coppola–Laporta, Theorem 2. Shrink the half-width from n^(7/12+ε) to √n with the same local restrictions and arbitrary log-power saving. A polylogarithmic union of exceptions costs only log powers; the window is the substantive gain. Seek a moving-centre minor-arc second moment and major-arc lower bound. Taking a=b=1 gives balanced representations for almost all even targets; removing the remaining exceptions is a separate step."
+      },
+      "source": "https://www.giovannicoppola.name/files/articoli/8_giovanni_coppola_number_theory_seminar_politecnico_torino_245.pdf",
+      "track": "exceptions",
+      "program": "correlation",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "imports": [],
+      "depends_on": [],
+      "module": "Conjectures.Goldbach.BalancedLinearSquareRoot",
+      "file": "lean/Conjectures/Goldbach/BalancedLinearSquareRoot.lean",
+      "route_source": "exceptions"
     },
     {
       "id": "L-goldbach-binary-shift-central-hit",
@@ -14792,7 +14886,9 @@
       "program": "exceptions",
       "parallel": true,
       "depends_on": [],
-      "imports": [],
+      "imports": [
+        "Conjectures.Goldbach.EstermannAlmostAllPolylog"
+      ],
       "track": "exceptions",
       "role": "target",
       "module": "Conjectures.Goldbach.BinaryShiftExceptionUnion",
@@ -14866,6 +14962,29 @@
       "route_source": "exceptions"
     },
     {
+      "id": "L-goldbach-binary-shift-simultaneous-richness",
+      "statement": "by\n  classical\n  exact let G := fun m : ℕ => ((Finset.Icc 2 m).filter (fun p => Nat.Prime p ∧ Nat.Prime (m-p))).card; ∃ c C : ℝ, 0 < c ∧ 0 < C ∧ ∃ T : ℕ, ∀ X ≥ T, let L := Nat.log 2 X / 2; let E := (Finset.Ico X (2*X)).filter (fun n => Even n ∧ ∃ e ∈ Finset.Icc 1 L, (G (n-2^e):ℝ) < c*(X:ℝ)/(Real.log (X:ℝ))^2); (E.card:ℝ) ≤ C*(X:ℝ)^((3:ℝ)/4)",
+      "plain_statement": {
+        "zh": "要求每个小二幂移位同时拥有 ≫X/log²X 个二素数表示，且例外数至多 O(X^(3/4))。",
+        "en": "Require many Goldbach representations at every small binary shift with at most O(X^(3/4)) exceptions."
+      },
+      "brief": {
+        "zh": "#4220 的合入证明只需所有移位都有一个见证，允许 X^(4/5) 个坏中心。新题既增加重数又缩小坏集；须检验近 1 零点会不会使归一化主项变小。对单一移位证明异常估计时要为随后 O(log X) 个平移的并集留余量。",
+        "en": "PR #4220 proves positivity at every small shift outside X^(4/5) centers. Improve both the representation floor and the exceptional exponent. Quantify the near-one-zero contribution and reserve enough saving to sum the individual exceptional sets."
+      },
+      "depends_on": [],
+      "imports": [],
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4220",
+      "program": "exceptions",
+      "track": "exceptions",
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "module": "Conjectures.Goldbach.BinaryShiftSimultaneousRichness",
+      "file": "lean/Conjectures/Goldbach/BinaryShiftSimultaneousRichness.lean",
+      "route_source": "exceptions"
+    },
+    {
       "id": "L-goldbach-binary-shift-thirteen",
       "statement": "∃ N : ℕ, ∀ n ≥ N, Even n → ∃ (p q : ℕ) (e : Fin 13 → ℕ), Nat.Prime p ∧ Nat.Prime q ∧ n = p+q+∑ j, 2^(e j+1)",
       "plain_statement": {
@@ -14888,6 +15007,1128 @@
       "route_source": "exceptions"
     },
     {
+      "id": "L-goldbach-chen-forced-three",
+      "statement": "by\n  classical\n  let ok := fun p : ℕ => 3 < p ∧ Nat.Prime p ∧ ¬ 9 ∣ p+2 ∧ ((p+2)/(if 3 ∣ p+2 then 3 else 1)).primeFactorsList.length ≤ 2\n  exact ∃ C : ℝ, 0 < C ∧ ∀ X : ℕ, 2 ≤ X → (((Finset.Icc 4 X).filter (fun m => Even m ∧ ¬ ∃ p q : ℕ, ok p ∧ ok q ∧ p+q=m)).card : ℝ) ≤ C*(X : ℝ)^(1-(1/10000 : ℝ))",
+      "plain_statement": {
+        "zh": "对所有偶数类同时研究两素数表示。对每个加数 p>3，仅当 p+2 含有因子 3 时剥去一个 3，禁止 9 整除，剩余部分至多有两个素因子（计重数）。要求 X 以内例外总数为 O(X^(1−1/10000))。",
+        "en": "Cover all even classes by two primes above three. For each shifted prime p+2, strip exactly one forced factor of three when present, exclude divisibility by nine, and demand at most two remaining prime factors with multiplicity. Seek O(X^(1−1/10000)) exceptions."
+      },
+      "brief": {
+        "zh": "Grimmelt–Teräväinen 定理 1.1 在 m≡4 (mod 6) 上给出某个正幂节省。对该类，p,q>3 强迫两者都 ≡2 (mod 3)，因此新命题在旧类保留原有陈素数要求，并指定一个可检验指数。在其余偶数类允许剥掉受同余强迫的 3，无需把 p+2=3r 中的 r 强行压成素数。先按模 9 固定可行的加数类，再对所得线性形式检验筛下界与例外零点损失。旧论文未给出能直接比较的数值 δ，故不宣称 1/10000 已超过其最佳指数。",
+        "en": "Theorem 1.1 of Grimmelt–Teräväinen gives a power saving on m≡4 mod 6. For that class both summands above three must be 2 mod 3, recovering the ordinary Chen requirements. The other classes need the forced local factor. Work in fixed classes mod nine and check that the rescaled linear forms admit a lower sieve with a compatible exceptional-character error. The original unspecified exponent is not numerically compared with 1/10000."
+      },
+      "source": "https://arxiv.org/html/2508.16400v1",
+      "track": "exceptions",
+      "program": "exceptions",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "imports": [],
+      "depends_on": [],
+      "module": "Conjectures.Goldbach.ChenForcedThree",
+      "file": "lean/Conjectures/Goldbach/ChenForcedThree.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-chen-prescribed-progressions",
+      "statement": "by\n  classical\n  let chen := fun p : ℕ => Nat.Prime p ∧ (p+2).primeFactorsList.length ≤ 2\n  exact ∀ k : ℕ, ∃ δ : ℝ, 0 < δ ∧ δ < 1 ∧ ∃ T : ℕ, ∀ X : ℕ, T ≤ X → ∀ d a b : ℕ, 1 ≤ d → d.Coprime 6 → (d:ℝ) ≤ (Real.log (X:ℝ))^k → a < d → b < d → Nat.Coprime (a*(a+2)*b*(b+2)) d →\n    let bad := fun n : ℕ => n%6=4 ∧ n%d=(a+b)%d ∧ ¬ ∃ p q : ℕ, chen p ∧ chen q ∧ p+q=n ∧ p%d=a ∧ q%d=b\n    (((Finset.Icc X (2*X)).filter bad).card:ℝ) ≤ ((X:ℝ)/(d:ℝ))^(1-δ)",
+      "plain_statement": {
+        "zh": "在对数幂范围的模数上预先指定两个陈素数的剩余类，给出一致的例外界。",
+        "en": "Uniform exceptional bound with both Chen-prime residue classes prescribed at polylogarithmic moduli."
+      },
+      "brief": {
+        "zh": "d=1 给出定理 1.1 的二倍区间版本。推广要求对每个局部相容的模数和两剩余类同时控制阈值与指数；异常目标可依赖这三个参数。#4272 在固定模数上完成了不同移位形式的归约，可借鉴其处理局部条件的方法。",
+        "en": "At d=1 this is a dyadic version of Theorem 1.1. Keep the onset and exponent uniform in the chosen modulus and residue pair. Compare the fixed-progression reduction #4272; its algebra alone does not give uniform analytic errors."
+      },
+      "source": "https://arxiv.org/html/2508.16400v1#S1",
+      "track": "exceptions",
+      "program": "exceptions",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "imports": [],
+      "depends_on": [],
+      "module": "Conjectures.Goldbach.ChenPrescribedProgressions",
+      "file": "lean/Conjectures/Goldbach/ChenPrescribedProgressions.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-chen-short-target-window",
+      "statement": "by\n  classical\n  let chen := fun p : ℕ => Nat.Prime p ∧ (p+2).primeFactorsList.length ≤ 2\n  let good := fun n : ℕ => ∃ p q : ℕ, chen p ∧ chen q ∧ p+q=n\n  exact ∃ δ : ℝ, 0 < δ ∧ δ < 1 ∧ ∃ T : ℕ, ∀ X : ℕ, T ≤ X → ∀ H : ℕ, X ≤ H^2 → H ≤ X →\n    (((Finset.Icc X (X+H)).filter (fun n => n%6=4 ∧ ¬good n)).card:ℝ) ≤ (H:ℝ)^(1-δ)",
+      "plain_statement": {
+        "zh": "在每个长度至少 √X 的目标短窗内证明双陈素数表示的幂节省例外界。",
+        "en": "Power-saving exceptional sets for two Chen primes in every target interval of length at least √X."
+      },
+      "brief": {
+        "zh": "原论文定理 1.1 给累计例外界，容许例外集中在短窗。本题要求对每个起点 X 成立，且损失以窗口长度 H 计算。加数仍可自由变化；这与现有要求 p、q 彼此接近的任务不同。",
+        "en": "Theorem 1.1 permits clustering of exceptions. Localize the exceptional-set argument in the target and preserve a saving measured in H. The summands remain unrestricted in distance."
+      },
+      "source": "https://arxiv.org/html/2508.16400v1#S1",
+      "track": "exceptions",
+      "program": "exceptions",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "imports": [],
+      "depends_on": [],
+      "module": "Conjectures.Goldbach.ChenShortTargetWindow",
+      "file": "lean/Conjectures/Goldbach/ChenShortTargetWindow.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-chen-square-targets",
+      "statement": "by\n  classical\n  let chen := fun p : ℕ => Nat.Prime p ∧ (p+2).primeFactorsList.length ≤ 2\n  let good := fun n : ℕ => ∃ p q : ℕ, chen p ∧ chen q ∧ p+q=n\n  exact ∃ δ : ℝ, 0 < δ ∧ δ < 1 ∧ ∃ T : ℕ, ∀ X : ℕ, T ≤ X → (((Finset.Icc 1 X).filter (fun t => ¬good (6*t^2+4))).card:ℝ) ≤ (X:ℝ)^(1-δ)",
+      "plain_statement": {
+        "zh": "在稀疏目标 6t²+4 上证明双陈素数表示，仅允许对参数 t 有幂节省的例外。",
+        "en": "Power-saving exceptions in the parameter for two Chen primes on quadratic targets 6t²+4."
+      },
+      "brief": {
+        "zh": "该序列落在原论文的局部允许类，但到高度 Y 仅约 √Y 项，原密度结论不能直接限制它。可把论文的异常集对偶和换成二次相位和，检查大弧下界能否覆盖该稀疏采样的次弧误差。",
+        "en": "These targets satisfy the mod-six condition but have square-root density in height. Replace the exceptional-set dual sum by a quadratic-phase sum; preserve the major-arc lower bound while controlling the sparse sampling error."
+      },
+      "source": "https://arxiv.org/html/2508.16400v1#S1",
+      "track": "exceptions",
+      "program": "exceptions",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "imports": [],
+      "depends_on": [],
+      "module": "Conjectures.Goldbach.ChenSquareTargets",
+      "file": "lean/Conjectures/Goldbach/ChenSquareTargets.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-chen-two-factor-windows",
+      "statement": "by\n  classical\n  let chen := fun p : ℕ => Nat.Prime p ∧ (p+2).primeFactorsList.length ≤ 2\n  let split := fun p : ℕ => ∃ a b : ℕ, Nat.Prime a ∧ Nat.Prime b ∧ a*b=p+2 ∧ a^5 ≤ p+2 ∧ p+2 ≤ a^6\n  exact ∃ δ : ℝ, 0 < δ ∧ δ < 1 ∧ ∃ T : ℕ, ∀ X : ℕ, T ≤ X → (((Finset.Icc X (2*X)).filter (fun n => n%6=4 ∧ ¬ ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ p+q=n ∧ split p ∧ split q)).card:ℝ) ≤ (X:ℝ)^(1-δ)",
+      "plain_statement": {
+        "zh": "要求 p+2 和 q+2 各恰有两个素因子，且各有一个落在自身的 1/6 至 1/5 次幂之间。",
+        "en": "Force a prime divisor in the exponent window [1/6,1/5] for each of two shifted semiprimes."
+      },
+      "brief": {
+        "zh": "原定理允许移位数为素数，也允许两个因子的大小不受限。本题要求两个移位数各落在明确的双线性因子区间。固定第一因子后需在余因子为素数的子族中获得下界，直接套用陈筛的上界不足以保证该区间存在表示。",
+        "en": "Theorem 1.1 allows prime shifts and imposes no factor-size window. Here both shifts must be semiprimes of a prescribed bilinear shape. Seek a lower bound inside the factor window, retaining primality of both complementary factors."
+      },
+      "source": "https://arxiv.org/html/2508.16400v1#S1",
+      "track": "exceptions",
+      "program": "exceptions",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "imports": [],
+      "depends_on": [],
+      "module": "Conjectures.Goldbach.ChenTwoFactorWindows",
+      "file": "lean/Conjectures/Goldbach/ChenTwoFactorWindows.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-cubic-balanced-goldbach-values",
+      "statement": "by\n  classical\n  exact ∀ P : Polynomial ℤ, P.natDegree=3 → 0<P.leadingCoeff → ∀ ε : ℝ, 0<ε → ∃ C : ℝ, 0<C ∧ ∀ N : ℕ, 2≤N → let bad := fun n : ℕ => let m := 2*P.eval (n:ℤ); ¬ ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ (p:ℤ)+(q:ℤ)=m ∧ |(p:ℤ)-(q:ℤ)|^3 ≤ m^2; (((Finset.Icc 1 N).filter bad).card:ℝ) ≤ C*(N:ℝ)^((5:ℝ)/8+ε)",
+      "plain_statement": {
+        "zh": "对两倍三次多项式值，在保持 5/8 例外指数的同时将素数对限制到 |p−q|≤m^(2/3)。",
+        "en": "Keep the cubic 5/8 exceptional exponent with both primes confined near half the target."
+      },
+      "brief": {
+        "zh": "文献定理 1 的三次结论允许素数任意分布。此题规定中心窗口，忽略间距可恢复旧界。需要重新分析随目标移动的短素数和，整段的加权主弧下界不会自动给出该窗内贡献。非正目标也计作坏指标。",
+        "en": "Theorem 1 permits unrestricted summands. Recover its cubic conclusion by dropping the central-window condition. The moving short prime sum needs a new lower estimate; a full-interval major-arc floor does not localize itself."
+      },
+      "source": "https://arxiv.org/html/2611.09386v1",
+      "track": "exceptions",
+      "program": "exceptions",
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "depends_on": [],
+      "imports": [],
+      "module": "Conjectures.Goldbach.CubicBalancedGoldbachValues",
+      "file": "lean/Conjectures/Goldbach/CubicBalancedGoldbachValues.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-cubic-fixed-linear-defect",
+      "statement": "by\n  classical\n  exact ∀ P : Polynomial ℤ, P.natDegree=3 → ∀ ε : ℝ, 0<ε → ∃ C : ℝ, 0<C ∧ ∀ M : ℕ, 2≤M → ∀ A : Finset ℕ, A ⊆ Finset.Icc 1 M → ∀ h : ℤ, let wt := fun (x : Fin 3 → (↥A)) => ∑ i, P.eval ((x i : ℕ):ℤ); let lin := fun (x : Fin 3 → (↥A)) => ∑ i, ((x i : ℕ):ℤ); let triples := (Finset.univ : Finset ((Fin 3 → (↥A)) × (Fin 3 → (↥A)))); ((triples.filter (fun z => wt z.1=wt z.2 ∧ lin z.1-lin z.2=h)).card:ℝ) ≤ C*(M:ℝ)^ε*(A.card:ℝ)^3",
+      "plain_statement": {
+        "zh": "固定三元组指标和之差 h，证明三次多项式的碰撞数在每个切片都至多 M^ε|A|³，常数对 h 一致。",
+        "en": "Bound cubic triple collisions at every prescribed linear defect uniformly in that defect."
+      },
+      "brief": {
+        "zh": "#4325 已证精确六阶矩恒等式。固定左边三元组后，右边的一次和与多项式和均已知。平移和缩放变量去掉二次项，利用 S³−Σxᵢ³=3(x₁+x₂)(x₂+x₃)(x₃+x₁) 控制非零乘积的约数；零乘积需单独处理。各 h 的界相加仍有损失。",
+        "en": "With the first triple fixed, the other triple has prescribed linear and cubic data. Depress the cubic, factor the difference between the cube of the sum and the sum of cubes, and isolate degeneracy before using divisor bounds. Summing the slices is a separate challenge."
+      },
+      "source": "https://arxiv.org/html/2611.09386v1",
+      "track": "exceptions",
+      "program": "exceptions",
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "depends_on": [],
+      "imports": [],
+      "module": "Conjectures.Goldbach.CubicFixedLinearDefect",
+      "file": "lean/Conjectures/Goldbach/CubicFixedLinearDefect.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-cubic-short-interval-rigidity",
+      "statement": "by\n  classical\n  exact ∀ P : Polynomial ℤ, P.natDegree=3 → ∃ C : ℕ, 0<C ∧ ∀ X H : ℕ, 1≤H → C*(H+1)^3 ≤ X → ∀ a b : Fin 3 → ℕ, (∀ i, a i ∈ Finset.Icc X (X+H) ∧ b i ∈ Finset.Icc X (X+H)) → (∑ i, P.eval ((a i):ℤ)) = (∑ i, P.eval ((b i):ℤ)) → ∃ σ : Equiv.Perm (Fin 3), ∀ i, a i=b (σ i)",
+      "plain_statement": {
+        "zh": "在足够远的立方根长度指标窗口中证明三项三次多项式和完全刚性，仅有重排碰撞。",
+        "en": "Prove exact rigidity of triple sums of cubic values on distant cube-root-length index windows."
+      },
+      "brief": {
+        "zh": "把变量写成 X+u；比较 X²、X 和常数三层，利用整数间距逐层强迫前三个幂和相等，再恢复带重数的三元组。若成功，#4325 的恒等式会给该窗口的精确对角矩，难点转为跨窗口耦合。",
+        "en": "Translate all variables by X. Separate the integer first, second and third power sums by coefficient size, then recover the multiset with multiplicity. In these windows #4325 turns rigidity into an exact diagonal moment."
+      },
+      "source": "https://arxiv.org/html/2611.09386v1",
+      "track": "exceptions",
+      "program": "exceptions",
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "depends_on": [],
+      "imports": [],
+      "module": "Conjectures.Goldbach.CubicShortIntervalRigidity",
+      "file": "lean/Conjectures/Goldbach/CubicShortIntervalRigidity.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-digit-set-intrinsic-square-root",
+      "track": "exceptions",
+      "statement": "∀ b : ℕ, 2 ≤ b → ∀ D : Finset ℕ, D ⊆ Finset.range b → 2 ≤ D.card → ∃ C : ℝ, 0 < C ∧ ∃ X₀ : ℕ, ∀ X : ℕ, X₀ ≤ X → let A := (Finset.Icc 1 X).filter (fun n => (b.digits n).all (fun d => decide (d ∈ D))); let bad := fun n : ℕ => Even n ∧ ¬ ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ p+q=n; ((@Finset.filter ℕ bad (Classical.decPred bad) A).card : ℝ) ≤ C * Real.sqrt (A.card : ℝ)",
+      "plain_statement": {
+        "zh": "对每个固定进制和至少含两个数字的字母表 D，证明缺少双素数表示的允许偶数，至多为所有允许正整数个数的平方根乘以常数。",
+        "en": "Bound exceptional even targets among integers supported on a fixed digit alphabet by a constant times the square root of the alphabet-restricted population."
+      },
+      "brief": {
+        "zh": "Cumberbatch 的定理给出按允许数字集合大小计算的幂节省。本题固定指数 1/2，对稀疏字母表也按实际大小归一化。研究数字 Fourier 乘积对主弧有理点的聚集，再控制它与哥猜例外指示的相关。分母按所有允许正整数计数；标准进制表示不补前导零。",
+        "en": "Cumberbatch obtains a saving in the intrinsic population. Target exponent 1/2 even for thin alphabets. Use the digit Fourier product to locate concentrations at rational arcs and estimate their interaction with Goldbach exceptions. The population includes all allowed positive integers in their standard representation, without padded leading zeroes."
+      },
+      "source": "https://arxiv.org/abs/2402.07921",
+      "imports": [],
+      "depends_on": [],
+      "role": "target",
+      "parallel": true,
+      "program": "correlation",
+      "challenge_only": true,
+      "module": "Conjectures.Goldbach.DigitSetIntrinsicSquareRoot",
+      "file": "lean/Conjectures/Goldbach/DigitSetIntrinsicSquareRoot.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-fixed-modulus-zero-class-square",
+      "statement": "∃ θ : ℝ, 0 ≤ θ ∧ θ < 1 ∧ ∀ (K : ℕ) (H T : ℝ), ∃ q₀ : ℕ,\n      ∀ (q : ℕ), q₀ ≤ q → ∀ [NeZero q] (S : Finset (DirichletCharacter ℂ q × ℂ)),\n        (∀ p ∈ S, p.1 ≠ 1 ∧ (1/2 : ℝ) < p.2.re ∧ |p.2.im| ≤ T ∧\n          p.1.LFunction p.2 = 0 ∧ (1 - p.2.re) * Real.log (q : ℝ) ≤ H) →\n        let a (p : DirichletCharacter ℂ q × ℂ) : ℝ :=\n          (analyticOrderNatAt p.1.LFunction p.2 : ℝ) *\n            (q : ℝ) ^ ((493/100 : ℝ) * (p.2.re - 1))\n        (Finset.sum S fun p => Finset.sum S fun r =>\n          if (p.1 / r.1).conductor ∣ K.factorial then a p * a r else 0) ≤ θ\n",
+      "plain_statement": {
+        "zh": "固定模数上的近 1 零点按特征分为若干类，两特征之商的导子整除 K! 时归为同一类。模数充分大时，各类加权质量的平方和有统一小于 1 的上界。",
+        "en": "On a common modulus, put two near-1 character–zero pairs in the same class when the conductor of their quotient character divides K!. For sufficiently large moduli, the sum of squared weighted class masses has a uniform bound strictly below 1."
+      },
+      "brief": {
+        "zh": "任取 K、H、T。对同一模数 q 上非主特征与零点的有限配对集合，在实部大于 1/2、虚部绝对值至多 T、对数亏损至多 H 的窗口内，以解析重数乘 exp(−4.93(1−Re ρ)log q) 为权。对商特征导子整除 K! 的有序对求权积。由零点排斥、计数和加权尾部估计取得统一界。该界给 L-goldbach-binary-shift-exception-union 的主弧模型留下正余量。OpenAI 的 Re s > 7/8 无零点结果也推出这一命题。",
+        "en": "Fix K, H and T. On the common modulus q, weight each zero of a nonprincipal character in the window Re ρ > 1/2, |Im ρ| ≤ T and (1−Re ρ)log q ≤ H by its analytic multiplicity times exp(−4.93(1−Re ρ)log q). Sum the weight products over ordered pairs whose quotient character has conductor dividing K!. Combine zero repulsion, counting and weighted tail bounds. The strict upper bound leaves a positive major-arc margin for L-goldbach-binary-shift-exception-union. OpenAI’s zero-free half-plane Re s > 7/8 also implies the statement."
+      },
+      "source": "https://arxiv.org/pdf/1804.09084#page=9",
+      "program": "exceptions",
+      "role": "lemma",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-frontier-no-siegel-zero"
+      ],
+      "imports": [
+        "Conjectures.Goldbach.B13BilateralVaughanReduction",
+        "Conjectures.Goldbach.BinaryShiftShortMixedEnergy",
+        "Conjectures.Goldbach.DynThinWindowExceptions",
+        "Conjectures.Goldbach.EstermannAlmostAllPolylog",
+        "Conjectures.Goldbach.FareyHyperbolaRectangles",
+        "Conjectures.Goldbach.MajorFixed144",
+        "Conjectures.Goldbach.ThreeQuartersExceptionalDirichletWindows",
+        "PEqualNP.Outside.L_goldbach_frontier_no_siegel_zero"
+      ],
+      "module": "Conjectures.Goldbach.FixedModulusZeroClassSquare",
+      "file": "lean/Conjectures/Goldbach/FixedModulusZeroClassSquare.lean",
+      "track": "exceptions",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-fixed-shift-sextic-goldbach",
+      "statement": "∃ N : ℕ, ∀ n : ℕ, N ≤ n → ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ p + q = 2*n^6",
+      "plain_statement": {
+        "zh": "证明每个充分大的 2n⁶ 都有两个素数之和的表示。",
+        "en": "Represent every sufficiently large twice-sixth-power as the sum of two primes."
+      },
+      "brief": {
+        "zh": "对标第 5 节末尾明确提出的 β=0 情形。定理 1 对 P(x)=x⁶ 允许 O(N^(6/7+ε)) 个例外；新题要求例外有限，严格推出该特例。几乎处处平移的结论不能指定 β=0。可先研究素数侧次弧大值和六次幂相位的相关性；只处理素数 n 或有限区间均不足。",
+        "en": "Section 5 explicitly identifies the fixed shift β=0. For P(x)=x⁶, Theorem 1 allows O(N^(6/7+ε)) bad indices. Finiteness recovers this special case and eliminates all large exceptions. Almost-everywhere translation does not select zero. Seek cancellation against the sixth-power phase at the remaining exceptional indices."
+      },
+      "source": "https://arxiv.org/html/2611.09386v1",
+      "program": "exceptions",
+      "track": "exceptions",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "imports": [],
+      "depends_on": [],
+      "module": "Conjectures.Goldbach.FixedShiftSexticGoldbach",
+      "file": "lean/Conjectures/Goldbach/FixedShiftSexticGoldbach.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-linnik-asymmetric-support-surplus",
+      "statement": "by\n  classical\n  exact let W := fun (k n : ℕ) => ∃ (p : ℕ) (e : Fin k → ℕ), Nat.Prime p ∧ n = p + ∑ i, 2^(e i+1); ∃ c : ℝ, 0 < c ∧ ∃ T : ℕ, ∀ N ≥ T, Even N → let U := (Finset.Ioo 0 N).filter Odd; (1+c)*(U.card:ℝ) ≤ ((U.filter (W 2)).card:ℝ)+((U.filter (W 3)).card:ℝ)",
+      "plain_statement": {
+        "zh": "无条件证明一个素数加两个或三个二幂的两类奇目标，其支撑大小之和超过奇目标总数一个固定比例。",
+        "en": "Uniform support surplus for the two-power and three-power one-prime sets."
+      },
+      "brief": {
+        "zh": "讨论 #4314 的困难在解析正性。这里提出可以直接推出五幂结论的较强中间猜想：反射 m↦N−m 保持奇目标集不变，固定盈余给出至少 c|U| 个不同的相遇点。Li–Liu 第 7 节用加权混合矩处理 GRH 情形；这里需要无条件的支撑估计。",
+        "en": "Reflection yields at least c|U| distinct intersections and hence a five-power two-prime representation for each large even target. Li–Liu Section 7 uses weighted mixed moments under GRH. This asks for unconditional support surplus, providing an analytic objective beyond witness extraction."
+      },
+      "depends_on": [],
+      "imports": [],
+      "source": "https://arxiv.org/html/2610.15784v1#S2",
+      "program": "exceptions",
+      "track": "exceptions",
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "module": "Conjectures.Goldbach.LinnikAsymmetricSupportSurplus",
+      "file": "lean/Conjectures/Goldbach/LinnikAsymmetricSupportSurplus.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-local-density-half-endpoint",
+      "statement": "by\n  classical\n  let primes := fun N q a : ℕ => (Finset.Icc 1 N).filter (fun n => Nat.Prime n ∧ n%q=a)\n  exact ∀ A : Set ℕ, (∀ n ∈ A, Nat.Prime n) →\n    (∀ q a : ℕ, 0 < q → a < q → Nat.Coprime a q → ∀ ε : ℝ, 0 < ε → ∃ T : ℕ, ∀ N ≥ T, (1/2-ε)*( (primes N q a).card : ℝ) ≤ (((primes N q a).filter (fun p => p ∈ A)).card : ℝ)) →\n    ∀ η : ℝ, 0 < η → ∃ T : ℕ, ∀ N ≥ T, (((Finset.Icc 1 N).filter (fun n => Even n ∧ ¬ ∃ p ∈ A, ∃ q ∈ A, p+q=n)).card : ℝ) ≤ η*(N : ℝ)",
+      "plain_statement": {
+        "zh": "若素数子集 A 在每个固定既约剩余类中的相对下密度都至少为 1/2，证明几乎所有偶数都能表示为 A 中两素数之和，或构造临界反例。",
+        "en": "Test the half-density endpoint: if A has relative lower density at least one half in every fixed reduced residue class, must A+A contain almost all even integers?"
+      },
+      "brief": {
+        "zh": "Alsetri–Shao 定理 1.2 要求所有类的下密度统一严格超过 1/2。此题包含原定理，并允许各类恰好等于 1/2。备注 1.3 的空档构造只覆盖严格低于一半；令其参数趋近端点不自动给出正比例漏点。可研究接近临界的结构或直接提交严格反例。阈值依赖固定模数、剩余类和精度，不要求对增长模数一致。",
+        "en": "Theorem 1.2 assumes a uniform positive margin above one half. This includes that theorem and reaches equality. Remark 1.3 treats strictly subcritical densities. Track whether a fixed positive proportion of even targets is actually missed before claiming an endpoint counterexample. Thresholds depend on the fixed modulus and residue."
+      },
+      "source": "https://arxiv.org/html/2405.18576v1",
+      "track": "exceptions",
+      "program": "exceptions",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "imports": [],
+      "depends_on": [],
+      "module": "Conjectures.Goldbach.LocalDensityHalfEndpoint",
+      "file": "lean/Conjectures/Goldbach/LocalDensityHalfEndpoint.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-near-extremal-partner-count",
+      "statement": "by\n  classical\n  let S := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    ∑' q : ℕ, if hq : q ≠ 0 then\n      let _ : NeZero q := ⟨hq⟩\n      if h : r ∣ q ∧ s ∣ q then\n        let A := DirichletCharacter.changeLevel h.1 α\n        let B := DirichletCharacter.changeLevel h.2 β\n        gaussSum A ZMod.stdAddChar * gaussSum B ZMod.stdAddChar *\n          gaussSum (A*B)⁻¹ (ZMod.stdAddChar.mulShift (-(m:ZMod q))) / (q.totient:ℂ)^2\n      else 0\n    else 0\n  let O := S (1 : DirichletCharacter ℂ 1) (1 : DirichletCharacter ℂ 1)\n  exact ∀ (r : ℕ) [NeZero r] (α : DirichletCharacter ℂ r), α.IsPrimitive →\n    ∀ m : ℕ, 0 < m → Even m →\n    ∀ F : Finset (Σ s : ℕ, DirichletCharacter ℂ s),\n    (∀ b ∈ F, b.1 ≠ 0 ∧ b.2.IsPrimitive ∧ ‖O m‖ < Real.sqrt 2 * ‖S α b.2 m‖) →\n    F.card ≤ 24",
+      "plain_statement": {
+        "zh": "固定原始特征 α 和正偶数 m，允许另一原始特征 β 在所有正导子间变化。扭曲奇异级数绝对值超过普通值 1/√2 的不同搭档（导子，β）总共至多 24 个，原来的例外类也计入。",
+        "en": "Fix a primitive character and a positive even target. Across all positive conductors, at most 24 primitive partners have twisted magnitude above 1/sqrt(2) of the ordinary magnitude, including the exceptional class."
+      },
+      "brief": {
+        "zh": "复用 WeiKun 的 #4106 和 #4023 的非零支撑。先把乘积特征送到共同模数，利用本原诱导的唯一性跨导子去重。例外类的乘积导子整除 36。非例外高值要求 5∤m；在 5 处检查 Jacobi 和，尝试排除平凡搭档与逆搭档，再证明两类何时能共存。仅得 φ(180)=48 不够。此界控制大搭档数，零点重数仍需另估。",
+        "en": "Use #4106 and the nonzero-support criterion in #4023. Lift to a common modulus and prove injectivity after primitive induction. Exceptional product conductors divide 36. In the other case test the modulo-five Jacobi sums for trivial and inverse partners, then show when the cases can coexist. The crude ceiling phi(180)=48 does not suffice. Zero multiplicities are separate."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4106",
+      "program": "exceptions",
+      "role": "lemma",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-near-extremal-reduced-conductor"
+      ],
+      "imports": [
+        "Conjectures.Goldbach.NearExtremalReducedConductor"
+      ],
+      "module": "Conjectures.Goldbach.NearExtremalPartnerCount",
+      "file": "lean/Conjectures/Goldbach/NearExtremalPartnerCount.lean",
+      "track": "exceptions",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-near-extremal-reduced-conductor",
+      "statement": "by\n  classical\n  let S := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    ∑' q : ℕ, if hq : q ≠ 0 then\n      let _ : NeZero q := ⟨hq⟩\n      if h : r ∣ q ∧ s ∣ q then\n        let A := DirichletCharacter.changeLevel h.1 α\n        let B := DirichletCharacter.changeLevel h.2 β\n        gaussSum A ZMod.stdAddChar * gaussSum B ZMod.stdAddChar *\n          gaussSum (A*B)⁻¹ (ZMod.stdAddChar.mulShift (-(m:ZMod q))) / (q.totient:ℂ)^2\n      else 0\n    else 0\n  let O := S (1 : DirichletCharacter ℂ 1) (1 : DirichletCharacter ℂ 1)\n  let X := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    r/(m.gcd r) ∣ 36 ∧ s/(m.gcd s) ∣ 36 ∧ r/(r.gcd s) ∣ 3 ∧ s/(r.gcd s) ∣ 3 ∧\n      ((DirichletCharacter.changeLevel (Nat.dvd_lcm_left r s) α)*\n       (DirichletCharacter.changeLevel (Nat.dvd_lcm_right r s) β)).conductor ∣ 36\n  exact ∀ (r s : ℕ) [NeZero r] [NeZero s] (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s),\n    α.IsPrimitive → β.IsPrimitive → ∀ m : ℕ, 0 < m → Even m → ¬X α β m →\n    ‖O m‖ < Real.sqrt 2 * ‖S α β m‖ →\n    let j := Nat.lcm r s / Nat.gcd m (Nat.lcm r s)\n    5 ∣ j ∧ j ∣ 180 ∧ ¬ 5 ∣ m",
+      "plain_statement": {
+        "zh": "定位接近最优的扭曲奇异级数：在五项整除例外之外，若比值超过 1/√2，则缩减导子必须是 180 的含 5 因子约数，且 5 不整除目标偶数。",
+        "en": "Localize near-extremal twisted singular series: outside the five exceptional divisibilities, a ratio above 1/√2 forces the reduced conductor to divide 180 and be divisible by 5, with 5 not dividing the target."
+      },
+      "brief": {
+        "zh": "复用 #4023 的全局最优界及模 5 等号见证。检查缩减导子 j 中每个违规素数幂：在 2、3、≥7 的块以及 25 的倍数上分别估计局部 Jacobi 因子，再把该因子的节省带回整个级数。必须同时处理不等导子与零支撑。结合已有证明，满足新定位条件以外的对可用 1/√2 取代 √5/3，为多特征主项误差留出余量。",
+        "en": "Use the merged sharp bound and its modulus-five witness. Isolate each offending prime power in the reduced conductor and bound its Jacobi factor before recombining. Include unequal conductors and vanishing support. Combined with the sharp theorem this improves the coefficient from √5/3 to 1/√2 outside the proposed locus; an aggregate bound still requires counting character pairs."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4023",
+      "program": "exceptions",
+      "role": "lemma",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-sharp-singular-series-ratios"
+      ],
+      "imports": [
+        "Conjectures.Goldbach.SharpSingularSeriesRatios"
+      ],
+      "module": "Conjectures.Goldbach.NearExtremalReducedConductor",
+      "file": "lean/Conjectures/Goldbach/NearExtremalReducedConductor.lean",
+      "track": "exceptions",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-partner-dyadic-zero-block",
+      "statement": "by\n  classical\n  let S := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    ∑' q : ℕ, if hq : q ≠ 0 then\n      let _ : NeZero q := ⟨hq⟩\n      if h : r ∣ q ∧ s ∣ q then\n        let A := DirichletCharacter.changeLevel h.1 α\n        let B := DirichletCharacter.changeLevel h.2 β\n        gaussSum A ZMod.stdAddChar * gaussSum B ZMod.stdAddChar *\n          gaussSum (A*B)⁻¹ (ZMod.stdAddChar.mulShift (-(m:ZMod q))) / (q.totient:ℂ)^2\n      else 0\n    else 0\n  let O := S (1 : DirichletCharacter ℂ 1) (1 : DirichletCharacter ℂ 1)\n  let B := Σ s : ℕ, DirichletCharacter ℂ s\n  let primitive := fun b : B => b.1 ≠ 0 ∧ b.2.IsPrimitive\n  let zeroAt := fun (b : B) (z : ℂ) => if h : b.1 ≠ 0 then\n    letI : NeZero b.1 := ⟨h⟩\n    DirichletCharacter.LFunction b.2 z = 0\n    else False\n  let N := fun (F : Finset B) (w : B → ℝ) => (∑ b ∈ F, |w b| ^ (6/5 : ℝ)) ^ (5/6 : ℝ)\n  exact\n    (∀ m : ℕ, 0 < m → Even m → ∀ F : Finset B, (∀ b ∈ F, primitive b) →\n      ∀ u v : B → ℝ, (∑ a ∈ F, ∑ b ∈ F, |u a| * ‖S a.2 b.2 m‖ * |v b|)\n        ≤ (3 : ℝ)^(1/3 : ℝ) * ‖O m‖ * N F u * N F v) ∧\n    ∃ C : ℝ, 0 < C ∧ ∀ (m : ℕ) (T : ℝ), 0 < m → Even m → 1 ≤ T →\n      ∀ (n : ℕ) (χ : Fin n → B) (z u v : Fin n → ℂ),\n      (∀ i, primitive (χ i) ∧ zeroAt (χ i) (z i) ∧\n        1/2 ≤ (z i).re ∧ (z i).re ≤ 1 ∧ T ≤ |(z i).im| ∧ |(z i).im| ≤ 2*T) →\n      let F := Finset.univ.image χ\n      let W := fun (w : Fin n → ℂ) (b : B) =>\n        ∑ i ∈ Finset.univ.filter (fun i => χ i = b), ‖w i‖ * (m : ℝ)^((z i).re-1)\n      let K := fun i j : Fin n => Complex.Gamma (z i) * Complex.Gamma (z j) /\n        Complex.Gamma (z i + z j) * (m : ℂ)^(z i + z j - 1)\n      ‖∑ i : Fin n, ∑ j : Fin n, u i * v j * S (χ i).2 (χ j).2 m * K i j‖\n        ≤ C * (m : ℝ) * ‖O m‖ / Real.sqrt T * N F (W u) * N F (W v)",
+      "plain_statement": {
+        "zh": "对全导子的奇异级数核证明双线性 ℓ⁶⁄⁵ 界，再对 Pintz 显式公式在同一二进高度块的实际零点对保留 T⁻¹⁄² 衰减及按特征合并的节省。",
+        "en": "Prove the all-conductor bilinear ℓ⁶⁄⁵ estimate and retain both height decay and character dispersion for a dyadic zero block in the Pintz kernel."
+      },
+      "brief": {
+        "zh": "Pintz (2.10)、(10.24)–(10.25)；Zhao (2.4)–(2.8)。先用行列三次矩插值得双线性界，在 T≤|Im ρ|≤2T 上统一估计 Beta 核，按原始特征累加零点权重。同一块若 M 个特征的两组归并权重均为 1，所得 M^(5/3) 比逐对上界 M² 节省 M^(1/3)。保留重数、符号和复相位；父题仍需其他高度块与显式公式余项。",
+        "en": "Interpolate the cubic row and column estimates. Bound the beta kernel uniformly on the height block and collect the weighted zeros by primitive character. For M equally weighted character groups on both sides this costs M^(5/3) instead of M² at the same height. Repeated indices allow multiplicities. Other blocks and the explicit-formula remainder are separate inputs."
+      },
+      "source": "https://arxiv.org/html/1804.05561v1",
+      "program": "exceptions",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "imports": [
+        "Conjectures.Goldbach.PrimitivePartnerCubicMass"
+      ],
+      "depends_on": [
+        "L-goldbach-primitive-partner-cubic-mass"
+      ],
+      "track": "exceptions",
+      "module": "Conjectures.Goldbach.PartnerDyadicZeroBlock",
+      "file": "lean/Conjectures/Goldbach/PartnerDyadicZeroBlock.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-partner-height-renormalized-square",
+      "statement": "by\n  classical\n  let S := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    ∑' q : ℕ, if hq : q ≠ 0 then\n      let _ : NeZero q := ⟨hq⟩\n      if h : r ∣ q ∧ s ∣ q then\n        let A := DirichletCharacter.changeLevel h.1 α\n        let B := DirichletCharacter.changeLevel h.2 β\n        gaussSum A ZMod.stdAddChar * gaussSum B ZMod.stdAddChar *\n          gaussSum (A*B)⁻¹ (ZMod.stdAddChar.mulShift (-(m:ZMod q))) / (q.totient:ℂ)^2\n      else 0\n    else 0\n  let O := S (1 : DirichletCharacter ℂ 1) (1 : DirichletCharacter ℂ 1)\n  let P := (1 : DirichletCharacter ℂ 1)\n  let B := Σ s : ℕ, DirichletCharacter ℂ s\n  let valid := fun b : B => b.1 ≠ 0 ∧ b.2.IsPrimitive\n  exact ∀ (r : ℕ) [NeZero r] (α : DirichletCharacter ℂ r), α.IsPrimitive → ∀ m : ℕ, 0 < m → Even m → ∃ b₀ : ℝ, ∀ ε : ℝ, 0 < ε → ∃ T : ℕ, ∀ Y ≥ T, ∃ F : Finset B, (∀ b, b ∈ F ↔ valid b ∧ b.1 ≤ Y) ∧ |(∑ b ∈ F, ‖S α b.2 m‖^2) - ‖O m‖ * Real.log (Y:ℝ) - b₀| ≤ ε",
+      "plain_statement": {
+        "zh": "按搭档导子 ≤Y 截断，求平方质量的对数主项并证明扣除后收敛到常数。",
+        "en": "Renormalize the quadratic mass by a conductor-height cutoff and obtain a constant secondary term."
+      },
+      "brief": {
+        "zh": "#4316 按整除共同水平取完整行。高度截断恰是另一族集合。先剥离 r 与 m 的有限局部项，再把剩余平方质量写成与调和级数的卷积。预期未归一化主项系数为普通奇异级数的模，常数项可依赖固定行及目标。",
+        "en": "A height cutoff differs from divisibility by one level. Peel off the finite local factors of r and m and factor the outer Dirichlet series against the harmonic series. Predict the unnormalized leading coefficient ‖O(m)‖ and retain a row-dependent constant term."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4316",
+      "program": "exceptions",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "imports": [],
+      "depends_on": [
+        "L-goldbach-partner-level-parseval"
+      ],
+      "track": "exceptions",
+      "module": "Conjectures.Goldbach.PartnerHeightRenormalizedSquare",
+      "file": "lean/Conjectures/Goldbach/PartnerHeightRenormalizedSquare.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-partner-level-parseval",
+      "statement": "by\n  classical\n  let S := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    ∑' q : ℕ, if hq : q ≠ 0 then\n      let _ : NeZero q := ⟨hq⟩\n      if h : r ∣ q ∧ s ∣ q then\n        let A := DirichletCharacter.changeLevel h.1 α\n        let B := DirichletCharacter.changeLevel h.2 β\n        gaussSum A ZMod.stdAddChar * gaussSum B ZMod.stdAddChar *\n          gaussSum (A*B)⁻¹ (ZMod.stdAddChar.mulShift (-(m:ZMod q))) / (q.totient:ℂ)^2\n      else 0\n    else 0\n  let O := S (1 : DirichletCharacter ℂ 1) (1 : DirichletCharacter ℂ 1)\n  exact ∀ (D r : ℕ) [NeZero D] [NeZero r], r ∣ D → ∀ α : DirichletCharacter ℂ r, α.IsPrimitive → ∀ m : ℕ, 0 < m → Even m → ∃ F : Finset (Σ s : ℕ, DirichletCharacter ℂ s), (∀ b, b ∈ F ↔ b.1 ≠ 0 ∧ b.1 ∣ D ∧ b.2.IsPrimitive) ∧ (∑ b ∈ F, ‖S α b.2 m‖ ^ 2) = ‖O m‖ ^ 2 * ∏ p ∈ D.primeFactors.filter (fun p => ¬ p ∣ m), (((p:ℝ)-1)/((p:ℝ)-2))",
+      "plain_statement": {
+        "zh": "对共同模数 D 内全部原始搭档，求扭曲奇异级数平方和的精确 Euler 乘积。",
+        "en": "An exact level-dependent quadratic mass formula for all primitive partners."
+      },
+      "brief": {
+        "zh": "#4245 对任意有限搭档只需证明提升是单射。本题要求证明全体导子整除 D 的原始搭档恰覆盖模 D 特征，进而把局部 Parseval 等式组装为全局等式。结果量化二次矩随共同模数增长的代价，可用于截断大弧误差。",
+        "en": "Upgrade the injection in #4245 to a bijection for the full family of primitive origins at level D. Combine row orthogonality with the global factorization, retaining the prime factors of D missing from the target."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4245",
+      "program": "exceptions",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "imports": [],
+      "depends_on": [
+        "L-goldbach-primitive-partner-cubic-mass"
+      ],
+      "track": "exceptions",
+      "module": "Conjectures.Goldbach.PartnerLevelParseval",
+      "file": "lean/Conjectures/Goldbach/PartnerLevelParseval.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-partner-level-signed-operator",
+      "statement": "by\n  classical\n  let S := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    ∑' q : ℕ, if hq : q ≠ 0 then\n      let _ : NeZero q := ⟨hq⟩\n      if h : r ∣ q ∧ s ∣ q then\n        let A := DirichletCharacter.changeLevel h.1 α\n        let B := DirichletCharacter.changeLevel h.2 β\n        gaussSum A ZMod.stdAddChar * gaussSum B ZMod.stdAddChar *\n          gaussSum (A*B)⁻¹ (ZMod.stdAddChar.mulShift (-(m:ZMod q))) / (q.totient:ℂ)^2\n      else 0\n    else 0\n  let O := S (1 : DirichletCharacter ℂ 1) (1 : DirichletCharacter ℂ 1)\n  let P := (1 : DirichletCharacter ℂ 1)\n  let B := Σ s : ℕ, DirichletCharacter ℂ s\n  let valid := fun b : B => b.1 ≠ 0 ∧ b.2.IsPrimitive\n  exact ∀ D m : ℕ, 0 < D → 0 < m → Even m → ∃ F : Finset B, (∀ b, b ∈ F ↔ valid b ∧ b.1 ∣ D) ∧ (let H := ((Finset.range D).filter (fun x => x.Coprime D ∧ (m+D-(x%D)).Coprime D)).card; let scale := ‖O m‖*(D.totient:ℝ)/(H:ℝ); let normSq := fun w : B → ℂ => ∑ a ∈ F, ‖w a‖^2; let applyRow := fun (w : B → ℂ) (a : B) => ∑ b ∈ F, S a.2 b.2 m * w b; (∀ w : B → ℂ, normSq (applyRow w) ≤ scale^2 * normSq w) ∧ ∃ w : B → ℂ, 0 < normSq w ∧ normSq (applyRow w) = scale^2 * normSq w)",
+      "plain_statement": {
+        "zh": "求整个共同导子水平上的带相位奇异级数矩阵的精确 ℓ² 算子范数，并给出取等向量。",
+        "en": "Determine the exact ℓ² operator norm of the signed full-level matrix, including attainment."
+      },
+      "brief": {
+        "zh": "#4316 给出每一行的平方和。对一般复系数求和还涉及行间干涉。把全体原始来源提升为单位群特征基；预计矩阵经左右 Fourier 变换后是 x↦m−x 在可用单位上的部分置换。H 为两端均为单位的剩余类个数，精确因子应为 ‖O(m)‖φ(D)/H。",
+        "en": "PR #4316 gives individual row energies. For arbitrary complex coefficients retain interference between rows. In the full character basis the kernel should become a partial permutation on admissible units, with Fourier normalization giving the predicted sharp factor."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4316",
+      "program": "exceptions",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "imports": [],
+      "depends_on": [
+        "L-goldbach-partner-level-parseval"
+      ],
+      "track": "exceptions",
+      "module": "Conjectures.Goldbach.PartnerLevelSignedOperator",
+      "file": "lean/Conjectures/Goldbach/PartnerLevelSignedOperator.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-partner-optimal-global-cubic",
+      "statement": "by\n  classical\n  let S := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    ∑' q : ℕ, if hq : q ≠ 0 then\n      let _ : NeZero q := ⟨hq⟩\n      if h : r ∣ q ∧ s ∣ q then\n        let A := DirichletCharacter.changeLevel h.1 α\n        let B := DirichletCharacter.changeLevel h.2 β\n        gaussSum A ZMod.stdAddChar * gaussSum B ZMod.stdAddChar *\n          gaussSum (A*B)⁻¹ (ZMod.stdAddChar.mulShift (-(m:ZMod q))) / (q.totient:ℂ)^2\n      else 0\n    else 0\n  let O := S (1 : DirichletCharacter ℂ 1) (1 : DirichletCharacter ℂ 1)\n  let B := Σ s : ℕ, DirichletCharacter ℂ s\n  let primitive := fun b : B => b.1 ≠ 0 ∧ b.2.IsPrimitive\n  let f := fun p : ℕ => if p.Prime ∧ 3 ≤ p then 1 + 1 / ((p : ℝ) - 2)^2 else 1\n  exact ∃ C : ℝ, HasProd f C ∧\n    (∀ K : ℝ, (∀ (r : ℕ) [NeZero r] (α : DirichletCharacter ℂ r), α.IsPrimitive →\n      ∀ m : ℕ, 0 < m → Even m → ∀ F : Finset B, (∀ b ∈ F, primitive b) →\n      (∑ b ∈ F, ‖S α b.2 m‖^3) ≤ K * ‖O m‖^3) ↔ C ≤ K) ∧\n    (∀ (r : ℕ) [NeZero r] (α : DirichletCharacter ℂ r), α.IsPrimitive →\n      ∀ m : ℕ, 0 < m → Even m → ∀ F : Finset B, (∀ b ∈ F, primitive b) →\n      (F.filter (fun b => ‖O m‖ < Real.sqrt 2 * ‖S α b.2 m‖)).card ≤ 6)",
+      "plain_statement": {
+        "zh": "求所有导子上的最佳统一三次矩常数，并把超过普通值 1/√2 的搭档数降至至多六个。",
+        "en": "Determine the optimal all-conductor cubic moment and bound the number of partners above the 1/√2 threshold by six."
+      },
+      "brief": {
+        "zh": "对每个素数幂使用 #4245 的局部预算，保留素数 Euler 乘积；在 m=2、首特征平凡的奇素数连乘水平由已发布的 sharp-cubic-level 寻找逼近上确界的有限族。对 ≤31 的素数精确相乘，余积用 30/29 控制。六是上界，不要求取到。",
+        "en": "Retain the prime product of the local budgets in #4245. Approximate the supremum by the principal row at m=2 on odd primorial levels. Bound the tail after 31 by 30/29 and apply the cubic bound to the strict threshold. Six need not be attained."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4245",
+      "program": "exceptions",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "imports": [
+        "Conjectures.Goldbach.PrimitivePartnerCubicMass"
+      ],
+      "depends_on": [
+        "L-goldbach-primitive-partner-cubic-mass",
+        "L-goldbach-partner-sharp-cubic-level"
+      ],
+      "track": "exceptions",
+      "module": "Conjectures.Goldbach.PartnerOptimalGlobalCubic",
+      "file": "lean/Conjectures/Goldbach/PartnerOptimalGlobalCubic.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-partner-principal-amplitude-tail",
+      "statement": "by\n  classical\n  let S := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    ∑' q : ℕ, if hq : q ≠ 0 then\n      let _ : NeZero q := ⟨hq⟩\n      if h : r ∣ q ∧ s ∣ q then\n        let A := DirichletCharacter.changeLevel h.1 α\n        let B := DirichletCharacter.changeLevel h.2 β\n        gaussSum A ZMod.stdAddChar * gaussSum B ZMod.stdAddChar *\n          gaussSum (A*B)⁻¹ (ZMod.stdAddChar.mulShift (-(m:ZMod q))) / (q.totient:ℂ)^2\n      else 0\n    else 0\n  let O := S (1 : DirichletCharacter ℂ 1) (1 : DirichletCharacter ℂ 1)\n  let P := (1 : DirichletCharacter ℂ 1)\n  let B := Σ s : ℕ, DirichletCharacter ℂ s\n  let valid := fun b : B => b.1 ≠ 0 ∧ b.2.IsPrimitive\n  exact ∀ ε : ℝ, 0 < ε → ∃ T : ℕ, ∀ Y ≥ T, ∃ F : Finset B, (∀ b, b ∈ F ↔ valid b ∧ ‖O 2‖ < (Y:ℝ)*‖S P b.2 2‖) ∧ |(F.card:ℝ)/(Y:ℝ)^2 - 1/(2*‖O 2‖)| ≤ ε",
+      "plain_statement": {
+        "zh": "在 m=2 的平凡首行，求全部超过 1/Y 归一化阈值的搭档数的精确二次渐近。",
+        "en": "Determine the precise quadratic tail count for the principal row at target two."
+      },
+      "brief": {
+        "zh": "#4164 只控制高阈值，#4245 由三次矩给出 O(Y³)。本题按振幅而非导子计数，阈值趋零时预测 Y²/(2‖O(2)‖)。平方自由导子 s 在此贡献 h(s)=∏(p−2) 个等振幅搭档；对按 h 排序的 Dirichlet 级数需证明适当的 Tauber 条件。",
+        "en": "Count by amplitude, not by conductor. Each odd squarefree s contributes h(s)=∏(p−2) partners of reciprocal normalized amplitude h(s). Derive the near-critical pole and justify the Tauberian step for an asymptotic, improving the cubic-moment tail bound."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4316",
+      "program": "exceptions",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "imports": [],
+      "depends_on": [
+        "L-goldbach-partner-level-parseval"
+      ],
+      "track": "exceptions",
+      "module": "Conjectures.Goldbach.PartnerPrincipalAmplitudeTail",
+      "file": "lean/Conjectures/Goldbach/PartnerPrincipalAmplitudeTail.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-partner-principal-row-phase",
+      "statement": "by\n  classical\n  let S := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    ∑' q : ℕ, if hq : q ≠ 0 then\n      let _ : NeZero q := ⟨hq⟩\n      if h : r ∣ q ∧ s ∣ q then\n        let A := DirichletCharacter.changeLevel h.1 α\n        let B := DirichletCharacter.changeLevel h.2 β\n        gaussSum A ZMod.stdAddChar * gaussSum B ZMod.stdAddChar *\n          gaussSum (A*B)⁻¹ (ZMod.stdAddChar.mulShift (-(m:ZMod q))) / (q.totient:ℂ)^2\n      else 0\n    else 0\n  let O := S (1 : DirichletCharacter ℂ 1) (1 : DirichletCharacter ℂ 1)\n  let P := (1 : DirichletCharacter ℂ 1)\n  let B := Σ s : ℕ, DirichletCharacter ℂ s\n  let valid := fun b : B => b.1 ≠ 0 ∧ b.2.IsPrimitive\n  exact ∀ (s : ℕ) [NeZero s] (β : DirichletCharacter ℂ s), β.IsPrimitive → ∀ m : ℕ, 0 < m → Even m → S P β m = if Squarefree s ∧ s.Coprime m then O m * ((-1:ℂ)^s.primeFactors.card) * β (m:ZMod s) / (∏ p ∈ s.primeFactors, ((p:ℂ)-2)) else 0",
+      "plain_statement": {
+        "zh": "确定平凡首特征与任意原始搭档的复相位、振幅和严格消失条件。",
+        "en": "Determine the full complex principal row, including phase and vanishing for every primitive partner."
+      },
+      "brief": {
+        "zh": "#4316 给出汇总平方和。相位信息有助于在带符号的零点和中保留抵消。对奇平方自由且与 m 互素的导子，将局部和 J(1,β;m) 化为 −β(m)，再重组；在其余导子证明零。模 1 对应空乘积。",
+        "en": "Recover phases lost in the aggregate Parseval bound. Evaluate the local sum as minus the character at m on each surviving prime and prove vanishing at the other conductor shapes. Check the empty product at conductor one."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4316",
+      "program": "exceptions",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "imports": [],
+      "depends_on": [
+        "L-goldbach-partner-level-parseval"
+      ],
+      "track": "exceptions",
+      "module": "Conjectures.Goldbach.PartnerPrincipalRowPhase",
+      "file": "lean/Conjectures/Goldbach/PartnerPrincipalRowPhase.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-partner-quadratic-obstruction",
+      "statement": "by\n  classical\n  let S := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    ∑' q : ℕ, if hq : q ≠ 0 then\n      let _ : NeZero q := ⟨hq⟩\n      if h : r ∣ q ∧ s ∣ q then\n        let A := DirichletCharacter.changeLevel h.1 α\n        let B := DirichletCharacter.changeLevel h.2 β\n        gaussSum A ZMod.stdAddChar * gaussSum B ZMod.stdAddChar *\n          gaussSum (A*B)⁻¹ (ZMod.stdAddChar.mulShift (-(m:ZMod q))) / (q.totient:ℂ)^2\n      else 0\n    else 0\n  let O := S (1 : DirichletCharacter ℂ 1) (1 : DirichletCharacter ℂ 1)\n  exact ∀ K : ℝ, ∃ F : Finset (Σ s : ℕ, DirichletCharacter ℂ s), (∀ b ∈ F, b.1 ≠ 0 ∧ b.2.IsPrimitive ∧ Squarefree b.1) ∧ K * ‖O 2‖ ^ 2 < ∑ b ∈ F, ‖S (1 : DirichletCharacter ℂ 1) b.2 2‖ ^ 2",
+      "plain_statement": {
+        "zh": "即使固定 m=2、首特征平凡、搭档导子无平方因子，归一化平方和仍可任意大。",
+        "en": "Unbounded normalized quadratic mass even on squarefree partners at a fixed target."
+      },
+      "brief": {
+        "zh": "检验把 #4245 的三次矩直接降为二次矩会遇到的障碍。取奇素数连乘为共同模数；每个 p 的平方质量因子应为 1+1/(p−2)。须证明普通级数非零并构造有限原始搭档族。该结论可排除一条错误的一致估计路线。",
+        "en": "Test the endpoint of #4245: choose odd primorial levels, prove the ordinary series is nonzero and realize the finite row factors 1+1/(p−2). Divergence excludes a conductor-independent square bound even for this fixed row."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4245",
+      "program": "exceptions",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "imports": [],
+      "depends_on": [
+        "L-goldbach-primitive-partner-cubic-mass"
+      ],
+      "track": "exceptions",
+      "module": "Conjectures.Goldbach.PartnerQuadraticObstruction",
+      "file": "lean/Conjectures/Goldbach/PartnerQuadraticObstruction.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-partner-sharp-cubic-level",
+      "statement": "by\n  classical\n  let S := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    ∑' q : ℕ, if hq : q ≠ 0 then\n      let _ : NeZero q := ⟨hq⟩\n      if h : r ∣ q ∧ s ∣ q then\n        let A := DirichletCharacter.changeLevel h.1 α\n        let B := DirichletCharacter.changeLevel h.2 β\n        gaussSum A ZMod.stdAddChar * gaussSum B ZMod.stdAddChar *\n          gaussSum (A*B)⁻¹ (ZMod.stdAddChar.mulShift (-(m:ZMod q))) / (q.totient:ℂ)^2\n      else 0\n    else 0\n  let O := S (1 : DirichletCharacter ℂ 1) (1 : DirichletCharacter ℂ 1)\n  exact ∀ D : ℕ, 0 < D → Odd D → Squarefree D → ∃ F : Finset (Σ s : ℕ, DirichletCharacter ℂ s), (∀ b, b ∈ F ↔ b.1 ≠ 0 ∧ b.1 ∣ D ∧ b.2.IsPrimitive) ∧ (∑ b ∈ F, ‖S (1 : DirichletCharacter ℂ 1) b.2 2‖ ^ 3) = ‖O 2‖ ^ 3 * (∏ p ∈ D.primeFactors, (1+1/((p:ℝ)-2)^2)) ∧ ∀ (r : ℕ) [NeZero r], r ∣ D → ∀ α : DirichletCharacter ℂ r, α.IsPrimitive → ∀ m : ℕ, 0 < m → Even m → (∑ b ∈ F, ‖S α b.2 m‖ ^ 3) ≤ ‖O m‖ ^ 3 * (∏ p ∈ D.primeFactors, (1+1/((p:ℝ)-2)^2))",
+      "plain_statement": {
+        "zh": "在无平方因子的奇模数上确定最优三次矩常数，并证明平凡首特征在 m=2 取到它。",
+        "en": "Determine the optimal cubic row constant at each odd squarefree level and exhibit an extremizer."
+      },
+      "brief": {
+        "zh": "#4245 的全局常数为 3。这里要求每个奇无平方因子水平的精确常数，及同一平台全部原始搭档上的取等例。对 p 的平凡首行，非平凡搭档应各贡献 1/(p−2)³；其余行复用已合入的局部上界。",
+        "en": "The uniform constant in #4245 is 3. At each odd squarefree level prove the exact optimal constant, including attainment: principal row, target two, p−2 nonprincipal entries at each prime. Reuse the local upper bounds for other rows."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4245",
+      "program": "exceptions",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "imports": [],
+      "depends_on": [
+        "L-goldbach-primitive-partner-cubic-mass"
+      ],
+      "track": "exceptions",
+      "module": "Conjectures.Goldbach.PartnerSharpCubicLevel",
+      "file": "lean/Conjectures/Goldbach/PartnerSharpCubicLevel.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-partner-signed-height-cancellation",
+      "statement": "by\n  classical\n  let S := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    ∑' q : ℕ, if hq : q ≠ 0 then\n      let _ : NeZero q := ⟨hq⟩\n      if h : r ∣ q ∧ s ∣ q then\n        let A := DirichletCharacter.changeLevel h.1 α\n        let B := DirichletCharacter.changeLevel h.2 β\n        gaussSum A ZMod.stdAddChar * gaussSum B ZMod.stdAddChar *\n          gaussSum (A*B)⁻¹ (ZMod.stdAddChar.mulShift (-(m:ZMod q))) / (q.totient:ℂ)^2\n      else 0\n    else 0\n  let O := S (1 : DirichletCharacter ℂ 1) (1 : DirichletCharacter ℂ 1)\n  let P := (1 : DirichletCharacter ℂ 1)\n  let B := Σ s : ℕ, DirichletCharacter ℂ s\n  let valid := fun b : B => b.1 ≠ 0 ∧ b.2.IsPrimitive\n  exact ∀ m : ℕ, 0 < m → Even m → 2 ≤ (m-1).primeFactors.card → ∀ ε : ℝ, 0 < ε → ∃ T : ℕ, ∀ Y ≥ T, ∃ F : Finset B, (∀ b, b ∈ F ↔ valid b ∧ b.1 ≤ Y) ∧ ‖∑ b ∈ F, S P b.2 m‖ ≤ ε",
+      "plain_statement": {
+        "zh": "若 m−1 至少有两个不同素因子，证明按导子高度截断的平凡行复数和趋零。",
+        "en": "Two distinct prime factors of m−1 force signed principal-row cancellation in conductor-height order."
+      },
+      "brief": {
+        "zh": "按导子合并所有原始特征后，p|m−1 的局部带符号因子预期形如 1−p^(−s)。两个不同素数带来两次有限差分，有望同时消掉对数项和常数项。必须按高度 Y 的实际顺序估计余项；绝对值矩不能推出该结论。",
+        "en": "Summing primitive character values locally produces finite differences at primes dividing m−1. Two such differences should remove both logarithmic and constant terms. Justify the cutoff error in the stated summation order; an absolute row moment loses the cancellation."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4316",
+      "program": "exceptions",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "imports": [],
+      "depends_on": [
+        "L-goldbach-partner-level-parseval"
+      ],
+      "track": "exceptions",
+      "module": "Conjectures.Goldbach.PartnerSignedHeightCancellation",
+      "file": "lean/Conjectures/Goldbach/PartnerSignedHeightCancellation.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-partner-superquadratic",
+      "statement": "by\n  classical\n  let S := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    ∑' q : ℕ, if hq : q ≠ 0 then\n      let _ : NeZero q := ⟨hq⟩\n      if h : r ∣ q ∧ s ∣ q then\n        let A := DirichletCharacter.changeLevel h.1 α\n        let B := DirichletCharacter.changeLevel h.2 β\n        gaussSum A ZMod.stdAddChar * gaussSum B ZMod.stdAddChar *\n          gaussSum (A*B)⁻¹ (ZMod.stdAddChar.mulShift (-(m:ZMod q))) / (q.totient:ℂ)^2\n      else 0\n    else 0\n  let O := S (1 : DirichletCharacter ℂ 1) (1 : DirichletCharacter ℂ 1)\n  exact ∀ t : ℝ, 2 < t → ∃ C : ℝ, 0 < C ∧ ∀ (r : ℕ) [NeZero r] (α : DirichletCharacter ℂ r), α.IsPrimitive →\n    ∀ m : ℕ, 0 < m → Even m →\n    ∀ F : Finset (Σ s : ℕ, DirichletCharacter ℂ s),\n    (∀ b ∈ F, b.1 ≠ 0 ∧ b.2.IsPrimitive) →\n    (∑ b ∈ F, ‖S α b.2 m‖ ^ t) ≤ C * ‖O m‖ ^ t",
+      "plain_statement": {
+        "zh": "对所有实指数 t>2，一致控制跨导子的原始搭档 t 次矩。",
+        "en": "Uniform superquadratic moments of primitive partners across all conductors."
+      },
+      "brief": {
+        "zh": "#4245 处理 t=3。归一化后单项至多 1，故真正新增的是 2<t<3，对小系数的控制更强。若首特征局部平凡，分离平凡搭档并对剩余项使用 1/(p−2) 上界。若局部非平凡，对二次矩用最大值的 t−2 次幂；大素数应给出收缩，小素数保留在依赖 t 的常数中。",
+        "en": "PR #4245 gives t=3. After normalization the new range is 2<t<3. For a principal local row isolate its principal entry; the rest have cap 1/(p−2). For a nonprincipal row combine Parseval with the pointwise cap to the power t−2. Control the product uniformly in both conductors."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4245",
+      "program": "exceptions",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "imports": [],
+      "depends_on": [
+        "L-goldbach-primitive-partner-cubic-mass"
+      ],
+      "track": "exceptions",
+      "module": "Conjectures.Goldbach.PartnerSuperquadratic",
+      "file": "lean/Conjectures/Goldbach/PartnerSuperquadratic.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-polynomial-eighth-moment-support",
+      "statement": "by\n  classical\n  exact ∀ P : Polynomial ℤ, 3 ≤ P.natDegree → ∀ ε : ℝ, 0 < ε → ∃ C : ℝ, 0 < C ∧ ∀ M : ℕ, 2 ≤ M → ∀ A : Finset ℕ, A ⊆ Finset.Icc 1 M →\n    let K := fun t : ℝ => ∑ n ∈ A, Complex.exp (2 * (Real.pi : ℂ) * Complex.I * ((P.eval (n : ℤ) : ℤ) : ℂ) * (t : ℂ))\n    intervalIntegral (fun t : ℝ => ‖K t‖^8) 0 1 MeasureTheory.volume ≤ C * (M : ℝ)^ε * (A.card : ℝ)^(if P.natDegree = 3 then (5 : ℕ) else 4)",
+      "plain_statement": {
+        "zh": "对任意三次及以上整系数多项式和任意指标子集，证明指数和八阶矩至多为 C M^ε |A|⁵（三次）或 C M^ε |A|⁴（四次及以上）。",
+        "en": "Control the eighth moment on arbitrary subsets by M^ε times the fifth power of their size in degree three and its fourth power in higher degrees."
+      },
+      "brief": {
+        "zh": "对标预印本第 3 节定理 F 的 M^(1+ε)|A|⁴。因 |A|≤M，三次目标收回原界并在稀疏集上改进；更高次数直接省 M。由正交性改为估计四项和相等的八元组，可从分离对角解与凸序列关联估计入手。代回式 (4.6)，对三、四次的例外指标指数均可降至 1/2+ε，须保留原文所用素数侧输入。",
+        "en": "Compare Theorem F in section 3. Cardinality is at most M, so the cubic estimate recovers the old bound and saves on sparse sets; higher degrees save a factor M. Count equal four-term sums and separate diagonal solutions. In (4.6), keeping the prime-side hypotheses, both cubic and quartic exceptional exponents would become 1/2+ε."
+      },
+      "source": "https://arxiv.org/html/2611.09386v1",
+      "program": "exceptions",
+      "track": "exceptions",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "imports": [],
+      "depends_on": [],
+      "module": "Conjectures.Goldbach.PolynomialEighthMomentSupport",
+      "file": "lean/Conjectures/Goldbach/PolynomialEighthMomentSupport.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-polynomial-fourier-transference",
+      "statement": "by\n  classical\n  exact ∀ p M : ℝ, 2 < p → p < 4 → 1 ≤ M → ∃ c K : ℝ, 0 < c ∧ 0 < K ∧ ∀ δ η : ℝ, 0 < δ → δ ≤ 1 → 0 < η → η ≤ 1 →\n    ∀ (N : ℕ) [NeZero N], ∀ f g u v : ZMod N → ℝ,\n    let avg := fun h : ZMod N → ℝ => (∑ x, h x)/(N : ℝ)\n    let ft := fun (h : ZMod N → ℝ) (r : ZMod N) => (∑ x : ZMod N, (h x : ℂ) * Complex.exp (-2*(Real.pi : ℂ)*Complex.I*((r*x).val : ℂ)/(N : ℂ)))/(N : ℂ)\n    (∀ x, 0 ≤ f x ∧ f x ≤ u x ∧ 0 ≤ g x ∧ g x ≤ v x) → 1+δ ≤ avg f + avg g →\n    (∑ r : ZMod N, ‖ft f r‖^p) ≤ M^p → (∑ r : ZMod N, ‖ft g r‖^p) ≤ M^p →\n    (∀ r, ‖ft (fun x => u x-1) r‖ ≤ c*(δ*η)^K ∧ ‖ft (fun x => v x-1) r‖ ≤ c*(δ*η)^K) →\n    ((Finset.univ.filter (fun n : ZMod N => avg (fun x => f x*g (n-x)) < δ^3/1000)).card : ℝ) ≤ η*(N : ℝ)",
+      "plain_statement": {
+        "zh": "给二元哥猜的 Fourier 转移原理一个定量版本：证明伪随机主化函数的 Fourier 误差只须小于 c(δη)^K，就可保留原有卷积下界及例外比例。",
+        "en": "Seek a polynomial Fourier-uniformity threshold c(δη)^K in the binary transference theorem, keeping its convolution floor and exceptional fraction."
+      },
+      "brief": {
+        "zh": "对标 Alsetri–Shao 命题 3.1。固定其 p 与 M，原命题允许依赖 δ、η 的足够小常数；此题要求统一的幂次与系数。若成立，取此阈值即可恢复原命题。第 3 节通过 Bohr 集拟合稠密模型，体积可能随大谱规模指数变小。试用卷积层面的直接逼近，或构造具有许多独立大谱方向的障碍。本题仅改善转移损耗，素数主化函数的误差还须独立验证。",
+        "en": "Compare Proposition 3.1. For fixed p and M the proposed polynomial modulus gives an admissible explicit form of its unspecified threshold. Section 3 smooths on a Bohr set whose volume can decay exponentially in the large-spectrum size. Seek a direct convolution estimate or an obstruction from independent frequencies. Prime majorants require separate verification."
+      },
+      "source": "https://arxiv.org/html/2405.18576v1",
+      "track": "exceptions",
+      "program": "exceptions",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "imports": [],
+      "depends_on": [],
+      "module": "Conjectures.Goldbach.PolynomialFourierTransference",
+      "file": "lean/Conjectures/Goldbach/PolynomialFourierTransference.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-polynomial-triple-collisions",
+      "statement": "by\n  classical\n  exact ∀ P : Polynomial ℤ, 3 ≤ P.natDegree → ∀ ε : ℝ, 0 < ε → ∃ C : ℝ, 0 < C ∧ ∀ M : ℕ, 2 ≤ M → ∀ A : Finset ℕ, A ⊆ Finset.Icc 1 M →\n    let weight := fun x : Fin 3 → (↥A) => ∑ j : Fin 3, P.eval ((x j : ℕ) : ℤ)\n    (((Finset.univ : Finset ((Fin 3 → (↥A)) × (Fin 3 → (↥A)))).filter (fun z => weight z.1 = weight z.2)).card : ℝ) ≤ C*(M : ℝ)^ε*(A.card : ℝ)^3",
+      "plain_statement": {
+        "zh": "对三次及以上固定整系数多项式 P 与 [1,M] 中任意有限指标集 A，证明两组有序三元组的 P 值之和相等的配对数至多为 C M^ε |A|³。允许重复指标，并计入所有对角解。",
+        "en": "For a fixed integer polynomial of degree at least three and arbitrary support A in [1,M], bound collisions of ordered triple sums of P-values by C M^ε |A|³, including repetitions and diagonal solutions."
+      },
+      "brief": {
+        "zh": "#4221 将八阶矩严格化成两组四元组之和相等的计数。若两侧共享一个指标，删除该指标后只需本题；16 种位置选择使此部分至多 16 C M^ε |A|⁴。其余八元组仍需攻克。对标 Althöfer 等第 3 节定理 F：八阶矩与差分因式分解给出的四阶矩插值，六阶矩有 M^(1/2+ε)|A|³ 的界。本题去掉额外的 M^(1/2)。另在该文式 (4.7) 中代入 q=6、b=0，若素数侧输入成立，三次例外指数便为 1/2、四次为 2/3。",
+        "en": "The verified #4221 orthogonality identity counts collisions of two ordered four-tuples. When they share an index, erase one of 16 possible pairs of positions: this bound would control those configurations by 16 C M^ε |A|⁴. Fully disjoint collisions remain. Compare section 3, Theorem F of arXiv:2611.09386v1: interpolating its eighth moment with the divisor-bound fourth moment costs M^(1/2+ε)|A|³. The target removes the extra square root. With the prime-side estimates in (4.7), q=6 and b=0 give exceptional exponents 1/2 for cubics and 2/3 for quartics."
+      },
+      "source": "https://arxiv.org/html/2611.09386v1",
+      "track": "exceptions",
+      "program": "exceptions",
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "depends_on": [],
+      "imports": [],
+      "module": "Conjectures.Goldbach.PolynomialTripleCollisions",
+      "file": "lean/Conjectures/Goldbach/PolynomialTripleCollisions.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-prime-local-compatible-colors",
+      "statement": "by\n  classical\n  let primes := fun N q a : ℕ => (Finset.Icc 1 N).filter (fun p => Nat.Prime p ∧ p%q=a)\n  let dense := fun (A : Set ℕ) (d a : ℕ) (t : ℝ) => ∀ ε : ℝ, 0 < ε → ∃ T : ℕ, ∀ N ≥ T, (t-ε)*((primes N d a).card:ℝ) ≤ (((primes N d a).filter (fun p => p ∈ A)).card:ℝ)\n  exact ∀ A B : Set ℕ, (∀ p ∈ A, Nat.Prime p) → (∀ p ∈ B, Nat.Prime p) →\n    ∀ W b : ℕ, 0 < W → b < W → (∃ δ : ℝ, 0 < δ ∧ ∀ d : ℕ, 0 < d → 2*W ∣ d → ∀ r : ℕ, r < d → Even r → r%W=b →\n      ∃ a c : ℕ, a < d ∧ c < d ∧ a.Coprime d ∧ c.Coprime d ∧ (a+c)%d=r ∧ ∃ u v : ℝ, 0 ≤ u ∧ u ≤ 1 ∧ 0 ≤ v ∧ v ≤ 1 ∧ 1+δ ≤ u+v ∧ dense A d a u ∧ dense B d c v) →\n    ∀ η : ℝ, 0 < η → ∃ T : ℕ, ∀ X ≥ T, (((Finset.Icc 1 X).filter (fun n => Even n ∧ n%W=b ∧ ¬∃ p ∈ A, ∃ q ∈ B, p+q=n)).card:ℝ) ≤ η*(X:ℝ)/(W:ℝ)",
+      "plain_statement": {
+        "zh": "允许两套不同的素数子集，仅要求每个目标细分类有一对密度和超过 1 的相容加数类。",
+        "en": "Almost-all binary Goldbach for two prime subsets with target-dependent compatible local densities."
+      },
+      "brief": {
+        "zh": "Alsetri–Shao 定理 1.2 对同一集合在每个既约类都要求超过半密度。本题可在部分加数类完全缺失时使用，只要每个目标细分类仍有一对有固定盈余的类。取 W=1、A=B 且所有类统一超过一半就恢复原定理。可用 #4281 的双输入转移定理逐类组装。",
+        "en": "Theorem 1.2 uses one set uniformly above half in all reduced classes. Here entire summand classes may be absent if each target refinement has a compatible pair with uniform surplus. Set W=1 and A=B to recover the original hypothesis as a sufficient condition. Apply the two-input transfer of #4281 on each compatible pair."
+      },
+      "source": "https://arxiv.org/html/2405.18576v1",
+      "track": "exceptions",
+      "program": "exceptions",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "imports": [],
+      "depends_on": [],
+      "module": "Conjectures.Goldbach.PrimeLocalCompatibleColors",
+      "file": "lean/Conjectures/Goldbach/PrimeLocalCompatibleColors.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-primitive-partner-cubic-mass",
+      "statement": "by\n  classical\n  let S := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    ∑' q : ℕ, if hq : q ≠ 0 then\n      let _ : NeZero q := ⟨hq⟩\n      if h : r ∣ q ∧ s ∣ q then\n        let A := DirichletCharacter.changeLevel h.1 α\n        let B := DirichletCharacter.changeLevel h.2 β\n        gaussSum A ZMod.stdAddChar * gaussSum B ZMod.stdAddChar *\n          gaussSum (A*B)⁻¹ (ZMod.stdAddChar.mulShift (-(m:ZMod q))) / (q.totient:ℂ)^2\n      else 0\n    else 0\n  let O := S (1 : DirichletCharacter ℂ 1) (1 : DirichletCharacter ℂ 1)\n  exact ∀ (r : ℕ) [NeZero r] (α : DirichletCharacter ℂ r), α.IsPrimitive →\n    ∀ m : ℕ, 0 < m → Even m →\n    ∀ F : Finset (Σ s : ℕ, DirichletCharacter ℂ s),\n    (∀ b ∈ F, b.1 ≠ 0 ∧ b.2.IsPrimitive) →\n    (∑ b ∈ F, ‖S α b.2 m‖^3) ≤ 3 * ‖O m‖^3",
+      "plain_statement": {
+        "zh": "固定原始特征 α 与正偶数 m。让另一原始特征 β 跨越所有正导子，对任意有限搭档集合 F，证明扭曲奇异级数绝对值的三次方之和至多为普通奇异级数绝对值三次方的 3 倍。",
+        "en": "Fix a primitive character and a positive even target. Over any finite collection of primitive partners of arbitrary positive conductors, bound the sum of cubes of twisted singular-series magnitudes by three times the cube of the ordinary magnitude."
+      },
+      "brief": {
+        "zh": "Qmhou 在 #4164 证明超过普通值 1/√2 的搭档至多 24 个。新界若成立，在相同阈值下严格大于阈值的项每个贡献超过普通值三次方的 1/(2√2)，故至多 8 个；同一估计还能控制任意正阈值。可先把有限搭档升至共同模数并检验本原来源的单射。在 p 不整除 m 的奇素数幂上研究归一化 Jacobi 和一行的三次矩是否至多 1+1/(p−2)²；对 p 整除 m 时用正交性及逐项上界。数值样本不能代替素数幂统一证明。最后还须证明局部乘积确实控制全局级数。",
+        "en": "PR #4164 bounds the number above 1/√2 by 24. The cubic bound implies at most 8 at that threshold, and gives a tail bound at every threshold. Lift a finite family to one level, preserving injectivity. For odd p not dividing m try the local factor 1+1/(p−2)²; for p dividing m try orthogonality and pointwise contraction. Prove the prime-power estimates uniformly and justify passage to the global series."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4164",
+      "program": "exceptions",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "imports": [],
+      "depends_on": [
+        "L-goldbach-near-extremal-partner-count"
+      ],
+      "module": "Conjectures.Goldbach.PrimitivePartnerCubicMass",
+      "file": "lean/Conjectures/Goldbach/PrimitivePartnerCubicMass.lean",
+      "track": "exceptions",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-quadratic-values-many-prime-pairs",
+      "statement": "by\n  classical\n  let reps := fun z : ℤ => ((Finset.Icc 2 z.toNat).filter (fun p => Nat.Prime p ∧ Nat.Prime (z.toNat-p))).card\n  exact ∀ P : Polynomial ℤ, P.natDegree = 2 → 0 < P.leadingCoeff → ∃ c : ℝ, 0 < c ∧ ∀ ε : ℝ, 0 < ε → ∃ C : ℝ, 0 < C ∧ ∀ N : ℕ, 2 ≤ N →\n    (((Finset.Icc 1 N).filter (fun n => let z := 2 * P.eval (n : ℤ); z ≤ 2 ∨ (reps z : ℝ) < c * (z : ℝ) / (Real.log (z : ℝ))^2)).card : ℝ) ≤ C*(N : ℝ)^((3 : ℝ)/7+ε)",
+      "plain_statement": {
+        "zh": "对每个正首项的整系数二次多项式，大部分 2P(n) 至少有 c·2P(n)/log²(2P(n)) 个有序素数表示，坏指标不超过 O(N^(3/7+ε))。",
+        "en": "For any fixed positive-leading quadratic, all but O(N^(3/7+ε)) indices give 2P(n) at least c·2P(n)/log²(2P(n)) ordered prime representations."
+      },
+      "brief": {
+        "zh": "对标定理 1 二次情形的 1/2+ε。所有无表示指标均计入坏集（包括非正目标），因此新界推出旧界。少数表示也计作坏点，用主弧下界与次弧误差之间的差距代替完全消失。指数降至 3/7 需要素数权与二次稀疏集合的额外抵消，不能只代入原第四矩。",
+        "en": "Theorem 1 gives an exceptional exponent 1/2 for quadratics. Nonpositive and unrepresented targets are included in the bad set. Compare the main term with the minor arcs even where a few representations survive. The saving to 3/7 requires cancellation beyond the existing fourth-moment argument."
+      },
+      "source": "https://arxiv.org/html/2611.09386v1",
+      "program": "exceptions",
+      "track": "exceptions",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "imports": [],
+      "depends_on": [],
+      "module": "Conjectures.Goldbach.QuadraticValuesManyPrimePairs",
+      "file": "lean/Conjectures/Goldbach/QuadraticValuesManyPrimePairs.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-quartic-progression-goldbach-values",
+      "statement": "by\n  classical\n  exact ∀ P : Polynomial ℤ, P.natDegree=4 → 0<P.leadingCoeff → ∀ k : ℕ, ∀ ε : ℝ, 0<ε → ∃ C : ℝ, 0<C ∧ ∀ N : ℕ, 2≤N → ∀ d a b : ℕ, 1≤d → (d:ℝ) ≤ (1+Real.log (N:ℝ))^k → a<d → b<d → a.Coprime d → b.Coprime d → let bad := fun n : ℕ => let m := 2*P.eval (n:ℤ); ((d:ℤ) ∣ m-(a:ℤ)-(b:ℤ)) ∧ ¬ ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ (p:ℤ)+(q:ℤ)=m ∧ p%d=a ∧ q%d=b; (((Finset.Icc 1 N).filter bad).card:ℝ) ≤ C*(N:ℝ)^((3:ℝ)/4+ε)",
+      "plain_statement": {
+        "zh": "对四次多项式目标同时指定两个素数的既约剩余类，保留 3/4 例外指数，对对数幂大小的模数一致。",
+        "en": "Retain the quartic 3/4 exceptional exponent with both prime residues prescribed at polylogarithmic moduli."
+      },
+      "brief": {
+        "zh": "d=1 恢复文献定理 1 的四次结论。一般 d 先筛选目标同余相容的指标，再对子进程素数和与任意异常指标集的四次 Weyl 和作混合估计。指数与阈值需对 d,a,b 一致。",
+        "en": "At d=1 recover the quartic case of Theorem 1. Restrict to compatible indices before estimating the prime sums in two progressions against the polynomial sum on an arbitrary exceptional set. Control errors uniformly in the modulus and both residues."
+      },
+      "source": "https://arxiv.org/html/2611.09386v1",
+      "track": "exceptions",
+      "program": "exceptions",
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "depends_on": [],
+      "imports": [],
+      "module": "Conjectures.Goldbach.QuarticProgressionGoldbachValues",
+      "file": "lean/Conjectures/Goldbach/QuarticProgressionGoldbachValues.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-quartic-square-slice",
+      "statement": "by\n  classical\n  exact ∀ ε : ℝ, 0<ε → ∃ C : ℝ, 0<C ∧ ∀ M : ℕ, 2≤M → ∀ A : Finset ℕ, A ⊆ Finset.Icc 1 M → ∀ h : ℤ, let w := fun (k : ℕ) (x : Fin 3 → (↥A)) => ∑ i, ((x i : ℕ):ℤ)^k; let triples := (Finset.univ : Finset ((Fin 3 → (↥A)) × (Fin 3 → (↥A)))); ((triples.filter (fun z => w 4 z.1=w 4 z.2 ∧ w 2 z.1-w 2 z.2=h)).card:ℝ) ≤ C*(M:ℝ)^ε*(A.card:ℝ)^3",
+      "plain_statement": {
+        "zh": "对四次幂三项和碰撞，按两组三元组的平方和之差切片，并证明每片都有对角规模上界。",
+        "en": "A diagonal-scale fourth-power triple-collision bound on slices of fixed square-sum defect."
+      },
+      "brief": {
+        "zh": "固定第一组三元组后，另一组平方数的和与平方和已知。消元得到二元正定二次型（Eisenstein 范数）；非退化表示数需一致的约数估计，零范数另算。这给 #4322 的四次模型提供独立的算术切片。",
+        "en": "Write the second triple as three squares with fixed sum and sum of squares. Elimination leads to a positive definite binary quadratic form. Bound its representations uniformly and handle zero norm separately."
+      },
+      "source": "https://arxiv.org/html/2611.09386v1",
+      "track": "exceptions",
+      "program": "exceptions",
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "depends_on": [],
+      "imports": [],
+      "module": "Conjectures.Goldbach.QuarticSquareSlice",
+      "file": "lean/Conjectures/Goldbach/QuarticSquareSlice.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-reflected-continuous-distribution",
+      "statement": "by\n  classical\n  let e := fun t : ℝ => Complex.exp (((2*Real.pi*t : ℝ) : ℂ)*Complex.I)\n  let S := fun (N : ℕ) (t : ℝ) => ∑ p ∈ (Finset.range (N+1)).filter Nat.Prime, (Real.log (p : ℝ) : ℂ) * e ((p : ℝ)*t)\n  let arcs := fun N : ℕ => let k := Nat.log 2 (N+2); {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ k ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t-(a : ℝ)/(q : ℝ)| ≤ ((k^3 : ℕ) : ℝ)/((q : ℝ)*(N : ℝ))}\n  let A := fun N m : ℕ => (intervalIntegral ((arcs N).indicator (fun t : ℝ => (S N t)^2 * e (-(m : ℝ)*t))) (0 : ℝ) 1 MeasureTheory.volume).re\n  let C₂ := ∏' p : ℕ, if Nat.Prime p ∧ 2 < p then 1 - 1/((p : ℝ)-1)^2 else 1\n  let band := fun N m : ℕ => 4*N ≤ 3*m ∧ 2*m ≤ 3*N ∧ Even m\n  let R := fun N m : ℕ => A N m / (2*(N:ℝ)-(m:ℝ))\n  let B := fun N : ℕ => (Finset.Icc N (2*N)).filter (band N)\n  let avg := fun (F : Finset ℕ) (f : ℕ → ℝ) => (∑ m ∈ F, f m)/(F.card:ℝ)\n  exact ∀ ε : ℝ, 0 < ε → ∃ δ : ℝ, 0 < δ ∧ ∃ T : ℕ, ∀ N : ℕ, T ≤ N → ∀ z : ℝ,\n    (((B N).filter (fun m => |R N m-z| ≤ δ)).card:ℝ) ≤ ε*((B N).card:ℝ)",
+      "plain_statement": {
+        "zh": "证明归一化大弧系数不会有正比例集中在任意足够窄的实区间内。",
+        "en": "Prove uniform anti-concentration for the actual major-arc coefficient."
+      },
+      "brief": {
+        "zh": "#4275 的尖锐下界并不给出系数取值的集中度。可截取有限个素数，用 CRT 比较独立整除事件，再控制剩余局部因子的影响。需要对区间中心 z 一致；仅证明单点不等于下界不够。",
+        "en": "Transfer to products over finitely many primes, control the discarded tail, and prove absence of atoms using independent prime divisibility. The scale must work simultaneously for all interval centers."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4275",
+      "track": "exceptions",
+      "program": "exceptions",
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "imports": [],
+      "depends_on": [
+        "L-goldbach-reflected-major-sharp-floor"
+      ],
+      "module": "Conjectures.Goldbach.ReflectedContinuousDistribution",
+      "file": "lean/Conjectures/Goldbach/ReflectedContinuousDistribution.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-reflected-lower-tail-density",
+      "statement": "by\n  classical\n  let e := fun t : ℝ => Complex.exp (((2*Real.pi*t : ℝ) : ℂ)*Complex.I)\n  let S := fun (N : ℕ) (t : ℝ) => ∑ p ∈ (Finset.range (N+1)).filter Nat.Prime, (Real.log (p : ℝ) : ℂ) * e ((p : ℝ)*t)\n  let arcs := fun N : ℕ => let k := Nat.log 2 (N+2); {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ k ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t-(a : ℝ)/(q : ℝ)| ≤ ((k^3 : ℕ) : ℝ)/((q : ℝ)*(N : ℝ))}\n  let A := fun N m : ℕ => (intervalIntegral ((arcs N).indicator (fun t : ℝ => (S N t)^2 * e (-(m : ℝ)*t))) (0 : ℝ) 1 MeasureTheory.volume).re\n  let C₂ := ∏' p : ℕ, if Nat.Prime p ∧ 2 < p then 1 - 1/((p : ℝ)-1)^2 else 1\n  let band := fun N m : ℕ => 4*N ≤ 3*m ∧ 2*m ≤ 3*N ∧ Even m\n  let R := fun N m : ℕ => A N m / (2*(N:ℝ)-(m:ℝ))\n  let B := fun N : ℕ => (Finset.Icc N (2*N)).filter (band N)\n  let avg := fun (F : Finset ℕ) (f : ℕ → ℝ) => (∑ m ∈ F, f m)/(F.card:ℝ)\n  exact ∀ ε : ℝ, 0 < ε → ∃ δ₀ : ℝ, 0 < δ₀ ∧ ∀ δ : ℝ, 0 < δ → δ < δ₀ → ∃ T : ℕ, ∀ N : ℕ, T ≤ N →\n    let P := (((B N).filter (fun m => R N m ≤ 2*C₂+δ)).card:ℝ)/((B N).card:ℝ)\n    |Real.log (1/δ)*P - 2*Real.exp (-Real.eulerMascheroniConstant)| ≤ ε",
+      "plain_statement": {
+        "zh": "精确计算距离最优下界 δ 以内的偶目标所占比例的一阶常数。",
+        "en": "Find the first-order lower-tail density at the sharp floor."
+      },
+      "brief": {
+        "zh": "#4275 用二的幂说明下界可逼近；本题预测比例约为 2e^(−γ)/log(1/δ)。避开至约 1/δ 的奇素数产生 Mertens 因子，须在这个筛过的样本内估计更大素因子的贡献，并按先 N 后 δ 的次序取极限。",
+        "en": "Powers of two give witnesses in #4275. For the frequency, sieve out odd prime factors up to scale 1/δ, then bound the conditional tail from larger primes. The order of limits is N first, δ second."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4275",
+      "track": "exceptions",
+      "program": "exceptions",
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "imports": [],
+      "depends_on": [
+        "L-goldbach-reflected-major-sharp-floor"
+      ],
+      "module": "Conjectures.Goldbach.ReflectedLowerTailDensity",
+      "file": "lean/Conjectures/Goldbach/ReflectedLowerTailDensity.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-reflected-major-sharp-floor",
+      "statement": "by\n  classical\n  let e := fun t : ℝ => Complex.exp (((2*Real.pi*t : ℝ) : ℂ)*Complex.I)\n  let S := fun (N : ℕ) (t : ℝ) => ∑ p ∈ (Finset.range (N+1)).filter Nat.Prime, (Real.log (p : ℝ) : ℂ) * e ((p : ℝ)*t)\n  let arcs := fun N : ℕ => let k := Nat.log 2 (N+2); {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ k ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t-(a : ℝ)/(q : ℝ)| ≤ ((k^3 : ℕ) : ℝ)/((q : ℝ)*(N : ℝ))}\n  let A := fun N m : ℕ => (intervalIntegral ((arcs N).indicator (fun t : ℝ => (S N t)^2 * e (-(m : ℝ)*t))) (0 : ℝ) 1 MeasureTheory.volume).re\n  let C₂ := ∏' p : ℕ, if Nat.Prime p ∧ 2 < p then 1 - 1/((p : ℝ)-1)^2 else 1\n  let band := fun N m : ℕ => 4*N ≤ 3*m ∧ 2*m ≤ 3*N ∧ Even m\n  exact ∀ ε : ℝ, 0 < ε →\n    (∃ T : ℕ, ∀ N m : ℕ, T ≤ N → band N m → (2*C₂-ε)*(2*(N : ℝ)-(m : ℝ)) ≤ A N m) ∧\n    (∀ T : ℕ, ∃ N m : ℕ, T ≤ N ∧ 1 ≤ N ∧ band N m ∧ A N m ≤ (2*C₂+ε)*(2*(N : ℝ)-(m : ℝ)))",
+      "plain_statement": {
+        "zh": "在 #4198 的同一组大弧上，求证归一化系数 A(N,m)/(2N−m) 在 4N/3≤m≤3N/2 的偶数带上的渐近最优下界恰为 2C₂，其中 C₂ 为孪生素数常数。",
+        "en": "Identify 2C₂ as the optimal asymptotic lower bound of the normalized major-arc coefficient A(N,m)/(2N−m) on even targets in the reflected band, for the arcs of PR #4198."
+      },
+      "brief": {
+        "zh": "沿用 #4198 已核验的素数权、半开周期的端点拼接、截断与一致模型误差。将 Ramanujan 和依照整除 m 的平方自由部分分组，分别控制剩余交错尾部；不可直接假定对所有 m 的截断奇异级数相对误差都趋零。对最优性可沿 m 为 2 的幂选取带内整数 N。下界若成立，因 2N−m≥N/2，将把 7N/64 提高到 (C₂−o(1))N，同时给出任何进一步提高归一化常数的障碍。次弧项另行控制。",
+        "en": "Keep the weights, endpoints and two cutoffs from #4198. Group the Ramanujan sum by the squarefree divisor supported on m, controlling the remaining alternating tails without assuming uniform relative convergence to the full series. Test powers of two for sharpness. The lower half improves 7N/64 to (C₂−o(1))N; the upper subsequence certifies optimality. Minor arcs remain separate."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4198",
+      "track": "exceptions",
+      "program": "exceptions",
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "imports": [],
+      "depends_on": [],
+      "module": "Conjectures.Goldbach.ReflectedMajorSharpFloor",
+      "file": "lean/Conjectures/Goldbach/ReflectedMajorSharpFloor.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-reflected-mean-square-euler-tail",
+      "statement": "by\n  classical\n  let e := fun t : ℝ => Complex.exp (((2*Real.pi*t : ℝ) : ℂ)*Complex.I)\n  let S := fun (N : ℕ) (t : ℝ) => ∑ p ∈ (Finset.range (N+1)).filter Nat.Prime, (Real.log (p : ℝ) : ℂ) * e ((p : ℝ)*t)\n  let arcs := fun N : ℕ => let k := Nat.log 2 (N+2); {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ k ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t-(a : ℝ)/(q : ℝ)| ≤ ((k^3 : ℕ) : ℝ)/((q : ℝ)*(N : ℝ))}\n  let A := fun N m : ℕ => (intervalIntegral ((arcs N).indicator (fun t : ℝ => (S N t)^2 * e (-(m : ℝ)*t))) (0 : ℝ) 1 MeasureTheory.volume).re\n  let C₂ := ∏' p : ℕ, if Nat.Prime p ∧ 2 < p then 1 - 1/((p : ℝ)-1)^2 else 1\n  let band := fun N m : ℕ => 4*N ≤ 3*m ∧ 2*m ≤ 3*N ∧ Even m\n  let R := fun N m : ℕ => A N m / (2*(N:ℝ)-(m:ℝ))\n  let B := fun N : ℕ => (Finset.Icc N (2*N)).filter (band N)\n  let avg := fun (F : Finset ℕ) (f : ℕ → ℝ) => (∑ m ∈ F, f m)/(F.card:ℝ)\n  exact ∃ C : ℝ, 0 < C ∧ ∀ y : ℕ, 3 ≤ y → ∃ T : ℕ, ∀ N : ℕ, T ≤ N →\n    let P := fun m : ℕ => 2*C₂ * ∏ p ∈ m.primeFactors.filter (fun p => 2 < p ∧ p ≤ y), (1+1/((p:ℝ)-2))\n    avg (B N) (fun m => (R N m-P m)^2) ≤ C/(y:ℝ)^2",
+      "plain_statement": {
+        "zh": "用不超过 y 的奇素因子预测实际大弧系数，在偶目标带上证明均方误差为 O(y⁻²)。",
+        "en": "Bound mean-square error of the small-prime model by O(y⁻²) on the reflected band."
+      },
+      "brief": {
+        "zh": "固定 y 后让 N 增长。有限模型只读目标的少量局部信息；误差上界要求绝对常数独立于 y。可先对截断 Ramanujan 和做正交，再把有限素因子模型与完整二阶 Euler 乘积比较。",
+        "en": "After fixing y take N large. Bound the actual coefficient in mean square by a model using only small prime divisors, with an absolute constant. Try Ramanujan orthogonality followed by a second-moment Euler product tail estimate."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4275",
+      "track": "exceptions",
+      "program": "exceptions",
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "imports": [],
+      "depends_on": [
+        "L-goldbach-reflected-major-sharp-floor"
+      ],
+      "module": "Conjectures.Goldbach.ReflectedMeanSquareEulerTail",
+      "file": "lean/Conjectures/Goldbach/ReflectedMeanSquareEulerTail.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-reflected-shifted-pair-moment",
+      "statement": "by\n  classical\n  let e := fun t : ℝ => Complex.exp (((2*Real.pi*t : ℝ) : ℂ)*Complex.I)\n  let S := fun (N : ℕ) (t : ℝ) => ∑ p ∈ (Finset.range (N+1)).filter Nat.Prime, (Real.log (p : ℝ) : ℂ) * e ((p : ℝ)*t)\n  let arcs := fun N : ℕ => let k := Nat.log 2 (N+2); {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ k ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t-(a : ℝ)/(q : ℝ)| ≤ ((k^3 : ℕ) : ℝ)/((q : ℝ)*(N : ℝ))}\n  let A := fun N m : ℕ => (intervalIntegral ((arcs N).indicator (fun t : ℝ => (S N t)^2 * e (-(m : ℝ)*t))) (0 : ℝ) 1 MeasureTheory.volume).re\n  let C₂ := ∏' p : ℕ, if Nat.Prime p ∧ 2 < p then 1 - 1/((p : ℝ)-1)^2 else 1\n  let band := fun N m : ℕ => 4*N ≤ 3*m ∧ 2*m ≤ 3*N ∧ Even m\n  let R := fun N m : ℕ => A N m / (2*(N:ℝ)-(m:ℝ))\n  let B := fun N : ℕ => (Finset.Icc N (2*N)).filter (band N)\n  let avg := fun (F : Finset ℕ) (f : ℕ → ℝ) => (∑ m ∈ F, f m)/(F.card:ℝ)\n  exact ∀ ε : ℝ, 0 < ε → ∃ T : ℕ, ∀ N h : ℕ, T ≤ N → h^3 ≤ N →\n    let F := (B N).filter (fun m => band N (m+2*h))\n    let E := (2*C₂)^2 * ∏' p : ℕ, if Nat.Prime p ∧ 2<p then (let u : ℝ := 1/((p:ℝ)-2); 1+2*u/(p:ℝ)+(if p ∣ h then u^2/(p:ℝ) else 0)) else 1\n    |avg F (fun m => R N m * R N (m+2*h)) - E| ≤ ε",
+      "plain_statement": {
+        "zh": "求相距 2h 的两个大弧系数的混合二阶矩，对 h³≤N 一致。",
+        "en": "Determine the shifted second moment uniformly for h³≤N."
+      },
+      "brief": {
+        "zh": "#4275 只控制单点下界。若 p∤h，则 p 不能同时整除 m 和 m+2h；若 p|h，则两条件重合，这给出不同的局部二阶项。须证明有限分母截断误差对移动的 h 一致。h=0 包含真正的二阶矩。",
+        "en": "Use intersection versus exclusion of the two divisibility events at odd p. Control the cutoff uniformly as h varies; h=0 recovers the unshifted second moment. The average is over the intersection of the two reflected bands."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4275",
+      "track": "exceptions",
+      "program": "exceptions",
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "imports": [],
+      "depends_on": [
+        "L-goldbach-reflected-major-sharp-floor"
+      ],
+      "module": "Conjectures.Goldbach.ReflectedShiftedPairMoment",
+      "file": "lean/Conjectures/Goldbach/ReflectedShiftedPairMoment.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-reflected-short-progression-mean",
+      "statement": "by\n  classical\n  let e := fun t : ℝ => Complex.exp (((2*Real.pi*t : ℝ) : ℂ)*Complex.I)\n  let S := fun (N : ℕ) (t : ℝ) => ∑ p ∈ (Finset.range (N+1)).filter Nat.Prime, (Real.log (p : ℝ) : ℂ) * e ((p : ℝ)*t)\n  let arcs := fun N : ℕ => let k := Nat.log 2 (N+2); {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ k ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t-(a : ℝ)/(q : ℝ)| ≤ ((k^3 : ℕ) : ℝ)/((q : ℝ)*(N : ℝ))}\n  let A := fun N m : ℕ => (intervalIntegral ((arcs N).indicator (fun t : ℝ => (S N t)^2 * e (-(m : ℝ)*t))) (0 : ℝ) 1 MeasureTheory.volume).re\n  let C₂ := ∏' p : ℕ, if Nat.Prime p ∧ 2 < p then 1 - 1/((p : ℝ)-1)^2 else 1\n  let band := fun N m : ℕ => 4*N ≤ 3*m ∧ 2*m ≤ 3*N ∧ Even m\n  let R := fun N m : ℕ => A N m / (2*(N:ℝ)-(m:ℝ))\n  let B := fun N : ℕ => (Finset.Icc N (2*N)).filter (band N)\n  let avg := fun (F : Finset ℕ) (f : ℕ → ℝ) => (∑ m ∈ F, f m)/(F.card:ℝ)\n  exact ∀ d a : ℕ, Odd d → a < d → ∀ θ : ℝ, 0 < θ → θ < 1 → ∀ ε : ℝ, 0 < ε → ∃ T : ℕ, ∀ N x H : ℕ, T ≤ N → 4*N ≤ 3*x → 2*(x+H) ≤ 3*N → (N:ℝ)^θ ≤ (H:ℝ) →\n    let F := ((B N) ∩ Finset.Icc x (x+H)).filter (fun m => m%d=a)\n    let E := 2 * ∏ p ∈ d.primeFactors, ((if p ∣ a then 1+1/((p:ℝ)-2) else 1)/(1+1/((p:ℝ)*((p:ℝ)-2))))\n    |avg F (R N) - E| ≤ ε",
+      "plain_statement": {
+        "zh": "在任意固定奇模剩余类、任意幂长短区间上求实际大弧系数的局部均值。",
+        "en": "Determine the mean in each fixed odd residue class uniformly in polynomial-length windows."
+      },
+      "brief": {
+        "zh": "把 #4275 的一致转移代入算术行，按同余条件平均 Ramanujan 和。p 整除模数时按 p 是否整除 a 固定局部因子；其余素数需控制短窗端点误差。取 d=1 时预测均值为 2。",
+        "en": "Use the uniform transfer of #4275, average the truncated Ramanujan sums in a progression and bound endpoint losses. Condition each prime dividing d on the target residue. For d=1 the expected mean is 2."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4275",
+      "track": "exceptions",
+      "program": "exceptions",
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "imports": [],
+      "depends_on": [
+        "L-goldbach-reflected-major-sharp-floor"
+      ],
+      "module": "Conjectures.Goldbach.ReflectedShortProgressionMean",
+      "file": "lean/Conjectures/Goldbach/ReflectedShortProgressionMean.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-reflected-upper-envelope",
+      "statement": "by\n  classical\n  let e := fun t : ℝ => Complex.exp (((2*Real.pi*t : ℝ) : ℂ)*Complex.I)\n  let S := fun (N : ℕ) (t : ℝ) => ∑ p ∈ (Finset.range (N+1)).filter Nat.Prime, (Real.log (p : ℝ) : ℂ) * e ((p : ℝ)*t)\n  let arcs := fun N : ℕ => let k := Nat.log 2 (N+2); {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ k ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t-(a : ℝ)/(q : ℝ)| ≤ ((k^3 : ℕ) : ℝ)/((q : ℝ)*(N : ℝ))}\n  let A := fun N m : ℕ => (intervalIntegral ((arcs N).indicator (fun t : ℝ => (S N t)^2 * e (-(m : ℝ)*t))) (0 : ℝ) 1 MeasureTheory.volume).re\n  let C₂ := ∏' p : ℕ, if Nat.Prime p ∧ 2 < p then 1 - 1/((p : ℝ)-1)^2 else 1\n  let band := fun N m : ℕ => 4*N ≤ 3*m ∧ 2*m ≤ 3*N ∧ Even m\n  let R := fun N m : ℕ => A N m / (2*(N:ℝ)-(m:ℝ))\n  let B := fun N : ℕ => (Finset.Icc N (2*N)).filter (band N)\n  exact ∀ ε : ℝ, 0 < ε → ∃ T : ℕ, ∀ N : ℕ, T ≤ N →\n    (∀ m ∈ B N, R N m ≤ (1+ε)*Real.log (Real.log (N:ℝ))) ∧\n    (∃ m ∈ B N, (1-ε)*Real.log (Real.log (N:ℝ)) ≤ R N m)",
+      "plain_statement": {
+        "zh": "证明每一条充分大的反射带上，大弧系数最大值的主项为 log log N。",
+        "en": "Identify the leading maximum of the major-arc coefficient on every sufficiently large reflected band."
+      },
+      "brief": {
+        "zh": "与 #4275 的最小值互补。上界可比较截断的 μ²(q)/φ(q) 之和；下界在带内寻找一个被小素数连乘整除的偶数。必须控制不能强迫整除的剩余分母，其符号可能为负。",
+        "en": "Complement the minimum in #4275. Majorize by the squarefree reciprocal-totient sum. For the lower bound choose a multiple of a suitable primorial inside each band and control the remaining signed denominators."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4275",
+      "track": "exceptions",
+      "program": "exceptions",
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "imports": [],
+      "depends_on": [
+        "L-goldbach-reflected-major-sharp-floor"
+      ],
+      "module": "Conjectures.Goldbach.ReflectedUpperEnvelope",
+      "file": "lean/Conjectures/Goldbach/ReflectedUpperEnvelope.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-romanov-critical-two-shift-scale",
+      "statement": "by\n  classical\n  exact ∃ c C : ℝ, 0 < c ∧ 0 < C ∧ ∃ T : ℕ, ∀ X ≥ T, let L := ⌊C*Real.sqrt (Real.log (X:ℝ))⌋₊; let good := fun m : ℕ => Odd m ∧ ∃ a b : ℕ, 1 ≤ a ∧ a < b ∧ b ≤ L ∧ Nat.Prime (m-(2^a+2^b)); c*(X:ℝ) ≤ (((Finset.Ico X (2*X)).filter good).card:ℝ)",
+      "plain_statement": {
+        "zh": "只用 O(√log X) 个允许指数，在每个二倍区间覆盖正比例的奇目标，每个表示使用两个不同二幂与一个素数。",
+        "en": "Cover a positive fraction with a prime and two distinct dyadic shifts at the critical exponent budget."
+      },
+      "brief": {
+        "zh": "素数数目与指数对的朴素计数表明 L=o(√log X) 时总表示数为 o(X)。在临界尺度可尝试控制两枚二幂之和的差所加权的素数对相关；必须扣除对角碰撞。该题研究用多少不同指数就能支撑反射法。",
+        "en": "The prime count and the number of exponent pairs force density zero when L=o(√log X). Seek a second-moment bound at the counting threshold, separating equal shifts and different representations. This quantifies the exponent budget of a reflection method."
+      },
+      "depends_on": [],
+      "imports": [],
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/discussions/4314",
+      "program": "exceptions",
+      "track": "exceptions",
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "module": "Conjectures.Goldbach.RomanovCriticalTwoShiftScale",
+      "file": "lean/Conjectures/Goldbach/RomanovCriticalTwoShiftScale.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-romanov-local-unique",
+      "statement": "by\n  classical\n  exact let R := fun n : ℕ => ((Finset.Icc 1 (Nat.log 2 n)).filter (fun e => Nat.Prime (n-2^e))).card; ∃ c : ℝ, 0 < c ∧ ∃ T : ℕ, ∀ X H : ℕ, T ≤ X → X ≤ H^2 → H ≤ X → c*(H:ℝ) ≤ (((Finset.Ico X (X+H)).filter (fun n => Odd n ∧ R n=1)).card:ℝ)",
+      "plain_statement": {
+        "zh": "在每个平方根长度以上的窗口，唯一表示为素数加一个正指数二幂的奇数都有正比例。",
+        "en": "Positive density of uniquely represented odd integers in every square-root-length window."
+      },
+      "brief": {
+        "zh": "Elsholtz–Schlage-Puchta 的唯一表示结果给出全局正下密度。局部结论可检测反射侧的质量是否集中在高重数点。需要在同一动窗内隔离恰一次的贡献，并把其他所有允许指数也纳入排除。",
+        "en": "Elsholtz and Schlage-Puchta prove positive lower density of unique representations globally. Isolate multiplicity exactly one in each moving window and exclude all other exponents. This distinguishes support size from a first-moment bound."
+      },
+      "depends_on": [],
+      "imports": [],
+      "source": "https://tugraz.elsevierpure.com/en/publications/on-romanovs-constant/",
+      "program": "exceptions",
+      "track": "exceptions",
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "module": "Conjectures.Goldbach.RomanovLocalUnique",
+      "file": "lean/Conjectures/Goldbach/RomanovLocalUnique.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-romanov-separated-band-support",
+      "statement": "by\n  classical\n  exact let J := fun a b m : ℕ => ((Finset.Icc a b).filter (fun e => Nat.Prime (m-2^e))).card; ∃ c : ℝ, 0 < c ∧ ∃ T : ℕ, ∀ X ≥ T, let L := Nat.log 2 X / 2; c*(X:ℝ) ≤ (((Finset.Ico X (2*X)).filter (fun m => Odd m ∧ 0<J 1 (L/2) m ∧ 0<J (L/2+1) L m)).card:ℝ)",
+      "plain_statement": {
+        "zh": "低指数带和高指数带各有一个表示的不同奇目标占正比例。",
+        "en": "A positive proportion of distinct odd targets meet both separated exponent bands."
+      },
+      "brief": {
+        "zh": "保留既有 cross-band-overlap 题的两个指数范围，把加权混合质量提升为不同目标数。该计数下界推出旧的质量下界；反过来必须排除少数高重数点支配均值。可先控制乘积的截断尾部，再用二阶矩。",
+        "en": "Keep the bands of the existing cross-band overlap task, counting each target only once. This implies its weighted lower bound. Control concentration of the product on high-multiplicity targets to go in the stronger direction."
+      },
+      "depends_on": [],
+      "imports": [],
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/discussions/4314",
+      "program": "exceptions",
+      "track": "exceptions",
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "module": "Conjectures.Goldbach.RomanovSeparatedBandSupport",
+      "file": "lean/Conjectures/Goldbach/RomanovSeparatedBandSupport.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-romanov-short-window-density",
+      "statement": "by\n  classical\n  exact let R := fun n : ℕ => ((Finset.Icc 1 (Nat.log 2 n)).filter (fun e => Nat.Prime (n-2^e))).card; ∃ T : ℕ, ∀ X H : ℕ, T ≤ X → X ≤ H^2 → H ≤ X → 13*H ≤ 100*((Finset.Ico X (X+H)).filter (fun n => Odd n ∧ 0 < R n)).card",
+      "plain_statement": {
+        "zh": "每个长度至少 √X 的窗口中，至少 13% 的全部整数是奇素数加一个正指数二幂。",
+        "en": "Represent at least 13% of all integers in every window of length at least √X as an odd prime and a positive power of two."
+      },
+      "brief": {
+        "zh": "Johnston–Trudgian v2 第 1.2 节记录的全区间下密度为 0.10788。此题同时提高该基线并要求短窗一致；分母是全部整数。局部化表示数的一、二阶矩，特别检验筛法误差对窗口起点的依赖。单个奇数的表示只给出反射法的一侧。",
+        "en": "Section 1.2 of Johnston–Trudgian v2 records a full-range lower density of 0.10788 among all integers. Strengthen that numerical baseline and localize the first and second moments to each moving window. This is one side of a reflection argument."
+      },
+      "depends_on": [],
+      "imports": [],
+      "source": "https://arxiv.org/html/2605.17825v2#S4",
+      "program": "exceptions",
+      "track": "exceptions",
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "module": "Conjectures.Goldbach.RomanovShortWindowDensity",
+      "file": "lean/Conjectures/Goldbach/RomanovShortWindowDensity.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-sharp-singular-series-ratios",
+      "statement": "by\n  classical\n  let S := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    ∑' q : ℕ, if hq : q ≠ 0 then\n      let _ : NeZero q := ⟨hq⟩\n      if h : r ∣ q ∧ s ∣ q then\n        let A := DirichletCharacter.changeLevel h.1 α\n        let B := DirichletCharacter.changeLevel h.2 β\n        gaussSum A ZMod.stdAddChar * gaussSum B ZMod.stdAddChar *\n          gaussSum (A*B)⁻¹ (ZMod.stdAddChar.mulShift (-(m:ZMod q))) / (q.totient:ℂ)^2\n      else 0\n    else 0\n  let O := S (1 : DirichletCharacter ℂ 1) (1 : DirichletCharacter ℂ 1)\n  let X := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    r/(m.gcd r) ∣ 36 ∧ s/(m.gcd s) ∣ 36 ∧ r/(r.gcd s) ∣ 3 ∧ s/(r.gcd s) ∣ 3 ∧\n      ((DirichletCharacter.changeLevel (Nat.dvd_lcm_left r s) α)*\n       (DirichletCharacter.changeLevel (Nat.dvd_lcm_right r s) β)).conductor ∣ 36\n  let P : DirichletCharacter ℂ 1 := 1\n  let K := fun (m : ℕ) (z w : ℂ) =>\n    (Complex.Gamma z*Complex.Gamma w/Complex.Gamma (z+w))*(m:ℂ)^(z+w-1)\n  let F := fun {r : ℕ} (χ : DirichletCharacter ℂ r) (z : ℂ) (m : ℕ) =>\n    (m:ℂ)*S P P m - 2*(S χ P m*K m z 1) + S χ χ m*K m z z\n  exact\n    (∀ K : ℝ, (∀ (r s : ℕ) [NeZero r] [NeZero s] (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s),\n      α.IsPrimitive → β.IsPrimitive → ∀ m : ℕ, 0 < m → Even m → ¬X α β m →\n      ‖S α β m‖ ≤ K*‖O m‖) ↔ Real.sqrt 5/3 ≤ K) ∧\n    (∃ χ : DirichletCharacter ℂ 5, χ.IsPrimitive ∧ χ^4=1 ∧ χ*χ ≠ 1 ∧\n      ∀ m : ℕ, 0 < m → Even m → ¬5 ∣ m → ¬X χ χ m ∧ 3*‖S χ χ m‖=Real.sqrt 5*‖O m‖) ∧\n    (∀ (r : ℕ) [NeZero r] (χ ψ : DirichletCharacter ℂ r), χ.IsPrimitive → ψ.IsPrimitive →\n      χ*ψ=1 → ∀ m : ℕ, 0 < m → Even m → ¬r ∣ 6*m → 3*‖S χ ψ m‖ ≤ ‖O m‖) ∧\n    (∀ p : ℕ, p.Prime → 3 ≤ p → ∃ χ : DirichletCharacter ℂ p, χ.IsPrimitive ∧ χ.IsQuadratic ∧\n      ∀ m : ℕ, 0 < m → Even m → ¬p ∣ m →\n      ((p:ℝ)-2)*‖S χ P m‖=‖O m‖ ∧ ((p:ℝ)-2)*‖S χ χ m‖=‖O m‖) ∧\n    (∀ (r : ℕ) [NeZero r] (χ : DirichletCharacter ℂ r), χ.IsPrimitive → χ.IsQuadratic → ¬r ∣ 30 →\n      (∀ m : ℕ, 0 < m → Even m → ¬r ∣ 6*m →\n        2*‖S χ P m‖+‖S χ χ m‖ ≤ (3/5:ℝ)*‖O m‖) ∧\n      ∀ z : ℂ, 1-1/128 ≤ z.re → z.re ≤ 1 →\n        (∀ m : ℕ, 0 < m → Even m → ¬r ∣ 6*m → ∀ err : ℂ,\n          (29/80:ℝ)*‖O m‖*m-‖err‖ ≤ (F χ z m+err).re) ∧\n        (∀ (N : ℕ) (err : ℕ → ℂ), (∀ m ∈ Finset.Ioc 0 N, Even m → ‖err m‖ ≤ (9/80:ℝ)*m) →\n          ((Finset.Ioc 0 N).filter (fun m : ℕ => Even m ∧ (F χ z m+err m).re < (m:ℝ)/4)).card ≤\n            N/(r/(r.gcd 6))))",
+      "plain_statement": {
+        "zh": "扭曲哥德巴赫奇异级数的最优比值与单个二次特征的主项下界",
+        "en": "Optimal twisted Goldbach singular-series ratios and a one-character main-term floor"
+      },
+      "brief": {
+        "zh": "Pintz (7.8) 的五个整除条件之外，全体本原特征对的最优常数为 √5/3，模 5 四次特征取到等号。互逆对在 r 不整除 6m 时的最优常数为 1/3。对每个奇素数 p，模 p 的二次特征在所有与 p 互素的正偶目标上给出精确比值 1/(p−2)。若二次特征的导子 r 不整除 30，在 r 不整除 6m 的偶目标上，两项混合系数和对角系数的范数和至多为普通级数的 3/5。靠近 1 的单零点主项给出 29/80 下界。显式余项不超过 9m/80 时，低于 m/4 的目标数至多为 ⌊N/(r/gcd(r,6))⌋。",
+        "en": "Outside the five divisibilities of Pintz (7.8), the optimal factor is sqrt(5)/3, attained by a quartic character modulo 5. For inverse pairs it is 1/3 off r | 6m. At every odd prime p the quadratic character gives exact ratios 1/(p−2) on every positive even unit target. For a quadratic conductor r not dividing 30, the two mixed terms and the diagonal have combined relative norm at most 3/5 off r | 6m. The one-zero main term has relative floor 29/80. With error at most 9m/80, at most floor(N/(r/gcd(r,6))) targets fall below m/4."
+      },
+      "source": "https://arxiv.org/abs/1804.05561",
+      "program": "exceptions",
+      "role": "lemma",
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-b13-bilateral-vaughan-reduction",
+        "L-goldbach-deep-three-quarters-exceptional-zero-criterion",
+        "L-goldbach-binary-shift-order-tail"
+      ],
+      "imports": [
+        "Conjectures.Goldbach.B13BilateralVaughanReduction",
+        "Conjectures.Goldbach.DeepThreeQuartersExceptionalZeroCriterion",
+        "Conjectures.Goldbach.BinaryShiftOrderTail"
+      ],
+      "module": "Conjectures.Goldbach.SharpSingularSeriesRatios",
+      "file": "lean/Conjectures/Goldbach/SharpSingularSeriesRatios.lean",
+      "track": "exceptions",
+      "route_source": "exceptions"
+    },
+    {
       "id": "L-goldbach-short-square-window-collision",
       "statement": "∀ (P H a b c d : ℤ), 0 ≤ P → 0 ≤ H → H ^ 2 ≤ 8 * P + 4 * H + 4 → P ≤ a → a ≤ b → b ≤ P + H → P ≤ c → c ≤ d → d ≤ P + H → a ^ 2 + b ^ 2 = c ^ 2 + d ^ 2 → a + b ≤ c + d → (a = c ∧ b = d) ∨ (H ^ 2 = 8 * P + 4 * H + 4 ∧ a = P ∧ b = P + H ∧ c = d ∧ 2 * c = 2 * P + H + 2)",
       "plain_statement": {
@@ -14906,6 +16147,144 @@
       "role": "lemma",
       "module": "Conjectures.Goldbach.ShortSquareWindowCollision",
       "file": "lean/Conjectures/Goldbach/ShortSquareWindowCollision.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-thin-prime-reservoir",
+      "statement": "by\n  classical\n  exact ∃ B : Set ℕ, (∀ p ∈ B, Nat.Prime p) ∧ ∃ C c : ℝ, 0 < C ∧ 0 < c ∧ ∃ T : ℕ, ∀ X : ℕ, T ≤ X →\n    (((Finset.Icc 1 X).filter (fun p => p ∈ B)).card : ℝ) ≤ C*Real.log (X : ℝ)*Real.log (Real.log (X : ℝ)) ∧\n    ∀ H : ℕ, X ≤ H^2 → H ≤ X →\n      let small := fun n : ℕ => (((Finset.Icc 1 n).filter (fun p => p ∈ B ∧ Nat.Prime (n-p))).card : ℝ) < c*Real.log (Real.log (X : ℝ))\n      (((Finset.Ioc X (X+H)).filter (fun n => Even n ∧ small n)).card : ℝ) ≤ C*(H : ℝ)/(Real.log (X : ℝ))^2",
+      "plain_statement": {
+        "zh": "构造一个固定素数集 B，至 X 只用 O(log X·log log X) 个元素。在每个长度 √X≤H≤X 的窗口 (X,X+H]，除 O(H/log² X) 个偶数外，每个偶数至少有 c log log X 个不同的 B 中素数作加数。",
+        "en": "Construct one fixed set of primes B of counting size O(log X log log X). In every window (X,X+H] of length √X≤H≤X, all but O(H/log² X) even targets should have at least c log log X distinct summands from B."
+      },
+      "brief": {
+        "zh": "Dai–Pan 定理 1.2 对任意趋无穷的 w 给出 O(w(X)log X) 的素数集，保证几乎所有偶数可表示。此题对 w=log log X 的特例保留相同用量，以每窗例外率和表示数强化结论；取 H=X 后按二进区间求和即可恢复该特例。B 必须对所有窗口同时固定，不能为每个 n 或 H 换集合。尝试以带权随机抽取构造 B，先在短窗估计候选素数对数与共享同一候选的依赖，再统一控制各尺度的失败概率。",
+        "en": "Dai–Pan, Theorem 1.2, allows O(w(X)log X) primes for any divergent w and gives density-one coverage of even targets. For w=log log X keep the budget, quantify the exceptions in every window and demand distinct witnesses. H=X and dyadic summation recover the stated special case. One set must work at all scales. Seek short-window prime-pair counts and dependency estimates for weighted random thinning."
+      },
+      "source": "https://www.impan.pl/shop/en/publication/transaction/download/product/83028",
+      "track": "exceptions",
+      "program": "exceptions",
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "depends_on": [],
+      "imports": [],
+      "module": "Conjectures.Goldbach.ThinPrimeReservoir",
+      "file": "lean/Conjectures/Goldbach/ThinPrimeReservoir.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-transference-fourth-obstruction",
+      "statement": "by\n  classical\n  exact ∃ M : ℝ, 0 < M ∧ ∀ ε : ℝ, 0 < ε → ∀ T : ℕ, ∃ N : ℕ, ∃ hN : Nat.Prime N, T ≤ N ∧ (letI : NeZero N := ⟨hN.ne_zero⟩; ∃ f : ZMod N → ℝ,\n    let ft := fun (h : ZMod N → ℝ) (r : ZMod N) => (∑ x : ZMod N, (h x : ℂ) * Complex.exp (-2*(Real.pi : ℂ)*Complex.I*((r*x).val : ℂ)/(N : ℂ)))/(N : ℂ)\n    (∀ x, 0 ≤ f x) ∧ (∑ x, f x)/(N:ℝ)=1 ∧ (∑ r : ZMod N, ‖ft f r‖^4) ≤ M ∧ (∀ r, ‖ft (fun x => f x-1) r‖ ≤ ε) ∧ (N:ℝ)/2 ≤ ((Finset.univ.filter (fun n : ZMod N => (∑ x, f x*f (n-x))=0)).card:ℝ))",
+      "plain_statement": {
+        "zh": "构造素数阶循环群上的临界反例：均值一、Fourier 误差任意小、四次矩有界，仍有半数目标卷积为零。",
+        "en": "Construct a Fourier-uniform fourth-moment endpoint obstruction missing half of all sums."
+      },
+      "brief": {
+        "zh": "尝试用约 √N/2 个点的稀疏集，按均值一归一化。小支撑直接限制和集；还须在同一个样本中同时证明加法能量为 O(N)、全部非零频率偏差趋零，并处理精确归一化。若成立，可排除把 #4281 的指数范围无条件闭合到 4。",
+        "en": "Try sparse sets of size about √N/2. The sumset is small by counting pairs; obtain additive energy O(N) and simultaneous uniformity at all nonzero frequencies for the same set. Normalize by its actual cardinality. This tests sharpness of the restriction assumption."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4281",
+      "track": "exceptions",
+      "program": "exceptions",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "imports": [],
+      "depends_on": [],
+      "module": "Conjectures.Goldbach.TransferenceFourthObstruction",
+      "file": "lean/Conjectures/Goldbach/TransferenceFourthObstruction.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-transference-linear-floor",
+      "statement": "by\n  classical\n  exact ∀ p M : ℝ, 2 < p → p < 4 → 1 ≤ M → ∃ c K : ℝ, 0 < c ∧ 0 < K ∧ ∀ δ η : ℝ, 0 < δ → δ ≤ 1 → 0 < η → η ≤ 1 →\n    ∀ (N : ℕ) [NeZero N], ∀ f g u v : ZMod N → ℝ,\n    let avg := fun h : ZMod N → ℝ => (∑ x, h x)/(N : ℝ)\n    let ft := fun (h : ZMod N → ℝ) (r : ZMod N) => (∑ x : ZMod N, (h x : ℂ) * Complex.exp (-2*(Real.pi : ℂ)*Complex.I*((r*x).val : ℂ)/(N : ℂ)))/(N : ℂ)\n    (∀ x, 0 ≤ f x ∧ f x ≤ u x ∧ 0 ≤ g x ∧ g x ≤ v x) → 1+δ ≤ avg f + avg g →\n    (∑ r : ZMod N, ‖ft f r‖^p) ≤ M^p → (∑ r : ZMod N, ‖ft g r‖^p) ≤ M^p →\n    (∀ r, ‖ft (fun x => u x-1) r‖ ≤ c*(δ*η)^K ∧ ‖ft (fun x => v x-1) r‖ ≤ c*(δ*η)^K) →\n    ((Finset.univ.filter (fun n : ZMod N => avg (fun x => f x*g (n-x)) < δ/2)).card : ℝ) ≤ η*(N : ℝ)",
+      "plain_statement": {
+        "zh": "保持多项式 Fourier 误差阈值，把几乎处处的卷积下界由 δ³/1000 提高到 δ/2。",
+        "en": "Raise the almost-everywhere convolution floor from cubic to linear while retaining polynomial uniformity."
+      },
+      "brief": {
+        "zh": "#4281 证明了多项式误差阈值。对 [0,1] 内的函数，fg≥f+g−1 给出线性尺度；真正的难点是把这一尺度转移给可能无界的素数权，同时维持误差阈值的多项式依赖。",
+        "en": "Bounded dense models have a linear floor by pointwise inclusion-exclusion. Transfer it to possibly unbounded inputs with a polynomial majorant-uniformity threshold, retaining #4281’s cyclic convolution normalization."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4281",
+      "track": "exceptions",
+      "program": "exceptions",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "imports": [],
+      "depends_on": [],
+      "module": "Conjectures.Goldbach.TransferenceLinearFloor",
+      "file": "lean/Conjectures/Goldbach/TransferenceLinearFloor.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-transference-log-endpoint",
+      "statement": "by\n  classical\n  exact ∀ M δ η : ℝ, 1 ≤ M → 0 < δ → δ ≤ 1 → 0 < η → η ≤ 1 → ∃ κ : ℝ, 0 < κ ∧ ∀ (N : ℕ) [NeZero N], ∀ f g u v : ZMod N → ℝ,\n    let avg := fun h : ZMod N → ℝ => (∑ x, h x)/(N : ℝ)\n    let ft := fun (h : ZMod N → ℝ) (r : ZMod N) => (∑ x : ZMod N, (h x : ℂ) * Complex.exp (-2*(Real.pi : ℂ)*Complex.I*((r*x).val : ℂ)/(N : ℂ)))/(N : ℂ)\n    let bump := fun x : ℝ => x^4 * (1+Real.log (1+x⁻¹))\n    (∀ x, 0 ≤ f x ∧ f x ≤ u x ∧ 0 ≤ g x ∧ g x ≤ v x) → 1+δ ≤ avg f + avg g →\n    (∑ r : ZMod N, bump ‖ft f r‖) ≤ M → (∑ r : ZMod N, bump ‖ft g r‖) ≤ M →\n    (∀ r, ‖ft (fun x => u x-1) r‖ ≤ κ ∧ ‖ft (fun x => v x-1) r‖ ≤ κ) →\n    ((Finset.univ.filter (fun n : ZMod N => avg (fun x => f x*g (n-x)) < δ^3/1000)).card : ℝ) ≤ η*(N : ℝ)",
+      "plain_statement": {
+        "zh": "在临界指数 4 上，以一个对数加权四次矩控制二元卷积的低值例外。",
+        "en": "Endpoint binary transference with logarithmically strengthened fourth moments."
+      },
+      "brief": {
+        "zh": "在小 Fourier 系数处额外的对数权使四次质量的尾部一致可控。尝试先选谱截断，再选主化误差；允许 κ 比多项式小。任意固定 p<4 的限制条件可控制该对数四次矩（大系数另用有界性），但反向推理一般不成立。",
+        "en": "The logarithmic bump forces uniformly small fourth-moment tails at small coefficients. Choose the spectral truncation before the uniformity parameter. This endpoint task asks for a qualitative modulus; the polynomial modulus of #4281 need not survive."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4281",
+      "track": "exceptions",
+      "program": "exceptions",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "imports": [],
+      "depends_on": [],
+      "module": "Conjectures.Goldbach.TransferenceLogEndpoint",
+      "file": "lean/Conjectures/Goldbach/TransferenceLogEndpoint.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-transference-mixed-restriction",
+      "statement": "by\n  classical\n  exact ∀ p q M : ℝ, 2 < p → 2 < q → 1/2 < 1/p+1/q → 1 ≤ M → ∃ c K : ℝ, 0 < c ∧ 0 < K ∧ ∀ δ η : ℝ, 0 < δ → δ ≤ 1 → 0 < η → η ≤ 1 →\n    ∀ (N : ℕ) [NeZero N], ∀ f g u v : ZMod N → ℝ,\n    let avg := fun h : ZMod N → ℝ => (∑ x, h x)/(N : ℝ)\n    let ft := fun (h : ZMod N → ℝ) (r : ZMod N) => (∑ x : ZMod N, (h x : ℂ) * Complex.exp (-2*(Real.pi : ℂ)*Complex.I*((r*x).val : ℂ)/(N : ℂ)))/(N : ℂ)\n    (∀ x, 0 ≤ f x ∧ f x ≤ u x ∧ 0 ≤ g x ∧ g x ≤ v x) → 1+δ ≤ avg f + avg g →\n    (∑ r : ZMod N, ‖ft f r‖^p) ≤ M^p → (∑ r : ZMod N, ‖ft g r‖^q) ≤ M^q →\n    (∀ r, ‖ft (fun x => u x-1) r‖ ≤ c*(δ*η)^K ∧ ‖ft (fun x => v x-1) r‖ ≤ c*(δ*η)^K) →\n    ((Finset.univ.filter (fun n : ZMod N => avg (fun x => f x*g (n-x)) < δ^3/1000)).card : ℝ) ≤ η*(N : ℝ)",
+      "plain_statement": {
+        "zh": "允许两端分别满足不同 Fourier 限制指数，包括一端超过 4 的情形。",
+        "en": "Asymmetric restriction exponents for polynomial binary transference."
+      },
+      "brief": {
+        "zh": "取 p=q 恢复 #4281。新区域允许一侧指数越过 4，只要两倒数之和仍严格大于 1/2。用混合 Hölder 控制系数乘积的小谱尾部；直接把两边换为较大的指数会损失这个区域。",
+        "en": "The diagonal p=q recovers #4281. One input may cross four. Seek a mixed Hölder estimate for the product spectrum and retain polynomial dependence on the density surplus and exceptional fraction."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4281",
+      "track": "exceptions",
+      "program": "exceptions",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "imports": [],
+      "depends_on": [],
+      "module": "Conjectures.Goldbach.TransferenceMixedRestriction",
+      "file": "lean/Conjectures/Goldbach/TransferenceMixedRestriction.lean",
+      "route_source": "exceptions"
+    },
+    {
+      "id": "L-goldbach-two-gaussian-norm-prime-exceptions",
+      "track": "exceptions",
+      "statement": "let lp := fun p : ℕ => Nat.Prime p ∧ ∃ a b : ℕ, p=a^2+b^2+1; let bad := fun n : ℕ => Even n ∧ n%9 ≠ 5 ∧ n%9 ≠ 8 ∧ ¬ ∃ p q : ℕ, lp p ∧ lp q ∧ p+q=n; ∃ δ : ℝ, 0 < δ ∧ δ < 1 ∧ ∃ X₀ : ℕ, ∀ X : ℕ, X₀ ≤ X → ((@Finset.filter ℕ bad (Classical.decPred bad) (Finset.Icc 2 X)).card : ℝ) ≤ (X : ℝ)^(1-δ)",
+      "plain_statement": {
+        "zh": "对模 9 非 5、8 的偶数，证明不能写成两个 x²+y²+1 型素数之和的例外总数具有幂节省。",
+        "en": "Obtain a power-saving exceptional set for sums of two primes of the form x²+y²+1 over even targets outside residues 5 and 8 modulo 9."
+      },
+      "brief": {
+        "zh": "Teräväinen 定理 1.1 给出同一目标集上的 o(X)。不增加坐标互素条件；否则局部可容许类会改变。尝试在半维筛中保留可量化的傅里叶误差及异常特征贡献。计数对象是失败的偶数，各坐标表示不重复计分。",
+        "en": "Theorem 1.1 gives o(X) on the same admissible targets. Keep unrestricted coordinates on both sides. Quantify the Fourier and exceptional-character errors in the half-dimensional sieve. Count exceptional targets rather than lattice witnesses."
+      },
+      "source": "https://www.cambridge.org/core/journals/mathematika/article/abs/goldbach-problem-for-primes-that-are-sums-of-two-squares-plus-one/4A5250357B50082F9203DAE01A3CDAC3",
+      "imports": [],
+      "depends_on": [],
+      "role": "target",
+      "parallel": true,
+      "program": "correlation",
+      "challenge_only": true,
+      "module": "Conjectures.Goldbach.TwoGaussianNormPrimeExceptions",
+      "file": "lean/Conjectures/Goldbach/TwoGaussianNormPrimeExceptions.lean",
       "route_source": "exceptions"
     },
     {
@@ -15148,6 +16527,52 @@
       "role": "lemma",
       "depends_on": [],
       "route_source": "explicit-skirt-inputs"
+    },
+    {
+      "id": "L-goldbach-central-rough-chen-mass",
+      "statement": "let C₀ : ℝ := ∏' p : ℕ, if Nat.Prime p ∧ 2 < p then 1 - 1 / ((p : ℝ)-1)^2 else 1; ∃ N₀ : ℕ, ∀ N : ℕ, N₀ ≤ N → Even N → let S := (Finset.range (N+1)).filter (fun p => Nat.Prime p ∧ N ≤ 4*p ∧ 4*p ≤ 3*N ∧ (Nat.Prime (N-p) ∨ (N-p).minFac.Prime ∧ Nat.Prime ((N-p)/(N-p).minFac) ∧ N < (N-p).minFac^6)); let D : ℝ := ∏ p ∈ N.primeFactors.filter (fun p => 2 < p), ((p : ℝ)-1)/((p : ℝ)-2); (99/50 : ℝ)*C₀*D*(N : ℝ)/(Real.log (N : ℝ))^2 ≤ (S.card : ℝ)",
+      "plain_statement": {
+        "zh": "待证：每个充分大偶数 N 的中央半区间内，至少有 1.98 C(N)N/(log N)² 个素数 p，使 N−p 是素数或两个均大于 N^(1/6) 的素数之积。允许平方，每个 p 只计一次。",
+        "en": "For every sufficiently large even N, find at least 1.98 C(N)N/(log N)² primes p in [N/4,3N/4] such that N−p is prime or is a product of two primes both exceeding N^(1/6). Squares are allowed; count each p once."
+      },
+      "brief": {
+        "zh": "Li 定理 1.1 的计数允许全部区间和小素因子，常数为 1.9728。保留原来的全长归一化。尝试在中央区间上直接构造切换筛下界，并在筛权里去掉小因子的半素数项。不能简单把全区间计数除以二。若再把同窗粗半素数的上界压到 1.98 以下，两界相减即得真正的双素数表示；该上界仍须独立证明。",
+        "en": "Compare Theorem 1.1, whose full-range count has coefficient 1.9728. Run the switching sieve on the central interval and handle small semiprime factors inside the weight. Keep the full-N normalization. A separate same-window rough-semiprime upper coefficient strictly below 1.98 would leave a positive prime-prime count; neither input follows from splitting the published total in half."
+      },
+      "source": "https://doi.org/10.59277/mrar.2026.28.78.1.2.39",
+      "program": "correlation",
+      "track": "farey-inverse-sieve",
+      "depends_on": [],
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "imports": [],
+      "module": "Conjectures.Goldbach.CentralRoughChenMass",
+      "file": "lean/Conjectures/Goldbach/CentralRoughChenMass.lean",
+      "route_source": "farey-inverse-sieve"
+    },
+    {
+      "id": "L-goldbach-farey-buchstab-reflected-limit",
+      "statement": "by\n  classical\n  exact let I := fun n : ℕ => Finset.Icc ((n+2)/3) ((2*n)/3); let P := fun z : ℕ => (Finset.Icc 2 z).filter Nat.Prime; let V := fun n z : ℕ => ((I n).card:ℝ)*(n.totient:ℝ)/n * ∏ p ∈ (P z).filter (fun p => ¬ p ∣ n), (1-2/(p:ℝ)); let S := fun n z : ℕ => ((I n).filter (fun u => u.Coprime n ∧ z < (u*(n-u)).minFac)).card; let Z₁ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊; let K : ℝ := (Real.exp Real.eulerMascheroniConstant*(1+Real.log 2)/3)^2; ∀ ε : ℝ, 0 < ε → ∃ T : ℕ, ∀ n ≥ T, Even n → |(S n (Z₁ n):ℝ)/V n (Z₁ n)-K| ≤ ε",
+      "plain_statement": {
+        "zh": "对每个充分大的偶数，确定中央反射窗口中立方根粗糙数对的归一化极限。",
+        "en": "A pointwise Buchstab-product limit for reflected cube-root-rough pairs."
+      },
+      "brief": {
+        "zh": "讨论 #3819 指出旧下界的相对损失预算约为 1/18。Kai Fan（arXiv:2306.03347）的单变量结果给出 ω(3)=(1+log 2)/3。这里提出检验经本项目局部密度 V 修正后两坐标的联合常数。预计值略大于 1，若得证可推进原下界。最大的未知是逐偶数的相关性；把单变量公式平方不能证明此命题。",
+        "en": "Discussion #3819 identifies a tight loss budget. Fan (arXiv:2306.03347) gives the one-variable rough-number framework; ω(3)=(1+log 2)/3. Test the predicted joint constant after local normalization. Correlation at each individual even target is an additional requirement."
+      },
+      "depends_on": [],
+      "imports": [],
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/discussions/3819",
+      "program": "correlation",
+      "track": "farey-inverse-sieve",
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "module": "Conjectures.Goldbach.FareyBuchstabReflectedLimit",
+      "file": "lean/Conjectures/Goldbach/FareyBuchstabReflectedLimit.lean",
+      "route_source": "farey-inverse-sieve"
     },
     {
       "id": "L-goldbach-farey-coprime-progression-count",
@@ -15529,6 +16954,33 @@
       "route_source": "farey-inverse-sieve"
     },
     {
+      "id": "L-goldbach-farey-late-positive-excess",
+      "statement": "let I := fun n : ℕ => Finset.Icc ((n+2)/3) ((2*n)/3); let P := fun z : ℕ => (Finset.Icc 2 z).filter Nat.Prime; let V := fun n z : ℕ => ((I n).card:ℝ)*(n.totient:ℝ)/n * ∏ p ∈ (P z).filter (fun p => ¬ p ∣ n), (1-2/(p:ℝ)); let Z₁ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊; let Z₂ := Nat.sqrt; let hit := fun n p : ℕ => ((I n).filter (fun u => u.Coprime n ∧ (u*(n-u)).minFac = p)).card; ∃ N₀ : ℕ, 64 ≤ N₀ ∧ ∀ n : ℕ, N₀ ≤ n → Even n → (∑ p ∈ (P (Z₂ n)).filter (fun p => Z₁ n < p), max 0 ((hit n p : ℝ) - (V n (p-1) - V n p))) ≤ (9/20 : ℝ)*V n (Z₂ n)",
+      "plain_statement": {
+        "zh": "按最小命中素数 p 将立方根到平方根之间的末段拆开。对所有充分大偶数，证明各个 p 的实际命中数超出模型减少量的正部之和至多为终筛主项的 9/20。",
+        "en": "Split the late sieve band by its first hitting prime. Bound the sum of positive excesses above the model drops by 9/20 of the terminal sieve volume, uniformly for large even targets."
+      },
+      "brief": {
+        "zh": "讨论 #3819 提出总损失预算为 V(√n)/2。模型降幅沿 p 望远镜求和，实际首次命中按最小素因子不交分组。故本题能用 9/20 替代 1/2，还对任意子集的有符号超额同时给界。复用已核验的换元定理，把 u=pq 和对称侧逐项计数。对 r 不整除 np 的奇素数，给定 q 为素数后附加局部存活因子为 (r−2)/(r−1)，它比 1−1/r 多一个收敛乘积因子；另算 q 为素数的密度。研究带正部的总误差，而非假设逐个 p 点态等分布。",
+        "en": "Discussion #3819 identifies a terminal budget of one half. First hits partition the actual total; model drops telescope. This target leaves 1/20 of terminal volume in reserve and applies to every subsum. Use the verified factor switch. For odd r not dividing np the conditional survival factor is (r−2)/(r−1) after q is prime; its ratio to 1−1/r is 1−1/(r−1)². Count the prime density of q separately. Bound the aggregate positive discrepancy."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/discussions/3819",
+      "track": "farey-inverse-sieve",
+      "program": "correlation",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "depends_on": [
+        "L-goldbach-farey-late-first-hit-factor-switch"
+      ],
+      "imports": [
+        "Conjectures.Goldbach.FareyLateFirstHitFactorSwitch"
+      ],
+      "module": "Conjectures.Goldbach.FareyLatePositiveExcess",
+      "file": "lean/Conjectures/Goldbach/FareyLatePositiveExcess.lean",
+      "route_source": "farey-inverse-sieve"
+    },
+    {
       "id": "L-goldbach-farey-late-prime-square-loss",
       "statement": "∀ (n : ℕ) (J : Finset ℕ), 64 ≤ n → let I := Finset.Icc ((n+2)/3) ((2*n)/3); let Hit := I.filter (fun u => u.Coprime n ∧ (J.filter (fun a => (a*u)%n = 1)).Nonempty ∧ (∃ p : ℕ, p ≤ Nat.sqrt n ∧ p.Prime ∧ n < p^3 ∧ p ≤ (u*(n-u)).minFac ∧ (u=p^2 ∨ n-u=p^2))); Hit.card ≤ 2*Nat.sqrt n",
       "plain_statement": {
@@ -15553,6 +17005,29 @@
       "route_source": "farey-inverse-sieve"
     },
     {
+      "id": "L-goldbach-farey-matched-semiprime-cofactors",
+      "statement": "by\n  classical\n  exact let I := fun n : ℕ => Finset.Icc ((n+2)/3) ((2*n)/3); let P := fun z : ℕ => (Finset.Icc 2 z).filter Nat.Prime; let V := fun n z : ℕ => ((I n).card:ℝ)*(n.totient:ℝ)/n * ∏ p ∈ (P z).filter (fun p => ¬ p ∣ n), (1-2/(p:ℝ)); let S := fun n z : ℕ => ((I n).filter (fun u => u.Coprime n ∧ z < (u*(n-u)).minFac)).card; let Z₁ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊; let B := fun X : ℕ => (Finset.Icc X (2*X)).filter Even; let good := fun n u : ℕ => u.Coprime n ∧ (Z₁ n) < (u*(n-u)).minFac ∧ u.primeFactorsList.length=2 ∧ (n-u).primeFactorsList.length=2 ∧ u.minFac ≤ 2*(n-u).minFac ∧ (n-u).minFac ≤ 2*u.minFac; ∃ κ δ : ℝ, 0 < κ ∧ 0 < δ ∧ δ < 1 ∧ ∃ T : ℕ, ∀ X ≥ T, (((B X).filter (fun n => (((I n).filter (good n)).card:ℝ) < κ*(n:ℝ)/(Real.log (n:ℝ))^3)).card:ℝ) ≤ (X:ℝ)^(1-δ)",
+      "plain_statement": {
+        "zh": "在立方根筛后，两个半素数的最小素因子相差不超过两倍；证明多数偶目标仍有 ≫n/log³n 个这样的表示，并取得幂节省例外界。",
+        "en": "Power-saving exceptional sets for reflected rough semiprimes whose least factors differ by at most a factor of two."
+      },
+      "brief": {
+        "zh": "在最小因子相对接近的细对角带中研究反射相关。因子指数带宽约为 1/log n，比固定指数矩形更薄；固定矩形的渐近式无法直接给出此结论。先对相邻倍区间做双线性估计，再求和并控制例外。",
+        "en": "This is a shrinking diagonal strip of exponent width O(1/log n), finer than fixed rectangles. Sum bilinear estimates on adjacent dyadic factor intervals and retain power-saving control of exceptional even targets."
+      },
+      "depends_on": [],
+      "imports": [],
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/discussions/3819",
+      "program": "correlation",
+      "track": "farey-inverse-sieve",
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "module": "Conjectures.Goldbach.FareyMatchedSemiprimeCofactors",
+      "file": "lean/Conjectures/Goldbach/FareyMatchedSemiprimeCofactors.lean",
+      "route_source": "farey-inverse-sieve"
+    },
+    {
       "id": "L-goldbach-farey-return-digit-line",
       "statement": "∀ n u : ℕ, 1≤u → u<n → (n-1+u)/(n-u) = (2*n-1)/(n-u)-1",
       "plain_statement": {
@@ -15572,6 +17047,52 @@
       "module": "Conjectures.Goldbach.FareyReturnDigitLine",
       "file": "lean/Conjectures/Goldbach/FareyReturnDigitLine.lean",
       "track": "farey-inverse-sieve",
+      "route_source": "farey-inverse-sieve"
+    },
+    {
+      "id": "L-goldbach-farey-semiprime-factor-rectangle",
+      "statement": "by\n  classical\n  exact let I := fun n : ℕ => Finset.Icc ((n+2)/3) ((2*n)/3); let P := fun z : ℕ => (Finset.Icc 2 z).filter Nat.Prime; let V := fun n z : ℕ => ((I n).card:ℝ)*(n.totient:ℝ)/n * ∏ p ∈ (P z).filter (fun p => ¬ p ∣ n), (1-2/(p:ℝ)); let S := fun n z : ℕ => ((I n).filter (fun u => u.Coprime n ∧ z < (u*(n-u)).minFac)).card; let Z₁ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊; let B := fun X : ℕ => (Finset.Icc X (2*X)).filter Even; let box := fun (n u : ℕ) (a b : ℝ) => u.primeFactorsList.length=2 ∧ (n:ℝ)^a < (u.minFac:ℝ) ∧ (u.minFac:ℝ) ≤ (n:ℝ)^b; let w := fun a b : ℝ => Real.log ((b*(1-a))/(a*(1-b))); ∀ a b c d : ℝ, 1/3 ≤ a → a < b → b ≤ 1/2 → 1/3 ≤ c → c < d → d ≤ 1/2 → ∀ ε : ℝ, 0 < ε → ∃ T : ℕ, ∀ X ≥ T, let R := fun n : ℕ => ((I n).filter (fun u => u.Coprime n ∧ box n u a b ∧ box n (n-u) c d)).card; let K := (Real.exp Real.eulerMascheroniConstant/3)^2*w a b*w c d; (∑ n ∈ B X, |(R n:ℝ)/V n (Z₁ n)-K|) ≤ ε*((B X).card:ℝ)",
+      "plain_statement": {
+        "zh": "分别指定两个半素数最小素因子的指数区间，求中央反射窗内计数的平均绝对误差。",
+        "en": "A joint factor-window law for both semiprimes in the central reflected interval."
+      },
+      "brief": {
+        "zh": "对最小素因子指数 t 的单侧候选密度为 dt/(t(1−t))，积分给出 w；不能假设两侧独立。#3819 的总幸存数混合了素数与半素数，本题可检验半素数—半素数分量在何处提供主质量。规范化取同一 V(n,Z₁)，允许例外目标但要求其误差总量可控。",
+        "en": "Integrating dt/(t(1−t)) gives the one-coordinate semiprime factor weight. Test the joint law for two separately specified rectangles without assuming independence. This resolves a component of the survivor count in #3819 and controls errors in mean absolute value."
+      },
+      "depends_on": [],
+      "imports": [],
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/discussions/3819",
+      "program": "correlation",
+      "track": "farey-inverse-sieve",
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "module": "Conjectures.Goldbach.FareySemiprimeFactorRectangle",
+      "file": "lean/Conjectures/Goldbach/FareySemiprimeFactorRectangle.lean",
+      "route_source": "farey-inverse-sieve"
+    },
+    {
+      "id": "L-goldbach-farey-short-window-rough-variance",
+      "statement": "by\n  classical\n  exact let I := fun n : ℕ => Finset.Icc ((n+2)/3) ((2*n)/3); let P := fun z : ℕ => (Finset.Icc 2 z).filter Nat.Prime; let V := fun n z : ℕ => ((I n).card:ℝ)*(n.totient:ℝ)/n * ∏ p ∈ (P z).filter (fun p => ¬ p ∣ n), (1-2/(p:ℝ)); let S := fun n z : ℕ => ((I n).filter (fun u => u.Coprime n ∧ z < (u*(n-u)).minFac)).card; let Z₁ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊; let K : ℝ := (Real.exp Real.eulerMascheroniConstant*(1+Real.log 2)/3)^2; ∀ ε : ℝ, 0 < ε → ∃ T : ℕ, ∀ X H : ℕ, T ≤ X → X ≤ H^2 → H ≤ X → let D := (Finset.Icc X (X+H)).filter Even; (∑ n ∈ D, ((S n (Z₁ n):ℝ)/V n (Z₁ n)-K)^2) ≤ ε*(D.card:ℝ)",
+      "plain_statement": {
+        "zh": "在每个长度至少 √X 的目标窗口，证明立方根粗糙数对模型的均方误差趋零。",
+        "en": "Vanishing mean-square discrepancy for reflected rough pairs in every square-root-length target window."
+      },
+      "brief": {
+        "zh": "这是逐偶数极限的可独立推进的弱化，仍须超越 Kai Fan（arXiv:2306.03347）的单坐标估计。展开平方会得到两对反射拆分的相关和；用 n 自己的 V 和移动筛点再做窗口平均。小均方误差可控制窗口中未达到旧筛下界的目标比例。",
+        "en": "A mesoscopic intermediate goal for #3819. Expand the square into two reflected pairs, retaining the moving sieve cutoff and each target’s local normalization. Fan’s single-coordinate estimate does not control this four-variable correlation."
+      },
+      "depends_on": [],
+      "imports": [],
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/discussions/3819",
+      "program": "correlation",
+      "track": "farey-inverse-sieve",
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "module": "Conjectures.Goldbach.FareyShortWindowRoughVariance",
+      "file": "lean/Conjectures/Goldbach/FareyShortWindowRoughVariance.lean",
       "route_source": "farey-inverse-sieve"
     },
     {
@@ -15667,6 +17188,29 @@
       "file": "lean/Conjectures/Goldbach/FareyTerminalSurvivors.lean",
       "module": "Conjectures.Goldbach.FareyTerminalSurvivors",
       "track": "farey-inverse-sieve",
+      "route_source": "farey-inverse-sieve"
+    },
+    {
+      "id": "L-goldbach-moving-window-two-factor-chen",
+      "statement": "let C₀ : ℝ := ∏' p : ℕ, if Nat.Prime p ∧ 2 < p then 1 - 1 / ((p : ℝ)-1)^2 else 1; ∃ c : ℝ, 0 < c ∧ ∃ N₀ : ℕ, ∀ N A H : ℕ, N₀ ≤ N → Even N → 2*A ≤ N → A+H ≤ N → (N : ℝ)^(817/1000 : ℝ) ≤ (H : ℝ) → (A=0 ∨ (N : ℝ)^(697/800 : ℝ) ≤ (H : ℝ)) → let S := (Finset.Icc A (A+H)).filter (fun p => Nat.Prime p ∧ (Nat.Prime (N-p) ∨ ((N-p).minFac.Prime ∧ Nat.Prime ((N-p)/(N-p).minFac)))); let D : ℝ := ∏ p ∈ N.primeFactors.filter (fun p => 2 < p), ((p : ℝ)-1)/((p : ℝ)-2); c*C₀*D*(H : ℝ)/(Real.log (N : ℝ))^2 ≤ (S.card : ℝ)",
+      "plain_statement": {
+        "zh": "在充分大偶数 N 的每个允许窗口 [A,A+H] 内，证明至少 c C(N)H/(log N)² 个素数 p 的补数是素数或半素数。同一个正常数适用于全部窗口：起点为零时 H≥N^0.817，其他 0<A≤N/2 时 H≥N^0.87125，右端不超过 N。",
+        "en": "Uniformly in windows [A,A+H] with 0≤A≤N/2 and A+H≤N, find at least c C(N)H/(log N)² prime summands with prime or semiprime complement for all sufficiently large even N. Require H≥N^0.817 at the origin and H≥N^0.87125 elsewhere."
+      },
+      "brief": {
+        "zh": "Li III 定理 1.1 在原点和中点以同量级得到至多三个素因子的补数。本题要求至多两个，允许平方，且起点可移动。先控制短区间素数在筛模上的带权误差，再估计切换后含三个素因子的部分。取窗口宽度向上取整只可能多计一个端点，对下界量级无影响。额外的半素数净损失界仍是得到素数对的必要输入。",
+        "en": "Li III Theorem 1.1 obtains at most three prime factors for the endpoint and midpoint windows. Keep their scales, remove the third factor and control translated starts with a single constant. Estimate short-interval distribution against the switching weights, then subtract the three-factor part. Rounding a width up loses at most one boundary term on returning to the paper's window. Prime-pair positivity still needs a separate semiprime subtraction."
+      },
+      "source": "https://runbolicarey.com/assets/downloads/On_Chen_s_theorem__Goldbach_s_conjecture_and_almost_prime_twins_III.pdf",
+      "program": "correlation",
+      "track": "farey-inverse-sieve",
+      "depends_on": [],
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "imports": [],
+      "module": "Conjectures.Goldbach.MovingWindowTwoFactorChen",
+      "file": "lean/Conjectures/Goldbach/MovingWindowTwoFactorChen.lean",
       "route_source": "farey-inverse-sieve"
     },
     {
@@ -17301,6 +18845,29 @@
       "route_source": "frontier-type2-dyadic-matrix"
     },
     {
+      "id": "L-goldbach-mixed-b13-short-even-mean",
+      "statement": "have x1 : ℕ → ℝ → ℕ := fun (x1 : ℕ) (x2 : ℝ) => ⌊(↑x1 : ℝ) ^ x2⌋₊; have x2 : ℕ → ℕ := fun (x2 : ℕ) => x1 x2 (1 / 16 : ℝ); have x3 : ℝ → ℂ := fun (x3 : ℝ) => Complex.exp ((↑((2 : ℝ) * Real.pi * x3) : ℂ) * Complex.I); have x4 : ℕ → ℕ → ℕ → ℕ → ℝ := fun (x4 x5 x6 x7 : ℕ) => ∑ x8 ∈ x7.divisors with x5 < x8 ∧ x8 ≤ x6 ∧ x2 x4 < x7 / x8, (∑ x9 ∈ x8.divisors with x2 x4 < x9, (↑((ArithmeticFunction.moebius : ℕ → ℤ) x9) : ℝ)) * (ArithmeticFunction.vonMangoldt : ℕ → ℝ) (x7 / x8); have x5 : ℕ → ℕ → ℕ → ℝ → ℂ := fun (x5 x6 x7 : ℕ) (x8 : ℝ) => ∑ x9 ∈ Finset.range (x5 + (1 : ℕ)), (↑(x4 x5 x6 x7 x9) : ℂ) * x3 ((↑x9 : ℝ) * x8); have x6 : ℕ → Set ℝ := fun (x6 : ℕ) => {x7 : ℝ | ∃ (x8 : ℕ) (x9 : ℕ), (1 : ℕ) ≤ x8 ∧ x8 ≤ x1 x6 (1 / 3 : ℝ) ∧ x9 ≤ x8 ∧ x9.Coprime x8 ∧ |x7 - (↑x9 : ℝ) / (↑x8 : ℝ)| ≤ (↑((256 : ℕ) * x1 x6 (1 / 3 : ℝ) * Nat.log (2 : ℕ) (x6 + (2 : ℕ)) ^ (2 : ℕ)) : ℝ) / ((↑x8 : ℝ) * (↑x6 : ℝ))}; have x7 : ℕ → ℂ := fun (x7 : ℕ) => ∫ (x8 : ℝ) in (0 : ℝ)..(1 : ℝ), (x6 x7)ᶜ.indicator (fun (x9 : ℝ) => x5 x7 (x2 x7) (x1 x7 (1 / 4 : ℝ)) x9 * x5 x7 (x1 x7 (1 / 3 : ℝ)) (x1 x7 (2 / 3 : ℝ)) x9 * x3 (-(↑x7 : ℝ) * x9)) x8; have x8 : ℕ → ℝ := fun (x8 : ℕ) => (‖x7 x8‖ / (↑x8 : ℝ)) ^ (2 : ℕ); have x9 : ℕ → ℕ → ℝ := fun (x9 x10 : ℕ) => (∑ x11 ∈ Finset.range (x10 + (1 : ℕ)), x8 (x9 + (2 : ℕ) * x11)) / (↑(x10 + (1 : ℕ)) : ℝ); ∃ C : ℝ, 0 < C ∧ ∃ T : ℕ, ∀ n H : ℕ, T ≤ n → Even n → n ≤ H^2 → H ≤ n → x9 n H ≤ C*(n : ℝ)^(-(13/512 : ℝ))",
+      "plain_statement": {
+        "zh": "对 #4211 原封不动的混合 B13 次弧系数，将偶数 n,n+2,…,n+2H 上的归一化平方平均推广到每个 √n≤H≤n 的短窗，保留累计长窗的 n^(−13/512) 节省。",
+        "en": "For the exact moving B13 coefficient in #4211 retain its long-window normalized square-mean saving n^(−13/512) uniformly on all even-step windows with √n≤H≤n."
+      },
+      "brief": {
+        "zh": "Qmhou 已用共享分块标签保留混合频谱，证明 [X,2X] 上未归一化二次矩为 O(X^(1523/512))。只把长窗上界搬到短窗再除 H 会损失 n/H，在平方根尺度完全不够。尝试把移动行的 Bessel 估计局部化，并单独控制窗口穿过 n^(2/3) 取整跳点的代价。H=n 即恢复原有均方衰减；均方本身仍允许个别偶数取大值。",
+        "en": "Qmhou bounded the dyadic unnormalized second moment by O(X^(1523/512)) with shared labels for the mixed spectrum. Restricting that total and dividing by H costs n/H; this loses the saving at square-root scale. Localize the moving-row Bessel estimate and control windows crossing jumps of the n^(2/3) cutoff. H=n recovers the long mean. Individual even targets may still be exceptional."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4211",
+      "track": "frontier-type2-dyadic-matrix",
+      "program": "correlation",
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "depends_on": [],
+      "imports": [],
+      "module": "Conjectures.Goldbach.MixedB13ShortEvenMean",
+      "file": "lean/Conjectures/Goldbach/MixedB13ShortEvenMean.lean",
+      "route_source": "frontier-type2-dyadic-matrix"
+    },
+    {
       "id": "L-goldbach-rectangular-corner-budget",
       "statement": "∀ (n A D B H : ℕ), 0<n → 0<B → B≤H → let L := fun N : ℕ => ∑ q ∈ Finset.Icc 1 N,(q:ℝ)⁻¹; let C := fun u v : ℕ => (1+Real.log ((n:ℝ)+2))^2 + ((max A D:ℕ):ℝ)*(u.gcd v:ℝ)^2/((u:ℝ)*v) + (n:ℝ)/((u:ℝ)*v) * ((∑ q ∈ (u.gcd v).divisors.filter (·≤B),(q.gcd n:ℝ)*q/H) + ∑ q ∈ (u.gcd v).divisors.filter (B<·),(q.gcd n:ℝ)); (∑ u ∈ Finset.Icc 1 A,∑ v ∈ Finset.Icc 1 D,C u v) ≤ (A:ℝ)*D*(1+Real.log ((n:ℝ)+2))^2 + (A:ℝ)*D*L A*L D + ((n:ℝ)/B)*n.divisors.card*L (min A D)*L A*L D",
       "plain_statement": {
@@ -17492,6 +19059,29 @@
       "role": "lemma",
       "module": "Conjectures.Goldbach.FareySpacingLower",
       "file": "lean/Conjectures/Goldbach/FareySpacingLower.lean",
+      "route_source": "large-sieve-dispersion"
+    },
+    {
+      "id": "L-goldbach-fraction-shifted-mangoldt-second-moment",
+      "statement": "let S := fun (w : ℝ → ℝ) (X t : ℝ) => ∑ n ∈ Finset.range (⌊X⌋₊+1), (((ArithmeticFunction.vonMangoldt n : ℝ)*w ((n : ℝ)/X) : ℝ) : ℂ)*Complex.exp (((2*Real.pi*(n : ℝ)*t : ℝ) : ℂ)*Complex.I); ∀ w : ℝ → ℝ, ContDiff ℝ ⊤ w → Function.support w ⊆ Set.Icc 0 1 → ∀ ε : ℝ, 0 < ε → ∃ C : ℝ, 0 < C ∧ ∀ X D x : ℝ, 2 ≤ X → 1 ≤ D → D ≤ X → x ∈ Set.Icc 0 1 → ∀ q : ℕ, 0 < q → ∀ a : ℤ, Nat.Coprime a.natAbs q → |x-(a : ℝ)/(q : ℝ)| ≤ 1/(q : ℝ)^2 → (∑ d ∈ Finset.Icc ⌈D⌉₊ ⌊2*D⌋₊, ∑ b ∈ Finset.range d, ‖S w X (x+(b : ℝ)/(d : ℝ))‖^2) ≤ C*X^(2+ε)*(D/(q : ℝ)+(q : ℝ)*D/X+D^2/X^(3/8 : ℝ))",
+      "plain_statement": {
+        "zh": "在整段 D 至 2D 的分母与全部剩余类上，对平移 Mangoldt 指数和的平方求和，将次弧误差 D²X^(−1/3) 改进为 D²X^(−3/8)。",
+        "en": "Improve the D²X^(−1/3) contribution to D²X^(−3/8) in the mean square of smoothed Mangoldt sums shifted by all fractions b/d in a dyadic denominator block."
+      },
+      "brief": {
+        "zh": "对标定理 2.1；保留 D/q 与 qD/X 两个共振项。论文的 1/6 障碍来自最后一项：在 D≤X^(3/16−δ) 时新项有幂节省。先研究频率聚集的 Type II 块；尚需另外核对主弧与切换筛，不能仅凭这一界宣称新的分布水平。",
+        "en": "Keep both resonance terms from Theorem 2.1. The proposed last term saves a power up to D≤X^(3/16−δ). Analyze clusters of shifted rational phases in the Type II terms. Other major-arc and switched-sieve inputs still have to be checked."
+      },
+      "track": "large-sieve-dispersion",
+      "program": "correlation",
+      "role": "target",
+      "depends_on": [],
+      "imports": [],
+      "parallel": true,
+      "challenge_only": true,
+      "source": "https://arxiv.org/html/2606.29559v1#S2",
+      "module": "Conjectures.Goldbach.FractionShiftedMangoldtSecondMoment",
+      "file": "lean/Conjectures/Goldbach/FractionShiftedMangoldtSecondMoment.lean",
       "route_source": "large-sieve-dispersion"
     },
     {
@@ -17956,6 +19546,29 @@
       "route_source": "minor-truncation"
     },
     {
+      "id": "L-goldbach-dyadic-tail-entropy-floor",
+      "statement": "let G := fun (L : ℕ) (x : ℝ) => ∑ j ∈ Finset.range L, Complex.exp (((2*Real.pi*(2 : ℝ)^j*x : ℝ) : ℂ)*Complex.I); ∃ L₀ : ℕ, ∀ L : ℕ, L₀ ≤ L → (2 : ℝ)^(-((291/500 : ℝ)*(L : ℝ))) ≤ (MeasureTheory.volume {x : ℝ | x ∈ Set.Icc 0 1 ∧ (93/125 : ℝ)*(L : ℝ) < ‖G L x‖}).toReal",
+      "plain_statement": {
+        "zh": "证明倍频指数和的高值不能过少：从某个 L 起，单位区间中 |Σⱼe(2ʲx)|>0.744L 的点集，其勒贝格测度至少为 2^(−0.582L)。",
+        "en": "Prove that for every sufficiently large L the set in the unit interval with |sum_{j<L}e(2^j x)|>0.744 L has Lebesgue measure at least 2^(−0.582 L)."
+      },
+      "brief": {
+        "zh": "检验只调稀疏集阈值能否完成六个二幂路线。给二进位使用平稳两状态链 P(1|0)=37/500、P(0|1)=3/4。用十六位傅里叶递推和 2π/2¹⁶ 的尾界估计相位均值，用熵率控制典型词数。扩展整个长度 L 的二进柱只损失 O(1/L) 的平均相位裕量。0.582<7/12；若证成，这个阈值无法满足 σ=19/24 时要求的稀疏度，须改进联合素数权或筛常数。",
+        "en": "Try the stationary binary Markov chain P(1|0)=37/500, P(0|1)=3/4. Bound its Fourier mean with a sixteen-digit recursion and tail 2π/2^16. Use entropy-rate typical words and control the phase variation across the full L-digit cylinders. Since 0.582<7/12, the claimed lower bound obstructs the exceptional-set budget at sigma=19/24; the weighted prime sum may still admit cancellation."
+      },
+      "source": "https://arxiv.org/html/2605.17825v2#S3.SS3",
+      "program": "correlation",
+      "track": "minor-truncation",
+      "role": "target",
+      "imports": [],
+      "depends_on": [],
+      "parallel": true,
+      "challenge_only": true,
+      "module": "Conjectures.Goldbach.DyadicTailEntropyFloor",
+      "file": "lean/Conjectures/Goldbach/DyadicTailEntropyFloor.lean",
+      "route_source": "minor-truncation"
+    },
+    {
       "id": "L-goldbach-fixed-budget-to-dyadic",
       "statement": "(let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let major := fun n : ℕ => intervalIntegral (fun t => (arcs n).indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume; let minor := fun n : ℕ => intervalIntegral (fun t => (arcs n)ᶜ.indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume; let conv := fun (u v : ℕ → ℝ) (n : ℕ) => Finset.sum (Finset.range (n+1)) (fun k => u k*v (n-k)); ∀ n, major n+minor n=(conv w w n:ℂ)) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let major := fun n : ℕ => intervalIntegral (fun t => (arcs n).indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → (n:ℝ)/144 ≤ (major n).re) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; ∀ n:ℕ,I n w w=I n (low n) (low n)+2*I n (low n) (high n)+I n (high n) (high n)) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; ∀ e:ℝ, 0<e → ∃ N:ℕ, ∀ n≥N, ‖I n (low n) (low n)‖≤e*(n:ℝ)) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; ∀ e:ℝ, 0<e → ∃ N:ℕ, ∀ n≥N, ‖I n (low n) (high n)‖≤e*(n:ℝ)) → (let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let low := fun (n k : ℕ) => if k^3≤n then w k else 0; let high := fun (n k : ℕ) => w k-low n k; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; ∃ N : ℕ, ∀ n ≥ N, Even n → -(n:ℝ)/288 ≤ (I n (high n) (high n)).re) → (∃ (c : ℝ) (N : ℕ), 0 < c ∧ ∀ X n : ℕ, N ≤ X → X ≤ n → n < 2 * X → Even n → let w : ℕ → ℝ := fun k => if Nat.Prime k then Real.log (k : ℝ) else 0; c * (n : ℝ) ≤ Finset.sum (Finset.range (n + 1)) (fun p => w p * w (n - p)))",
       "plain_statement": {
@@ -18071,6 +19684,98 @@
       "depends_on": [],
       "module": "Conjectures.Goldbach.FullPrimeCutoffLoss",
       "file": "lean/Conjectures/Goldbach/FullPrimeCutoffLoss.lean",
+      "route_source": "minor-truncation"
+    },
+    {
+      "id": "L-goldbach-linnik-five-unconditional",
+      "statement": "∃ N₀ : ℕ, ∀ N : ℕ, N₀ ≤ N → Even N → ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ ∃ a : Fin 5 → ℕ, N = p + q + ∑ i : Fin 5, 2 ^ (a i + 1)",
+      "plain_statement": {
+        "zh": "无条件把每个充分大偶数表示为两个素数与恰好五个正指数二幂之和。",
+        "en": "Represent every sufficiently large even integer by two primes and five positive powers of two unconditionally."
+      },
+      "brief": {
+        "zh": "Li–Liu 定理 1.2 在 GRH 下达到五幂，定理 1.1 无条件达到六幂。尝试找出五幂反射积分的无条件主弧下界，并与次弧损失作定量比较。#4232 控制的是模 30 模型修正项，替换成真正素数后的误差仍需证明。",
+        "en": "Li–Liu Theorem 1.2 reaches five under GRH and Theorem 1.1 reaches six unconditionally. Seek a positive unconditional margin between the five-power major and minor arcs. PR #4232 only treats a wheel-model correction; the prime-weighted transfer needs its own bound."
+      },
+      "source": "https://arxiv.org/html/2610.15784v1#S1",
+      "program": "correlation",
+      "track": "minor-truncation",
+      "depends_on": [],
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "imports": [],
+      "module": "Conjectures.Goldbach.LinnikFiveUnconditional",
+      "file": "lean/Conjectures/Goldbach/LinnikFiveUnconditional.lean",
+      "route_source": "minor-truncation"
+    },
+    {
+      "id": "L-goldbach-linnik-six-subpower-shift",
+      "statement": "∀ ε : ℝ, 0 < ε → ∃ N₀ : ℕ, ∀ N : ℕ, N₀ ≤ N → Even N → ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ ∃ a : Fin 6 → ℕ, N = p + q + ∑ i : Fin 6, 2 ^ (a i + 1) ∧ ((∑ i : Fin 6, (2 : ℕ) ^ (a i + 1) : ℕ) : ℝ) ≤ (N : ℝ) ^ ε",
+      "plain_statement": {
+        "zh": "把六幂偏移的总和压进任意固定的 N^ε 窗口，对每个充分大偶数成立。",
+        "en": "Place the entire six-power correction inside N^ε for every fixed positive ε and every sufficiently large even N."
+      },
+      "brief": {
+        "zh": "本题保留定理 1.1 的六项并限制总偏移。因此每个大偶数 N 左侧的短区间内都要有一个二素数和，而且其距离具有六幂结构。应先将二幂和截到 ε log₂ N 的长度，在这个新长度下分别重算大值集和反射积分的损失。阈值可依赖 ε。",
+        "en": "Retain six terms but constrain their sum. A Goldbach number must lie just below every even N at a distance with six-term binary structure. Truncate the lacunary sum at a length proportional to ε log₂ N and reassess the large-value and reflection losses. The threshold may depend on ε."
+      },
+      "source": "https://arxiv.org/html/2610.15784v1#S1",
+      "program": "correlation",
+      "track": "minor-truncation",
+      "depends_on": [],
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "imports": [],
+      "module": "Conjectures.Goldbach.LinnikSixSubpowerShift",
+      "file": "lean/Conjectures/Goldbach/LinnikSixSubpowerShift.lean",
+      "route_source": "minor-truncation"
+    },
+    {
+      "id": "L-goldbach-linnik-six-unconditional",
+      "statement": "∃ N₀ : ℕ, ∀ N : ℕ, N₀ ≤ N → Even N → ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ ∃ a : Fin 6 → ℕ, N = p + q + ∑ i : Fin 6, 2 ^ (a i + 1)",
+      "plain_statement": {
+        "zh": "无条件证明每个充分大的偶数都是两个素数与恰好六个二的正整数次幂之和；允许幂重复。",
+        "en": "Unconditionally represent every sufficiently large even integer as two primes and exactly six positive powers of two (repetitions allowed)."
+      },
+      "brief": {
+        "zh": "Li–Liu 预印本定理 1.1 的加权六幂表示数给出了无条件基线。本题保留原冻结命题，供形式化。可沿论文的主弧下界、次弧大值估计和反射不等式逐段实现。",
+        "en": "Li and Liu's preprint, Theorem 1.1, gives the unconditional six-power baseline via a weighted count. Formalize the frozen target using the major-arc lower bound, minor-arc large values and reflection inequality."
+      },
+      "source": "https://arxiv.org/html/2610.15784v1#S1",
+      "program": "correlation",
+      "track": "minor-truncation",
+      "depends_on": [],
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "imports": [],
+      "module": "Conjectures.Goldbach.LinnikSixUnconditional",
+      "file": "lean/Conjectures/Goldbach/LinnikSixUnconditional.lean",
+      "route_source": "minor-truncation"
+    },
+    {
+      "id": "L-goldbach-linnik-triple-centered-energy",
+      "statement": "let L := fun N : ℕ => Nat.log 2 N; let r := fun N m : ℕ => ∑ a ∈ Finset.Icc 1 (L N), ∑ b ∈ Finset.Icc 1 (L N), ∑ c ∈ Finset.Icc 1 (L N), let p := m - (2^a + 2^b + 2^c); if Nat.Prime p then Real.log (p : ℝ) else 0; ∃ δ : ℝ, 0 < δ ∧ δ < 1 ∧ ∃ N₀ : ℕ, ∀ N : ℕ, N₀ ≤ N → Even N → (∑ m ∈ (Finset.range (N+1)).filter (fun m => Odd m), (r N m - 2*(L N : ℝ)^3)^2) ≤ (1-δ)*2*(N : ℝ)*(L N : ℝ)^6",
+      "plain_statement": {
+        "zh": "无条件证明：一个素数加三个二幂的对数加权表示函数，在奇数上的中心二阶矩，比临界值 2N⌊log₂N⌋⁶ 至少小一个固定比例。",
+        "en": "Unconditionally bound the centered second moment of the log-weighted prime plus three powers representation function on odd targets by a fixed factor below 2N floor(log₂N)^6."
+      },
+      "brief": {
+        "zh": "对照 (13)、(24)–(26)，每个三元组有序，减法下溢时 p=0 自动不计。保留倍频核与大素数和在次弧上的联合分布，避免把两个最坏值直接相乘。严格余量配合已知一阶矩和 Cauchy–Schwarz 可令反射卷积为正。这里的改进是无条件跨过 1 的临界系数，不声称改进 GRH 下的数值。",
+        "en": "Track the joint large values of the dyadic kernel and the prime sum rather than multiplying their separate maxima. Tuples are ordered. A fixed margin below the critical coefficient absorbs the first-moment error and proves positivity of (24) by reflected Cauchy–Schwarz. Compare the unconditional specialization of (26)."
+      },
+      "source": "https://arxiv.org/html/2605.17825v2#S3.SS1",
+      "program": "correlation",
+      "track": "minor-truncation",
+      "depends_on": [],
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "imports": [],
+      "module": "Conjectures.Goldbach.LinnikTripleCenteredEnergy",
+      "file": "lean/Conjectures/Goldbach/LinnikTripleCenteredEnergy.lean",
       "route_source": "minor-truncation"
     },
     {
@@ -19557,6 +21262,29 @@
       "route_source": "minor-truncation"
     },
     {
+      "id": "L-goldbach-shifted-prime-pair-sieve-566",
+      "statement": "let C₀ : ℝ := ∏' p : ℕ, if Nat.Prime p ∧ 2 < p then 1 - 1 / ((p : ℝ) - 1)^2 else 1; ∀ ε : ℝ, 0 < ε → ∃ N₀ : ℕ, ∀ N h : ℕ, N₀ ≤ N → 0 < h → h < N → let pairs := (Finset.range (N+1)).filter (fun p => Nat.Prime p ∧ p+h ≤ N ∧ Nat.Prime (p+h)); let localFactor : ℝ := ∏ p ∈ h.primeFactors.filter (fun p => 2 < p), ((p : ℝ)-1)/((p : ℝ)-2); (pairs.card : ℝ) ≤ ((283/50 : ℝ)+ε)*C₀*(N : ℝ)*localFactor/(Real.log (N : ℝ))^2",
+      "plain_statement": {
+        "zh": "一致控制所有 0<h<N 的素数差对计数，把显式筛上界中的常数从 6.7814 降至 5.66，保留局部奇异因子和任意 ε 损失。",
+        "en": "Improve the uniform prime-difference sieve constant to 5.66 for every 0<h<N, preserving the local factors and an arbitrary epsilon loss."
+      },
+      "brief": {
+        "zh": "对标命题 2 的 R(N,h)，按较小素数 p 计数，p+h 也须不超过 N。尝试在可分解筛权中分离大素因子，再对移动剩余类 −h 保持一致估计。5.66 严格小于表 1 无条件六项的 5.672 门槛；只控制固定 h 或对 h 平均都不够。",
+        "en": "Use Proposition 2 with the smaller prime as the parameter. Separate the large prime factors of the sieve moduli and retain uniformity in the moving residue −h. Table 1 puts the unconditional six-power threshold at 5.672. A fixed-shift estimate cannot be substituted."
+      },
+      "source": "https://arxiv.org/html/2605.17825v2#S2.SS2",
+      "program": "correlation",
+      "track": "minor-truncation",
+      "depends_on": [],
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "imports": [],
+      "module": "Conjectures.Goldbach.ShiftedPrimePairSieve566",
+      "file": "lean/Conjectures/Goldbach/ShiftedPrimePairSieve566.lean",
+      "route_source": "minor-truncation"
+    },
+    {
       "id": "L-goldbach-vaughan-high-exact-split",
       "statement": "let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (w : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (w k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let I := fun (n:ℕ) (a b:ℕ→ℝ) => intervalIntegral (fun t => (arcs n)ᶜ.indicator (fun u => S n a u*S n b u*E (-(n:ℝ)*u)) t) (0:ℝ) 1 MeasureTheory.volume; let Λ := ArithmeticFunction.vonMangoldt; let μ := fun d : ℕ => ((ArithmeticFunction.moebius d : ℤ) : ℝ); let U := fun n : ℕ => ⌊(n : ℝ) ^ (1 / 6 : ℝ)⌋₊; let u := fun (n m : ℕ) => if m ^ 3 ≤ n then 0 else (∑ d ∈ (Nat.divisors m).filter (fun d => d ≤ U n), μ d * Real.log ((m / d : ℕ) : ℝ)) - (∑ d ∈ (Nat.divisors m).filter (fun d => d ≤ U n), μ d * ∑ l ∈ (Nat.divisors (m / d)).filter (fun l => l ≤ U n), Λ l); let v := fun (n m : ℕ) => if m ^ 3 ≤ n then 0 else ∑ a ∈ (Nat.divisors m).filter (fun a => U n < m / a), (∑ d ∈ (Nat.divisors a).filter (fun d => U n < d), μ d) * Λ (m / a); let highLambda := fun (n k : ℕ) => if k ^ 3 ≤ n then 0 else Λ k; (∀ n m : ℕ, highLambda n m = u n m + v n m) ∧ (∀ n : ℕ, I n (highLambda n) (highLambda n) = I n (u n) (u n) + 2 * I n (u n) (v n) + I n (v n) (v n))",
       "plain_statement": {
@@ -19576,6 +21304,29 @@
       "role": "lemma",
       "module": "Conjectures.Goldbach.VaughanHighExactSplit",
       "file": "lean/Conjectures/Goldbach/VaughanHighExactSplit.lean",
+      "route_source": "minor-truncation"
+    },
+    {
+      "id": "L-goldbach-wheel-model-log-square-decay",
+      "statement": "by\n  classical\n  let Qn : ℕ → ℕ := fun n => (Nat.log 2 (n + 2)) ^ 2\n  let arcs : ℕ → Set ℝ := fun n => {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ Qn n ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t - (a : ℝ) / (q : ℝ)| ≤ (Qn n : ℝ) / ((q : ℝ) * (n : ℝ))}\n  let L : ℕ → ℕ := fun n => max 1 (Nat.log 2 n / 2)\n  let K : ℕ → ℝ → ℝ := fun n t => (∑ j ∈ Finset.range (L n), Real.cos (2 * Real.pi * (2 : ℝ) ^ (j + 1) * t)) / (L n : ℝ)\n  let B : ℕ → Set ℝ := fun n => {t : ℝ | t ∉ arcs n ∧ (1 : ℝ) / 2 < K n t}\n  let V : ℕ → ℕ → ℝ := fun n h => intervalIntegral ((B n).indicator (fun t => Real.cos (2 * Real.pi * (h : ℝ) * t))) (0 : ℝ) 1 MeasureTheory.volume\n  let A : ℕ → ℕ → (ℕ → ℝ) → ℝ := fun n h a => ∑ k ∈ Finset.range (n + 1 - h), a k * a (k + h)\n  let model : ℕ → ℝ := fun k => if Nat.Coprime k 30 then (30 : ℝ) / 8 else 0\n  let rho : ℕ → ℝ := fun h => (2 : ℝ) ^ (if 3 ∣ h then 1 else 0) * (3 * (if 5 ∣ h then (0 : ℝ) else 1) + 4 * (if 5 ∣ h then (1 : ℝ) else 0))\n  let Q : ℕ → ℝ := fun n => 2 * (∑ h ∈ Finset.Icc ((L n) ^ 2 + 1) n, ((n - h : ℝ) * ((15 : ℝ) / 32) * rho h - A n h model) * V n h)\n  exact ∃ C : ℝ, 0 < C ∧ ∃ N : ℕ, 2 ≤ N ∧ ∀ n : ℕ, N ≤ n → Even n → |Q n| ≤ C * (n : ℝ) / (Real.log (n : ℝ))^2",
+      "plain_statement": {
+        "zh": "在原有的大弧截断、二进掩膜与模 30 模型下，证明模型修正项 Q 的绝对值对所有充分大偶数至多为 Cn/log² n。",
+        "en": "Bound the absolute wheel-model correction Q by Cn/log² n for every sufficiently large even n, keeping the original arcs, mask and modulus-30 model."
+      },
+      "brief": {
+        "zh": "WaterKing201030 在 #4136 给出线性下界，证伪原先要求 Q ≤ −n/312 的路线。本题若成立，可将模型修正吸收到任意固定的线性误差预算中。先用 #4128 的周期自相关隔离端点误差，再用 #4127 的掩膜估计控制短位移。将剩余周期项展开成模 30 的频率，估计各平移 Fejér 核在大弧以外的质量。尚需另外控制真正的素数相关项。",
+        "en": "PR #4136 refuted the old negative-linear target. Use the periodic autocorrelation in #4128 and mask bounds in #4127. Expand the triangular periodic term into shifted Fejér kernels and bound their tails outside the major arcs. This would absorb the model correction into any fixed linear budget. The prime correlation remains open."
+      },
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4136",
+      "track": "minor-truncation",
+      "program": "correlation",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "imports": [],
+      "depends_on": [],
+      "module": "Conjectures.Goldbach.WheelModelLogSquareDecay",
+      "file": "lean/Conjectures/Goldbach/WheelModelLogSquareDecay.lean",
       "route_source": "minor-truncation"
     },
     {
@@ -19784,6 +21535,75 @@
       "route_source": "powers"
     },
     {
+      "id": "L-goldbach-chen-pair-admissible-shifts",
+      "statement": "let ok := fun (n : ℕ) (h k : ℤ) => ∀ l : ℕ, Nat.Prime l → ∃ a : ℤ, ¬ (l : ℤ) ∣ a*(a+h)*((n : ℤ)-a)*((n : ℤ)-a+k); let good := fun (n : ℕ) (h k : ℤ) => ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ p+q=n ∧ 1 < (p : ℤ)+h ∧ 1 < (q : ℤ)+k ∧ ((p : ℤ)+h).toNat.primeFactorsList.length ≤ 2 ∧ ((q : ℤ)+k).toNat.primeFactorsList.length ≤ 2; ∀ H : ℕ, ∃ δ : ℝ, 0 < δ ∧ δ < 1 ∧ ∃ X₀ : ℕ, ∀ X : ℕ, X₀ ≤ X → ∀ h k : ℤ, h ≠ 0 → k ≠ 0 → Even h → Even k → (h.natAbs : ℝ) ≤ (Real.log (X : ℝ))^H → (k.natAbs : ℝ) ≤ (Real.log (X : ℝ))^H → let bad := fun n : ℕ => Even n ∧ ok n h k ∧ ¬good n h k; ((@Finset.filter ℕ bad (Classical.decPred bad) (Finset.Icc 4 X)).card : ℝ) ≤ (X : ℝ)^(1-δ)",
+      "plain_statement": {
+        "zh": "对两个独立的正负偶移位 h、k（绝对值至多为对数幂），在所有局部可容许偶数中证明一致的幂节省例外界，使 p+h 与 q+k 同为至多两个素因子的正数。",
+        "en": "For two independent nonzero even shifts up to a log power, prove a uniform power-saving exceptional bound for locally admissible Goldbach targets with both shifted summands positive almost primes of order two."
+      },
+      "brief": {
+        "zh": "先对每个素模剔除四个禁剩余类；在 p 或 q 上分别使用相应的切换筛，再控制两个移动移位的共同误差。h=k=2、n≡4(mod 6) 时，2 和 3 各有允许类，较大素模至多排除四类，因此包含定理 1.1。异常集可随移位变，误差指数和起始点不能变。",
+        "en": "Allow the exceptional set to depend on the shifts, but keep the exponent and onset uniform. For h=k=2 and n=4 mod 6 the local test holds at 2 and 3 and removes at most four classes at larger primes. Mixed shifts introduce different local roots and sieve errors."
+      },
+      "source": "https://arxiv.org/html/2508.16400v1#S1",
+      "track": "progressions",
+      "program": "correlation",
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "imports": [],
+      "depends_on": [],
+      "module": "Conjectures.Goldbach.ChenPairAdmissibleShifts",
+      "file": "lean/Conjectures/Goldbach/ChenPairAdmissibleShifts.lean",
+      "route_source": "progressions"
+    },
+    {
+      "id": "L-goldbach-prescribed-residues-square-root-moduli",
+      "statement": "let missed := fun q a b n : ℕ => Even n ∧ n % q = (a+b) % q ∧ ¬ ∃ p r : ℕ, Nat.Prime p ∧ Nat.Prime r ∧ p+r=n ∧ p%q=a ∧ r%q=b; ∀ B : ℕ, ∃ A : ℕ, ∀ ε : ℝ, 0 < ε → ∃ N₀ : ℕ, ∀ N R : ℕ, N₀ ≤ N → 3 ≤ R → (R : ℝ)*(Real.log (N : ℝ))^A ≤ Real.sqrt (N : ℝ) → ∃ T : Finset ℕ, T ⊆ Finset.Icc 3 R ∧ (T.card : ℝ)*(Real.log (N : ℝ))^B ≤ (R : ℝ) ∧ ∀ q ∈ Finset.Icc 3 R, q ∉ T → ∀ a b : ℕ, a < q → b < q → Nat.Coprime a q → Nat.Coprime b q → (((@Finset.filter ℕ (missed q a b) (Classical.decPred (missed q a b)) (Finset.Icc 2 N)).card : ℝ)*(q : ℝ)) ≤ ε*(N : ℝ)",
+      "plain_statement": {
+        "zh": "在几乎所有不超过 √N/对数幂的模数 q 上，同时对每一对互素剩余类 a、b 证明：至 N 的可容许偶数中，没有指定两素数表示的仅为 o(N/q)。同一批例外模数适用于所有剩余类。",
+        "en": "For almost all moduli up to sqrt N divided by a log power, prove o(N/q) exceptional even targets simultaneously for every pair of reduced summand classes. The same bad-modulus set must work for all residue pairs."
+      },
+      "brief": {
+        "zh": "Salmensuu 定理 1.1 在平方根尺度还须排除某些第二剩余类；定理 1.2 在较小的素数模范围可固定两类。尝试估计每个模数内最坏剩余类对的误差，再对模数取矩。该任务让参与者可以事先指定双素数所在的同余类，仍允许少量模数和偶数例外。",
+        "en": "Theorem 1.1 leaves exceptional second residues at the square-root scale; Theorem 1.2 treats both prescribed classes on a smaller prime-modulus range. Seek a moment over moduli controlling their worst residue pair. This would allow a local congruence filter chosen in advance, while still permitting exceptional targets."
+      },
+      "source": "https://doi.org/10.1093/qmath/haac008",
+      "program": "correlation",
+      "track": "progressions",
+      "depends_on": [],
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "imports": [],
+      "module": "Conjectures.Goldbach.PrescribedResiduesSquareRootModuli",
+      "file": "lean/Conjectures/Goldbach/PrescribedResiduesSquareRootModuli.lean",
+      "route_source": "progressions"
+    },
+    {
+      "id": "L-goldbach-seven-factor-product-shift",
+      "statement": "let bad := fun n : ℕ => 6 ∣ n ∧ ¬ ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ p+q=n ∧ (2*p*q+1).primeFactorsList.length ≤ 7; ∀ A : ℕ, ∃ X₀ : ℕ, ∀ X : ℕ, X₀ ≤ X → (((@Finset.filter ℕ bad (Classical.decPred bad) (Finset.Ioc (X/2) X)).card : ℝ)*(Real.log (X : ℝ))^A) ≤ (X : ℝ)",
+      "plain_statement": {
+        "zh": "对几乎所有 6 的倍数，寻找素数对 p+q=n，使二次式 2pq+1 至多有七个素因子（计重），保留任意对数幂的例外节省。",
+        "en": "For almost all multiples of six, represent n=p+q by primes with at most seven prime factors of 2pq+1, preserving arbitrary logarithmic savings in the exceptional set."
+      },
+      "brief": {
+        "zh": "对标定理 1.3 的十三个因子。固定 n 后筛二次式 2p(n−p)+1，按素模上的零点数与重根分别估计，不将它当线性多项式。保留 6|n 消除模 3 的固定因子问题。七因子目标需要新的筛估计；该约束检验双素数解在二次剩余类上的分布。",
+        "en": "Compare Theorem 1.3. Sieve the polynomial 2p(n−p)+1, keeping split roots and repeated roots separate at each prime. Retain the multiple-of-six condition. An upper bound for a linear shift alone cannot provide the required quadratic distribution."
+      },
+      "track": "progressions",
+      "program": "correlation",
+      "role": "target",
+      "depends_on": [],
+      "imports": [],
+      "parallel": true,
+      "challenge_only": true,
+      "source": "https://arxiv.org/html/2606.29559v1#S4.SS2",
+      "module": "Conjectures.Goldbach.SevenFactorProductShift",
+      "file": "lean/Conjectures/Goldbach/SevenFactorProductShift.lean",
+      "route_source": "progressions"
+    },
+    {
       "id": "L-goldbach-twisted-cutoff-residual",
       "statement": "∀ (N : ℕ) [NeZero N] (χ : DirichletCharacter ℂ N) (c : ℝ) (s : ℂ), 1 ≤ c → 1 < s.re → let w : ℕ → ℂ := fun n => if 1 ≤ n ∧ (n : ℝ) < c then ((Real.log c - Real.log (n : ℝ) : ℝ) : ℂ) else 0; let r : ℕ → ℂ := (Real.log c : ℂ) • LSeries.delta - LSeries.convolution (fun n : ℕ => (ArithmeticFunction.moebius n : ℂ)) w; LSeries (fun n : ℕ => χ (n : ZMod N) * r n) s = (Real.log c : ℂ) - LSeries (fun n : ℕ => χ (n : ZMod N) * w n) s / χ.LFunction s",
       "plain_statement": {
@@ -19824,6 +21644,52 @@
       "role": "lemma",
       "module": "Conjectures.Goldbach.AlmostPrimeParityDetector",
       "file": "lean/Conjectures/Goldbach/AlmostPrimeParityDetector.lean",
+      "route_source": "representations"
+    },
+    {
+      "id": "L-goldbach-balanced-three-factor-gap",
+      "statement": "let bad := fun n : ℕ => Even n ∧ ¬ ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ p+q=n ∧ q < p ∧ (p-q)^2 ≤ n ∧ (p-q+1).primeFactorsList.length ≤ 3; ∀ A : ℕ, ∃ X₀ : ℕ, ∀ X : ℕ, X₀ ≤ X → (((@Finset.filter ℕ bad (Classical.decPred bad) (Finset.Ioc (X/2) X)).card : ℝ)*(Real.log (X : ℝ))^A) ≤ (X : ℝ)",
+      "plain_statement": {
+        "zh": "除去任意对数幂节省的例外，每个偶数 n 都可写成 p+q，其中 0<p−q≤√n，且 p−q+1 至多有三个素因子（计重）。",
+        "en": "For all but O_A(X/log^A X) even targets in (X/2,X], find primes with 0<p−q≤sqrt(n) and at most three prime factors of p−q+1, counted with multiplicity."
+      },
+      "brief": {
+        "zh": "对照 Akeno 定理 1.2，在同一例外集尺度上，把四个因子降到三个，并约束在中点附近。尝试在短对称窗上估计原筛与切换筛的分布误差；全长版本的 0.267 门槛不能直接搬到这个窗口。q<p 排除了用差零反复贡献。",
+        "en": "Compare Theorem 1.2. Localize both summands near n/2 and study the switched and original sieve in the same short window. The full-range switched-sieve criterion does not supply this localization. Strict ordering excludes a zero-gap shortcut."
+      },
+      "track": "representations",
+      "program": "correlation",
+      "role": "target",
+      "depends_on": [],
+      "imports": [],
+      "parallel": true,
+      "challenge_only": true,
+      "source": "https://arxiv.org/html/2606.29559v1#S1",
+      "module": "Conjectures.Goldbach.BalancedThreeFactorGap",
+      "file": "lean/Conjectures/Goldbach/BalancedThreeFactorGap.lean",
+      "route_source": "representations"
+    },
+    {
+      "id": "L-goldbach-beatty-common-exceptions",
+      "statement": "let bt := fun (u v : ℝ) (p : ℕ) => ∃ j : ℤ, ⌊u*(j : ℝ)+v⌋ = (p : ℤ); ∀ α : ℝ, 1 < α → α < 2 → Irrational α → (∃ c τ : ℝ, 0 < c ∧ 0 < τ ∧ ∀ q : ℕ, 0 < q → ∀ a : ℤ, c/(q : ℝ)^τ ≤ |α-(a : ℝ)/(q : ℝ)|) → ∃ C : ℝ, 0 < C ∧ ∃ X₀ : ℕ, ∀ X : ℕ, X₀ ≤ X → let bad := fun n : ℕ => Even n ∧ ∃ β : ℝ, ¬ ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ p+q=n ∧ bt α β p ∧ bt α β q; ((@Finset.filter ℕ bad (Classical.decPred bad) (Finset.Icc 4 X)).card : ℝ) ≤ C*Real.sqrt (X : ℝ)",
+      "plain_statement": {
+        "zh": "固定 1<α<2 的有限型无理斜率，寻找大小仅 Oα(√X) 的共同例外集；对集外每个偶数及每个实平移 β，都有两个同一 Beatty 序列中素数的表示。",
+        "en": "For every finite-type irrational slope between one and two, bound by Oα(sqrt X) a single exceptional set working for every translate of the Beatty sequence."
+      },
+      "brief": {
+        "zh": "与 Banks–Güloğlu–Nevans 对固定序列的几乎处处存在性相比，误差目标是平方根且平移置于选定目标之后。利用 α<2 给出的两段相位交叠余量，用有限网格覆盖平移，真正的困难是得到幂级例外界。不能由两段各自的素数密度推出同时命中。",
+        "en": "Exploit the positive overlap margin for slope below two to discretize translates. The difficult step is a square-root exceptional bound for simultaneous phase hits. Separate marginal densities do not control the joint count."
+      },
+      "source": "https://arxiv.org/abs/math/0701285",
+      "track": "representations",
+      "program": "correlation",
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "imports": [],
+      "depends_on": [],
+      "module": "Conjectures.Goldbach.BeattyCommonExceptions",
+      "file": "lean/Conjectures/Goldbach/BeattyCommonExceptions.lean",
       "route_source": "representations"
     },
     {
@@ -21028,6 +22894,29 @@
       "imports": []
     },
     {
+      "id": "L-goldbach-mixed-piatetski-shapiro-asymptotic",
+      "statement": "let ps := fun (g : ℝ) (p : ℕ) => ∃ j : ℕ, 0 < j ∧ ⌊(j : ℝ)^(1/g)⌋₊=p; let c₀ : ℝ := ∏' l : ℕ, if Nat.Prime l ∧ 2 < l then 1-1/((l : ℝ)-1)^2 else 1; let sing := fun n : ℕ => 2*c₀*∏ l ∈ n.primeFactors.filter (fun l => 2 < l), ((l : ℝ)-1)/((l : ℝ)-2); ∀ u v : ℝ, 9/10 ≤ u → u ≤ 1 → 9/10 ≤ v → v ≤ 1 → let w := fun (g : ℝ) (p : ℕ) => @ite ℝ (Nat.Prime p ∧ ps g p) (Classical.propDecidable _) ((p : ℝ)^(1-g)*Real.log (p : ℝ)/g) 0; ∀ ε : ℝ, 0 < ε → ∃ X₀ : ℕ, ∀ X : ℕ, X₀ ≤ X → let bad := fun n : ℕ => Even n ∧ ε*sing n*(n : ℝ) < |(∑ p ∈ Finset.range (n+1), w u p*w v (n-p))-sing n*(n : ℝ)|; ((@Finset.filter ℕ bad (Classical.decPred bad) (Finset.Icc 4 X)).card : ℝ) ≤ ε*(X : ℝ)",
+      "plain_statement": {
+        "zh": "两套独立 Piatetski–Shapiro 指数 γ₁、γ₂ 都允许降至 9/10，在几乎所有偶数上证明补偿加权的双素数表示渐近式，保留普通哥猜奇异级数主项。",
+        "en": "Extend the compensated two-summand Piatetski–Shapiro Goldbach asymptotic to independent exponents in [9/10,1], with the usual binary singular series for almost all even targets."
+      },
+      "brief": {
+        "zh": "对标李洪泽定理 2 的 γᵢ>27/29。不能用仅保证下界或只约束一侧的结果替代。把素数上的薄序列权分别展开，重点估计双侧非零频率的交叉项。取 γ=1 时该侧恢复普通对数素数权。",
+        "en": "Compare H. Z. Li's Theorem 2. Subtract the ordinary logarithmic prime weight on each side and bound the cross term of the two sparse oscillatory errors. A one-sided estimate or a lower bound for equal exponents alone does not yield the asymptotic."
+      },
+      "source": "https://www.impan.pl/shop/en/publication/transaction/download/product/82175",
+      "track": "representations",
+      "program": "correlation",
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "imports": [],
+      "depends_on": [],
+      "module": "Conjectures.Goldbach.MixedPiatetskiShapiroAsymptotic",
+      "file": "lean/Conjectures/Goldbach/MixedPiatetskiShapiroAsymptotic.lean",
+      "route_source": "representations"
+    },
+    {
       "id": "L-goldbach-prime-mod-four-partition",
       "statement": "∀ (f : ℕ → ℝ), (∀ k : ℕ, ¬ k.Prime → f k = 0) → ∀ n : ℕ, (∑ k ∈ Finset.range (n + 1), f k) = (∑ k ∈ (Finset.range (n + 1)).filter (fun k => k % 4 = 1), f k) + (∑ k ∈ (Finset.range (n + 1)).filter (fun k => k % 4 = 3), f k) + (if 2 ≤ n then f 2 else 0)",
       "plain_statement": {
@@ -21139,6 +23028,52 @@
       "module": "Conjectures.Goldbach.ReflectedFactorCenters",
       "file": "lean/Conjectures/Goldbach/ReflectedFactorCenters.lean",
       "route_source": "rh-central-support"
+    },
+    {
+      "id": "L-goldbach-centered-triangle-log-saving",
+      "statement": "let z := fun n : ℕ => ArithmeticFunction.vonMangoldt n - (1 : ℝ); RiemannHypothesis → ∃ C : ℝ, 0 < C ∧ ∀ N : ℕ, 2 ≤ N → |∑ a ∈ Finset.Icc 1 N, ∑ b ∈ Finset.Icc 1 (N-a), z a * z b| ≤ C*(N : ℝ)*(Real.log (N : ℝ))^2",
+      "plain_statement": {
+        "zh": "只假设黎曼猜想，将正整数三角域 a+b≤N 上中心化冯·曼戈尔特乘积的有符号和控制在 O(N log² N)。",
+        "en": "Under RH, bound the signed triangular sum of (Λ(a)−1)(Λ(b)−1) over positive a+b≤N by O(N log² N) with a sharp cutoff."
+      },
+      "brief": {
+        "zh": "对标 Goldston–Yang 定理 1 及证明中的中心化余项。展开乘积，单变量项可按 a≤N 的权 N−a 单独求和，余下双变量项正是本题。成功会把未平滑的哥德巴赫加权表示累加公式误差从 O(N log³ N) 降为 O(N log² N)。保留所有素数幂与端点；避免对各频段分别取绝对值而损失一次对数。累加估计仍允许单个偶数无表示。",
+        "en": "Compare Goldston–Yang, Theorem 1 and its centered remainder. Expanding the product separates the one-variable sum with weight N−a. Saving one logarithm in the residual would improve the sharp-cutoff summatory estimate while keeping the explicit zero term. Retain prime powers and the endpoints. Try cancellation between dyadic frequency bands before taking absolute values. This controls averages, leaving individual targets open."
+      },
+      "source": "https://arxiv.org/abs/1601.06902",
+      "program": "correlation",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "imports": [],
+      "depends_on": [],
+      "track": "rh-grh-windows",
+      "module": "Conjectures.Goldbach.CenteredTriangleLogSaving",
+      "file": "lean/Conjectures/Goldbach/CenteredTriangleLogSaving.lean",
+      "route_source": "rh-grh-windows"
+    },
+    {
+      "id": "L-goldbach-selberg-theta-single-log",
+      "statement": "let θ := fun t : ℝ => ∑ p ∈ (Finset.Icc 2 ⌊t⌋₊).filter Nat.Prime, Real.log (p : ℝ); RiemannHypothesis → ∀ x δ : ℝ, (10 : ℝ)^13 ≤ x → 0 < δ → δ ≤ 1/(10 : ℝ)^13 → (intervalIntegral (fun y : ℝ => (θ ((1+δ)*y) - θ y - δ*y)^2) (1 : ℝ) x MeasureTheory.volume) ≤ (25571/10000 : ℝ)*δ*Real.log ((20001/10000 : ℝ)/δ)*x^2",
+      "plain_statement": {
+        "zh": "在黎曼猜想假设下，保留定理 3 的 x、δ 范围及常数 2.5571，将素数切比雪夫函数短区间方差上界中的 log²(2.0001/δ) 改为一次对数。",
+        "en": "Assuming RH, retain the exact range and coefficient of Theorem 3 while replacing log²(2.0001/δ) by one logarithm in the short-interval theta variance bound."
+      },
+      "brief": {
+        "zh": "对标《On Goldbach numbers in short intervals》定理 3。因 0<δ≤10⁻¹³，对数大于 1，故候选严格推出原界。可从显式公式的成对零点项出发保留相位，单独核对由 ψ 转成 θ 的素数幂误差。不准把额外的对相关猜想藏进假设。成功会在短窗缺素数的二阶矩预算中省去整项对数；转成哥德巴赫数的具体窗长还须重做反射估计。",
+        "en": "Compare Theorem 3 in On Goldbach numbers in short intervals. The logarithm exceeds one throughout the original range, so the candidate implies the old bound directly. Retain phases of zero pairs and control the prime-power correction in passing from psi to theta. No pair-correlation hypothesis is supplied. Revisit the reflected-window argument before claiming a new explicit Goldbach gap."
+      },
+      "source": "https://doi.org/10.1007/s40993-026-00767-6",
+      "track": "rh-grh-windows",
+      "program": "correlation",
+      "role": "target",
+      "challenge_only": true,
+      "parallel": true,
+      "imports": [],
+      "depends_on": [],
+      "module": "Conjectures.Goldbach.SelbergThetaSingleLog",
+      "file": "lean/Conjectures/Goldbach/SelbergThetaSingleLog.lean",
+      "route_source": "rh-grh-windows"
     },
     {
       "id": "L-goldbach-wheel-coarse-mean",
@@ -21982,6 +23917,52 @@
       "route_source": "unconditional-circle-milestones"
     },
     {
+      "id": "L-goldbach-mangoldt-denominator-decay",
+      "statement": "let S := fun (N : ℕ) (x : ℝ) => ∑ m ∈ Finset.range N, ((ArithmeticFunction.vonMangoldt m : ℝ) : ℂ) * Complex.exp (((2*Real.pi*(m : ℝ)*x : ℝ) : ℂ)*Complex.I); ∀ η : ℝ, 0 < η → ∃ N₀ : ℕ, ∀ N q : ℕ, N₀ ≤ N → 2 ≤ N → ∀ a : ℤ, ∀ x : ℝ, 0 < q → q^2 ≤ N → Nat.Coprime a.natAbs q → let e := |x - (a : ℝ)/(q : ℝ)|; e ≤ 1/((q : ℝ)*Real.sqrt (N : ℝ)) → let B := max (q : ℝ) ((q : ℝ)*(N : ℝ)*e); ‖S N x‖ ≤ (N : ℝ)^η * (N : ℝ)/Real.sqrt B",
+      "plain_statement": {
+        "zh": "对每个 Dirichlet 有理逼近 x=a/q+e，证明 Mangoldt 指数和只有 N^(1+o(1))/√B 这一项，其中 B=max(q,qN|e|)，q²≤N 且 |e|≤1/(q√N)。",
+        "en": "Prove uniform denominator decay N^(1+o(1))/sqrt(B) for the Mangoldt exponential sum at every Dirichlet approximation x=a/q+e with q²≤N, |e|≤1/(q sqrt N), and B=max(q,qN|e|)."
+      },
+      "brief": {
+        "zh": "与 Maynard–Pandey–Radziwiłł 定理 1.1 的全部参数对齐，挑战是去掉独立的 N^(19/24) 项。原定理已覆盖 B≤N^(5/12) 的尺度；优先处理大 B，尤其靠近 √N 的 Type II 项。终点得到 N^(3/4+o(1)) 的逐点界。用于小弧大值分析时仍须处理低分母区；单个指数和上界也不直接控制每个偶数的带符号傅里叶系数。 综合该文比较的 Kumchev 界，B≤N^(9/20) 的范围也已覆盖。",
+        "en": "The extra N^(19/24) term in the 2026 theorem is absorbed for B≤N^(5/12). Concentrate on the Type II estimates beyond this threshold. At B near sqrt N the requested exponent is 3/4. This sharpens large-value budgets on high-denominator arcs; low denominators and the signed target coefficient still need separate estimates. Kumchev's alternative estimate in the same introduction already covers B≤N^(9/20)."
+      },
+      "source": "https://arxiv.org/abs/2608.14777",
+      "program": "correlation",
+      "track": "vaughan-bilinear",
+      "depends_on": [],
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "imports": [],
+      "module": "Conjectures.Goldbach.MangoldtDenominatorDecay",
+      "file": "lean/Conjectures/Goldbach/MangoldtDenominatorDecay.lean",
+      "route_source": "vaughan-bilinear"
+    },
+    {
+      "id": "L-goldbach-prime-square-denominator-cancellation",
+      "statement": "let S := fun (N : ℕ) (x : ℝ) => ∑ m ∈ Finset.range N, ((ArithmeticFunction.vonMangoldt m : ℝ) : ℂ) * Complex.exp (((2*Real.pi*(m : ℝ)*x : ℝ) : ℂ)*Complex.I); ∀ η : ℝ, 0 < η → ∃ N₀ : ℕ, ∀ N p : ℕ, N₀ ≤ N → 2 ≤ N → Nat.Prime p → let q := p^2; q^2 ≤ N → N ≤ 4*q^2 → ∀ a : ℤ, Nat.Coprime a.natAbs q → ∀ e : ℝ, |e| ≤ 1/((q : ℝ)*Real.sqrt (N : ℝ)) → ‖S N ((a : ℝ)/(q : ℝ)+e)‖ ≤ (N : ℝ)^((3 : ℝ)/4+η)",
+      "plain_statement": {
+        "zh": "在 q=p² 且 √N/2≤q≤√N 的所有标准有理逼近弧上，对每个既约分子无条件证明 N^(3/4+η) 的冯·曼戈尔特指数和界。",
+        "en": "For prime-square denominators between √N/2 and √N, seek the unconditional N^(3/4+η) pointwise bound throughout every reduced rational arc."
+      },
+      "brief": {
+        "zh": "对标 Maynard–Pandey–Radziwiłł 定理 1.1 在此分母族的特例：去掉主导的 19/24 指数。#4193 已核验高次素数幂质量无需相位抵消即可处理。对素数贡献先沿模 p 分层，再利用模 p² 的加法相位对提升变量是线性的；完整主特征项因 μ(p²)=0 消失。一般分母与次弧带符号系数仍须另做。",
+        "en": "In this denominator family the 19/24 term of Theorem 1.1 dominates. Remove it without GRH. Reuse #4193 for the higher-prime-power contribution. Group the prime part by residues mod p and exploit the linear phase in the lift from p to p². The complete principal Gauss sum vanishes. General denominators remain open."
+      },
+      "source": "https://arxiv.org/html/2608.14777v1",
+      "program": "correlation",
+      "track": "vaughan-bilinear",
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "depends_on": [],
+      "imports": [],
+      "module": "Conjectures.Goldbach.PrimeSquareDenominatorCancellation",
+      "file": "lean/Conjectures/Goldbach/PrimeSquareDenominatorCancellation.lean",
+      "route_source": "vaughan-bilinear"
+    },
+    {
       "id": "L-goldbach-type-i-hyperbola-bound",
       "statement": "let E (x : ℝ) := Complex.exp (((2 * Real.pi * x : ℝ) : ℂ) * Complex.I); let cap (H : ℕ) (x : ℝ) := if E x = 1 then (H : ℝ) else min (H : ℝ) (2 / ‖1 - E x‖); ∀ (N D : ℕ) (a : ℕ → ℂ) (t : ℝ), ‖∑ d ∈ Finset.Icc 1 D, a d * ∑ k ∈ Finset.Icc 1 (N / d), E ((d : ℝ) * (k : ℝ) * t)‖ ≤ ∑ d ∈ Finset.Icc 1 D, ‖a d‖ * cap (N / d) ((d : ℝ) * t)",
       "plain_statement": {
@@ -22043,6 +24024,52 @@
       "module": "Conjectures.Goldbach.VaughanCutoffIdentity",
       "file": "lean/Conjectures/Goldbach/VaughanCutoffIdentity.lean",
       "route_source": "vaughan-bilinear"
+    },
+    {
+      "id": "L-goldbach-worst-numerator-quadratic-mean",
+      "statement": "let S := fun (N : ℕ) (x : ℝ) => ∑ m ∈ Finset.range N, ((ArithmeticFunction.vonMangoldt m : ℝ) : ℂ) * Complex.exp (((2*Real.pi*(m : ℝ)*x : ℝ) : ℂ)*Complex.I); ∀ η : ℝ, 0 < η → ∃ N₀ : ℕ, ∀ N : ℕ, N₀ ≤ N → 2 ≤ N → ∀ a : ℕ → ℕ, (∀ q : ℕ, Nat.Prime q → a q < q ∧ Nat.Coprime (a q) q) → (∑ q ∈ (Finset.Icc 2 N.sqrt).filter (fun q => Nat.Prime q ∧ N ≤ 4*q^2), ‖S N ((a q : ℝ)/(q : ℝ))‖^2) ≤ (N : ℝ)^((23 : ℝ)/12+η)",
+      "plain_statement": {
+        "zh": "对 √N/2≤q≤√N 的素分母，每个 q 任选最坏的既约分子，要求相应冯·曼戈尔特指数和的平方和至多为 N^(23/12+η)。",
+        "en": "Allow an adversarial reduced numerator for each prime denominator between √N/2 and √N; bound the sum of squared Mangoldt sums at these selected rationals by N^(23/12+η)."
+      },
+      "brief": {
+        "zh": "间距至少 1/N 的加法大筛给出 N^(2+o(1))，与目标相差 N^(1/12)。若新界成立，以 N^(3/4) 为阈值，坏素分母数至多 N^(5/12+η)，小于整个约 √N/log N 的分母族。此题保留最坏分子，但仅对精确有理点作模数平均；和逐点父题互补。#4193 的素数幂部分可按绝对值界去除，重点是素数权在选定分数上的平均消去。",
+        "en": "The additive large sieve for 1/N-separated reduced fractions yields N^(2+o(1)). Save N^(1/12). At threshold N^(3/4) this would leave at most N^(5/12+η) bad prime denominators, even after optimizing the numerator. Focus on the prime part after #4193 (its underlying √N log N estimate suffices). This is a mean estimate for exact rationals, separate from pointwise or perturbed arcs."
+      },
+      "source": "https://arxiv.org/html/2608.14777v1",
+      "program": "correlation",
+      "track": "vaughan-bilinear",
+      "role": "target",
+      "parallel": true,
+      "challenge_only": true,
+      "depends_on": [],
+      "imports": [],
+      "module": "Conjectures.Goldbach.WorstNumeratorQuadraticMean",
+      "file": "lean/Conjectures/Goldbach/WorstNumeratorQuadraticMean.lean",
+      "route_source": "vaughan-bilinear"
+    },
+    {
+      "id": "L-goldbach-skirt-omitted-prime-negative-mass",
+      "statement": "by\n  classical\n  let n := fun (p y : ℕ) => ∏ r ∈ (Finset.Icc 2 y).filter (fun r => Nat.Prime r ∧ r ≠ p), r\n  let Q := fun N : ℕ => (Nat.log 2 (N+2))^2\n  let mass := fun (N q : ℕ) =>\n    let lo := (Q N : ℝ) / ((q:ℝ)*(N:ℝ))\n    2 * intervalIntegral (fun t : ℝ => (Real.sin (Real.pi*((N:ℝ)+1)*t) / Real.sin (Real.pi*t))^2) lo (lo*(N:ℝ)^((1:ℝ)/6)) MeasureTheory.volume\n  exact ∀ p : ℕ, Nat.Prime p → 3 ≤ p → ∃ c : ℝ, 0 < c ∧ ∃ Y : ℕ, ∀ y : ℕ, Y ≤ y →\n    let N := n p y\n    let D := N.divisors.filter (fun d => Q N < p*d ∧ p*d ≤ 2*Q N)\n    c*(N:ℝ) ≤ ∑ d ∈ D, ((d.totient:ℝ)/(((p*d).totient:ℝ)^2)) * mass N (p*d)",
+      "track": "wide-arc-signed-remainder",
+      "program": "correlation",
+      "parallel": true,
+      "challenge_only": true,
+      "role": "target",
+      "depends_on": [],
+      "imports": [],
+      "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/discussions/3806",
+      "plain_statement": {
+        "zh": "对剔除一个固定奇素数的素数连乘目标，在首个二倍分母段证明裙边模型负部至少为 cₚN。",
+        "en": "For primorial targets omitting one fixed odd prime, show that the negative model mass in the first dyadic denominator band is at least cₚN."
+      },
+      "brief": {
+        "zh": "讨论 #3806 更正后尝试把负部单独压到 o(N)。本题检验其障碍：固定奇素数 p，N 为不含 p 的素数连乘，取 q=pd、d|N，则 q 平方自由且 c_q(N)=−φ(d)。在 Q<q≤2Q 时积分应包含一个远离零点、长度与 1/N 同阶的区间。另需证明该倍段内有正比例的平方自由、与 p 互素、素因子不超过 y 的 d。常数可依赖 p。若得证，仅排除丢弃正项的估计，原带符号下界仍开放。",
+        "en": "Discussion #3806 proposes discarding the positive model terms. At a primorial missing p take q=pd with d dividing N. Then q is squarefree and its Ramanujan sum at N is −φ(d). Bound the kernel mass below on a fixed interval scaled by 1/N and count y-smooth squarefree divisors in the moving dyadic window. Constants may depend on p. A proof rules out the negative-only estimate while leaving the signed floor open."
+      },
+      "module": "Conjectures.Goldbach.SkirtOmittedPrimeNegativeMass",
+      "file": "lean/Conjectures/Goldbach/SkirtOmittedPrimeNegativeMass.lean",
+      "route_source": "wide-arc-signed-remainder"
     },
     {
       "id": "L-goldbach-wide-remainder-inner-floor",
@@ -22129,6 +24156,7 @@
     },
     {
       "id": "L-goldbach-wide-signed-unconditional",
+      "reductions": true,
       "statement": "let w := fun k : ℕ => if Nat.Prime k then Real.log (k:ℝ) else 0; let E := fun x : ℝ => Complex.exp (((2*Real.pi*x:ℝ):ℂ)*Complex.I); let S := fun (n : ℕ) (u : ℕ → ℝ) (t : ℝ) => Finset.sum (Finset.range (n+1)) (fun k => (u k:ℂ)*E ((k:ℝ)*t)); let Q := fun n : ℕ => (Nat.log 2 (n+2))^2; let arcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n:ℝ)/((q:ℝ)*(n:ℝ))}; let f := fun (n : ℕ) (t : ℝ) => (S n w t)^2*E (-(n:ℝ)*t); let Q₁ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊; let H := fun n : ℕ => 256 * Q₁ n * Q n; let wideArcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q₁ n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (H n:ℝ)/((q:ℝ)*(n:ℝ))}; let lowWideArcs := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (H n:ℝ)/((q:ℝ)*(n:ℝ))}; let lowPart := fun n : ℕ => lowWideArcs n \\ arcs n; let remainder := fun n : ℕ => (wideArcs n \\ arcs n) \\ lowPart n; let inner := fun n : ℕ => {t : ℝ | ∃ q a : ℕ, 1≤q ∧ q≤Q₁ n ∧ a≤q ∧ Nat.Coprime a q ∧ |t-(a:ℝ)/(q:ℝ)| ≤ (Q n : ℝ) * (n : ℝ)^(1/6 : ℝ) / ((q:ℝ)*(n:ℝ))}; let J := fun (n : ℕ) (A : Set ℝ) => (intervalIntegral (fun t => A.indicator (f n) t) (0:ℝ) 1 MeasureTheory.volume).re; let floor := fun (A : ℕ → Set ℝ) => ∀ e : ℝ, 0 < e → ∃ N : ℕ, ∀ n : ℕ, N ≤ n → Even n → -(e * (n:ℝ)) ≤ J n (A n); floor (fun n => wideArcs n \\ arcs n)",
       "plain_statement": {
         "zh": "证明扩宽弧区去掉原主弧后的整个积分，实部无条件至少为 −εn。",

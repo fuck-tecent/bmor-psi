@@ -16,7 +16,7 @@ systemctl daemon-reload
 systemctl enable --now goldbach-catalogue.timer
 ```
 
-加载器一次解析 current 指向的不可变版本。新版本目录完整落盘后，发布器原子切换链接、仅重启 goldbach-web，并从生产 health 核对 catalogue_revision；失败时切回原版本。若线上清单与 Git 基线不同，三方合并保留现网差异；有冲突时在切换前退出。核验 API 和服务记录无需部署令牌。对批量发布检查各台 api/status 和新题详情；公开变更记录入口为 research-changes?lang=zh。
+加载器一次解析 current 指向的不可变版本。新版本目录完整落盘后，发布器原子切换链接、仅重启 goldbach-web，并从生产 health 核对 catalogue_revision；失败时切回原版本。若线上清单与 Git 基线不同，三方合并保留现网差异；有冲突时在切换前退出。核验 API 和服务记录无需部署令牌。对批量发布检查各台 api/catalogue-status 和新题详情；公开变更记录入口为 research-changes?lang=zh。
 
 ## 发布社区引理导入
 
@@ -36,7 +36,7 @@ Jenkins 在 `/var/cache/goldbach-lean-deps` 复用社区依赖的 `.olean`。缓
 
 ## 启用可核验拆题
 
-先部署带 reduce 模式的 CheckLemma 并按锁定版本重建受信 checklemma，更新受信快照的 outside-guard.mjs、Jenkins controller（含 assemble.py）、合并服务脚本、网站发布器允许列表与 Desk 运行文件（含 reductions.py），再在任务源文件上启用 reductions。已有 SQLite 库会在启动时增量迁移。研究台和 CI 共用原正式裁决签名配置。使用原有 GOLDBACH_TRUSTED_BASE、GOLDBACH_DESK_URL 和 GOLDBACH_DESK_SECRET_FILE。配置正式 Desk 的 site runner 每轮从所有分站获取一套就绪的拆法，在原有并发配额内核验；暂缺已合并源文件时会轮询重试。父题的冻结声明、组合 Lean 源码、依赖哈希和各方 PR 可从任务详情及 /api/status 复核。
+先部署带 reduce 模式的 CheckLemma 并按锁定版本重建受信 checklemma，更新受信快照的 outside-guard.mjs、Jenkins controller（含 assemble.py）、合并服务脚本、网站发布器允许列表与 Desk 运行文件（含 reductions.py），供各研究台的开放任务拆分使用。任务源文件上的 reductions 控制正式反驳资格。已有 SQLite 库会在启动时增量迁移。研究台和 CI 共用原正式裁决签名配置。使用原有 GOLDBACH_TRUSTED_BASE、GOLDBACH_DESK_URL 和 GOLDBACH_DESK_SECRET_FILE。配置正式 Desk 的 site runner 每轮从所有分站获取一套就绪的拆法，在原有并发配额内核验；暂缺已合并源文件时会轮询重试。父题的冻结声明、组合 Lean 源码、依赖哈希和各方 PR 可从任务详情及 /api/catalogue-status 复核。
 
 在备有锁定 Lean、Mathlib、PEqualNP.Defs 和 checklemma 的开发 checkout 中，通过下列命令重放两套拆法、正式反驳和父题核验。测试使用独立的本地 HTTPS Desk 和临时数据库。
 

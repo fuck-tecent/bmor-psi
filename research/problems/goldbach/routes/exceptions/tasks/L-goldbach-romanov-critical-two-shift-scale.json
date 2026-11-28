@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-romanov-critical-two-shift-scale",
+  "statement": "by\n  classical\n  exact ∃ c C : ℝ, 0 < c ∧ 0 < C ∧ ∃ T : ℕ, ∀ X ≥ T, let L := ⌊C*Real.sqrt (Real.log (X:ℝ))⌋₊; let good := fun m : ℕ => Odd m ∧ ∃ a b : ℕ, 1 ≤ a ∧ a < b ∧ b ≤ L ∧ Nat.Prime (m-(2^a+2^b)); c*(X:ℝ) ≤ (((Finset.Ico X (2*X)).filter good).card:ℝ)",
+  "plain_statement": {
+    "zh": "只用 O(√log X) 个允许指数，在每个二倍区间覆盖正比例的奇目标，每个表示使用两个不同二幂与一个素数。",
+    "en": "Cover a positive fraction with a prime and two distinct dyadic shifts at the critical exponent budget."
+  },
+  "brief": {
+    "zh": "素数数目与指数对的朴素计数表明 L=o(√log X) 时总表示数为 o(X)。在临界尺度可尝试控制两枚二幂之和的差所加权的素数对相关；必须扣除对角碰撞。该题研究用多少不同指数就能支撑反射法。",
+    "en": "The prime count and the number of exponent pairs force density zero when L=o(√log X). Seek a second-moment bound at the counting threshold, separating equal shifts and different representations. This quantifies the exponent budget of a reflection method."
+  },
+  "depends_on": [],
+  "imports": [],
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/discussions/4314",
+  "program": "exceptions",
+  "track": "exceptions",
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true
+}

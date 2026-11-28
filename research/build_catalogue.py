@@ -8,6 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 SLUG = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
 MARK = "route_source"
+REFUTATION_DESKS = {"goldbach", "twin-primes", "quadratic-primes", "no-three-in-line", "square-packing", "log-rank", "joshi-abc"}
 COMMUNITY_PROOF = re.compile(
     r"(?:Conjectures\.[A-Z][A-Za-z0-9]*\.[A-Z][A-Za-z0-9]*|PEqualNP\.Outside\.L_[a-z0-9_]+)"
 )
@@ -46,6 +47,8 @@ def build(root):
     old_locations = {}
     for slug, desk in desks.items():
         for g in desk["gaps"]:
+            if g.get("reductions") and slug not in REFUTATION_DESKS:
+                raise ValueError(f"Formal refutations are not enabled for this desk: {g['id']}")
             if MARK in g:
                 old_statements[g["id"]] = g["statement"]
                 old_locations[g["id"]] = {key: g[key] for key in ("file", "module")}
@@ -98,8 +101,8 @@ def build(root):
                 raise ValueError(f"Conflicting task ID, route or missing statement: {task}")
             if not isinstance(g.get("reductions", False), bool):
                 raise ValueError(f"Expected a boolean reductions setting: {task}")
-            if g.get("reductions") and slug != "twin-primes":
-                raise ValueError(f"Proof decomposition pilot is restricted to twin primes: {task}")
+            if g.get("reductions") and slug not in REFUTATION_DESKS:
+                raise ValueError(f"Formal refutations are not enabled for this desk: {task}")
             if not bilingual(g.get("plain_statement", {})) or not bilingual(g.get("brief", {})):
                 raise ValueError(f"Missing bilingual task description: {task}")
             if ident in old_statements and g["statement"] != old_statements[ident]:

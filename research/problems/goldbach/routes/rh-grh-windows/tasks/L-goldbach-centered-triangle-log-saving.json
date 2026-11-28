@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-centered-triangle-log-saving",
+  "statement": "let z := fun n : ℕ => ArithmeticFunction.vonMangoldt n - (1 : ℝ); RiemannHypothesis → ∃ C : ℝ, 0 < C ∧ ∀ N : ℕ, 2 ≤ N → |∑ a ∈ Finset.Icc 1 N, ∑ b ∈ Finset.Icc 1 (N-a), z a * z b| ≤ C*(N : ℝ)*(Real.log (N : ℝ))^2",
+  "plain_statement": {
+    "zh": "只假设黎曼猜想，将正整数三角域 a+b≤N 上中心化冯·曼戈尔特乘积的有符号和控制在 O(N log² N)。",
+    "en": "Under RH, bound the signed triangular sum of (Λ(a)−1)(Λ(b)−1) over positive a+b≤N by O(N log² N) with a sharp cutoff."
+  },
+  "brief": {
+    "zh": "对标 Goldston–Yang 定理 1 及证明中的中心化余项。展开乘积，单变量项可按 a≤N 的权 N−a 单独求和，余下双变量项正是本题。成功会把未平滑的哥德巴赫加权表示累加公式误差从 O(N log³ N) 降为 O(N log² N)。保留所有素数幂与端点；避免对各频段分别取绝对值而损失一次对数。累加估计仍允许单个偶数无表示。",
+    "en": "Compare Goldston–Yang, Theorem 1 and its centered remainder. Expanding the product separates the one-variable sum with weight N−a. Saving one logarithm in the residual would improve the sharp-cutoff summatory estimate while keeping the explicit zero term. Retain prime powers and the endpoints. Try cancellation between dyadic frequency bands before taking absolute values. This controls averages, leaving individual targets open."
+  },
+  "source": "https://arxiv.org/abs/1601.06902",
+  "program": "correlation",
+  "role": "target",
+  "challenge_only": true,
+  "parallel": true,
+  "imports": [],
+  "depends_on": [],
+  "track": "rh-grh-windows"
+}

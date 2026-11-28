@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-local-density-half-endpoint",
+  "statement": "by\n  classical\n  let primes := fun N q a : ℕ => (Finset.Icc 1 N).filter (fun n => Nat.Prime n ∧ n%q=a)\n  exact ∀ A : Set ℕ, (∀ n ∈ A, Nat.Prime n) →\n    (∀ q a : ℕ, 0 < q → a < q → Nat.Coprime a q → ∀ ε : ℝ, 0 < ε → ∃ T : ℕ, ∀ N ≥ T, (1/2-ε)*( (primes N q a).card : ℝ) ≤ (((primes N q a).filter (fun p => p ∈ A)).card : ℝ)) →\n    ∀ η : ℝ, 0 < η → ∃ T : ℕ, ∀ N ≥ T, (((Finset.Icc 1 N).filter (fun n => Even n ∧ ¬ ∃ p ∈ A, ∃ q ∈ A, p+q=n)).card : ℝ) ≤ η*(N : ℝ)",
+  "plain_statement": {
+    "zh": "若素数子集 A 在每个固定既约剩余类中的相对下密度都至少为 1/2，证明几乎所有偶数都能表示为 A 中两素数之和，或构造临界反例。",
+    "en": "Test the half-density endpoint: if A has relative lower density at least one half in every fixed reduced residue class, must A+A contain almost all even integers?"
+  },
+  "brief": {
+    "zh": "Alsetri–Shao 定理 1.2 要求所有类的下密度统一严格超过 1/2。此题包含原定理，并允许各类恰好等于 1/2。备注 1.3 的空档构造只覆盖严格低于一半；令其参数趋近端点不自动给出正比例漏点。可研究接近临界的结构或直接提交严格反例。阈值依赖固定模数、剩余类和精度，不要求对增长模数一致。",
+    "en": "Theorem 1.2 assumes a uniform positive margin above one half. This includes that theorem and reaches equality. Remark 1.3 treats strictly subcritical densities. Track whether a fixed positive proportion of even targets is actually missed before claiming an endpoint counterexample. Thresholds depend on the fixed modulus and residue."
+  },
+  "source": "https://arxiv.org/html/2405.18576v1",
+  "track": "exceptions",
+  "program": "exceptions",
+  "role": "target",
+  "challenge_only": true,
+  "parallel": true,
+  "imports": [],
+  "depends_on": []
+}

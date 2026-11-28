@@ -1,0 +1,29 @@
+{
+  "id": "L-goldbach-fixed-modulus-zero-class-square",
+  "statement": "∃ θ : ℝ, 0 ≤ θ ∧ θ < 1 ∧ ∀ (K : ℕ) (H T : ℝ), ∃ q₀ : ℕ,\n      ∀ (q : ℕ), q₀ ≤ q → ∀ [NeZero q] (S : Finset (DirichletCharacter ℂ q × ℂ)),\n        (∀ p ∈ S, p.1 ≠ 1 ∧ (1/2 : ℝ) < p.2.re ∧ |p.2.im| ≤ T ∧\n          p.1.LFunction p.2 = 0 ∧ (1 - p.2.re) * Real.log (q : ℝ) ≤ H) →\n        let a (p : DirichletCharacter ℂ q × ℂ) : ℝ :=\n          (analyticOrderNatAt p.1.LFunction p.2 : ℝ) *\n            (q : ℝ) ^ ((493/100 : ℝ) * (p.2.re - 1))\n        (Finset.sum S fun p => Finset.sum S fun r =>\n          if (p.1 / r.1).conductor ∣ K.factorial then a p * a r else 0) ≤ θ\n",
+  "plain_statement": {
+    "zh": "固定模数上的近 1 零点按特征分为若干类，两特征之商的导子整除 K! 时归为同一类。模数充分大时，各类加权质量的平方和有统一小于 1 的上界。",
+    "en": "On a common modulus, put two near-1 character–zero pairs in the same class when the conductor of their quotient character divides K!. For sufficiently large moduli, the sum of squared weighted class masses has a uniform bound strictly below 1."
+  },
+  "brief": {
+    "zh": "任取 K、H、T。对同一模数 q 上非主特征与零点的有限配对集合，在实部大于 1/2、虚部绝对值至多 T、对数亏损至多 H 的窗口内，以解析重数乘 exp(−4.93(1−Re ρ)log q) 为权。对商特征导子整除 K! 的有序对求权积。由零点排斥、计数和加权尾部估计取得统一界。该界给 L-goldbach-binary-shift-exception-union 的主弧模型留下正余量。OpenAI 的 Re s > 7/8 无零点结果也推出这一命题。",
+    "en": "Fix K, H and T. On the common modulus q, weight each zero of a nonprincipal character in the window Re ρ > 1/2, |Im ρ| ≤ T and (1−Re ρ)log q ≤ H by its analytic multiplicity times exp(−4.93(1−Re ρ)log q). Sum the weight products over ordered pairs whose quotient character has conductor dividing K!. Combine zero repulsion, counting and weighted tail bounds. The strict upper bound leaves a positive major-arc margin for L-goldbach-binary-shift-exception-union. OpenAI’s zero-free half-plane Re s > 7/8 also implies the statement."
+  },
+  "source": "https://arxiv.org/pdf/1804.09084#page=9",
+  "program": "exceptions",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-frontier-no-siegel-zero"
+  ],
+  "imports": [
+    "Conjectures.Goldbach.B13BilateralVaughanReduction",
+    "Conjectures.Goldbach.BinaryShiftShortMixedEnergy",
+    "Conjectures.Goldbach.DynThinWindowExceptions",
+    "Conjectures.Goldbach.EstermannAlmostAllPolylog",
+    "Conjectures.Goldbach.FareyHyperbolaRectangles",
+    "Conjectures.Goldbach.MajorFixed144",
+    "Conjectures.Goldbach.ThreeQuartersExceptionalDirichletWindows",
+    "PEqualNP.Outside.L_goldbach_frontier_no_siegel_zero"
+  ]
+}

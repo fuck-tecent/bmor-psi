@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-cubic-short-interval-rigidity",
+  "statement": "by\n  classical\n  exact ∀ P : Polynomial ℤ, P.natDegree=3 → ∃ C : ℕ, 0<C ∧ ∀ X H : ℕ, 1≤H → C*(H+1)^3 ≤ X → ∀ a b : Fin 3 → ℕ, (∀ i, a i ∈ Finset.Icc X (X+H) ∧ b i ∈ Finset.Icc X (X+H)) → (∑ i, P.eval ((a i):ℤ)) = (∑ i, P.eval ((b i):ℤ)) → ∃ σ : Equiv.Perm (Fin 3), ∀ i, a i=b (σ i)",
+  "plain_statement": {
+    "zh": "在足够远的立方根长度指标窗口中证明三项三次多项式和完全刚性，仅有重排碰撞。",
+    "en": "Prove exact rigidity of triple sums of cubic values on distant cube-root-length index windows."
+  },
+  "brief": {
+    "zh": "把变量写成 X+u；比较 X²、X 和常数三层，利用整数间距逐层强迫前三个幂和相等，再恢复带重数的三元组。若成功，#4325 的恒等式会给该窗口的精确对角矩，难点转为跨窗口耦合。",
+    "en": "Translate all variables by X. Separate the integer first, second and third power sums by coefficient size, then recover the multiset with multiplicity. In these windows #4325 turns rigidity into an exact diagonal moment."
+  },
+  "source": "https://arxiv.org/html/2611.09386v1",
+  "track": "exceptions",
+  "program": "exceptions",
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true,
+  "depends_on": [],
+  "imports": []
+}

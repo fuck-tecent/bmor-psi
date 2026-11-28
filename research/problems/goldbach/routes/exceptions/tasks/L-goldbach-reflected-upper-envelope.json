@@ -1,0 +1,22 @@
+{
+  "id": "L-goldbach-reflected-upper-envelope",
+  "statement": "by\n  classical\n  let e := fun t : ℝ => Complex.exp (((2*Real.pi*t : ℝ) : ℂ)*Complex.I)\n  let S := fun (N : ℕ) (t : ℝ) => ∑ p ∈ (Finset.range (N+1)).filter Nat.Prime, (Real.log (p : ℝ) : ℂ) * e ((p : ℝ)*t)\n  let arcs := fun N : ℕ => let k := Nat.log 2 (N+2); {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ k ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t-(a : ℝ)/(q : ℝ)| ≤ ((k^3 : ℕ) : ℝ)/((q : ℝ)*(N : ℝ))}\n  let A := fun N m : ℕ => (intervalIntegral ((arcs N).indicator (fun t : ℝ => (S N t)^2 * e (-(m : ℝ)*t))) (0 : ℝ) 1 MeasureTheory.volume).re\n  let C₂ := ∏' p : ℕ, if Nat.Prime p ∧ 2 < p then 1 - 1/((p : ℝ)-1)^2 else 1\n  let band := fun N m : ℕ => 4*N ≤ 3*m ∧ 2*m ≤ 3*N ∧ Even m\n  let R := fun N m : ℕ => A N m / (2*(N:ℝ)-(m:ℝ))\n  let B := fun N : ℕ => (Finset.Icc N (2*N)).filter (band N)\n  exact ∀ ε : ℝ, 0 < ε → ∃ T : ℕ, ∀ N : ℕ, T ≤ N →\n    (∀ m ∈ B N, R N m ≤ (1+ε)*Real.log (Real.log (N:ℝ))) ∧\n    (∃ m ∈ B N, (1-ε)*Real.log (Real.log (N:ℝ)) ≤ R N m)",
+  "plain_statement": {
+    "zh": "证明每一条充分大的反射带上，大弧系数最大值的主项为 log log N。",
+    "en": "Identify the leading maximum of the major-arc coefficient on every sufficiently large reflected band."
+  },
+  "brief": {
+    "zh": "与 #4275 的最小值互补。上界可比较截断的 μ²(q)/φ(q) 之和；下界在带内寻找一个被小素数连乘整除的偶数。必须控制不能强迫整除的剩余分母，其符号可能为负。",
+    "en": "Complement the minimum in #4275. Majorize by the squarefree reciprocal-totient sum. For the lower bound choose a multiple of a suitable primorial inside each band and control the remaining signed denominators."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4275",
+  "track": "exceptions",
+  "program": "exceptions",
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true,
+  "imports": [],
+  "depends_on": [
+    "L-goldbach-reflected-major-sharp-floor"
+  ]
+}

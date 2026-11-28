@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-romanov-short-window-density",
+  "statement": "by\n  classical\n  exact let R := fun n : ℕ => ((Finset.Icc 1 (Nat.log 2 n)).filter (fun e => Nat.Prime (n-2^e))).card; ∃ T : ℕ, ∀ X H : ℕ, T ≤ X → X ≤ H^2 → H ≤ X → 13*H ≤ 100*((Finset.Ico X (X+H)).filter (fun n => Odd n ∧ 0 < R n)).card",
+  "plain_statement": {
+    "zh": "每个长度至少 √X 的窗口中，至少 13% 的全部整数是奇素数加一个正指数二幂。",
+    "en": "Represent at least 13% of all integers in every window of length at least √X as an odd prime and a positive power of two."
+  },
+  "brief": {
+    "zh": "Johnston–Trudgian v2 第 1.2 节记录的全区间下密度为 0.10788。此题同时提高该基线并要求短窗一致；分母是全部整数。局部化表示数的一、二阶矩，特别检验筛法误差对窗口起点的依赖。单个奇数的表示只给出反射法的一侧。",
+    "en": "Section 1.2 of Johnston–Trudgian v2 records a full-range lower density of 0.10788 among all integers. Strengthen that numerical baseline and localize the first and second moments to each moving window. This is one side of a reflection argument."
+  },
+  "depends_on": [],
+  "imports": [],
+  "source": "https://arxiv.org/html/2605.17825v2#S4",
+  "program": "exceptions",
+  "track": "exceptions",
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true
+}

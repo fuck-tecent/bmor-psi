@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-selberg-theta-single-log",
+  "statement": "let θ := fun t : ℝ => ∑ p ∈ (Finset.Icc 2 ⌊t⌋₊).filter Nat.Prime, Real.log (p : ℝ); RiemannHypothesis → ∀ x δ : ℝ, (10 : ℝ)^13 ≤ x → 0 < δ → δ ≤ 1/(10 : ℝ)^13 → (intervalIntegral (fun y : ℝ => (θ ((1+δ)*y) - θ y - δ*y)^2) (1 : ℝ) x MeasureTheory.volume) ≤ (25571/10000 : ℝ)*δ*Real.log ((20001/10000 : ℝ)/δ)*x^2",
+  "plain_statement": {
+    "zh": "在黎曼猜想假设下，保留定理 3 的 x、δ 范围及常数 2.5571，将素数切比雪夫函数短区间方差上界中的 log²(2.0001/δ) 改为一次对数。",
+    "en": "Assuming RH, retain the exact range and coefficient of Theorem 3 while replacing log²(2.0001/δ) by one logarithm in the short-interval theta variance bound."
+  },
+  "brief": {
+    "zh": "对标《On Goldbach numbers in short intervals》定理 3。因 0<δ≤10⁻¹³，对数大于 1，故候选严格推出原界。可从显式公式的成对零点项出发保留相位，单独核对由 ψ 转成 θ 的素数幂误差。不准把额外的对相关猜想藏进假设。成功会在短窗缺素数的二阶矩预算中省去整项对数；转成哥德巴赫数的具体窗长还须重做反射估计。",
+    "en": "Compare Theorem 3 in On Goldbach numbers in short intervals. The logarithm exceeds one throughout the original range, so the candidate implies the old bound directly. Retain phases of zero pairs and control the prime-power correction in passing from psi to theta. No pair-correlation hypothesis is supplied. Revisit the reflected-window argument before claiming a new explicit Goldbach gap."
+  },
+  "source": "https://doi.org/10.1007/s40993-026-00767-6",
+  "track": "rh-grh-windows",
+  "program": "correlation",
+  "role": "target",
+  "challenge_only": true,
+  "parallel": true,
+  "imports": [],
+  "depends_on": []
+}

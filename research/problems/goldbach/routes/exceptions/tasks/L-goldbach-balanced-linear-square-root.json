@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-balanced-linear-square-root",
+  "statement": "by\n  classical\n  let missed := fun (n a b : ℕ) => Nat.Coprime n (a*b) ∧ n % 2 = (a+b) % 2 ∧ ¬ ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ a*p+b*q=n ∧ |((a*p : ℕ) : ℝ) - (n : ℝ)/2| ≤ Real.sqrt n ∧ |((b*q : ℕ) : ℝ) - (n : ℝ)/2| ≤ Real.sqrt n\n  exact ∀ c E : ℕ, ∃ C : ℝ, 0 < C ∧ ∃ N₀ : ℕ, ∀ N : ℕ, N₀ ≤ N → 2 ≤ N → let B := ⌊(Real.log (N : ℝ))^c⌋₊; (((Finset.Icc N (2*N)).filter (fun n => ∃ a ∈ Finset.Icc 1 B, ∃ b ∈ Finset.Icc 1 B, Nat.Coprime a b ∧ missed n a b)).card : ℝ) ≤ C*(N : ℝ)/(Real.log (N : ℝ))^E",
+  "plain_statement": {
+    "zh": "在 [N,2N] 中，除去 O(N/logᴱ N) 个共同例外，对所有不超过 logᶜ N 的互素正系数 a,b 和满足局部条件的 n，找到素数 p,q，使 ap+bq=n 且两项距离 n/2 均不超过 √n。",
+    "en": "Outside one set of O(N/logᴱ N) exceptions in [N,2N], simultaneously solve ap+bq=n for every admissible coprime pair of positive coefficients up to logᶜ N, with each summand within √n of n/2."
+  },
+  "brief": {
+    "zh": "对标 Coppola–Laporta 定理 2，保留互素、奇偶和对数幂例外集条件，将 n^(7/12+ε) 窗口缩至 √n。统一多个系数仅需在已有任意对数节省时取并集，核心难点是缩窗。可先在平方根尺度上估计移动中心的次弧均方，随后用主弧正下界控制例外数。取 a=b=1 就给出几乎所有偶数的近等哥德巴赫表示，逐偶数结论仍需排除剩余例外。",
+    "en": "Compare Coppola–Laporta, Theorem 2. Shrink the half-width from n^(7/12+ε) to √n with the same local restrictions and arbitrary log-power saving. A polylogarithmic union of exceptions costs only log powers; the window is the substantive gain. Seek a moving-centre minor-arc second moment and major-arc lower bound. Taking a=b=1 gives balanced representations for almost all even targets; removing the remaining exceptions is a separate step."
+  },
+  "source": "https://www.giovannicoppola.name/files/articoli/8_giovanni_coppola_number_theory_seminar_politecnico_torino_245.pdf",
+  "track": "exceptions",
+  "program": "correlation",
+  "role": "target",
+  "challenge_only": true,
+  "parallel": true,
+  "imports": [],
+  "depends_on": []
+}

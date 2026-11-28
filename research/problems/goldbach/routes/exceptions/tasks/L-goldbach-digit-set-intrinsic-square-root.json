@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-digit-set-intrinsic-square-root",
+  "track": "exceptions",
+  "statement": "∀ b : ℕ, 2 ≤ b → ∀ D : Finset ℕ, D ⊆ Finset.range b → 2 ≤ D.card → ∃ C : ℝ, 0 < C ∧ ∃ X₀ : ℕ, ∀ X : ℕ, X₀ ≤ X → let A := (Finset.Icc 1 X).filter (fun n => (b.digits n).all (fun d => decide (d ∈ D))); let bad := fun n : ℕ => Even n ∧ ¬ ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ p+q=n; ((@Finset.filter ℕ bad (Classical.decPred bad) A).card : ℝ) ≤ C * Real.sqrt (A.card : ℝ)",
+  "plain_statement": {
+    "zh": "对每个固定进制和至少含两个数字的字母表 D，证明缺少双素数表示的允许偶数，至多为所有允许正整数个数的平方根乘以常数。",
+    "en": "Bound exceptional even targets among integers supported on a fixed digit alphabet by a constant times the square root of the alphabet-restricted population."
+  },
+  "brief": {
+    "zh": "Cumberbatch 的定理给出按允许数字集合大小计算的幂节省。本题固定指数 1/2，对稀疏字母表也按实际大小归一化。研究数字 Fourier 乘积对主弧有理点的聚集，再控制它与哥猜例外指示的相关。分母按所有允许正整数计数；标准进制表示不补前导零。",
+    "en": "Cumberbatch obtains a saving in the intrinsic population. Target exponent 1/2 even for thin alphabets. Use the digit Fourier product to locate concentrations at rational arcs and estimate their interaction with Goldbach exceptions. The population includes all allowed positive integers in their standard representation, without padded leading zeroes."
+  },
+  "source": "https://arxiv.org/abs/2402.07921",
+  "imports": [],
+  "depends_on": [],
+  "role": "target",
+  "parallel": true,
+  "program": "correlation",
+  "challenge_only": true
+}

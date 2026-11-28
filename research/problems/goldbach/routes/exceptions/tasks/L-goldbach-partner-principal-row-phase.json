@@ -1,0 +1,22 @@
+{
+  "id": "L-goldbach-partner-principal-row-phase",
+  "statement": "by\n  classical\n  let S := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    ∑' q : ℕ, if hq : q ≠ 0 then\n      let _ : NeZero q := ⟨hq⟩\n      if h : r ∣ q ∧ s ∣ q then\n        let A := DirichletCharacter.changeLevel h.1 α\n        let B := DirichletCharacter.changeLevel h.2 β\n        gaussSum A ZMod.stdAddChar * gaussSum B ZMod.stdAddChar *\n          gaussSum (A*B)⁻¹ (ZMod.stdAddChar.mulShift (-(m:ZMod q))) / (q.totient:ℂ)^2\n      else 0\n    else 0\n  let O := S (1 : DirichletCharacter ℂ 1) (1 : DirichletCharacter ℂ 1)\n  let P := (1 : DirichletCharacter ℂ 1)\n  let B := Σ s : ℕ, DirichletCharacter ℂ s\n  let valid := fun b : B => b.1 ≠ 0 ∧ b.2.IsPrimitive\n  exact ∀ (s : ℕ) [NeZero s] (β : DirichletCharacter ℂ s), β.IsPrimitive → ∀ m : ℕ, 0 < m → Even m → S P β m = if Squarefree s ∧ s.Coprime m then O m * ((-1:ℂ)^s.primeFactors.card) * β (m:ZMod s) / (∏ p ∈ s.primeFactors, ((p:ℂ)-2)) else 0",
+  "plain_statement": {
+    "zh": "确定平凡首特征与任意原始搭档的复相位、振幅和严格消失条件。",
+    "en": "Determine the full complex principal row, including phase and vanishing for every primitive partner."
+  },
+  "brief": {
+    "zh": "#4316 给出汇总平方和。相位信息有助于在带符号的零点和中保留抵消。对奇平方自由且与 m 互素的导子，将局部和 J(1,β;m) 化为 −β(m)，再重组；在其余导子证明零。模 1 对应空乘积。",
+    "en": "Recover phases lost in the aggregate Parseval bound. Evaluate the local sum as minus the character at m on each surviving prime and prove vanishing at the other conductor shapes. Check the empty product at conductor one."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4316",
+  "program": "exceptions",
+  "role": "target",
+  "challenge_only": true,
+  "parallel": true,
+  "imports": [],
+  "depends_on": [
+    "L-goldbach-partner-level-parseval"
+  ],
+  "track": "exceptions"
+}

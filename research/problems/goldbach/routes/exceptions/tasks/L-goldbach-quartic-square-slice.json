@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-quartic-square-slice",
+  "statement": "by\n  classical\n  exact ∀ ε : ℝ, 0<ε → ∃ C : ℝ, 0<C ∧ ∀ M : ℕ, 2≤M → ∀ A : Finset ℕ, A ⊆ Finset.Icc 1 M → ∀ h : ℤ, let w := fun (k : ℕ) (x : Fin 3 → (↥A)) => ∑ i, ((x i : ℕ):ℤ)^k; let triples := (Finset.univ : Finset ((Fin 3 → (↥A)) × (Fin 3 → (↥A)))); ((triples.filter (fun z => w 4 z.1=w 4 z.2 ∧ w 2 z.1-w 2 z.2=h)).card:ℝ) ≤ C*(M:ℝ)^ε*(A.card:ℝ)^3",
+  "plain_statement": {
+    "zh": "对四次幂三项和碰撞，按两组三元组的平方和之差切片，并证明每片都有对角规模上界。",
+    "en": "A diagonal-scale fourth-power triple-collision bound on slices of fixed square-sum defect."
+  },
+  "brief": {
+    "zh": "固定第一组三元组后，另一组平方数的和与平方和已知。消元得到二元正定二次型（Eisenstein 范数）；非退化表示数需一致的约数估计，零范数另算。这给 #4322 的四次模型提供独立的算术切片。",
+    "en": "Write the second triple as three squares with fixed sum and sum of squares. Elimination leads to a positive definite binary quadratic form. Bound its representations uniformly and handle zero norm separately."
+  },
+  "source": "https://arxiv.org/html/2611.09386v1",
+  "track": "exceptions",
+  "program": "exceptions",
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true,
+  "depends_on": [],
+  "imports": []
+}

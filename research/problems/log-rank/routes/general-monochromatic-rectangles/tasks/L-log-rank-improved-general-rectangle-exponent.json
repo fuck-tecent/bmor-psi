@@ -13,5 +13,6 @@
   "source": "https://github.com/google-research/google-research/tree/master/cogentic_research_papers/logrank_conjecture",
   "parallel": true,
   "depends_on": [],
-  "imports": []
+  "imports": [],
+  "reductions": true
 }

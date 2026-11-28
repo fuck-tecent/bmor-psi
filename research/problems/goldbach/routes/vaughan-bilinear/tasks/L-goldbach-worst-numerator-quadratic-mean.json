@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-worst-numerator-quadratic-mean",
+  "statement": "let S := fun (N : ℕ) (x : ℝ) => ∑ m ∈ Finset.range N, ((ArithmeticFunction.vonMangoldt m : ℝ) : ℂ) * Complex.exp (((2*Real.pi*(m : ℝ)*x : ℝ) : ℂ)*Complex.I); ∀ η : ℝ, 0 < η → ∃ N₀ : ℕ, ∀ N : ℕ, N₀ ≤ N → 2 ≤ N → ∀ a : ℕ → ℕ, (∀ q : ℕ, Nat.Prime q → a q < q ∧ Nat.Coprime (a q) q) → (∑ q ∈ (Finset.Icc 2 N.sqrt).filter (fun q => Nat.Prime q ∧ N ≤ 4*q^2), ‖S N ((a q : ℝ)/(q : ℝ))‖^2) ≤ (N : ℝ)^((23 : ℝ)/12+η)",
+  "plain_statement": {
+    "zh": "对 √N/2≤q≤√N 的素分母，每个 q 任选最坏的既约分子，要求相应冯·曼戈尔特指数和的平方和至多为 N^(23/12+η)。",
+    "en": "Allow an adversarial reduced numerator for each prime denominator between √N/2 and √N; bound the sum of squared Mangoldt sums at these selected rationals by N^(23/12+η)."
+  },
+  "brief": {
+    "zh": "间距至少 1/N 的加法大筛给出 N^(2+o(1))，与目标相差 N^(1/12)。若新界成立，以 N^(3/4) 为阈值，坏素分母数至多 N^(5/12+η)，小于整个约 √N/log N 的分母族。此题保留最坏分子，但仅对精确有理点作模数平均；和逐点父题互补。#4193 的素数幂部分可按绝对值界去除，重点是素数权在选定分数上的平均消去。",
+    "en": "The additive large sieve for 1/N-separated reduced fractions yields N^(2+o(1)). Save N^(1/12). At threshold N^(3/4) this would leave at most N^(5/12+η) bad prime denominators, even after optimizing the numerator. Focus on the prime part after #4193 (its underlying √N log N estimate suffices). This is a mean estimate for exact rationals, separate from pointwise or perturbed arcs."
+  },
+  "source": "https://arxiv.org/html/2608.14777v1",
+  "program": "correlation",
+  "track": "vaughan-bilinear",
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true,
+  "depends_on": [],
+  "imports": []
+}

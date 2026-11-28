@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-transference-linear-floor",
+  "statement": "by\n  classical\n  exact ∀ p M : ℝ, 2 < p → p < 4 → 1 ≤ M → ∃ c K : ℝ, 0 < c ∧ 0 < K ∧ ∀ δ η : ℝ, 0 < δ → δ ≤ 1 → 0 < η → η ≤ 1 →\n    ∀ (N : ℕ) [NeZero N], ∀ f g u v : ZMod N → ℝ,\n    let avg := fun h : ZMod N → ℝ => (∑ x, h x)/(N : ℝ)\n    let ft := fun (h : ZMod N → ℝ) (r : ZMod N) => (∑ x : ZMod N, (h x : ℂ) * Complex.exp (-2*(Real.pi : ℂ)*Complex.I*((r*x).val : ℂ)/(N : ℂ)))/(N : ℂ)\n    (∀ x, 0 ≤ f x ∧ f x ≤ u x ∧ 0 ≤ g x ∧ g x ≤ v x) → 1+δ ≤ avg f + avg g →\n    (∑ r : ZMod N, ‖ft f r‖^p) ≤ M^p → (∑ r : ZMod N, ‖ft g r‖^p) ≤ M^p →\n    (∀ r, ‖ft (fun x => u x-1) r‖ ≤ c*(δ*η)^K ∧ ‖ft (fun x => v x-1) r‖ ≤ c*(δ*η)^K) →\n    ((Finset.univ.filter (fun n : ZMod N => avg (fun x => f x*g (n-x)) < δ/2)).card : ℝ) ≤ η*(N : ℝ)",
+  "plain_statement": {
+    "zh": "保持多项式 Fourier 误差阈值，把几乎处处的卷积下界由 δ³/1000 提高到 δ/2。",
+    "en": "Raise the almost-everywhere convolution floor from cubic to linear while retaining polynomial uniformity."
+  },
+  "brief": {
+    "zh": "#4281 证明了多项式误差阈值。对 [0,1] 内的函数，fg≥f+g−1 给出线性尺度；真正的难点是把这一尺度转移给可能无界的素数权，同时维持误差阈值的多项式依赖。",
+    "en": "Bounded dense models have a linear floor by pointwise inclusion-exclusion. Transfer it to possibly unbounded inputs with a polynomial majorant-uniformity threshold, retaining #4281’s cyclic convolution normalization."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4281",
+  "track": "exceptions",
+  "program": "exceptions",
+  "role": "target",
+  "challenge_only": true,
+  "parallel": true,
+  "imports": [],
+  "depends_on": []
+}

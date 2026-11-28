@@ -1,0 +1,25 @@
+{
+  "id": "L-goldbach-partner-optimal-global-cubic",
+  "statement": "by\n  classical\n  let S := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    ∑' q : ℕ, if hq : q ≠ 0 then\n      let _ : NeZero q := ⟨hq⟩\n      if h : r ∣ q ∧ s ∣ q then\n        let A := DirichletCharacter.changeLevel h.1 α\n        let B := DirichletCharacter.changeLevel h.2 β\n        gaussSum A ZMod.stdAddChar * gaussSum B ZMod.stdAddChar *\n          gaussSum (A*B)⁻¹ (ZMod.stdAddChar.mulShift (-(m:ZMod q))) / (q.totient:ℂ)^2\n      else 0\n    else 0\n  let O := S (1 : DirichletCharacter ℂ 1) (1 : DirichletCharacter ℂ 1)\n  let B := Σ s : ℕ, DirichletCharacter ℂ s\n  let primitive := fun b : B => b.1 ≠ 0 ∧ b.2.IsPrimitive\n  let f := fun p : ℕ => if p.Prime ∧ 3 ≤ p then 1 + 1 / ((p : ℝ) - 2)^2 else 1\n  exact ∃ C : ℝ, HasProd f C ∧\n    (∀ K : ℝ, (∀ (r : ℕ) [NeZero r] (α : DirichletCharacter ℂ r), α.IsPrimitive →\n      ∀ m : ℕ, 0 < m → Even m → ∀ F : Finset B, (∀ b ∈ F, primitive b) →\n      (∑ b ∈ F, ‖S α b.2 m‖^3) ≤ K * ‖O m‖^3) ↔ C ≤ K) ∧\n    (∀ (r : ℕ) [NeZero r] (α : DirichletCharacter ℂ r), α.IsPrimitive →\n      ∀ m : ℕ, 0 < m → Even m → ∀ F : Finset B, (∀ b ∈ F, primitive b) →\n      (F.filter (fun b => ‖O m‖ < Real.sqrt 2 * ‖S α b.2 m‖)).card ≤ 6)",
+  "plain_statement": {
+    "zh": "求所有导子上的最佳统一三次矩常数，并把超过普通值 1/√2 的搭档数降至至多六个。",
+    "en": "Determine the optimal all-conductor cubic moment and bound the number of partners above the 1/√2 threshold by six."
+  },
+  "brief": {
+    "zh": "对每个素数幂使用 #4245 的局部预算，保留素数 Euler 乘积；在 m=2、首特征平凡的奇素数连乘水平由已发布的 sharp-cubic-level 寻找逼近上确界的有限族。对 ≤31 的素数精确相乘，余积用 30/29 控制。六是上界，不要求取到。",
+    "en": "Retain the prime product of the local budgets in #4245. Approximate the supremum by the principal row at m=2 on odd primorial levels. Bound the tail after 31 by 30/29 and apply the cubic bound to the strict threshold. Six need not be attained."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4245",
+  "program": "exceptions",
+  "role": "target",
+  "challenge_only": true,
+  "parallel": true,
+  "imports": [
+    "Conjectures.Goldbach.PrimitivePartnerCubicMass"
+  ],
+  "depends_on": [
+    "L-goldbach-primitive-partner-cubic-mass",
+    "L-goldbach-partner-sharp-cubic-level"
+  ],
+  "track": "exceptions"
+}

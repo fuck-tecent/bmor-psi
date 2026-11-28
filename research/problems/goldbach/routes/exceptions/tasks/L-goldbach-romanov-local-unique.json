@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-romanov-local-unique",
+  "statement": "by\n  classical\n  exact let R := fun n : ℕ => ((Finset.Icc 1 (Nat.log 2 n)).filter (fun e => Nat.Prime (n-2^e))).card; ∃ c : ℝ, 0 < c ∧ ∃ T : ℕ, ∀ X H : ℕ, T ≤ X → X ≤ H^2 → H ≤ X → c*(H:ℝ) ≤ (((Finset.Ico X (X+H)).filter (fun n => Odd n ∧ R n=1)).card:ℝ)",
+  "plain_statement": {
+    "zh": "在每个平方根长度以上的窗口，唯一表示为素数加一个正指数二幂的奇数都有正比例。",
+    "en": "Positive density of uniquely represented odd integers in every square-root-length window."
+  },
+  "brief": {
+    "zh": "Elsholtz–Schlage-Puchta 的唯一表示结果给出全局正下密度。局部结论可检测反射侧的质量是否集中在高重数点。需要在同一动窗内隔离恰一次的贡献，并把其他所有允许指数也纳入排除。",
+    "en": "Elsholtz and Schlage-Puchta prove positive lower density of unique representations globally. Isolate multiplicity exactly one in each moving window and exclude all other exponents. This distinguishes support size from a first-moment bound."
+  },
+  "depends_on": [],
+  "imports": [],
+  "source": "https://tugraz.elsevierpure.com/en/publications/on-romanovs-constant/",
+  "program": "exceptions",
+  "track": "exceptions",
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true
+}

@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-linnik-asymmetric-support-surplus",
+  "statement": "by\n  classical\n  exact let W := fun (k n : ℕ) => ∃ (p : ℕ) (e : Fin k → ℕ), Nat.Prime p ∧ n = p + ∑ i, 2^(e i+1); ∃ c : ℝ, 0 < c ∧ ∃ T : ℕ, ∀ N ≥ T, Even N → let U := (Finset.Ioo 0 N).filter Odd; (1+c)*(U.card:ℝ) ≤ ((U.filter (W 2)).card:ℝ)+((U.filter (W 3)).card:ℝ)",
+  "plain_statement": {
+    "zh": "无条件证明一个素数加两个或三个二幂的两类奇目标，其支撑大小之和超过奇目标总数一个固定比例。",
+    "en": "Uniform support surplus for the two-power and three-power one-prime sets."
+  },
+  "brief": {
+    "zh": "讨论 #4314 的困难在解析正性。这里提出可以直接推出五幂结论的较强中间猜想：反射 m↦N−m 保持奇目标集不变，固定盈余给出至少 c|U| 个不同的相遇点。Li–Liu 第 7 节用加权混合矩处理 GRH 情形；这里需要无条件的支撑估计。",
+    "en": "Reflection yields at least c|U| distinct intersections and hence a five-power two-prime representation for each large even target. Li–Liu Section 7 uses weighted mixed moments under GRH. This asks for unconditional support surplus, providing an analytic objective beyond witness extraction."
+  },
+  "depends_on": [],
+  "imports": [],
+  "source": "https://arxiv.org/html/2610.15784v1#S2",
+  "program": "exceptions",
+  "track": "exceptions",
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true
+}

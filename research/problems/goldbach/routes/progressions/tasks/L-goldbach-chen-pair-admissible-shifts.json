@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-chen-pair-admissible-shifts",
+  "statement": "let ok := fun (n : ℕ) (h k : ℤ) => ∀ l : ℕ, Nat.Prime l → ∃ a : ℤ, ¬ (l : ℤ) ∣ a*(a+h)*((n : ℤ)-a)*((n : ℤ)-a+k); let good := fun (n : ℕ) (h k : ℤ) => ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ p+q=n ∧ 1 < (p : ℤ)+h ∧ 1 < (q : ℤ)+k ∧ ((p : ℤ)+h).toNat.primeFactorsList.length ≤ 2 ∧ ((q : ℤ)+k).toNat.primeFactorsList.length ≤ 2; ∀ H : ℕ, ∃ δ : ℝ, 0 < δ ∧ δ < 1 ∧ ∃ X₀ : ℕ, ∀ X : ℕ, X₀ ≤ X → ∀ h k : ℤ, h ≠ 0 → k ≠ 0 → Even h → Even k → (h.natAbs : ℝ) ≤ (Real.log (X : ℝ))^H → (k.natAbs : ℝ) ≤ (Real.log (X : ℝ))^H → let bad := fun n : ℕ => Even n ∧ ok n h k ∧ ¬good n h k; ((@Finset.filter ℕ bad (Classical.decPred bad) (Finset.Icc 4 X)).card : ℝ) ≤ (X : ℝ)^(1-δ)",
+  "plain_statement": {
+    "zh": "对两个独立的正负偶移位 h、k（绝对值至多为对数幂），在所有局部可容许偶数中证明一致的幂节省例外界，使 p+h 与 q+k 同为至多两个素因子的正数。",
+    "en": "For two independent nonzero even shifts up to a log power, prove a uniform power-saving exceptional bound for locally admissible Goldbach targets with both shifted summands positive almost primes of order two."
+  },
+  "brief": {
+    "zh": "先对每个素模剔除四个禁剩余类；在 p 或 q 上分别使用相应的切换筛，再控制两个移动移位的共同误差。h=k=2、n≡4(mod 6) 时，2 和 3 各有允许类，较大素模至多排除四类，因此包含定理 1.1。异常集可随移位变，误差指数和起始点不能变。",
+    "en": "Allow the exceptional set to depend on the shifts, but keep the exponent and onset uniform. For h=k=2 and n=4 mod 6 the local test holds at 2 and 3 and removes at most four classes at larger primes. Mixed shifts introduce different local roots and sieve errors."
+  },
+  "source": "https://arxiv.org/html/2508.16400v1#S1",
+  "track": "progressions",
+  "program": "correlation",
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true,
+  "imports": [],
+  "depends_on": []
+}

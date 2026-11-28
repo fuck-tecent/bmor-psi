@@ -1,0 +1,22 @@
+{
+  "id": "L-goldbach-partner-sharp-cubic-level",
+  "statement": "by\n  classical\n  let S := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    ∑' q : ℕ, if hq : q ≠ 0 then\n      let _ : NeZero q := ⟨hq⟩\n      if h : r ∣ q ∧ s ∣ q then\n        let A := DirichletCharacter.changeLevel h.1 α\n        let B := DirichletCharacter.changeLevel h.2 β\n        gaussSum A ZMod.stdAddChar * gaussSum B ZMod.stdAddChar *\n          gaussSum (A*B)⁻¹ (ZMod.stdAddChar.mulShift (-(m:ZMod q))) / (q.totient:ℂ)^2\n      else 0\n    else 0\n  let O := S (1 : DirichletCharacter ℂ 1) (1 : DirichletCharacter ℂ 1)\n  exact ∀ D : ℕ, 0 < D → Odd D → Squarefree D → ∃ F : Finset (Σ s : ℕ, DirichletCharacter ℂ s), (∀ b, b ∈ F ↔ b.1 ≠ 0 ∧ b.1 ∣ D ∧ b.2.IsPrimitive) ∧ (∑ b ∈ F, ‖S (1 : DirichletCharacter ℂ 1) b.2 2‖ ^ 3) = ‖O 2‖ ^ 3 * (∏ p ∈ D.primeFactors, (1+1/((p:ℝ)-2)^2)) ∧ ∀ (r : ℕ) [NeZero r], r ∣ D → ∀ α : DirichletCharacter ℂ r, α.IsPrimitive → ∀ m : ℕ, 0 < m → Even m → (∑ b ∈ F, ‖S α b.2 m‖ ^ 3) ≤ ‖O m‖ ^ 3 * (∏ p ∈ D.primeFactors, (1+1/((p:ℝ)-2)^2))",
+  "plain_statement": {
+    "zh": "在无平方因子的奇模数上确定最优三次矩常数，并证明平凡首特征在 m=2 取到它。",
+    "en": "Determine the optimal cubic row constant at each odd squarefree level and exhibit an extremizer."
+  },
+  "brief": {
+    "zh": "#4245 的全局常数为 3。这里要求每个奇无平方因子水平的精确常数，及同一平台全部原始搭档上的取等例。对 p 的平凡首行，非平凡搭档应各贡献 1/(p−2)³；其余行复用已合入的局部上界。",
+    "en": "The uniform constant in #4245 is 3. At each odd squarefree level prove the exact optimal constant, including attainment: principal row, target two, p−2 nonprincipal entries at each prime. Reuse the local upper bounds for other rows."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4245",
+  "program": "exceptions",
+  "role": "target",
+  "challenge_only": true,
+  "parallel": true,
+  "imports": [],
+  "depends_on": [
+    "L-goldbach-primitive-partner-cubic-mass"
+  ],
+  "track": "exceptions"
+}

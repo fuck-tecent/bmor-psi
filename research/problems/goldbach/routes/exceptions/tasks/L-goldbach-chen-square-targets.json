@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-chen-square-targets",
+  "statement": "by\n  classical\n  let chen := fun p : ℕ => Nat.Prime p ∧ (p+2).primeFactorsList.length ≤ 2\n  let good := fun n : ℕ => ∃ p q : ℕ, chen p ∧ chen q ∧ p+q=n\n  exact ∃ δ : ℝ, 0 < δ ∧ δ < 1 ∧ ∃ T : ℕ, ∀ X : ℕ, T ≤ X → (((Finset.Icc 1 X).filter (fun t => ¬good (6*t^2+4))).card:ℝ) ≤ (X:ℝ)^(1-δ)",
+  "plain_statement": {
+    "zh": "在稀疏目标 6t²+4 上证明双陈素数表示，仅允许对参数 t 有幂节省的例外。",
+    "en": "Power-saving exceptions in the parameter for two Chen primes on quadratic targets 6t²+4."
+  },
+  "brief": {
+    "zh": "该序列落在原论文的局部允许类，但到高度 Y 仅约 √Y 项，原密度结论不能直接限制它。可把论文的异常集对偶和换成二次相位和，检查大弧下界能否覆盖该稀疏采样的次弧误差。",
+    "en": "These targets satisfy the mod-six condition but have square-root density in height. Replace the exceptional-set dual sum by a quadratic-phase sum; preserve the major-arc lower bound while controlling the sparse sampling error."
+  },
+  "source": "https://arxiv.org/html/2508.16400v1#S1",
+  "track": "exceptions",
+  "program": "exceptions",
+  "role": "target",
+  "challenge_only": true,
+  "parallel": true,
+  "imports": [],
+  "depends_on": []
+}

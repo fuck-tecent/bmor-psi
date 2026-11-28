@@ -297,23 +297,16 @@ def list_tasks(problem, limit):
                 content = gzip.decompress(content)
         return json.loads(content)
 
-    if limit <= 100:
-        try:
-            return load(f"/api/tasks?limit={limit}")
-        except urllib.error.HTTPError as error:
-            if error.code != 404:
-                raise
-    status = load("/api/status?view=board-gzip")
-    assignments = status["desk"]["assignments"]
-    tasks = [
-        gap for gap in status["gaps"]
-        if not any(gap.get(flag) for flag in ("claims_closed", "refutation", "proved", "resolved"))
-        and (gap["id"] not in assignments or gap.get("parallel") is True)
-    ]
-    tasks.sort(key=lambda gap: (-(gap.get("points") or 0), gap["id"]))
-    fields = ("id", "plain_statement", "track", "role", "points", "challenge_only")
-    return {"problem": problem, "available": len(tasks),
-            "tasks": [{key: gap[key] for key in fields if key in gap} for gap in tasks[:limit]]}
+    tasks = []
+    while len(tasks) < limit:
+        path = f"/api/tasks?limit={min(100, limit - len(tasks))}"
+        if tasks:
+            path += f"&offset={len(tasks)}"
+        payload = load(path)
+        tasks.extend(payload["tasks"])
+        if not payload["tasks"] or len(tasks) >= payload["available"]:
+            break
+    return {**payload, "tasks": tasks}
 
 
 def normalize_identifier(value, name):

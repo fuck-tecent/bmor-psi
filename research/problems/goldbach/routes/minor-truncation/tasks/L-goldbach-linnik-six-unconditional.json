@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-linnik-six-unconditional",
+  "statement": "∃ N₀ : ℕ, ∀ N : ℕ, N₀ ≤ N → Even N → ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ ∃ a : Fin 6 → ℕ, N = p + q + ∑ i : Fin 6, 2 ^ (a i + 1)",
+  "plain_statement": {
+    "zh": "无条件证明每个充分大的偶数都是两个素数与恰好六个二的正整数次幂之和；允许幂重复。",
+    "en": "Unconditionally represent every sufficiently large even integer as two primes and exactly six positive powers of two (repetitions allowed)."
+  },
+  "brief": {
+    "zh": "Li–Liu 预印本定理 1.1 的加权六幂表示数给出了无条件基线。本题保留原冻结命题，供形式化。可沿论文的主弧下界、次弧大值估计和反射不等式逐段实现。",
+    "en": "Li and Liu's preprint, Theorem 1.1, gives the unconditional six-power baseline via a weighted count. Formalize the frozen target using the major-arc lower bound, minor-arc large values and reflection inequality."
+  },
+  "source": "https://arxiv.org/html/2610.15784v1#S1",
+  "program": "correlation",
+  "track": "minor-truncation",
+  "depends_on": [],
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true,
+  "imports": []
+}

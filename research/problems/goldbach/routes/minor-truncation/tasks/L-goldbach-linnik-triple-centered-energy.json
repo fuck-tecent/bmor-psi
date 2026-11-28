@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-linnik-triple-centered-energy",
+  "statement": "let L := fun N : ℕ => Nat.log 2 N; let r := fun N m : ℕ => ∑ a ∈ Finset.Icc 1 (L N), ∑ b ∈ Finset.Icc 1 (L N), ∑ c ∈ Finset.Icc 1 (L N), let p := m - (2^a + 2^b + 2^c); if Nat.Prime p then Real.log (p : ℝ) else 0; ∃ δ : ℝ, 0 < δ ∧ δ < 1 ∧ ∃ N₀ : ℕ, ∀ N : ℕ, N₀ ≤ N → Even N → (∑ m ∈ (Finset.range (N+1)).filter (fun m => Odd m), (r N m - 2*(L N : ℝ)^3)^2) ≤ (1-δ)*2*(N : ℝ)*(L N : ℝ)^6",
+  "plain_statement": {
+    "zh": "无条件证明：一个素数加三个二幂的对数加权表示函数，在奇数上的中心二阶矩，比临界值 2N⌊log₂N⌋⁶ 至少小一个固定比例。",
+    "en": "Unconditionally bound the centered second moment of the log-weighted prime plus three powers representation function on odd targets by a fixed factor below 2N floor(log₂N)^6."
+  },
+  "brief": {
+    "zh": "对照 (13)、(24)–(26)，每个三元组有序，减法下溢时 p=0 自动不计。保留倍频核与大素数和在次弧上的联合分布，避免把两个最坏值直接相乘。严格余量配合已知一阶矩和 Cauchy–Schwarz 可令反射卷积为正。这里的改进是无条件跨过 1 的临界系数，不声称改进 GRH 下的数值。",
+    "en": "Track the joint large values of the dyadic kernel and the prime sum rather than multiplying their separate maxima. Tuples are ordered. A fixed margin below the critical coefficient absorbs the first-moment error and proves positivity of (24) by reflected Cauchy–Schwarz. Compare the unconditional specialization of (26)."
+  },
+  "source": "https://arxiv.org/html/2605.17825v2#S3.SS1",
+  "program": "correlation",
+  "track": "minor-truncation",
+  "depends_on": [],
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true,
+  "imports": []
+}

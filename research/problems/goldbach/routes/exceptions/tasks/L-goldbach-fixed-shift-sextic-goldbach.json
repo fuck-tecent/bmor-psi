@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-fixed-shift-sextic-goldbach",
+  "statement": "∃ N : ℕ, ∀ n : ℕ, N ≤ n → ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ p + q = 2*n^6",
+  "plain_statement": {
+    "zh": "证明每个充分大的 2n⁶ 都有两个素数之和的表示。",
+    "en": "Represent every sufficiently large twice-sixth-power as the sum of two primes."
+  },
+  "brief": {
+    "zh": "对标第 5 节末尾明确提出的 β=0 情形。定理 1 对 P(x)=x⁶ 允许 O(N^(6/7+ε)) 个例外；新题要求例外有限，严格推出该特例。几乎处处平移的结论不能指定 β=0。可先研究素数侧次弧大值和六次幂相位的相关性；只处理素数 n 或有限区间均不足。",
+    "en": "Section 5 explicitly identifies the fixed shift β=0. For P(x)=x⁶, Theorem 1 allows O(N^(6/7+ε)) bad indices. Finiteness recovers this special case and eliminates all large exceptions. Almost-everywhere translation does not select zero. Seek cancellation against the sixth-power phase at the remaining exceptional indices."
+  },
+  "source": "https://arxiv.org/html/2611.09386v1",
+  "program": "exceptions",
+  "track": "exceptions",
+  "role": "target",
+  "challenge_only": true,
+  "parallel": true,
+  "imports": [],
+  "depends_on": []
+}

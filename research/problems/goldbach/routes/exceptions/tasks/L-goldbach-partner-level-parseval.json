@@ -1,0 +1,22 @@
+{
+  "id": "L-goldbach-partner-level-parseval",
+  "statement": "by\n  classical\n  let S := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    ∑' q : ℕ, if hq : q ≠ 0 then\n      let _ : NeZero q := ⟨hq⟩\n      if h : r ∣ q ∧ s ∣ q then\n        let A := DirichletCharacter.changeLevel h.1 α\n        let B := DirichletCharacter.changeLevel h.2 β\n        gaussSum A ZMod.stdAddChar * gaussSum B ZMod.stdAddChar *\n          gaussSum (A*B)⁻¹ (ZMod.stdAddChar.mulShift (-(m:ZMod q))) / (q.totient:ℂ)^2\n      else 0\n    else 0\n  let O := S (1 : DirichletCharacter ℂ 1) (1 : DirichletCharacter ℂ 1)\n  exact ∀ (D r : ℕ) [NeZero D] [NeZero r], r ∣ D → ∀ α : DirichletCharacter ℂ r, α.IsPrimitive → ∀ m : ℕ, 0 < m → Even m → ∃ F : Finset (Σ s : ℕ, DirichletCharacter ℂ s), (∀ b, b ∈ F ↔ b.1 ≠ 0 ∧ b.1 ∣ D ∧ b.2.IsPrimitive) ∧ (∑ b ∈ F, ‖S α b.2 m‖ ^ 2) = ‖O m‖ ^ 2 * ∏ p ∈ D.primeFactors.filter (fun p => ¬ p ∣ m), (((p:ℝ)-1)/((p:ℝ)-2))",
+  "plain_statement": {
+    "zh": "对共同模数 D 内全部原始搭档，求扭曲奇异级数平方和的精确 Euler 乘积。",
+    "en": "An exact level-dependent quadratic mass formula for all primitive partners."
+  },
+  "brief": {
+    "zh": "#4245 对任意有限搭档只需证明提升是单射。本题要求证明全体导子整除 D 的原始搭档恰覆盖模 D 特征，进而把局部 Parseval 等式组装为全局等式。结果量化二次矩随共同模数增长的代价，可用于截断大弧误差。",
+    "en": "Upgrade the injection in #4245 to a bijection for the full family of primitive origins at level D. Combine row orthogonality with the global factorization, retaining the prime factors of D missing from the target."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4245",
+  "program": "exceptions",
+  "role": "target",
+  "challenge_only": true,
+  "parallel": true,
+  "imports": [],
+  "depends_on": [
+    "L-goldbach-primitive-partner-cubic-mass"
+  ],
+  "track": "exceptions"
+}

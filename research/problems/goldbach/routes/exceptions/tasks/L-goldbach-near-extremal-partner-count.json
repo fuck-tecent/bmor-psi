@@ -1,0 +1,22 @@
+{
+  "id": "L-goldbach-near-extremal-partner-count",
+  "statement": "by\n  classical\n  let S := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    ∑' q : ℕ, if hq : q ≠ 0 then\n      let _ : NeZero q := ⟨hq⟩\n      if h : r ∣ q ∧ s ∣ q then\n        let A := DirichletCharacter.changeLevel h.1 α\n        let B := DirichletCharacter.changeLevel h.2 β\n        gaussSum A ZMod.stdAddChar * gaussSum B ZMod.stdAddChar *\n          gaussSum (A*B)⁻¹ (ZMod.stdAddChar.mulShift (-(m:ZMod q))) / (q.totient:ℂ)^2\n      else 0\n    else 0\n  let O := S (1 : DirichletCharacter ℂ 1) (1 : DirichletCharacter ℂ 1)\n  exact ∀ (r : ℕ) [NeZero r] (α : DirichletCharacter ℂ r), α.IsPrimitive →\n    ∀ m : ℕ, 0 < m → Even m →\n    ∀ F : Finset (Σ s : ℕ, DirichletCharacter ℂ s),\n    (∀ b ∈ F, b.1 ≠ 0 ∧ b.2.IsPrimitive ∧ ‖O m‖ < Real.sqrt 2 * ‖S α b.2 m‖) →\n    F.card ≤ 24",
+  "plain_statement": {
+    "zh": "固定原始特征 α 和正偶数 m，允许另一原始特征 β 在所有正导子间变化。扭曲奇异级数绝对值超过普通值 1/√2 的不同搭档（导子，β）总共至多 24 个，原来的例外类也计入。",
+    "en": "Fix a primitive character and a positive even target. Across all positive conductors, at most 24 primitive partners have twisted magnitude above 1/sqrt(2) of the ordinary magnitude, including the exceptional class."
+  },
+  "brief": {
+    "zh": "复用 WeiKun 的 #4106 和 #4023 的非零支撑。先把乘积特征送到共同模数，利用本原诱导的唯一性跨导子去重。例外类的乘积导子整除 36。非例外高值要求 5∤m；在 5 处检查 Jacobi 和，尝试排除平凡搭档与逆搭档，再证明两类何时能共存。仅得 φ(180)=48 不够。此界控制大搭档数，零点重数仍需另估。",
+    "en": "Use #4106 and the nonzero-support criterion in #4023. Lift to a common modulus and prove injectivity after primitive induction. Exceptional product conductors divide 36. In the other case test the modulo-five Jacobi sums for trivial and inverse partners, then show when the cases can coexist. The crude ceiling phi(180)=48 does not suffice. Zero multiplicities are separate."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4106",
+  "program": "exceptions",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-near-extremal-reduced-conductor"
+  ],
+  "imports": [
+    "Conjectures.Goldbach.NearExtremalReducedConductor"
+  ]
+}

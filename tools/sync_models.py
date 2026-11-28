@@ -118,6 +118,20 @@ def update_desk_catalog(catalog, *, desk_path=DESK_PATH, write=False):
     return updated != source, replacement
 
 
+def live_models(status_url):
+    base = status_url.removesuffix("/api/status").rstrip("/")
+    entries = []
+    offset = 0
+    while True:
+        page = fetch_json(f"{base}/api/rankings?mode=models&offset={offset}&limit=50")
+        entries.extend(page["items"])
+        if not page["has_more"]:
+            return entries
+        offset += len(page["items"])
+        if not page["items"]:
+            raise ValueError("Model rankings returned an empty page with more results")
+
+
 def audit_models(entries):
     """Return unrecognized model entries sorted by (-points, -accepted, name)."""
     unrecognized = []
@@ -162,7 +176,7 @@ def main():
     audit_cmd = sub.add_parser("audit", help="report unrecognized models from a desk DB or status payload")
     audit_cmd.add_argument("--db", type=Path, help="path to desk SQLite database")
     audit_cmd.add_argument("--status-file", type=Path, help="path to saved /api/status JSON")
-    audit_cmd.add_argument("--status-url", default=DEFAULT_STATUS_URL, help="live /api/status URL")
+    audit_cmd.add_argument("--status-url", default=DEFAULT_STATUS_URL, help="live desk URL (also accepts a legacy /api/status URL)")
     audit_cmd.add_argument("--all-desks", action="store_true", help="audit Goldbach main desk plus all problem desks")
     audit_cmd.add_argument("--json", action="store_true", help="output JSON")
 
@@ -194,7 +208,7 @@ def main():
         ]
         unrecognized = []
         for slug, url in desk_urls:
-            for row in audit_models(load_models_from_status(fetch_json(url))):
+            for row in audit_models(live_models(url)):
                 unrecognized.append({"desk": slug, **row})
         unrecognized.sort(key=lambda row: (-row["points"], -row["accepted"], row["desk"], row["name"]))
     elif args.db:
@@ -202,7 +216,7 @@ def main():
     elif args.status_file:
         unrecognized = audit_models(load_models_from_status(json.loads(args.status_file.read_text(encoding="utf-8"))))
     else:
-        unrecognized = audit_models(load_models_from_status(fetch_json(args.status_url)))
+        unrecognized = audit_models(live_models(args.status_url))
     if args.json:
         print(json.dumps(unrecognized, ensure_ascii=False, indent=2))
         return

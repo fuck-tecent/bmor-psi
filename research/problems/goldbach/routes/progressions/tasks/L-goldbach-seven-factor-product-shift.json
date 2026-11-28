@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-seven-factor-product-shift",
+  "statement": "let bad := fun n : ℕ => 6 ∣ n ∧ ¬ ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ p+q=n ∧ (2*p*q+1).primeFactorsList.length ≤ 7; ∀ A : ℕ, ∃ X₀ : ℕ, ∀ X : ℕ, X₀ ≤ X → (((@Finset.filter ℕ bad (Classical.decPred bad) (Finset.Ioc (X/2) X)).card : ℝ)*(Real.log (X : ℝ))^A) ≤ (X : ℝ)",
+  "plain_statement": {
+    "zh": "对几乎所有 6 的倍数，寻找素数对 p+q=n，使二次式 2pq+1 至多有七个素因子（计重），保留任意对数幂的例外节省。",
+    "en": "For almost all multiples of six, represent n=p+q by primes with at most seven prime factors of 2pq+1, preserving arbitrary logarithmic savings in the exceptional set."
+  },
+  "brief": {
+    "zh": "对标定理 1.3 的十三个因子。固定 n 后筛二次式 2p(n−p)+1，按素模上的零点数与重根分别估计，不将它当线性多项式。保留 6|n 消除模 3 的固定因子问题。七因子目标需要新的筛估计；该约束检验双素数解在二次剩余类上的分布。",
+    "en": "Compare Theorem 1.3. Sieve the polynomial 2p(n−p)+1, keeping split roots and repeated roots separate at each prime. Retain the multiple-of-six condition. An upper bound for a linear shift alone cannot provide the required quadratic distribution."
+  },
+  "track": "progressions",
+  "program": "correlation",
+  "role": "target",
+  "depends_on": [],
+  "imports": [],
+  "parallel": true,
+  "challenge_only": true,
+  "source": "https://arxiv.org/html/2606.29559v1#S4.SS2"
+}

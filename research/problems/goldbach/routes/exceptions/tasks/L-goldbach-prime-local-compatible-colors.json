@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-prime-local-compatible-colors",
+  "statement": "by\n  classical\n  let primes := fun N q a : ℕ => (Finset.Icc 1 N).filter (fun p => Nat.Prime p ∧ p%q=a)\n  let dense := fun (A : Set ℕ) (d a : ℕ) (t : ℝ) => ∀ ε : ℝ, 0 < ε → ∃ T : ℕ, ∀ N ≥ T, (t-ε)*((primes N d a).card:ℝ) ≤ (((primes N d a).filter (fun p => p ∈ A)).card:ℝ)\n  exact ∀ A B : Set ℕ, (∀ p ∈ A, Nat.Prime p) → (∀ p ∈ B, Nat.Prime p) →\n    ∀ W b : ℕ, 0 < W → b < W → (∃ δ : ℝ, 0 < δ ∧ ∀ d : ℕ, 0 < d → 2*W ∣ d → ∀ r : ℕ, r < d → Even r → r%W=b →\n      ∃ a c : ℕ, a < d ∧ c < d ∧ a.Coprime d ∧ c.Coprime d ∧ (a+c)%d=r ∧ ∃ u v : ℝ, 0 ≤ u ∧ u ≤ 1 ∧ 0 ≤ v ∧ v ≤ 1 ∧ 1+δ ≤ u+v ∧ dense A d a u ∧ dense B d c v) →\n    ∀ η : ℝ, 0 < η → ∃ T : ℕ, ∀ X ≥ T, (((Finset.Icc 1 X).filter (fun n => Even n ∧ n%W=b ∧ ¬∃ p ∈ A, ∃ q ∈ B, p+q=n)).card:ℝ) ≤ η*(X:ℝ)/(W:ℝ)",
+  "plain_statement": {
+    "zh": "允许两套不同的素数子集，仅要求每个目标细分类有一对密度和超过 1 的相容加数类。",
+    "en": "Almost-all binary Goldbach for two prime subsets with target-dependent compatible local densities."
+  },
+  "brief": {
+    "zh": "Alsetri–Shao 定理 1.2 对同一集合在每个既约类都要求超过半密度。本题可在部分加数类完全缺失时使用，只要每个目标细分类仍有一对有固定盈余的类。取 W=1、A=B 且所有类统一超过一半就恢复原定理。可用 #4281 的双输入转移定理逐类组装。",
+    "en": "Theorem 1.2 uses one set uniformly above half in all reduced classes. Here entire summand classes may be absent if each target refinement has a compatible pair with uniform surplus. Set W=1 and A=B to recover the original hypothesis as a sufficient condition. Apply the two-input transfer of #4281 on each compatible pair."
+  },
+  "source": "https://arxiv.org/html/2405.18576v1",
+  "track": "exceptions",
+  "program": "exceptions",
+  "role": "target",
+  "challenge_only": true,
+  "parallel": true,
+  "imports": [],
+  "depends_on": []
+}

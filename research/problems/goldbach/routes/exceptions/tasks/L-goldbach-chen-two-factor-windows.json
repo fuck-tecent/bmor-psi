@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-chen-two-factor-windows",
+  "statement": "by\n  classical\n  let chen := fun p : ℕ => Nat.Prime p ∧ (p+2).primeFactorsList.length ≤ 2\n  let split := fun p : ℕ => ∃ a b : ℕ, Nat.Prime a ∧ Nat.Prime b ∧ a*b=p+2 ∧ a^5 ≤ p+2 ∧ p+2 ≤ a^6\n  exact ∃ δ : ℝ, 0 < δ ∧ δ < 1 ∧ ∃ T : ℕ, ∀ X : ℕ, T ≤ X → (((Finset.Icc X (2*X)).filter (fun n => n%6=4 ∧ ¬ ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ p+q=n ∧ split p ∧ split q)).card:ℝ) ≤ (X:ℝ)^(1-δ)",
+  "plain_statement": {
+    "zh": "要求 p+2 和 q+2 各恰有两个素因子，且各有一个落在自身的 1/6 至 1/5 次幂之间。",
+    "en": "Force a prime divisor in the exponent window [1/6,1/5] for each of two shifted semiprimes."
+  },
+  "brief": {
+    "zh": "原定理允许移位数为素数，也允许两个因子的大小不受限。本题要求两个移位数各落在明确的双线性因子区间。固定第一因子后需在余因子为素数的子族中获得下界，直接套用陈筛的上界不足以保证该区间存在表示。",
+    "en": "Theorem 1.1 allows prime shifts and imposes no factor-size window. Here both shifts must be semiprimes of a prescribed bilinear shape. Seek a lower bound inside the factor window, retaining primality of both complementary factors."
+  },
+  "source": "https://arxiv.org/html/2508.16400v1#S1",
+  "track": "exceptions",
+  "program": "exceptions",
+  "role": "target",
+  "challenge_only": true,
+  "parallel": true,
+  "imports": [],
+  "depends_on": []
+}

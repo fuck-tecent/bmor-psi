@@ -1,0 +1,106 @@
+import Mathlib
+
+-- The character integral and conjugation laws are adapted from the Apache-2.0
+-- BinaryShiftFourierFourth proof in this repository.
+open Finset MeasureTheory
+open scoped ComplexConjugate
+
+namespace GoldbachTripleMomentCharacter
+
+noncomputable def E (x : ℝ) : ℂ := Complex.exp (((2 * Real.pi * x : ℝ) : ℂ) * Complex.I)
+
+lemma phase_add (u v : ℝ) : E (u + v) = E u * E v := by
+  unfold E
+  rw [← Complex.exp_add]
+  congr 1
+  push_cast
+  ring
+
+lemma fourier_mode (m : ℤ) :
+    (∫ t in (0 : ℝ)..1, E ((m : ℝ) * t)) = if m = 0 then 1 else 0 := by
+  by_cases hm : m = 0
+  · subst m
+    simp [E]
+  let c : ℂ := (m : ℂ) * (2 * Real.pi * Complex.I)
+  have he (t : ℝ) : E ((m : ℝ) * t) = Complex.exp (c * (t : ℂ)) := by
+    unfold E c
+    congr 1
+    push_cast
+    ring
+  have hc : c ≠ 0 := by
+    dsimp [c]
+    exact mul_ne_zero (by exact_mod_cast hm)
+      (mul_ne_zero (mul_ne_zero two_ne_zero (by exact_mod_cast Real.pi_ne_zero)) Complex.I_ne_zero)
+  simp_rw [he]
+  rw [integral_exp_mul_complex hc]
+  simp [hm, c, Complex.exp_int_mul_two_pi_mul_I]
+
+
+theorem eneg (x : ℝ) : conj (E x) = E (-x) := by
+  unfold E
+  rw [← Complex.exp_conj]
+  congr 1
+  push_cast
+  simp only [map_mul,Complex.conj_ofReal,Complex.conj_I,map_ofNat]
+  ring
+
+end GoldbachTripleMomentCharacter
+
+open GoldbachTripleMomentCharacter in
+theorem Conjectures.Cuts.Task15427979739773da697a0459 : (by
+  classical
+  let S := fun (f : ℕ → ℤ) (A : Finset ℕ) (t : ℝ) => ∑ j : (↥A), Complex.exp (2*(Real.pi:ℂ)*Complex.I*(f j:ℂ)*(t:ℂ))
+  exact ∀ (f : ℕ → ℤ) (A : Finset ℕ) (r : ℕ),
+    let w := fun u : Fin r → (↥A) => ∑ j : Fin r, f (u j)
+    (∫ t in (0:ℝ)..1, ‖S f A t‖^(2*r)) = (((Finset.univ : Finset ((Fin r → (↥A)) × (Fin r → (↥A)))).filter (fun z => w z.1 = w z.2)).card : ℝ)) := by
+  classical
+  intro S f A r F
+  let T := (Finset.univ : Finset (Fin r → (↥A)))
+  have term (j : ℕ) (t : ℝ) :
+      Complex.exp (2*(Real.pi:ℂ)*Complex.I*(f j:ℂ)*(t:ℂ)) = E ((f j:ℝ)*t) := by
+    unfold E
+    congr 1
+    push_cast
+    ring
+  have expansion (t : ℝ) : (S f A t)^r = ∑ u ∈ T, E ((F u:ℝ)*t) := by
+    change (∑ j : (↥A), Complex.exp (2*(Real.pi:ℂ)*Complex.I*(f j:ℂ)*(t:ℂ)))^r = _
+    simp_rw [term]
+    calc
+      _ = ∏ _i : Fin r, (∑ j : (↥A), E ((f j:ℝ)*t)) := by simp
+      _ = ∑ u ∈ T, ∏ i : Fin r, E ((f (u i):ℝ)*t) :=
+        Fintype.prod_sum (fun (_ : Fin r) (j : (↥A)) => E ((f j:ℝ)*t))
+      _ = _ := by
+        apply sum_congr rfl
+        intro u _
+        unfold E
+        rw [← Complex.exp_sum]
+        congr 1
+        dsimp [F]
+        push_cast
+        simp only [Finset.sum_mul, Finset.mul_sum]
+  let W := T.product T
+  let M := fun (w : (Fin r → (↥A)) × (Fin r → (↥A))) (t : ℝ) => E (((F w.1 - F w.2 : ℤ):ℝ)*t)
+  have ortho (w) : (∫ t in (0:ℝ)..1, M w t) = if F w.1 = F w.2 then 1 else 0 := by
+    simp only [M,fourier_mode,sub_eq_zero]
+  have point (t : ℝ) : ((‖S f A t‖^(2*r):ℝ):ℂ) = ∑ w ∈ W, M w t := by
+    have sqnorm : ((‖S f A t‖^(2*r):ℝ):ℂ) = (S f A t)^r * conj ((S f A t)^r) := by
+      rw [Complex.mul_conj', norm_pow, show 2*r=r*2 by omega, pow_mul]; push_cast; ring
+    rw [sqnorm, expansion, map_sum, sum_mul, show W = T ×ˢ T by rfl, sum_product]
+    apply sum_congr rfl
+    intro u _
+    rw [mul_sum]
+    apply sum_congr rfl
+    intro v _
+    rw [eneg, ← phase_add]
+    dsimp [M]
+    push_cast
+    ring_nf
+  apply Complex.ofReal_injective
+  rw [← intervalIntegral.integral_ofReal]
+  simp_rw [point]
+  rw [intervalIntegral.integral_finsetSum (fun w _ =>
+    (show Continuous (M w) by dsimp [M,E]; fun_prop).intervalIntegrable ..)]
+  simp_rw [ortho]
+  push_cast
+  rw [← Finset.sum_filter]
+  simp [W,T]

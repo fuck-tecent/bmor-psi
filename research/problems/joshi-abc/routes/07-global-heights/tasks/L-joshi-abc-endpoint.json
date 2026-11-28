@@ -22,5 +22,6 @@
   "challenge_only": true,
   "track": "07-global-heights",
   "module": "Conjectures.JoshiAbc.Endpoint",
-  "file": "lean/Conjectures/JoshiAbc/Endpoint.lean"
+  "file": "lean/Conjectures/JoshiAbc/Endpoint.lean",
+  "reductions": true
 }

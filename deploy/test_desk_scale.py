@@ -31,8 +31,6 @@ PROBLEMS = json.loads((ROOT / "research/problems.json").read_text(encoding="utf-
 
 
 class DeskServerTestCase(unittest.TestCase):
-    server_setup = ""
-
     def configure_catalogue(self, folder):
         pass
 
@@ -62,14 +60,31 @@ class DeskServerTestCase(unittest.TestCase):
         self.context = ssl.create_default_context(cafile=str(folder / "fullchain.pem"))
 
         # Use the production TLS/thread/SQLite handlers with a random loopback port and test-only state.
-        launcher = (
-            "from server import Server, Handler\n"
-            f"{self.server_setup}"
-            "Handler.log_request = lambda *args: None\n"
-            "with Server(('127.0.0.1', 0), Handler) as server:\n"
-            "    print(server.server_port, flush=True)\n"
-            "    server.serve_forever()\n"
-        )
+        launcher = """
+import gzip, json, re
+from urllib.parse import urlsplit, parse_qs
+from server import Server, Handler, DESKS, research_status
+
+class FixtureHandler(Handler):
+    def log_request(self, *args):
+        pass
+
+    def do_GET(self):
+        url = urlsplit(self.path)
+        match = re.fullmatch(r'(?:/problems/([a-z-]+))?/fixture-status', url.path)
+        if match:
+            view = parse_qs(url.query).get('view', [])
+            data = research_status(DESKS[match[1] or 'goldbach'], compact=bool(view), board=view == ['board-gzip'])
+            body = json.dumps(data).encode()
+            if view:
+                return self.reply(200, gzip.compress(body), encoding='gzip')
+            return self.reply(200, body)
+        return super().do_GET()
+
+with Server(('127.0.0.1', 0), FixtureHandler) as server:
+    print(server.server_port, flush=True)
+    server.serve_forever()
+"""
         self.server = subprocess.Popen(
             [sys.executable, "-B", "-c", launcher], cwd=folder,
             env={**os.environ, "CREDENTIALS_DIRECTORY": str(folder), "STATE_DIRECTORY": str(folder)},
@@ -125,9 +140,9 @@ class DeskScaleTest(DeskServerTestCase):
                       "manifest": {"rests_on": [{"module": gap["module"], "sha256": "a" * 64}], "defs": []}}
             self.request("/api/verdict", record, signed=True)
             self.request("/api/verdict", record, signed=True)
-            status = self.request(path + "/api/status")
+            status = self.request(path + "/fixture-status")
             with closing(HTTPSConnection("127.0.0.1", self.port, context=self.context)) as conn:
-                conn.request("GET", path + "/api/status?view=web-gzip")
+                conn.request("GET", path + "/fixture-status?view=web-gzip")
                 response = conn.getresponse()
                 self.assertEqual(response.status, 200)
                 self.assertEqual(response.getheader("Content-Encoding"), "gzip")
@@ -263,7 +278,7 @@ class DeskScaleTest(DeskServerTestCase):
                         if not entry.get("parallel"):
                             self.assertLessEqual(count, 1)
                     self.assertEqual(len(set(tokens)), SESSIONS)
-                    status = self.request("/api/status")["desk"]
+                    status = self.request("/fixture-status")["desk"]
                     self.assertEqual(set(status["assignments"]), gaps)
                     self.assertEqual(status["active"], SESSIONS)
                     if ticket:
@@ -285,14 +300,14 @@ class DeskScaleTest(DeskServerTestCase):
                     self.wave(pool, mode, "returns", lambda i: self.request(
                         api + "release", {"reason": "abandoned"}, token=tokens[i],
                     ))
-                    self.assertEqual(self.request("/api/status")["desk"]["active"], 0)
+                    self.assertEqual(self.request("/fixture-status")["desk"]["active"], 0)
 
     def test_parallel_problems_keep_independent_leases_and_verdicts(self):
         paths = ["", *(f"/problems/{slug}" for slug in PROBLEMS)]
         landau = "/problems/quadratic-primes"
         milestone = next(g["id"] for g in PROBLEMS["quadratic-primes"]["gaps"]
                          if g.get("lpf_exponent") == "1.324")
-        baseline = self.request(landau + "/api/status")["lpf_record"]
+        baseline = self.request(landau + "/fixture-status")["lpf_record"]
         self.assertEqual(baseline["current"]["exponent"], "1.323")
         self.assertIsNone(baseline["verified"])
         with ThreadPoolExecutor(max_workers=len(paths)) as pool:
@@ -324,7 +339,7 @@ class DeskScaleTest(DeskServerTestCase):
         with ThreadPoolExecutor(max_workers=len(paths)) as pool:
             list(pool.map(finish, range(len(paths))))
         for path, claim in zip(paths, claims):
-            result = self.request(path + "/api/status")
+            result = self.request(path + "/fixture-status")
             self.assertEqual(result["counts"]["accepted"], 1)
             self.assertEqual(result["counts"]["attempts"], 1)
             self.assertEqual(result["desk"]["rankings"]["proofs"], 1)
@@ -353,7 +368,7 @@ class DeskScaleTest(DeskServerTestCase):
             scopes = {gap: path for path, _, gap in claims}
             for path in paths:
                 expected = [gap for owner, _, gap in claims if owner == path]
-                status = self.request(path + "/api/status")
+                status = self.request(path + "/fixture-status")
                 self.assertEqual(len(expected), expected_claims[path])
                 self.assertEqual(status["desk"]["active"], len(expected))
                 self.assertEqual(set(status["desk"]["assignments"]), set(expected))
@@ -379,7 +394,7 @@ class DeskScaleTest(DeskServerTestCase):
                 claims[i][0] + "/api/desk/release", {"reason": "abandoned"}, token=claims[i][1]
             ))
         for path in paths:
-            self.assertEqual(self.request(path + "/api/status")["desk"]["active"], 0)
+            self.assertEqual(self.request(path + "/fixture-status")["desk"]["active"], 0)
 
     def test_log_rank_sources_and_claim_links(self):
         problem = PROBLEMS["log-rank"]
@@ -398,8 +413,13 @@ class DeskScaleTest(DeskServerTestCase):
                 self.assertIn(material["url"], page)
                 self.assertIn(material["url"], guide)
             self.assertIn("claim --problem log-rank", guide)
-            for task in ids:
-                self.assertIn(f'data-roadmap-task="{task}"', page)
+            self.assertNotIn('data-roadmap-task=', page)
+            for stage in problem["roadmap"]:
+                key = stage.get("route_id") or stage["route_source"]
+                rows = self.request(f"{path}/api/task-page?" + urlencode({"panel": key, "lang": lang, "limit": 3}))
+                self.assertEqual(rows["total"], len(stage["tasks"]))
+                self.assertLessEqual(len(rows["gaps"]), 3)
+                self.assertTrue({g["id"] for g in rows["gaps"]} <= {g["id"] for g in stage["tasks"]})
 
     def test_directory_counts_and_scoped_join_guides(self):
         slug, problem = next(iter(PROBLEMS.items()))
@@ -409,7 +429,7 @@ class DeskScaleTest(DeskServerTestCase):
         self.assertIn(f"Lean verified 0/{total} · {total} available", directory)
         claim = self.request(path + "/api/desk/claim", {"handle": "reader", "gap": problem["gaps"][0]["id"]},
                              ip="192.0.2.11", expected=201)
-        gap = next(g for g in self.request(path + "/api/status")["gaps"] if g["id"] == claim["gap"]["id"])
+        gap = next(g for g in self.request(path + "/fixture-status")["gaps"] if g["id"] == claim["gap"]["id"])
         self.assertEqual(claim["route_id"], gap["route_id"])
         self.assertIn(f"Lean verified 0/{total} · {total} available",
                       self.request("/problems/?lang=en", text=True))
@@ -423,15 +443,20 @@ class DeskScaleTest(DeskServerTestCase):
             directory = self.request(f"/problems/?lang={lang}", text=True)
             self.assertIn(("进行中 · " if lang == "zh" else "In progress · ") + title, directory)
             page = self.request(f"{path}/?lang={lang}", text=True)
-            for task in problem["gaps"]:
-                self.assertIn(f'data-roadmap-task="{task["id"]}"', page)
+            self.assertIn('data-route-panel=', page)
+            self.assertNotIn('data-roadmap-task=', page)
+            self.assertTrue(self.request(f"{path}/api/task-page?limit=48")["gaps"])
             guide = self.request(f"{path}/join{suffix}.txt", text=True)
             self.assertIn(f"python tools/goldbach.py claim --problem {slug}\n", guide)
             self.assertNotIn("python tools/goldbach.py claim\n", guide)
             self.assertIn(f"{path}/?lang={lang}#records", guide)
+            context = "阅读帖子及最新评论" if lang == "zh" else "read the latest replies"
+            self.assertIn(context, guide)
+            self.assertIn("discussion.search_url", guide)
             goldbach_guide = self.request(f"/join{suffix}.txt", text=True)
             self.assertIn("python tools/goldbach.py claim", goldbach_guide)
             self.assertNotIn(f"--problem {slug}", goldbach_guide)
+            self.assertIn(context, goldbach_guide)
 
     def test_rankings_pagination_and_board_initial_slice(self):
         with closing(sqlite3.connect(self.folder / "verdicts.sqlite3")) as conn:
@@ -452,7 +477,7 @@ class DeskScaleTest(DeskServerTestCase):
             conn.commit()
 
         with closing(HTTPSConnection("127.0.0.1", self.port, context=self.context)) as conn:
-            conn.request("GET", "/api/status?view=board-gzip")
+            conn.request("GET", "/fixture-status?view=board-gzip")
             response = conn.getresponse()
             self.assertEqual(response.status, 200)
             board = json.loads(gzip.decompress(response.read()))
@@ -460,17 +485,18 @@ class DeskScaleTest(DeskServerTestCase):
         self.assertEqual(board["desk"]["rankings"]["all_time_total"], 18)
         self.assertEqual(len(board["desk"]["agent_rankings"]["models"]), 12)
         self.assertEqual(board["desk"]["agent_rankings"]["totals"]["models"], 18)
-        index = self.request("/api/status?view=board-index-gzip")
-        delta = self.request("/api/status?view=board-index-delta-gzip")
-        self.assertEqual(index["counts"], board["counts"])
-        self.assertEqual(index["tracks"], board["tracks"])
-        self.assertEqual(index["desk"]["rankings"], board["desk"]["rankings"])
-        self.assertNotIn("tracks", delta)
-        self.assertEqual([g["id"] for g in index["gaps"]], [g["id"] for g in board["gaps"]])
-        self.assertIn("statement", board["gaps"][0])
-        self.assertIn("plain_statement", index["gaps"][0])
-        self.assertNotIn("plain_statement", delta["gaps"][0])
-        for gap in index["gaps"] + delta["gaps"]:
+        overview = self.request("/api/overview")
+        self.assertEqual(overview["counts"], board["counts"])
+        self.assertEqual(overview["tracks"], board["tracks"])
+        self.assertEqual(overview["desk"]["rankings"], board["desk"]["rankings"])
+        self.assertNotIn("gaps", overview)
+        self.assertNotIn("assignments", overview["desk"])
+        index = self.request("/api/task-page?limit=5")
+        self.assertEqual(index["total"], len(board["gaps"]))
+        self.assertEqual(len(index["gaps"]), 5)
+        following = self.request("/api/task-page?limit=5&page=2")
+        self.assertFalse({g["id"] for g in index["gaps"]} & {g["id"] for g in following["gaps"]})
+        for gap in index["gaps"] + following["gaps"]:
             self.assertFalse({"statement", "brief", "source", "file", "imports", "cuts", "assembly"} & gap.keys())
 
         page1 = self.request("/api/rankings?mode=all_time&offset=0&limit=12")
@@ -506,44 +532,97 @@ class DeskScaleTest(DeskServerTestCase):
             response = conn.getresponse()
             self.assertEqual(response.status, 200)
             self.assertEqual(response.headers.get("Content-Type"), "image/svg+xml")
+            self.assertEqual(response.headers.get("Cache-Control"), "public, max-age=300")
+            etag = response.headers.get("ETag")
+            self.assertTrue(etag)
             sprite_svg = gzip.decompress(response.read()).decode("utf-8")
             self.assertIn('id="brand-nex-agi"', sprite_svg)
             self.assertIn('id="brand-antigravity"', sprite_svg)
             self.assertIn('id="brand-tool-other"', sprite_svg)
 
-
-class FullStatusTransferTest(DeskServerTestCase):
-    server_setup = (
-        "import server\n"
-        "server.FULL_STATUS_BURST_BYTES = 1\n"
-        "server.FULL_STATUS_MIN_BYTES = 1\n"
-        "server.FULL_STATUS_REFILL_PER_SECOND = 1e-8\n"
-    )
-
-    def test_only_limit_full_body_transfers(self):
-        headers = {"Accept-Encoding": "gzip", "X-Goldbach-Client-IP": "1.1.1.1"}
         with closing(HTTPSConnection("127.0.0.1", self.port, context=self.context)) as conn:
-            conn.request("GET", "/api/status", headers=headers)
+            conn.request("GET", "/agent-icons.svg", headers={"Accept-Encoding": "gzip", "If-None-Match": etag})
             response = conn.getresponse()
-            self.assertEqual(response.status, 200)
-            etag = response.getheader("ETag")
-            self.assertIn("statement", json.loads(gzip.decompress(response.read()))["gaps"][0])
-
-            conn.request("GET", "/api/status", headers={**headers, "If-None-Match": etag})
-            response = conn.getresponse()
+            response.read()
             self.assertEqual(response.status, 304)
-            self.assertEqual(response.read(), b"")
 
-            conn.request("GET", "/api/status", headers=headers)
+        page_html = self.request("/?lang=zh", text=True)
+        css_ver = hashlib.sha256((ROOT / "deploy/site.css").read_bytes()).hexdigest()[:8]
+        self.assertIn(f'href="site.css?v={css_ver}"', page_html)
+        with closing(HTTPSConnection("127.0.0.1", self.port, context=self.context)) as conn:
+            conn.request("GET", f"/site.css?v={css_ver}", headers={"Accept-Encoding": "gzip"})
             response = conn.getresponse()
-            self.assertEqual(response.status, 429)
-            self.assertGreater(int(response.getheader("Retry-After")), 0)
-            self.assertIn("/api/tasks", json.load(response)["error"])
-
-            conn.request("GET", "/api/status?view=board-index-gzip", headers=headers)
-            response = conn.getresponse()
+            response.read()
             self.assertEqual(response.status, 200)
-            self.assertNotIn("statement", json.loads(gzip.decompress(response.read()))["gaps"][0])
+            self.assertEqual(response.headers.get("Cache-Control"), "public, max-age=604800")
+            self.assertEqual(response.headers.get("Vary"), "Accept-Encoding")
+            self.assertTrue(response.headers.get("ETag"))
+
+        with closing(HTTPSConnection("127.0.0.1", self.port, context=self.context)) as conn:
+            conn.request("GET", "/api/rankings?mode=all_time&offset=0&limit=12", headers={"Accept-Encoding": "gzip"})
+            response = conn.getresponse()
+            response.read()
+            self.assertEqual(response.status, 200)
+            self.assertEqual(response.headers.get("Cache-Control"), "public, max-age=10")
+            rankings_etag = response.headers.get("ETag")
+            self.assertTrue(rankings_etag)
+        with closing(HTTPSConnection("127.0.0.1", self.port, context=self.context)) as conn:
+            conn.request("GET", "/api/rankings?mode=all_time&offset=0&limit=12",
+                         headers={"Accept-Encoding": "gzip", "If-None-Match": rankings_etag})
+            response = conn.getresponse()
+            response.read()
+            self.assertEqual(response.status, 304)
+
+        # Seed one approved sponsor logo and verify WebP/PNG Accept negotiation + 304.
+        from PIL import Image
+        import io
+        buf = io.BytesIO()
+        Image.new("RGBA", (480, 240), (30, 120, 210, 255)).save(buf, format="PNG")
+        with closing(sqlite3.connect(self.folder / "contributor-links.sqlite3")) as conn:
+            conn.execute(
+                "INSERT INTO sponsor_logos(id, owner, name, png, state, submitted, website) VALUES (7, 'u1', 'Demo Org', ?, 'approved', 1, '')",
+                (buf.getvalue(),),
+            )
+            conn.commit()
+        with closing(HTTPSConnection("127.0.0.1", self.port, context=self.context)) as conn:
+            conn.request("GET", "/sponsors/logo/7.png", headers={"Accept": "image/avif,image/webp,image/*,*/*;q=0.8"})
+            response = conn.getresponse()
+            webp_body = response.read()
+            self.assertEqual(response.status, 200)
+            self.assertEqual(response.headers.get("Content-Type"), "image/webp")
+            self.assertEqual(response.headers.get("Vary"), "Accept")
+            self.assertEqual(response.headers.get("Cache-Control"), "public, max-age=604800")
+            self.assertEqual(webp_body[:4], b"RIFF")
+            webp_etag = response.headers.get("ETag")
+        with closing(HTTPSConnection("127.0.0.1", self.port, context=self.context)) as conn:
+            conn.request("GET", "/sponsors/logo/7.png",
+                         headers={"Accept": "image/webp", "If-None-Match": webp_etag})
+            response = conn.getresponse()
+            response.read()
+            self.assertEqual(response.status, 304)
+        with closing(HTTPSConnection("127.0.0.1", self.port, context=self.context)) as conn:
+            conn.request("GET", "/sponsors/logo/7.png", headers={"Accept": "image/png"})
+            response = conn.getresponse()
+            png_body = response.read()
+            self.assertEqual(response.status, 200)
+            self.assertEqual(response.headers.get("Content-Type"), "image/png")
+            self.assertEqual(response.headers.get("Vary"), "Accept")
+            self.assertTrue(png_body.startswith(b"\x89PNG"))
+            self.assertNotEqual(response.headers.get("ETag"), webp_etag)
+
+
+class RetiredStatusTest(DeskServerTestCase):
+    def test_old_status_has_no_bulk_representation(self):
+        for prefix in ("", "/problems/twin-primes"):
+            for suffix in ("", "?view=board-gzip", "?view=web-gzip", "?view=board-index-gzip"):
+                error = self.request(prefix + "/api/status" + suffix, expected=410)
+                self.assertEqual(error["overview"], "api/overview")
+            overview = self.request(prefix + "/api/overview")
+            self.assertNotIn("gaps", overview)
+            catalogue = self.request(prefix + "/api/catalogue-status")
+            self.assertTrue(catalogue["gaps"])
+            self.assertIn("statement_sha256", catalogue["gaps"][0])
+            self.assertNotIn("statement", catalogue["gaps"][0])
 
 
 if __name__ == "__main__":

@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-chen-forced-three",
+  "statement": "by\n  classical\n  let ok := fun p : ℕ => 3 < p ∧ Nat.Prime p ∧ ¬ 9 ∣ p+2 ∧ ((p+2)/(if 3 ∣ p+2 then 3 else 1)).primeFactorsList.length ≤ 2\n  exact ∃ C : ℝ, 0 < C ∧ ∀ X : ℕ, 2 ≤ X → (((Finset.Icc 4 X).filter (fun m => Even m ∧ ¬ ∃ p q : ℕ, ok p ∧ ok q ∧ p+q=m)).card : ℝ) ≤ C*(X : ℝ)^(1-(1/10000 : ℝ))",
+  "plain_statement": {
+    "zh": "对所有偶数类同时研究两素数表示。对每个加数 p>3，仅当 p+2 含有因子 3 时剥去一个 3，禁止 9 整除，剩余部分至多有两个素因子（计重数）。要求 X 以内例外总数为 O(X^(1−1/10000))。",
+    "en": "Cover all even classes by two primes above three. For each shifted prime p+2, strip exactly one forced factor of three when present, exclude divisibility by nine, and demand at most two remaining prime factors with multiplicity. Seek O(X^(1−1/10000)) exceptions."
+  },
+  "brief": {
+    "zh": "Grimmelt–Teräväinen 定理 1.1 在 m≡4 (mod 6) 上给出某个正幂节省。对该类，p,q>3 强迫两者都 ≡2 (mod 3)，因此新命题在旧类保留原有陈素数要求，并指定一个可检验指数。在其余偶数类允许剥掉受同余强迫的 3，无需把 p+2=3r 中的 r 强行压成素数。先按模 9 固定可行的加数类，再对所得线性形式检验筛下界与例外零点损失。旧论文未给出能直接比较的数值 δ，故不宣称 1/10000 已超过其最佳指数。",
+    "en": "Theorem 1.1 of Grimmelt–Teräväinen gives a power saving on m≡4 mod 6. For that class both summands above three must be 2 mod 3, recovering the ordinary Chen requirements. The other classes need the forced local factor. Work in fixed classes mod nine and check that the rescaled linear forms admit a lower sieve with a compatible exceptional-character error. The original unspecified exponent is not numerically compared with 1/10000."
+  },
+  "source": "https://arxiv.org/html/2508.16400v1",
+  "track": "exceptions",
+  "program": "exceptions",
+  "role": "target",
+  "challenge_only": true,
+  "parallel": true,
+  "imports": [],
+  "depends_on": []
+}

@@ -13,7 +13,9 @@
   "program": "exceptions",
   "parallel": true,
   "depends_on": [],
-  "imports": [],
+  "imports": [
+    "Conjectures.Goldbach.EstermannAlmostAllPolylog"
+  ],
   "track": "exceptions",
   "role": "target",
   "module": "Conjectures.Goldbach.BinaryShiftExceptionUnion",

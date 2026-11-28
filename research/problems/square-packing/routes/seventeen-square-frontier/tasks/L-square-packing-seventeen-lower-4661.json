@@ -21,5 +21,6 @@
   "challenge_only": true,
   "imports": [
     "Conjectures.SquarePacking.SeventeenWeightedBridge4661"
-  ]
+  ],
+  "reductions": true
 }

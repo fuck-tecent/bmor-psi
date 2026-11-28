@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-farey-semiprime-factor-rectangle",
+  "statement": "by\n  classical\n  exact let I := fun n : ℕ => Finset.Icc ((n+2)/3) ((2*n)/3); let P := fun z : ℕ => (Finset.Icc 2 z).filter Nat.Prime; let V := fun n z : ℕ => ((I n).card:ℝ)*(n.totient:ℝ)/n * ∏ p ∈ (P z).filter (fun p => ¬ p ∣ n), (1-2/(p:ℝ)); let S := fun n z : ℕ => ((I n).filter (fun u => u.Coprime n ∧ z < (u*(n-u)).minFac)).card; let Z₁ := fun n : ℕ => ⌊(n:ℝ)^(1/3:ℝ)⌋₊; let B := fun X : ℕ => (Finset.Icc X (2*X)).filter Even; let box := fun (n u : ℕ) (a b : ℝ) => u.primeFactorsList.length=2 ∧ (n:ℝ)^a < (u.minFac:ℝ) ∧ (u.minFac:ℝ) ≤ (n:ℝ)^b; let w := fun a b : ℝ => Real.log ((b*(1-a))/(a*(1-b))); ∀ a b c d : ℝ, 1/3 ≤ a → a < b → b ≤ 1/2 → 1/3 ≤ c → c < d → d ≤ 1/2 → ∀ ε : ℝ, 0 < ε → ∃ T : ℕ, ∀ X ≥ T, let R := fun n : ℕ => ((I n).filter (fun u => u.Coprime n ∧ box n u a b ∧ box n (n-u) c d)).card; let K := (Real.exp Real.eulerMascheroniConstant/3)^2*w a b*w c d; (∑ n ∈ B X, |(R n:ℝ)/V n (Z₁ n)-K|) ≤ ε*((B X).card:ℝ)",
+  "plain_statement": {
+    "zh": "分别指定两个半素数最小素因子的指数区间，求中央反射窗内计数的平均绝对误差。",
+    "en": "A joint factor-window law for both semiprimes in the central reflected interval."
+  },
+  "brief": {
+    "zh": "对最小素因子指数 t 的单侧候选密度为 dt/(t(1−t))，积分给出 w；不能假设两侧独立。#3819 的总幸存数混合了素数与半素数，本题可检验半素数—半素数分量在何处提供主质量。规范化取同一 V(n,Z₁)，允许例外目标但要求其误差总量可控。",
+    "en": "Integrating dt/(t(1−t)) gives the one-coordinate semiprime factor weight. Test the joint law for two separately specified rectangles without assuming independence. This resolves a component of the survivor count in #3819 and controls errors in mean absolute value."
+  },
+  "depends_on": [],
+  "imports": [],
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/discussions/3819",
+  "program": "correlation",
+  "track": "farey-inverse-sieve",
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true
+}

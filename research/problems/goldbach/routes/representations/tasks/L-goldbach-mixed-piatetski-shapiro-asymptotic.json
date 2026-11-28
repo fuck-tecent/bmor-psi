@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-mixed-piatetski-shapiro-asymptotic",
+  "statement": "let ps := fun (g : ℝ) (p : ℕ) => ∃ j : ℕ, 0 < j ∧ ⌊(j : ℝ)^(1/g)⌋₊=p; let c₀ : ℝ := ∏' l : ℕ, if Nat.Prime l ∧ 2 < l then 1-1/((l : ℝ)-1)^2 else 1; let sing := fun n : ℕ => 2*c₀*∏ l ∈ n.primeFactors.filter (fun l => 2 < l), ((l : ℝ)-1)/((l : ℝ)-2); ∀ u v : ℝ, 9/10 ≤ u → u ≤ 1 → 9/10 ≤ v → v ≤ 1 → let w := fun (g : ℝ) (p : ℕ) => @ite ℝ (Nat.Prime p ∧ ps g p) (Classical.propDecidable _) ((p : ℝ)^(1-g)*Real.log (p : ℝ)/g) 0; ∀ ε : ℝ, 0 < ε → ∃ X₀ : ℕ, ∀ X : ℕ, X₀ ≤ X → let bad := fun n : ℕ => Even n ∧ ε*sing n*(n : ℝ) < |(∑ p ∈ Finset.range (n+1), w u p*w v (n-p))-sing n*(n : ℝ)|; ((@Finset.filter ℕ bad (Classical.decPred bad) (Finset.Icc 4 X)).card : ℝ) ≤ ε*(X : ℝ)",
+  "plain_statement": {
+    "zh": "两套独立 Piatetski–Shapiro 指数 γ₁、γ₂ 都允许降至 9/10，在几乎所有偶数上证明补偿加权的双素数表示渐近式，保留普通哥猜奇异级数主项。",
+    "en": "Extend the compensated two-summand Piatetski–Shapiro Goldbach asymptotic to independent exponents in [9/10,1], with the usual binary singular series for almost all even targets."
+  },
+  "brief": {
+    "zh": "对标李洪泽定理 2 的 γᵢ>27/29。不能用仅保证下界或只约束一侧的结果替代。把素数上的薄序列权分别展开，重点估计双侧非零频率的交叉项。取 γ=1 时该侧恢复普通对数素数权。",
+    "en": "Compare H. Z. Li's Theorem 2. Subtract the ordinary logarithmic prime weight on each side and bound the cross term of the two sparse oscillatory errors. A one-sided estimate or a lower bound for equal exponents alone does not yield the asymptotic."
+  },
+  "source": "https://www.impan.pl/shop/en/publication/transaction/download/product/82175",
+  "track": "representations",
+  "program": "correlation",
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true,
+  "imports": [],
+  "depends_on": []
+}

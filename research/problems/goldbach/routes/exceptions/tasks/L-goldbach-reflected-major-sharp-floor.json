@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-reflected-major-sharp-floor",
+  "statement": "by\n  classical\n  let e := fun t : ℝ => Complex.exp (((2*Real.pi*t : ℝ) : ℂ)*Complex.I)\n  let S := fun (N : ℕ) (t : ℝ) => ∑ p ∈ (Finset.range (N+1)).filter Nat.Prime, (Real.log (p : ℝ) : ℂ) * e ((p : ℝ)*t)\n  let arcs := fun N : ℕ => let k := Nat.log 2 (N+2); {t : ℝ | ∃ q a : ℕ, 1 ≤ q ∧ q ≤ k ∧ a ≤ q ∧ Nat.Coprime a q ∧ |t-(a : ℝ)/(q : ℝ)| ≤ ((k^3 : ℕ) : ℝ)/((q : ℝ)*(N : ℝ))}\n  let A := fun N m : ℕ => (intervalIntegral ((arcs N).indicator (fun t : ℝ => (S N t)^2 * e (-(m : ℝ)*t))) (0 : ℝ) 1 MeasureTheory.volume).re\n  let C₂ := ∏' p : ℕ, if Nat.Prime p ∧ 2 < p then 1 - 1/((p : ℝ)-1)^2 else 1\n  let band := fun N m : ℕ => 4*N ≤ 3*m ∧ 2*m ≤ 3*N ∧ Even m\n  exact ∀ ε : ℝ, 0 < ε →\n    (∃ T : ℕ, ∀ N m : ℕ, T ≤ N → band N m → (2*C₂-ε)*(2*(N : ℝ)-(m : ℝ)) ≤ A N m) ∧\n    (∀ T : ℕ, ∃ N m : ℕ, T ≤ N ∧ 1 ≤ N ∧ band N m ∧ A N m ≤ (2*C₂+ε)*(2*(N : ℝ)-(m : ℝ)))",
+  "plain_statement": {
+    "zh": "在 #4198 的同一组大弧上，求证归一化系数 A(N,m)/(2N−m) 在 4N/3≤m≤3N/2 的偶数带上的渐近最优下界恰为 2C₂，其中 C₂ 为孪生素数常数。",
+    "en": "Identify 2C₂ as the optimal asymptotic lower bound of the normalized major-arc coefficient A(N,m)/(2N−m) on even targets in the reflected band, for the arcs of PR #4198."
+  },
+  "brief": {
+    "zh": "沿用 #4198 已核验的素数权、半开周期的端点拼接、截断与一致模型误差。将 Ramanujan 和依照整除 m 的平方自由部分分组，分别控制剩余交错尾部；不可直接假定对所有 m 的截断奇异级数相对误差都趋零。对最优性可沿 m 为 2 的幂选取带内整数 N。下界若成立，因 2N−m≥N/2，将把 7N/64 提高到 (C₂−o(1))N，同时给出任何进一步提高归一化常数的障碍。次弧项另行控制。",
+    "en": "Keep the weights, endpoints and two cutoffs from #4198. Group the Ramanujan sum by the squarefree divisor supported on m, controlling the remaining alternating tails without assuming uniform relative convergence to the full series. Test powers of two for sharpness. The lower half improves 7N/64 to (C₂−o(1))N; the upper subsequence certifies optimality. Minor arcs remain separate."
+  },
+  "source": "https://github.com/CGandGameEngineLearner/goldbach-proofs/pull/4198",
+  "track": "exceptions",
+  "program": "exceptions",
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true,
+  "imports": [],
+  "depends_on": []
+}

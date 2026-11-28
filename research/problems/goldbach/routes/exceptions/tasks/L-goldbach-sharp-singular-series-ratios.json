@@ -1,0 +1,26 @@
+{
+  "id": "L-goldbach-sharp-singular-series-ratios",
+  "statement": "by\n  classical\n  let S := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    ∑' q : ℕ, if hq : q ≠ 0 then\n      let _ : NeZero q := ⟨hq⟩\n      if h : r ∣ q ∧ s ∣ q then\n        let A := DirichletCharacter.changeLevel h.1 α\n        let B := DirichletCharacter.changeLevel h.2 β\n        gaussSum A ZMod.stdAddChar * gaussSum B ZMod.stdAddChar *\n          gaussSum (A*B)⁻¹ (ZMod.stdAddChar.mulShift (-(m:ZMod q))) / (q.totient:ℂ)^2\n      else 0\n    else 0\n  let O := S (1 : DirichletCharacter ℂ 1) (1 : DirichletCharacter ℂ 1)\n  let X := fun {r s : ℕ} (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s) (m : ℕ) =>\n    r/(m.gcd r) ∣ 36 ∧ s/(m.gcd s) ∣ 36 ∧ r/(r.gcd s) ∣ 3 ∧ s/(r.gcd s) ∣ 3 ∧\n      ((DirichletCharacter.changeLevel (Nat.dvd_lcm_left r s) α)*\n       (DirichletCharacter.changeLevel (Nat.dvd_lcm_right r s) β)).conductor ∣ 36\n  let P : DirichletCharacter ℂ 1 := 1\n  let K := fun (m : ℕ) (z w : ℂ) =>\n    (Complex.Gamma z*Complex.Gamma w/Complex.Gamma (z+w))*(m:ℂ)^(z+w-1)\n  let F := fun {r : ℕ} (χ : DirichletCharacter ℂ r) (z : ℂ) (m : ℕ) =>\n    (m:ℂ)*S P P m - 2*(S χ P m*K m z 1) + S χ χ m*K m z z\n  exact\n    (∀ K : ℝ, (∀ (r s : ℕ) [NeZero r] [NeZero s] (α : DirichletCharacter ℂ r) (β : DirichletCharacter ℂ s),\n      α.IsPrimitive → β.IsPrimitive → ∀ m : ℕ, 0 < m → Even m → ¬X α β m →\n      ‖S α β m‖ ≤ K*‖O m‖) ↔ Real.sqrt 5/3 ≤ K) ∧\n    (∃ χ : DirichletCharacter ℂ 5, χ.IsPrimitive ∧ χ^4=1 ∧ χ*χ ≠ 1 ∧\n      ∀ m : ℕ, 0 < m → Even m → ¬5 ∣ m → ¬X χ χ m ∧ 3*‖S χ χ m‖=Real.sqrt 5*‖O m‖) ∧\n    (∀ (r : ℕ) [NeZero r] (χ ψ : DirichletCharacter ℂ r), χ.IsPrimitive → ψ.IsPrimitive →\n      χ*ψ=1 → ∀ m : ℕ, 0 < m → Even m → ¬r ∣ 6*m → 3*‖S χ ψ m‖ ≤ ‖O m‖) ∧\n    (∀ p : ℕ, p.Prime → 3 ≤ p → ∃ χ : DirichletCharacter ℂ p, χ.IsPrimitive ∧ χ.IsQuadratic ∧\n      ∀ m : ℕ, 0 < m → Even m → ¬p ∣ m →\n      ((p:ℝ)-2)*‖S χ P m‖=‖O m‖ ∧ ((p:ℝ)-2)*‖S χ χ m‖=‖O m‖) ∧\n    (∀ (r : ℕ) [NeZero r] (χ : DirichletCharacter ℂ r), χ.IsPrimitive → χ.IsQuadratic → ¬r ∣ 30 →\n      (∀ m : ℕ, 0 < m → Even m → ¬r ∣ 6*m →\n        2*‖S χ P m‖+‖S χ χ m‖ ≤ (3/5:ℝ)*‖O m‖) ∧\n      ∀ z : ℂ, 1-1/128 ≤ z.re → z.re ≤ 1 →\n        (∀ m : ℕ, 0 < m → Even m → ¬r ∣ 6*m → ∀ err : ℂ,\n          (29/80:ℝ)*‖O m‖*m-‖err‖ ≤ (F χ z m+err).re) ∧\n        (∀ (N : ℕ) (err : ℕ → ℂ), (∀ m ∈ Finset.Ioc 0 N, Even m → ‖err m‖ ≤ (9/80:ℝ)*m) →\n          ((Finset.Ioc 0 N).filter (fun m : ℕ => Even m ∧ (F χ z m+err m).re < (m:ℝ)/4)).card ≤\n            N/(r/(r.gcd 6))))",
+  "plain_statement": {
+    "zh": "扭曲哥德巴赫奇异级数的最优比值与单个二次特征的主项下界",
+    "en": "Optimal twisted Goldbach singular-series ratios and a one-character main-term floor"
+  },
+  "brief": {
+    "zh": "Pintz (7.8) 的五个整除条件之外，全体本原特征对的最优常数为 √5/3，模 5 四次特征取到等号。互逆对在 r 不整除 6m 时的最优常数为 1/3。对每个奇素数 p，模 p 的二次特征在所有与 p 互素的正偶目标上给出精确比值 1/(p−2)。若二次特征的导子 r 不整除 30，在 r 不整除 6m 的偶目标上，两项混合系数和对角系数的范数和至多为普通级数的 3/5。靠近 1 的单零点主项给出 29/80 下界。显式余项不超过 9m/80 时，低于 m/4 的目标数至多为 ⌊N/(r/gcd(r,6))⌋。",
+    "en": "Outside the five divisibilities of Pintz (7.8), the optimal factor is sqrt(5)/3, attained by a quartic character modulo 5. For inverse pairs it is 1/3 off r | 6m. At every odd prime p the quadratic character gives exact ratios 1/(p−2) on every positive even unit target. For a quadratic conductor r not dividing 30, the two mixed terms and the diagonal have combined relative norm at most 3/5 off r | 6m. The one-zero main term has relative floor 29/80. With error at most 9m/80, at most floor(N/(r/gcd(r,6))) targets fall below m/4."
+  },
+  "source": "https://arxiv.org/abs/1804.05561",
+  "program": "exceptions",
+  "role": "lemma",
+  "parallel": true,
+  "depends_on": [
+    "L-goldbach-b13-bilateral-vaughan-reduction",
+    "L-goldbach-deep-three-quarters-exceptional-zero-criterion",
+    "L-goldbach-binary-shift-order-tail"
+  ],
+  "imports": [
+    "Conjectures.Goldbach.B13BilateralVaughanReduction",
+    "Conjectures.Goldbach.DeepThreeQuartersExceptionalZeroCriterion",
+    "Conjectures.Goldbach.BinaryShiftOrderTail"
+  ]
+}

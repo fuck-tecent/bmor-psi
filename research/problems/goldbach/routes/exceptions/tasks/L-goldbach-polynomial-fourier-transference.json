@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-polynomial-fourier-transference",
+  "statement": "by\n  classical\n  exact ∀ p M : ℝ, 2 < p → p < 4 → 1 ≤ M → ∃ c K : ℝ, 0 < c ∧ 0 < K ∧ ∀ δ η : ℝ, 0 < δ → δ ≤ 1 → 0 < η → η ≤ 1 →\n    ∀ (N : ℕ) [NeZero N], ∀ f g u v : ZMod N → ℝ,\n    let avg := fun h : ZMod N → ℝ => (∑ x, h x)/(N : ℝ)\n    let ft := fun (h : ZMod N → ℝ) (r : ZMod N) => (∑ x : ZMod N, (h x : ℂ) * Complex.exp (-2*(Real.pi : ℂ)*Complex.I*((r*x).val : ℂ)/(N : ℂ)))/(N : ℂ)\n    (∀ x, 0 ≤ f x ∧ f x ≤ u x ∧ 0 ≤ g x ∧ g x ≤ v x) → 1+δ ≤ avg f + avg g →\n    (∑ r : ZMod N, ‖ft f r‖^p) ≤ M^p → (∑ r : ZMod N, ‖ft g r‖^p) ≤ M^p →\n    (∀ r, ‖ft (fun x => u x-1) r‖ ≤ c*(δ*η)^K ∧ ‖ft (fun x => v x-1) r‖ ≤ c*(δ*η)^K) →\n    ((Finset.univ.filter (fun n : ZMod N => avg (fun x => f x*g (n-x)) < δ^3/1000)).card : ℝ) ≤ η*(N : ℝ)",
+  "plain_statement": {
+    "zh": "给二元哥猜的 Fourier 转移原理一个定量版本：证明伪随机主化函数的 Fourier 误差只须小于 c(δη)^K，就可保留原有卷积下界及例外比例。",
+    "en": "Seek a polynomial Fourier-uniformity threshold c(δη)^K in the binary transference theorem, keeping its convolution floor and exceptional fraction."
+  },
+  "brief": {
+    "zh": "对标 Alsetri–Shao 命题 3.1。固定其 p 与 M，原命题允许依赖 δ、η 的足够小常数；此题要求统一的幂次与系数。若成立，取此阈值即可恢复原命题。第 3 节通过 Bohr 集拟合稠密模型，体积可能随大谱规模指数变小。试用卷积层面的直接逼近，或构造具有许多独立大谱方向的障碍。本题仅改善转移损耗，素数主化函数的误差还须独立验证。",
+    "en": "Compare Proposition 3.1. For fixed p and M the proposed polynomial modulus gives an admissible explicit form of its unspecified threshold. Section 3 smooths on a Bohr set whose volume can decay exponentially in the large-spectrum size. Seek a direct convolution estimate or an obstruction from independent frequencies. Prime majorants require separate verification."
+  },
+  "source": "https://arxiv.org/html/2405.18576v1",
+  "track": "exceptions",
+  "program": "exceptions",
+  "role": "target",
+  "challenge_only": true,
+  "parallel": true,
+  "imports": [],
+  "depends_on": []
+}

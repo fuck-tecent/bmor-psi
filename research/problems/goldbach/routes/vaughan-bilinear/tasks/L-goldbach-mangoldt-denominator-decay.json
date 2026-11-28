@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-mangoldt-denominator-decay",
+  "statement": "let S := fun (N : ℕ) (x : ℝ) => ∑ m ∈ Finset.range N, ((ArithmeticFunction.vonMangoldt m : ℝ) : ℂ) * Complex.exp (((2*Real.pi*(m : ℝ)*x : ℝ) : ℂ)*Complex.I); ∀ η : ℝ, 0 < η → ∃ N₀ : ℕ, ∀ N q : ℕ, N₀ ≤ N → 2 ≤ N → ∀ a : ℤ, ∀ x : ℝ, 0 < q → q^2 ≤ N → Nat.Coprime a.natAbs q → let e := |x - (a : ℝ)/(q : ℝ)|; e ≤ 1/((q : ℝ)*Real.sqrt (N : ℝ)) → let B := max (q : ℝ) ((q : ℝ)*(N : ℝ)*e); ‖S N x‖ ≤ (N : ℝ)^η * (N : ℝ)/Real.sqrt B",
+  "plain_statement": {
+    "zh": "对每个 Dirichlet 有理逼近 x=a/q+e，证明 Mangoldt 指数和只有 N^(1+o(1))/√B 这一项，其中 B=max(q,qN|e|)，q²≤N 且 |e|≤1/(q√N)。",
+    "en": "Prove uniform denominator decay N^(1+o(1))/sqrt(B) for the Mangoldt exponential sum at every Dirichlet approximation x=a/q+e with q²≤N, |e|≤1/(q sqrt N), and B=max(q,qN|e|)."
+  },
+  "brief": {
+    "zh": "与 Maynard–Pandey–Radziwiłł 定理 1.1 的全部参数对齐，挑战是去掉独立的 N^(19/24) 项。原定理已覆盖 B≤N^(5/12) 的尺度；优先处理大 B，尤其靠近 √N 的 Type II 项。终点得到 N^(3/4+o(1)) 的逐点界。用于小弧大值分析时仍须处理低分母区；单个指数和上界也不直接控制每个偶数的带符号傅里叶系数。 综合该文比较的 Kumchev 界，B≤N^(9/20) 的范围也已覆盖。",
+    "en": "The extra N^(19/24) term in the 2026 theorem is absorbed for B≤N^(5/12). Concentrate on the Type II estimates beyond this threshold. At B near sqrt N the requested exponent is 3/4. This sharpens large-value budgets on high-denominator arcs; low denominators and the signed target coefficient still need separate estimates. Kumchev's alternative estimate in the same introduction already covers B≤N^(9/20)."
+  },
+  "source": "https://arxiv.org/abs/2608.14777",
+  "program": "correlation",
+  "track": "vaughan-bilinear",
+  "depends_on": [],
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true,
+  "imports": []
+}

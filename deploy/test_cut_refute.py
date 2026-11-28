@@ -13,7 +13,7 @@ from pathlib import Path
 from unittest.mock import Mock, patch
 from unittest import skipUnless
 
-from deploy.test_desk_scale import DeskServerTestCase, ROOT
+from deploy.test_desk_scale import DeskServerTestCase, PROBLEMS, ROOT
 
 sys.path.insert(0, str(ROOT / "deploy/jenkins"))
 from tools import goldbach as cli
@@ -39,7 +39,6 @@ class CutFlow(DeskServerTestCase):
         root = {**data["gaps"][0], "id": PARENT, "statement": P, "parallel": True,
                 "module": "Conjectures.Fixtures.Parent", "file": "lean/Conjectures/Fixtures/Parent.lean",
                 "reductions": True}
-        self.disabled = data["gaps"][0]["id"]
         data["gaps"].append(root)
         for key, statement, name in ((NEGATIVE, f"¬ ({P})", "Negative"), (OTHER, "True", "Other")):
             data["gaps"].append({**root, "id": key, "statement": statement,
@@ -155,17 +154,16 @@ class CutFlow(DeskServerTestCase):
 
     def exercise(self, native):
         self.native = native
-        self.request(DESK + "claim", {"gap": self.disabled, "handle": "x", "kind": "cut"}, expected=409)
         _, first = self.submit_task(PARENT, "cut", "split-one", [A, B])
         _, second = self.submit_task(PARENT, "cut", "split-two", [C, B])
         def gaps():
-            return {g["id"]: g for g in self.request("/api/status")["gaps"]}
+            return {g["id"]: g for g in self.request("/fixture-status")["gaps"]}
         board = gaps()
         left, right = [c["children"] for c in board[PARENT]["cuts"]]
         self.assertEqual(self.request(f"/api/task?lemma={PARENT}")["cuts"], board[PARENT]["cuts"])
         child = left[0]
         self.assertEqual(self.request(f"/api/task?lemma={child}")["statement"], board[child]["statement"])
-        delta = self.request("/api/status?view=board-index-delta-gzip")
+        delta = self.request("/api/task-page?focus=" + child)
         child_row = next(row for row in delta["gaps"] if row["id"] == child)
         self.assertEqual(child_row["plain_statement"], board[child]["plain_statement"])
         self.assertNotIn("statement", child_row)
@@ -187,7 +185,7 @@ class CutFlow(DeskServerTestCase):
         self.assertEqual(board[a]["refutation"]["handle"], "counterexample")
         self.assertTrue(board[a]["resolved"])
         self.assertIsNone(board[a]["points"])
-        rankings = self.request("/api/status")["desk"]["rankings"]["all_time"]
+        rankings = self.request("/fixture-status")["desk"]["rankings"]["all_time"]
         scores = {r["handle"]: (r["accepted"], r["points"], r.get("cuts", 0)) for r in rankings}
         self.assertEqual(scores, {"counterexample": (1, 1, 0), "split-one": (0, 1, 1), "split-two": (0, 1, 1)})
         self.request(DESK + "claim", {"gap": a, "kind": "prove", "handle": "late"}, expected=409)
@@ -205,6 +203,34 @@ class CutFlow(DeskServerTestCase):
     def test_desk_flow(self):
         self.exercise(False)
 
+    def test_runner_interruption_allows_retry_on_same_head(self):
+        receipt = self.request(DESK + "claim", {"gap": PARENT, "kind": "cut", "handle": "retry-user"}, expected=201)
+        gap, token = receipt["gap"], receipt["lease"]["token"]
+        pr, head = 1051, "a" * 40
+        self.request(DESK + "submit", {"pr": pr, "head": head, "agent": {"model": "test", "harness": "codex"}}, token=token)
+        auth = {"pr": pr, "head": head, "gap": PARENT, "handle": "retry-user", "kind": "cut",
+                "module": gap["module"], "statement_sha256": hashlib.sha256(P.encode()).hexdigest()}
+        self.request(DESK + "authorize", dict(auth, run_id=11), signed=True)
+        failed = {"pr": pr, "head_sha": head, "run_id": 11}
+        self.request(DESK + "check-failed", failed, expected=401)
+        self.request(DESK + "check-failed", failed, signed=True)
+        detail = self.request("/api/task?lemma=" + PARENT)
+        self.assertIsNone(detail["assignment"])
+        status = self.request("/api/overview")
+        self.assertEqual(status["counts"]["attempts"], 0)
+        self.assertTrue(any(x["kind"] == "error" and x.get("pr") == pr for x in status["desk"]["activities"]))
+        self.request(DESK + "authorize", dict(auth, run_id=12), signed=True)
+        self.request(DESK + "check-failed", failed, signed=True)
+        proof = {"lemma_id": PARENT, "kind": "cut", "module": gap["module"], "head_sha": head,
+                 "verdict": "ACCEPTED", "run_id": 12, "run_attempt": 1,
+                 "manifest": {"rests_on": [{"module": gap["module"], "sha256": "b" * 64}],
+                              "defs": [], "children": [A, B]}}
+        self.request("/api/verdict", proof, signed=True)
+        self.request(DESK + "check-failed", dict(failed, run_id=12), signed=True)
+        detail = self.request("/api/task?lemma=" + PARENT)
+        self.assertFalse(detail["proved"])
+        self.assertEqual([(x["run_id"], x["points"]) for x in detail["cuts"]], [(12, 1)])
+
     def test_catalogued_negative_proof_settles_original_and_blocks_dependent_cuts(self):
         self.native = False
         self.submit_task(PARENT, "cut", "split-original", [A, B])
@@ -212,7 +238,7 @@ class CutFlow(DeskServerTestCase):
         late = self.submit_task(OTHER, "cut", "late-cut", [P, C], defer=True)
         self.submit_task(NEGATIVE, "prove", "legacy-refuter", "")
         late()
-        status = self.request("/api/status")
+        status = self.request("/fixture-status")
         gaps = {g["id"]: g for g in status["gaps"]}
         self.assertTrue(gaps[NEGATIVE]["proved"])
         self.assertTrue(gaps[PARENT]["resolved"])
@@ -228,16 +254,36 @@ class CutFlow(DeskServerTestCase):
         self.native = False
         self.submit_task(PARENT, "cut", "bad-route", [A, B, "Exclusive"])
         self.submit_task(PARENT, "cut", "good-route", [B, C])
-        before = {g["id"]: g for g in self.request("/api/status")["gaps"]}
+        before = {g["id"]: g for g in self.request("/fixture-status")["gaps"]}
         first, second = before[PARENT]["cuts"]
         bad, shared, exclusive = first["children"]
         self.submit_task(bad, "refute", "refuter", f"¬ ({A})")
-        after = {g["id"]: g for g in self.request("/api/status")["gaps"]}
+        after = {g["id"]: g for g in self.request("/fixture-status")["gaps"]}
         self.assertEqual([cut["status"] for cut in after[PARENT]["cuts"]], ["refuted", "live"])
         self.assertTrue(after[exclusive]["claims_closed"])
         self.assertFalse(after[shared].get("claims_closed", False))
         self.request(DESK + "claim", {"gap": exclusive, "handle": "late"}, expected=409)
         self.request(DESK + "claim", {"gap": PARENT, "handle": "direct"}, expected=201)
+
+    def test_open_tasks_can_be_split_across_desks(self):
+        unflagged = json.loads((self.published / "gaps.json").read_bytes())["gaps"][0]
+        without_flags = [("", unflagged)] + [
+            (f"/problems/{slug}", next(gap for gap in problem["gaps"] if not gap.get("reductions")
+                                     and not gap.get("claims_closed") and not gap.get("refutation")))
+            for slug, problem in PROBLEMS.items()
+        ]
+        for index, (prefix, task) in enumerate(without_flags):
+            with self.subTest(desk=prefix):
+                ident = task["id"]
+                self.assertTrue(self.request(f"{prefix}/api/task?lemma={ident}")["takes_cuts"])
+                self.assertEqual(self.request(prefix + DESK + "claim", {
+                    "gap": ident, "kind": "refute", "handle": f"smoke-{index}",
+                }, expected=409)["error"], "refutations_disabled")
+                receipt = self.request(prefix + DESK + "claim", {
+                    "gap": ident, "kind": "cut", "handle": f"smoke-{index}",
+                }, expected=201)
+                self.assertEqual(receipt["gap"]["id"], ident)
+                self.request(prefix + DESK + "release", {"reason": "other"}, token=receipt["lease"]["token"])
 
     def test_limits_inheritance_and_reuse(self):
         self.native = False
@@ -248,14 +294,14 @@ class CutFlow(DeskServerTestCase):
         overflow = self.submit_task(PARENT, "cut", "overflow", ["D", "E"], defer=True)
         self.submit_task(PARENT, "cut", "c3", [A, C])
         overflow()
-        gaps = {g["id"]: g for g in self.request("/api/status")["gaps"]}
+        gaps = {g["id"]: g for g in self.request("/fixture-status")["gaps"]}
         cuts = gaps[PARENT]["cuts"]
         self.assertEqual(cuts[2]["reason"], "duplicate_cut")
         self.assertEqual(cuts[3]["reason"], "cut_limit")
         self.assertFalse(cuts[3]["children"])
         self.assertEqual(gaps[PARENT]["reductions_live"], 3)
         self.assertEqual([cut.get("points", 0) for cut in cuts], [1, 1, 0, 0, 1])
-        rankings = self.request("/api/status")["desk"]
+        rankings = self.request("/fixture-status")["desk"]
         for period in ("hour", "all_time"):
             self.assertEqual({r["handle"]: (r["accepted"], r["points"], r["cuts"])
                               for r in rankings["rankings"][period]}, {"c1": (0, 1, 1), "c2": (0, 1, 1), "c3": (0, 1, 1)})
@@ -268,18 +314,37 @@ class CutFlow(DeskServerTestCase):
                                       expected=409)["error"], "cut_limit")
         a, reused = cuts[0]["children"]
         self.assertEqual(reused, known["id"])
-        self.assertFalse(gaps[reused]["takes_cuts"])
+        self.assertTrue(gaps[reused]["takes_cuts"])
         self.submit_task(a, "cut", "recursive", ["X", "Y"])
         self.submit_task(a, "cut", "cycle", [P, "Z"])
-        board = self.request("/api/status?view=board-delta-gzip")
+        board = self.request("/fixture-status?view=board-delta-gzip")
         by_id = {g["id"]: g for g in board["gaps"]}
         self.assertEqual(by_id[a]["cuts"][1]["reason"], "cyclic_cut")
         for child in by_id[a]["cuts"][0]["children"]:
             self.assertEqual(by_id[child]["depth"], 2)
-            self.assertEqual(by_id[child]["cut_reason"], "cut_depth_limit")
+            self.assertTrue(by_id[child]["takes_cuts"])
+
+        cursor = by_id[a]["cuts"][0]["children"][0]
+        for depth in range(3, 9):
+            self.submit_task(cursor, "cut", f"depth-maker-{depth}", [f"input-{depth}-left", f"input-{depth}-right"])
+            parent_detail = self.request(f"/api/task?lemma={cursor}")
+            cursor = parent_detail["cuts"][0]["children"][0]
+            detail = self.request(f"/api/task?lemma={cursor}")
+            self.assertEqual(detail["depth"], depth)
+            self.assertEqual(detail["takes_cuts"], depth < 8)
+        self.assertEqual(self.request(DESK + "claim", {"gap": cursor, "handle": "deeper", "kind": "cut"},
+                                      expected=409)["error"], "cut_depth_limit")
+
+        # Reusing an existing shallow task must not extend its downstream chain past the cap.
+        self.submit_task(OTHER, "cut", "other-root", ["secondary-root-left", "secondary-root-right"])
+        other = self.request(f"/api/task?lemma={OTHER}")["cuts"][0]["children"][0]
+        self.submit_task(other, "cut", "too-deep-via-reuse", [by_id[a]["statement"], "another-input"])
+        rejected = self.request(f"/api/task?lemma={other}")["cuts"][0]
+        self.assertEqual((rejected["status"], rejected["reason"], rejected["children"]),
+                         ("surplus", "cut_depth_limit", []))
 
         self.submit_task(PARENT, "prove", "first-proof", P)
-        scores = {r["handle"]: r for r in self.request("/api/status")["desk"]["rankings"]["all_time"]}
+        scores = {r["handle"]: r for r in self.request("/fixture-status")["desk"]["rankings"]["all_time"]}
         self.assertEqual(scores["first-proof"]["accepted"], 1)
         self.assertNotIn("cuts", scores["first-proof"])
         self.assertEqual(scores["c1"]["points"], 1)
@@ -307,7 +372,7 @@ class CutFlow(DeskServerTestCase):
                     self.assertEqual(cli.current_branch(), receipt["branch"])
                     self.assertIn("expires_at", cli.desk("beat", {}, receipt["token"]))
                     cli.desk("release", {"reason": "statement_seems_false"}, receipt["token"])
-                self.assertFalse(any(g.get("refutation") for g in self.request("/api/status")["gaps"] if g["id"] == PARENT))
+                self.assertFalse(any(g.get("refutation") for g in self.request("/fixture-status")["gaps"] if g["id"] == PARENT))
 
     @skipUnless(os.environ.get("GOLDBACH_TEST_LEAN") == "1", "requires pinned Lean and built mathlib cache")
     def test_kernel_flow(self):
@@ -348,7 +413,7 @@ class CutFlow(DeskServerTestCase):
         self.request(DESK + "assembly-complete", dict(result, plan_hash="a" * 64), signed=True, expected=409)
         for _ in range(2):
             self.request(DESK + "assembly-complete", result, signed=True)
-        parent = next(g for g in self.request("/api/status")["gaps"] if g["id"] == PARENT)
+        parent = next(g for g in self.request("/fixture-status")["gaps"] if g["id"] == PARENT)
         self.assertTrue(parent["proved"])
         self.assertEqual(parent["assembly"]["proof"], plan["proof"])
         self.assertEqual([c["status"] for c in parent["cuts"]], ["refuted", "completed"])

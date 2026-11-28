@@ -1,0 +1,20 @@
+{
+  "id": "L-goldbach-balanced-chen-prime-pairs",
+  "statement": "let bad := fun n : ℕ => n%6=4 ∧ ¬ ∃ p q : ℕ, Nat.Prime p ∧ Nat.Prime q ∧ p+q=n ∧ (p+2).primeFactorsList.length ≤ 2 ∧ (q+2).primeFactorsList.length ≤ 2 ∧ (p-q)^2 ≤ n ∧ (q-p)^2 ≤ n; ∃ δ : ℝ, 0 < δ ∧ δ < 1 ∧ ∃ X₀ : ℕ, ∀ X : ℕ, X₀ ≤ X → ((@Finset.filter ℕ bad (Classical.decPred bad) (Finset.Icc 4 X)).card : ℝ) ≤ (X : ℝ)^(1-δ)",
+  "plain_statement": {
+    "zh": "在模 6 余 4 的目标中，除 O(X^(1−δ)) 个例外，每个 n 都有一对陈素数之和表示，且两素数之差至多 √n。",
+    "en": "Represent all but O(X^(1−δ)) targets congruent to 4 modulo 6 by two Chen primes with absolute difference at most sqrt(n)."
+  },
+  "brief": {
+    "zh": "对照 Grimmelt–Teräväinen 定理 1.1，把两个筛权局部化到以 n/2 为中心、宽度仅 √n 的同一反射窗口。必须在该窗口内重新证明均值与误差估计。两个自然数截断差同时受限；忽略间距可恢复原定理的幂节省结论。",
+    "en": "Localize both sieve weights in the same reflected window before estimating errors. Both truncated differences are bounded, capturing absolute distance. Forgetting the gap recovers the qualitative power saving of Theorem 1.1."
+  },
+  "source": "https://arxiv.org/html/2508.16400v1#S1",
+  "track": "dyadic-reflection",
+  "program": "correlation",
+  "role": "target",
+  "parallel": true,
+  "challenge_only": true,
+  "imports": [],
+  "depends_on": []
+}
