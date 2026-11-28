@@ -2632,3 +2632,62 @@ Neither step needs new mathematics; both are length.  Step 1 is the only part wi
 genuine choice of constant.
 
 Dossier: 2907 -> 2970 lines, no `sorry`.
+
+## Milestone 44: `d(n) = n^o(1)` — step 2 of 3 done
+
+Per the PR constraint (one Lean file, ≤ 2 MiB; the file is 152 KiB) everything goes into
+`b1b1_port.lean` rather than a second module that would have to be inlined later.
+
+### 44.1 Verified
+
+```lean
+/-- `∏ (x i)^δ = (∏ x i)^δ` for nonnegative factors. -/
+theorem prod_rpow_eq_rpow_prod …
+
+/-- Product monotonicity for nonnegative real factors.
+    (`MulLeftMono ℝ` does *not* hold, so `Finset.prod_le_prod` is unusable here.) -/
+theorem prod_le_prod_nonneg …
+
+/-- **`d(n) ≤ C_δ^(ω n) · n^δ`** with `C_δ = 2/(δ log 2)`. -/
+theorem card_divisors_le_pow_mul_rpow (n : ℕ) (δ : ℝ) (hδ : 0 < δ) (hn : 0 < n) :
+  (n.divisors.card : ℝ) ≤ (2 / (δ * Real.log 2)) ^ n.primeFactors.card * (n : ℝ) ^ δ
+```
+
+Assembly: `Nat.card_divisors` ⟹ `d(n) = ∏_{p ∈ primeFactors}(e_p+1)`; step 1 applies
+factorwise; `∏ p^(δ e_p) = (∏ p^e_p)^δ = n^δ` via `prod_rpow_eq_rpow_prod`,
+`Nat.prod_factorization_pow_eq_self`, `Real.rpow_mul`, `Real.rpow_natCast`.
+
+### 44.2 Landmines recorded
+
+* `Finset.prod_le_prod` needs `[MulLeftMono N]`, which **fails for `ℝ`** (negatives).
+  There is no `prod_le_prod_of_nonneg` in this Mathlib; `prod_le_prod_nonneg` above is
+  the replacement (induction + `mul_le_mul`).
+* `Nat.prod_factorization_pow_eq_self (hn : n ≠ 0) : n.factorization.prod (· ^ ·) = n`;
+  to use it on `∏ p ∈ n.primeFactors, …` rewrite with
+  `← Nat.prod_factorization_eq_prod_primeFactors` first.
+* `rw [← hnat]` where `hnat : ∏ … = n` will also rewrite occurrences of `n` *inside*
+  `n.primeFactors`.  Cast the ℕ identity to `ℝ` instead and `push_cast` it.
+* `↑(e + 1)` (ℕ addition, then cast) versus `↑e + 1` (real addition) needs `push_cast`
+  before applying step 1.
+
+### 44.3 Step 3 remains — and why it is not short
+
+Step 2 leaves `d(n) ≤ C_δ^ω · n^δ`.  For `d(n) ≤ n^ε` one needs
+`C_δ^ω ≤ n^(ε−δ)`, i.e. `ω(n) log C_δ ≤ (ε−δ) log n`.
+
+* `ω(n) ≤ log₂ n` (trivial) gives `ω log C_δ ≤ (log C_δ/log 2) log n`, and
+  `log C_δ/log 2 ≤ ε/2` forces `δ ≥ 4/(ε log 2)·2^{−ε/2} → ∞` as `ε → 0`.  **Insufficient.**
+* A `√(log n)` bound on `ω` would suffice, but is **false** in general; the truth is
+  `ω(n) ≤ (1+o(1)) log n / log log n`, and the elementary route is
+  `n ≥ ∏_{p|n} p ≥ ∏_{i≤ω}(i+1) = (ω+1)!`, whence `ω log ω ≲ log n`.
+
+So step 3 needs `Nat.factorial` growth bounds plus `Real.log`/`Real.log ∘ Real.log`
+manipulation: ~150–250 lines, no new mathematics.  The three ingredients are:
+
+```text
+(A)  ∏_{i<ω}(i+1) = ω! ≤ ∏_{p ∈ primeFactors} p ≤ n
+(B)  ω! ≥ (ω/2)^(ω/2)          -- discard the small half of the factors
+(C)  ω ≤ ε' log n when ω ≥ K(ε') and ε' log 2 · log(K/2) ≥ 2
+```
+
+Dossier: 2956 → 3040 lines, no `sorry`.

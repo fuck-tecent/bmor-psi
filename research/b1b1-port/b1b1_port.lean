@@ -2953,4 +2953,82 @@ theorem add_one_le_rpow_mul (δ : ℝ) (hδ : 0 < δ) (p : ℕ) (hp : 2 ≤ p) (
     linarith
   exact hCe.trans (mul_le_mul_of_nonneg_left hbern (by positivity))
 
+/-! ### Milestone 43 (step 2): the product assembly `d(n) ≤ C_δ^(ω n) · n^δ` -/
+
+/-- `∏ (x i)^δ = (∏ x i)^δ` for nonnegative factors. -/
+theorem prod_rpow_eq_rpow_prod {ι : Type*} (s : Finset ι) (x : ι → ℝ) (δ : ℝ)
+    (hx : ∀ i ∈ s, 0 ≤ x i) :
+    (∏ i ∈ s, (x i) ^ δ) = (∏ i ∈ s, x i) ^ δ := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert a s ha ih =>
+      rw [Finset.prod_insert ha, Finset.prod_insert ha,
+        Real.mul_rpow (hx a (by simp)) (Finset.prod_nonneg fun i hi => hx i (by simp [hi])),
+        ih (fun i hi => hx i (by simp [hi]))]
+
+/-- Product monotonicity for nonnegative real factors (`MulLeftMono ℝ` does not hold). -/
+theorem prod_le_prod_nonneg {ι : Type*} (s : Finset ι) (f g : ι → ℝ)
+    (hf : ∀ i ∈ s, 0 ≤ f i) (hg : ∀ i ∈ s, 0 ≤ g i) (h : ∀ i ∈ s, f i ≤ g i) :
+    (∏ i ∈ s, f i) ≤ ∏ i ∈ s, g i := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert a s ha ih =>
+      rw [Finset.prod_insert ha, Finset.prod_insert ha]
+      exact mul_le_mul (h a (by simp))
+        (ih (fun i hi => hf i (by simp [hi])) (fun i hi => hg i (by simp [hi]))
+          (fun i hi => h i (by simp [hi])))
+        (Finset.prod_nonneg fun i hi => hf i (by simp [hi])) (hg a (by simp))
+
+/-- **`d(n) ≤ C_δ^(ω n) · n^δ`** with `C_δ = 2/(δ log 2)`. -/
+theorem card_divisors_le_pow_mul_rpow (n : ℕ) (δ : ℝ) (hδ : 0 < δ) (hn : 0 < n) :
+    (n.divisors.card : ℝ) ≤ (2 / (δ * Real.log 2)) ^ n.primeFactors.card * (n : ℝ) ^ δ := by
+  classical
+  set C : ℝ := 2 / (δ * Real.log 2) with hC
+  have hCpos : 0 < C := by rw [hC]; positivity
+  have hn0 : n ≠ 0 := by omega
+  -- `∏ p ∈ primeFactors, p^(e_p) = n`
+  have hfact : (∏ p ∈ n.primeFactors, (p : ℝ) ^ (n.factorization p)) = (n : ℝ) := by
+    have hnat : (∏ p ∈ n.primeFactors, p ^ (n.factorization p)) = n := by
+      rw [← Nat.prod_factorization_eq_prod_primeFactors]
+      exact Nat.prod_factorization_pow_eq_self hn0
+    have hcast : ((∏ p ∈ n.primeFactors, p ^ (n.factorization p) : ℕ) : ℝ) = (n : ℝ) := by
+      rw [hnat]
+    push_cast at hcast
+    exact hcast
+  -- `∏ p, p^(δ e_p) = n^δ`
+  have hrpow : (∏ p ∈ n.primeFactors, (p : ℝ) ^ (δ * (n.factorization p : ℝ)))
+      = (n : ℝ) ^ δ := by
+    have h1 : ∀ p ∈ n.primeFactors,
+        (p : ℝ) ^ (δ * (n.factorization p : ℝ))
+          = ((p : ℝ) ^ (n.factorization p)) ^ δ := by
+      intro p _
+      rw [show δ * (n.factorization p : ℝ) = (n.factorization p : ℝ) * δ by ring,
+        Real.rpow_mul (by positivity), Real.rpow_natCast]
+    rw [Finset.prod_congr rfl (fun p hp => h1 p hp),
+      prod_rpow_eq_rpow_prod (s := n.primeFactors)
+        (x := fun p => (p : ℝ) ^ (n.factorization p)) (δ := δ)
+        (fun p _ => by positivity),
+      hfact]
+  calc (n.divisors.card : ℝ)
+      = ∏ p ∈ n.primeFactors, ((n.factorization p + 1 : ℕ) : ℝ) := by
+          rw [Nat.card_divisors hn0]
+          push_cast
+          rfl
+    _ ≤ ∏ p ∈ n.primeFactors, C * (p : ℝ) ^ (δ * (n.factorization p : ℝ)) := by
+          refine prod_le_prod_nonneg _ _ _
+            (fun p _ => by positivity)
+            (fun p _ => mul_nonneg (le_of_lt hCpos) (by positivity))
+            ?_
+          intro p hp
+          have hpp := Nat.prime_of_mem_primeFactors hp
+          have hdvd : p ∣ n := Nat.dvd_of_mem_primeFactors hp
+          have he1 : 1 ≤ n.factorization p :=
+            (Nat.Prime.dvd_iff_one_le_factorization hpp hn0).mp hdvd
+          push_cast
+          exact add_one_le_rpow_mul δ hδ p hpp.two_le (n.factorization p) he1
+    _ = C ^ n.primeFactors.card * (n : ℝ) ^ δ := by
+          rw [Finset.prod_mul_distrib, Finset.prod_const, hrpow]
+
 end B1B1Port
